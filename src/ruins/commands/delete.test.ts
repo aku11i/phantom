@@ -99,7 +99,41 @@ describe("deleteRuin", () => {
     strictEqual(result.hasUncommittedChanges, false);
   });
 
-  it("should delete dirty ruin with warning", async () => {
+  it("should refuse to delete dirty ruin without --force", async () => {
+    accessMock.mock.resetCalls();
+    execMock.mock.resetCalls();
+
+    // Mock git commands
+    execMock.mock.mockImplementation(
+      (cmd: string, options?: { cwd?: string }) => {
+        if (cmd === "git rev-parse --show-toplevel") {
+          return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
+        }
+        if (cmd === "git status --porcelain") {
+          return Promise.resolve({
+            stdout: " M file1.ts\n?? file2.ts\n",
+            stderr: "",
+          }); // Dirty status with 2 files
+        }
+        return Promise.resolve({ stdout: "", stderr: "" });
+      },
+    );
+
+    // Mock ruin exists
+    accessMock.mock.mockImplementation(() => Promise.resolve());
+
+    const result = await deleteRuin("dirty-ruin");
+
+    strictEqual(result.success, false);
+    strictEqual(
+      result.message,
+      "Error: Ruin 'dirty-ruin' has uncommitted changes (2 files). Use --force to delete anyway.",
+    );
+    strictEqual(result.hasUncommittedChanges, true);
+    strictEqual(result.changedFiles, 2);
+  });
+
+  it("should delete dirty ruin with --force", async () => {
     accessMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
@@ -128,7 +162,7 @@ describe("deleteRuin", () => {
     // Mock ruin exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteRuin("dirty-ruin");
+    const result = await deleteRuin("dirty-ruin", { force: true });
 
     strictEqual(result.success, true);
     strictEqual(

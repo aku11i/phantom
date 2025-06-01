@@ -7,7 +7,10 @@ import { getGitRoot } from "../../git/libs/get-git-root.ts";
 
 const execAsync = promisify(exec);
 
-export async function deleteRuin(name: string): Promise<{
+export async function deleteRuin(
+  name: string,
+  options: { force?: boolean } = {},
+): Promise<{
   success: boolean;
   message: string;
   hasUncommittedChanges?: boolean;
@@ -16,6 +19,8 @@ export async function deleteRuin(name: string): Promise<{
   if (!name) {
     return { success: false, message: "Error: ruin name required" };
   }
+
+  const { force = false } = options;
 
   try {
     const gitRoot = await getGitRoot();
@@ -49,6 +54,16 @@ export async function deleteRuin(name: string): Promise<{
       hasUncommittedChanges = false;
     }
 
+    // If ruin has uncommitted changes and --force is not specified, refuse deletion
+    if (hasUncommittedChanges && !force) {
+      return {
+        success: false,
+        message: `Error: Ruin '${name}' has uncommitted changes (${changedFiles} files). Use --force to delete anyway.`,
+        hasUncommittedChanges: true,
+        changedFiles,
+      };
+    }
+
     // Remove git worktree
     try {
       await execAsync(`git worktree remove "${ruinPath}"`, {
@@ -79,11 +94,10 @@ export async function deleteRuin(name: string): Promise<{
       // We'll still report success for the worktree removal
     }
 
-    let message = `Deleted ruin '${name}'`;
+    let message = `Deleted ruin '${name}' and its branch '${branchName}'`;
     if (hasUncommittedChanges) {
       message = `Warning: Ruin '${name}' had uncommitted changes (${changedFiles} files)\n${message}`;
     }
-    message += ` and its branch '${branchName}'`;
 
     return {
       success: true,
@@ -101,8 +115,15 @@ export async function deleteRuin(name: string): Promise<{
 }
 
 export async function ruinsDeleteHandler(args: string[]): Promise<void> {
-  const name = args[0];
-  const result = await deleteRuin(name);
+  // Parse arguments for --force flag
+  const forceIndex = args.indexOf("--force");
+  const force = forceIndex !== -1;
+
+  // Remove --force from args to get the ruin name
+  const filteredArgs = args.filter((arg) => arg !== "--force");
+  const name = filteredArgs[0];
+
+  const result = await deleteRuin(name, { force });
 
   if (!result.success) {
     console.error(result.message);

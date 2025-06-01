@@ -41,7 +41,7 @@ const commands: Command[] = [
       },
       {
         name: "delete",
-        description: "Delete a ruin",
+        description: "Delete a ruin (use --force for dirty ruins)",
         handler: ruinsDeleteHandler,
       },
     ],
