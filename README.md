@@ -134,37 +134,6 @@ When working within a Phantom context, these environment variables are available
 - `PHANTOM_RUIN` - Name of the current ruin
 - `PHANTOM_RUIN_PATH` - Absolute path to the ruin directory
 
-### Tips & Tricks
-
-#### Quick Navigation
-```bash
-# Add to your .bashrc/.zshrc for quick navigation
-alias pr='cd $(phantom ruins where $1)'
-
-# Usage: pr feature-auth
-```
-
-#### Shell Prompt Customization
-```bash
-# Add to your shell configuration
-if [ -n "$PHANTOM_RUIN" ]; then
-    PS1="👻[$PHANTOM_RUIN] $PS1"
-fi
-```
-
-#### Parallel Development Workflow
-```bash
-# Start multiple features in parallel
-phantom ruins create feature-auth & 
-phantom ruins create feature-api &
-phantom ruins create bugfix-header
-
-# Run AI agents on different features simultaneously
-phantom exec feature-auth cursor .
-phantom exec feature-api aider
-phantom exec bugfix-header vim
-```
-
 ## 🔄 Phantom vs Git Worktree
 
 | Feature | Git Worktree | Phantom |
