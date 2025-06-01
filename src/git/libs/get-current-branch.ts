@@ -1,5 +1,9 @@
-import { execSync } from "node:child_process";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 
-export function getCurrentBranch(): string {
-  return execSync("git branch --show-current", { encoding: "utf8" }).trim();
+const execAsync = promisify(exec);
+
+export async function getCurrentBranch(): Promise<string> {
+  const { stdout } = await execAsync("git branch --show-current");
+  return stdout.trim();
 }

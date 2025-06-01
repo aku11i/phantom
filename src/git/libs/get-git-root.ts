@@ -1,5 +1,9 @@
-import { execSync } from "node:child_process";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 
-export function getGitRoot(): string {
-  return execSync("git rev-parse --show-toplevel", { encoding: "utf8" }).trim();
+const execAsync = promisify(exec);
+
+export async function getGitRoot(): Promise<string> {
+  const { stdout } = await execAsync("git rev-parse --show-toplevel");
+  return stdout.trim();
 }

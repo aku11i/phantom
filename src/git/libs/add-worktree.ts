@@ -1,4 +1,7 @@
-import { type ExecSyncOptions, execSync } from "node:child_process";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 
 export interface AddWorktreeOptions {
   path: string;
@@ -6,12 +9,8 @@ export interface AddWorktreeOptions {
   commitish?: string;
 }
 
-export function addWorktree(options: AddWorktreeOptions): void {
+export async function addWorktree(options: AddWorktreeOptions): Promise<void> {
   const { path, branch, commitish = "HEAD" } = options;
-  const execOptions: ExecSyncOptions = { stdio: "inherit" };
 
-  execSync(
-    `git worktree add "${path}" -b "${branch}" ${commitish}`,
-    execOptions,
-  );
+  await execAsync(`git worktree add "${path}" -b "${branch}" ${commitish}`);
 }

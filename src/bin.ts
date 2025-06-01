@@ -7,7 +7,7 @@ interface Command {
   name: string;
   description: string;
   subcommands?: Command[];
-  handler?: (args: string[]) => void;
+  handler?: (args: string[]) => void | Promise<void>;
 }
 
 const commands: Command[] = [
@@ -129,23 +129,27 @@ function findCommand(
   return { command, remainingArgs: rest };
 }
 
-function main() {
-  const args = argv.slice(2);
+const args = argv.slice(2);
 
-  if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
-    printHelp(commands);
-    exit(0);
-  }
-
-  const { command, remainingArgs } = findCommand(args, commands);
-
-  if (!command || !command.handler) {
-    console.error(`Error: Unknown command '${args.join(" ")}'\n`);
-    printHelp(commands);
-    exit(1);
-  }
-
-  command.handler(remainingArgs);
+if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
+  printHelp(commands);
+  exit(0);
 }
 
-main();
+const { command, remainingArgs } = findCommand(args, commands);
+
+if (!command || !command.handler) {
+  console.error(`Error: Unknown command '${args.join(" ")}'\n`);
+  printHelp(commands);
+  exit(1);
+}
+
+try {
+  await command.handler(remainingArgs);
+} catch (error) {
+  console.error(
+    "Error:",
+    error instanceof Error ? error.message : String(error),
+  );
+  exit(1);
+}
