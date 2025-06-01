@@ -184,8 +184,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built for the AI-assisted development era
 - Special thanks to all contributors
 
+## 🤝 Contributors
+
+- [@aku11i](https://github.com/aku11i) - Project creator and maintainer
+- [Claude (Anthropic)](https://claude.ai) - AI pair programmer who implemented most of the codebase
+
 ---
 
 <div align="center">
-Made with 👻 by <a href="https://github.com/aku11i">aku11i</a>
+Made with 👻 by <a href="https://github.com/aku11i">aku11i</a> and <a href="https://claude.ai">Claude</a>
 </div>
