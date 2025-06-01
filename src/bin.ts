@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
+import { execHandler } from "./commands/exec.ts";
 import { ruinsCreateHandler } from "./ruins/commands/create.ts";
 import { ruinsDeleteHandler } from "./ruins/commands/delete.ts";
 import { ruinsListHandler } from "./ruins/commands/list.ts";
@@ -39,6 +40,11 @@ const commands: Command[] = [
         handler: ruinsDeleteHandler,
       },
     ],
+  },
+  {
+    name: "exec",
+    description: "Execute a command in a ruin directory",
+    handler: execHandler,
   },
   {
     name: "spawn",
