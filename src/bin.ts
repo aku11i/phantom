@@ -2,6 +2,7 @@
 
 import { argv, exit } from "node:process";
 import { ruinsCreateHandler } from "./ruins/commands/create.ts";
+import { ruinsListHandler } from "./ruins/commands/list.ts";
 
 interface Command {
   name: string;
@@ -23,9 +24,7 @@ const commands: Command[] = [
       {
         name: "list",
         description: "List all ruins",
-        handler: () => {
-          console.log("Listing ruins...");
-        },
+        handler: ruinsListHandler,
       },
       {
         name: "switch",
