@@ -14,6 +14,6 @@
   "javascript": { "formatter": { "quoteStyle": "double" } },
   "files": {
     "include": ["src/**/*", "*.ts", "*.js", "*.json"],
-    "ignore": ["node_modules/**/*", ".git/**/*", "dist/**/*"]
+    "ignore": ["node_modules/**/*", ".git/**/*", "dist/**/*", "package.json"]
   }
 }
