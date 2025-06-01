@@ -19,6 +19,8 @@
   },
   "scripts": {
     "start": "node ./src/bin/phantom.ts",
+    "phantom": "node ./src/bin/phantom.ts",
+    "ruins": "node ./src/bin/ruins.ts",
     "type-check": "tsc --noEmit",
     "test": "node --test --experimental-test-module-mocks src/**/*.test.ts",
     "lint": "biome check .",
