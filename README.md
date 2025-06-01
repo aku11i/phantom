@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@aku11i/phantom.svg)](https://nodejs.org)
 
-[Installation](#-installation) • [Quick Start](#-quick-start) • [Why Phantom?](#-why-phantom) • [Documentation](#-documentation)
+[Installation](#-installation) • [Quick Start](#-quick-start) • [Why Phantom?](#-why-phantom) • [Documentation](#-documentation) • [日本語](./README.ja.md)
 
 </div>
 
