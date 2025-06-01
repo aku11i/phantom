@@ -82,7 +82,6 @@ yarn global add @aku11i/phantom
 git clone https://github.com/aku11i/phantom.git
 cd phantom
 pnpm install
-pnpm build
 npm link
 ```
 
