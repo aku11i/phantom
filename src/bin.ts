@@ -52,39 +52,6 @@ const commands: Command[] = [
     description: "Open interactive shell in a ruin directory",
     handler: shellHandler,
   },
-  {
-    name: "spawn",
-    description: "Spawn a phantom (run command) in a ruin",
-    handler: (args) => {
-      const ruinName = args[0];
-      const command = args.slice(1).join(" ");
-      if (!ruinName || !command) {
-        console.error("Error: ruin name and command required");
-        exit(1);
-      }
-      console.log(`Spawning phantom in ${ruinName}: ${command}`);
-    },
-  },
-  {
-    name: "kill",
-    description: "Kill a phantom (stop process) in a ruin",
-    handler: (args) => {
-      const ruinName = args[0];
-      const command = args.slice(1).join(" ");
-      if (!ruinName || !command) {
-        console.error("Error: ruin name and command required");
-        exit(1);
-      }
-      console.log(`Killing phantom in ${ruinName}: ${command}`);
-    },
-  },
-  {
-    name: "list",
-    description: "List running phantoms (processes)",
-    handler: () => {
-      console.log("Listing phantoms...");
-    },
-  },
 ];
 
 function printHelp(commands: Command[], prefix = "") {

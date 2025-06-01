@@ -1,12 +1,18 @@
 # phantom
 
-A convenient CLI tool for managing Git worktrees with ease.
+A CLI tool for managing Git worktrees (called "ruins") with enhanced functionality.
 
 ## Overview
 
-`git phantom` is a CLI wrapper around `git worktree` that provides a more intuitive interface for creating, switching between, and managing multiple worktrees in your Git repositories.
+`phantom` provides an intuitive interface for creating and managing Git worktrees. It treats worktrees as isolated development environments called "ruins" where you can work on different features or experiments without affecting your main repository.
 
 ## Installation
+
+### Prerequisites
+
+- Node.js 20 or later
+- Git
+- pnpm (for development)
 
 ### Build from source
 
@@ -15,90 +21,104 @@ A convenient CLI tool for managing Git worktrees with ease.
 git clone https://github.com/aku11i/phantom.git
 cd phantom
 
-# Build the binary
-go build -o phantom
+# Install dependencies
+pnpm install
 
-# Optional: Install to your PATH
-go install
+# Build the project
+pnpm build
+
+# Run the CLI
+pnpm start <command>
 ```
 
 ## Usage
 
-### Run directly with Go
+### Ruins Management
+
+Ruins are Git worktrees managed by phantom. Each ruin is an isolated workspace for a specific branch or feature.
 
 ```bash
-# Run without building
-go run main.go <command>
+# Create a new ruin
+phantom ruins create <name>
 
-# Examples
-go run main.go list
-go run main.go help
+# List all ruins with their status
+phantom ruins list
+
+# Get the path of a specific ruin
+phantom ruins where <name>
+
+# Delete a ruin
+phantom ruins delete <name>
+# Use --force to delete ruins with uncommitted changes
+phantom ruins delete <name> --force
 ```
 
-### Run the built binary
+### Working with Ruins
 
 ```bash
-# Build first
-go build -o phantom
+# Execute a command in a ruin directory
+phantom exec <ruin-name> <command> [args...]
+# Example: phantom exec my-feature npm test
 
-# Run commands
-./phantom list
-./phantom add /path/to/worktree
-./phantom switch /path/to/worktree
-./phantom remove /path/to/worktree
-./phantom prune
+# Open an interactive shell in a ruin
+phantom shell <ruin-name>
+# This changes your working directory to the ruin and starts a new shell session
 ```
 
-### Use as a Git subcommand
+### Navigation Tips
 
-If you install `phantom` to your PATH, you can use it as a Git subcommand:
+You can use the `where` command with shell substitution to quickly navigate to a ruin:
 
 ```bash
-# Install to PATH
-go install
-
-# Use as git subcommand
-git phantom list
-git phantom add feature-branch
+# Change directory to a ruin
+cd $(phantom ruins where <name>)
 ```
 
-## Available Commands
+## Environment Variables
 
-- `list` - List all worktrees
-- `add <path>` - Create a new worktree
-- `switch <path>` - Switch to a worktree (outputs cd command)
-- `remove <path>` - Remove a worktree
-- `prune` - Clean up non-existent worktrees
-- `help` - Show help message
+When using `phantom shell` or `phantom exec`, the following environment variables are set:
+
+- `PHANTOM_RUIN` - The name of the current ruin
+- `PHANTOM_RUIN_PATH` - The absolute path to the ruin directory
+
+You can use these in your shell configuration to customize your prompt:
+
+```bash
+# Example for .bashrc or .zshrc
+if [ -n "$PHANTOM_RUIN" ]; then
+    PS1="[ruin:$PHANTOM_RUIN] $PS1"
+fi
+```
 
 ## Development
 
-### Prerequisites
-
-- Go 1.19 or later
-- Git
-
-### Building
+### Setup
 
 ```bash
-# Build for current platform
-go build
+# Install dependencies
+pnpm install
 
-# Build with specific output name
-go build -o phantom
+# Run tests
+pnpm test
 
-# Build for different platforms
-GOOS=linux GOARCH=amd64 go build -o phantom-linux-amd64
-GOOS=darwin GOARCH=amd64 go build -o phantom-darwin-amd64
-GOOS=windows GOARCH=amd64 go build -o phantom-windows-amd64.exe
+# Run linting and type checking
+pnpm fix
+pnpm type-check
+
+# Run all checks (lint, type-check, and test)
+pnpm ready
 ```
 
-### Testing
+### Project Structure
 
-```bash
-# Run tests (when implemented)
-go test ./...
-```
+- `src/bin.ts` - CLI entry point
+- `src/ruins/` - Ruins management commands
+- `src/commands/` - Top-level commands (exec, shell)
+- `src/git/` - Git utility functions
+
+## Contributing
+
+Contributions are welcome! Please ensure all tests pass and follow the existing code style.
 
 ## License
 
