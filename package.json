@@ -1,5 +1,6 @@
 {
   "name": "phantom",
+  "packageManager": "pnpm@10.8.1",
   "version": "0.0.1",
   "homepage": "https://github.com/aku11i/phantom#readme",
   "bugs": {
