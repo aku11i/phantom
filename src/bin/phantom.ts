@@ -22,7 +22,7 @@ const commands: Command[] = [
     subcommands: [
       {
         name: "create",
-        description: "Create a new worktree (garden)",
+        description: "Create a new worktree (garden) [--shell to open shell]",
         handler: gardensCreateHandler,
       },
       {

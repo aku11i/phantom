@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { exit } from "node:process";
 import { addWorktree } from "../../git/libs/add-worktree.ts";
 import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { shellInGarden } from "../../phantom/command/shell.ts";
 
 export async function createGarden(name: string): Promise<{
   success: boolean;
@@ -56,6 +57,8 @@ export async function createGarden(name: string): Promise<{
 
 export async function gardensCreateHandler(args: string[]): Promise<void> {
   const name = args[0];
+  const openShell = args.includes("--shell");
+
   const result = await createGarden(name);
 
   if (!result.success) {
@@ -64,4 +67,20 @@ export async function gardensCreateHandler(args: string[]): Promise<void> {
   }
 
   console.log(result.message);
+
+  if (openShell && result.path) {
+    console.log(`\nEntering garden '${name}' at ${result.path}`);
+    console.log("Type 'exit' to return to your original directory\n");
+
+    const shellResult = await shellInGarden(name);
+
+    if (!shellResult.success) {
+      if (shellResult.message) {
+        console.error(shellResult.message);
+      }
+      exit(shellResult.exitCode ?? 1);
+    }
+
+    exit(shellResult.exitCode ?? 0);
+  }
 }

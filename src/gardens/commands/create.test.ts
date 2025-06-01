@@ -30,12 +30,19 @@ describe("createGarden", () => {
     mock.module("node:child_process", {
       namedExports: {
         exec: execMock,
+        spawn: mock.fn(),
       },
     });
 
     mock.module("node:util", {
       namedExports: {
         promisify: (fn: unknown) => fn,
+      },
+    });
+
+    mock.module("../../gardens/commands/where.ts", {
+      namedExports: {
+        whereGarden: mock.fn(),
       },
     });
 
