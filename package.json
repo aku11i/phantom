@@ -24,28 +24,34 @@
   "author": "aku11i",
   "type": "module",
   "bin": {
-    "phantom": "./src/bin/phantom.ts",
-    "garden": "./src/bin/garden.ts"
+    "phantom": "./dist/bin/phantom.js",
+    "garden": "./dist/bin/garden.js"
   },
   "scripts": {
     "start": "node ./src/bin/phantom.ts",
     "phantom": "node ./src/bin/phantom.ts",
     "garden": "node ./src/bin/garden.ts",
+    "build": "node build.ts",
     "type-check": "tsc --noEmit",
     "test": "node --test --experimental-test-module-mocks src/**/*.test.ts",
     "lint": "biome check .",
     "fix": "biome check --write .",
     "ready": "pnpm fix && pnpm type-check && pnpm test",
     "ready:check": "pnpm lint && pnpm type-check && pnpm test",
-    "prepublishOnly": "pnpm ready:check"
+    "prepublishOnly": "pnpm ready:check && pnpm build"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "files": ["src/", "README.md", "LICENSE"],
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.15.29",
+    "esbuild": "^0.25.5",
     "typescript": "^5.8.3"
   }
 }
