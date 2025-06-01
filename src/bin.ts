@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { argv, exit } from 'node:process';
-import { ruinsCreateHandler } from './ruins/commands/create.ts';
+import { argv, exit } from "node:process";
+import { ruinsCreateHandler } from "./ruins/commands/create.ts";
 
 interface Command {
   name: string;
@@ -12,40 +12,40 @@ interface Command {
 
 const commands: Command[] = [
   {
-    name: 'ruins',
-    description: 'Manage git worktrees (ruins)',
+    name: "ruins",
+    description: "Manage git worktrees (ruins)",
     subcommands: [
       {
-        name: 'create',
-        description: 'Create a new worktree (ruin)',
+        name: "create",
+        description: "Create a new worktree (ruin)",
         handler: ruinsCreateHandler,
       },
       {
-        name: 'list',
-        description: 'List all ruins',
+        name: "list",
+        description: "List all ruins",
         handler: () => {
-          console.log('Listing ruins...');
+          console.log("Listing ruins...");
         },
       },
       {
-        name: 'switch',
-        description: 'Switch to a specific ruin',
+        name: "switch",
+        description: "Switch to a specific ruin",
         handler: (args) => {
           const name = args[0];
           if (!name) {
-            console.error('Error: ruin name required');
+            console.error("Error: ruin name required");
             exit(1);
           }
           console.log(`Switching to ruin: ${name}`);
         },
       },
       {
-        name: 'delete',
-        description: 'Delete a ruin',
+        name: "delete",
+        description: "Delete a ruin",
         handler: (args) => {
           const name = args[0];
           if (!name) {
-            console.error('Error: ruin name required');
+            console.error("Error: ruin name required");
             exit(1);
           }
           console.log(`Deleting ruin: ${name}`);
@@ -54,54 +54,57 @@ const commands: Command[] = [
     ],
   },
   {
-    name: 'spawn',
-    description: 'Spawn a phantom (run command) in a ruin',
+    name: "spawn",
+    description: "Spawn a phantom (run command) in a ruin",
     handler: (args) => {
       const ruinName = args[0];
-      const command = args.slice(1).join(' ');
+      const command = args.slice(1).join(" ");
       if (!ruinName || !command) {
-        console.error('Error: ruin name and command required');
+        console.error("Error: ruin name and command required");
         exit(1);
       }
       console.log(`Spawning phantom in ${ruinName}: ${command}`);
     },
   },
   {
-    name: 'kill',
-    description: 'Kill a phantom (stop process) in a ruin',
+    name: "kill",
+    description: "Kill a phantom (stop process) in a ruin",
     handler: (args) => {
       const ruinName = args[0];
-      const command = args.slice(1).join(' ');
+      const command = args.slice(1).join(" ");
       if (!ruinName || !command) {
-        console.error('Error: ruin name and command required');
+        console.error("Error: ruin name and command required");
         exit(1);
       }
       console.log(`Killing phantom in ${ruinName}: ${command}`);
     },
   },
   {
-    name: 'list',
-    description: 'List running phantoms (processes)',
+    name: "list",
+    description: "List running phantoms (processes)",
     handler: () => {
-      console.log('Listing phantoms...');
+      console.log("Listing phantoms...");
     },
   },
 ];
 
-function printHelp(commands: Command[], prefix = '') {
-  console.log('Usage: phantom <command> [options]\n');
-  console.log('Commands:');
-  commands.forEach((cmd) => {
+function printHelp(commands: Command[], prefix = "") {
+  console.log("Usage: phantom <command> [options]\n");
+  console.log("Commands:");
+  for (const cmd of commands) {
     console.log(`  ${prefix}${cmd.name.padEnd(20)} ${cmd.description}`);
     if (cmd.subcommands) {
-      cmd.subcommands.forEach((subcmd) => {
+      for (const subcmd of cmd.subcommands) {
         console.log(`    ${subcmd.name.padEnd(18)} ${subcmd.description}`);
-      });
+      }
     }
-  });
+  }
 }
 
-function findCommand(args: string[], commands: Command[]): { command: Command | null; remainingArgs: string[] } {
+function findCommand(
+  args: string[],
+  commands: Command[],
+): { command: Command | null; remainingArgs: string[] } {
   if (args.length === 0) {
     return { command: null, remainingArgs: [] };
   }
@@ -114,7 +117,10 @@ function findCommand(args: string[], commands: Command[]): { command: Command | 
   }
 
   if (command.subcommands && rest.length > 0) {
-    const { command: subcommand, remainingArgs } = findCommand(rest, command.subcommands);
+    const { command: subcommand, remainingArgs } = findCommand(
+      rest,
+      command.subcommands,
+    );
     if (subcommand) {
       return { command: subcommand, remainingArgs };
     }
@@ -126,7 +132,7 @@ function findCommand(args: string[], commands: Command[]): { command: Command | 
 function main() {
   const args = argv.slice(2);
 
-  if (args.length === 0 || args[0] === '-h' || args[0] === '--help') {
+  if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
     printHelp(commands);
     exit(0);
   }
@@ -134,7 +140,7 @@ function main() {
   const { command, remainingArgs } = findCommand(args, commands);
 
   if (!command || !command.handler) {
-    console.error(`Error: Unknown command '${args.join(' ')}'\n`);
+    console.error(`Error: Unknown command '${args.join(" ")}'\n`);
     printHelp(commands);
     exit(1);
   }

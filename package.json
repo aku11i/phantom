@@ -18,9 +18,12 @@
   "scripts": {
     "start": "node ./src/bin.ts",
     "type-check": "tsc --noEmit",
-    "test": "node --test --experimental-test-module-mocks src/**/*.test.ts"
+    "test": "node --test --experimental-test-module-mocks src/**/*.test.ts",
+    "lint": "biome check .",
+    "fix": "biome check --write ."
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.15.29",
     "typescript": "^5.8.3"
   }
