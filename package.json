@@ -3,7 +3,15 @@
   "packageManager": "pnpm@10.8.1",
   "version": "0.1.0",
   "description": "A CLI tool for managing Git worktrees (ruins) with enhanced functionality",
-  "keywords": ["git", "worktree", "cli", "phantom", "ruins", "workspace", "development"],
+  "keywords": [
+    "git",
+    "worktree",
+    "cli",
+    "phantom",
+    "ruins",
+    "workspace",
+    "development"
+  ],
   "homepage": "https://github.com/aku11i/phantom#readme",
   "bugs": {
     "url": "https://github.com/aku11i/phantom/issues"
@@ -34,11 +42,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "files": [
-    "src/",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["src/", "README.md", "LICENSE"],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.15.29",
