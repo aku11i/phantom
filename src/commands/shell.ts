@@ -65,7 +65,7 @@ export async function shellHandler(args: string[]): Promise<void> {
   }
 
   const ruinName = args[0];
-  
+
   // Get ruin path for display
   const ruinResult = await whereRuin(ruinName);
   if (!ruinResult.success) {
@@ -76,7 +76,7 @@ export async function shellHandler(args: string[]): Promise<void> {
   // Display entering message
   console.log(`Entering ruin '${ruinName}' at ${ruinResult.path}`);
   console.log("Type 'exit' to return to your original directory\n");
-  
+
   const result = await shellInRuin(ruinName);
 
   if (!result.success) {
