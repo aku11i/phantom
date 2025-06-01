@@ -18,7 +18,7 @@
   "scripts": {
     "start": "node ./src/bin.ts",
     "type-check": "tsc --noEmit",
-    "test": "node --test src/**/*.test.ts"
+    "test": "node --test --experimental-test-module-mocks src/**/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
