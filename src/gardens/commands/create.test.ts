@@ -102,7 +102,7 @@ describe("createGarden", () => {
     );
     strictEqual(
       execMock.mock.calls[1].arguments[0],
-      'git worktree add "/test/repo/.git/phantom/gardens/test-garden" -b "phantom/gardens/test-garden" HEAD',
+      'git worktree add "/test/repo/.git/phantom/gardens/test-garden" -b "test-garden" HEAD',
     );
   });
 

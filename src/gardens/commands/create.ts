@@ -37,7 +37,7 @@ export async function createGarden(name: string): Promise<{
 
     await addWorktree({
       path: worktreePath,
-      branch: `phantom/gardens/${name}`,
+      branch: name,
       commitish: "HEAD",
     });
 
