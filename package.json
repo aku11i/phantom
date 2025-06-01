@@ -14,10 +14,11 @@
   "author": "aku11i",
   "type": "module",
   "bin": {
-    "phantom": "./src/bin.ts"
+    "phantom": "./src/bin/phantom.ts",
+    "ruins": "./src/bin/ruins.ts"
   },
   "scripts": {
-    "start": "node ./src/bin.ts",
+    "start": "node ./src/bin/phantom.ts",
     "type-check": "tsc --noEmit",
     "test": "node --test --experimental-test-module-mocks src/**/*.test.ts",
     "lint": "biome check .",

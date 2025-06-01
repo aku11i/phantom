@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
-import { execHandler } from "./commands/exec.ts";
-import { shellHandler } from "./commands/shell.ts";
-import { ruinsCreateHandler } from "./ruins/commands/create.ts";
-import { ruinsDeleteHandler } from "./ruins/commands/delete.ts";
-import { ruinsListHandler } from "./ruins/commands/list.ts";
-import { ruinsWhereHandler } from "./ruins/commands/where.ts";
+import { execHandler } from "../commands/exec.ts";
+import { shellHandler } from "../commands/shell.ts";
+import { ruinsCreateHandler } from "../ruins/commands/create.ts";
+import { ruinsDeleteHandler } from "../ruins/commands/delete.ts";
+import { ruinsListHandler } from "../ruins/commands/list.ts";
+import { ruinsWhereHandler } from "../ruins/commands/where.ts";
 
 interface Command {
   name: string;
