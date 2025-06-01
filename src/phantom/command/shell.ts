@@ -1,21 +1,14 @@
 import { spawn } from "node:child_process";
 import { exit } from "node:process";
-import { whereGarden } from "../gardens/commands/where.ts";
+import { whereGarden } from "../../gardens/commands/where.ts";
 
-export async function execInGarden(
-  gardenName: string,
-  command: string[],
-): Promise<{
+export async function shellInGarden(gardenName: string): Promise<{
   success: boolean;
   message?: string;
   exitCode?: number;
 }> {
   if (!gardenName) {
     return { success: false, message: "Error: garden name required" };
-  }
-
-  if (!command || command.length === 0) {
-    return { success: false, message: "Error: command required" };
   }
 
   // Validate garden exists and get its path
@@ -25,18 +18,25 @@ export async function execInGarden(
   }
 
   const gardenPath = gardenResult.path as string;
-  const [cmd, ...args] = command;
+  // Use user's preferred shell or fallback to /bin/sh
+  const shell = process.env.SHELL || "/bin/sh";
 
   return new Promise((resolve) => {
-    const childProcess = spawn(cmd, args, {
+    const childProcess = spawn(shell, [], {
       cwd: gardenPath,
       stdio: "inherit",
+      env: {
+        ...process.env,
+        // Add environment variable to indicate we're in a phantom garden
+        PHANTOM_GARDEN: gardenName,
+        PHANTOM_GARDEN_PATH: gardenPath,
+      },
     });
 
     childProcess.on("error", (error) => {
       resolve({
         success: false,
-        message: `Error executing command: ${error.message}`,
+        message: `Error starting shell: ${error.message}`,
       });
     });
 
@@ -44,7 +44,7 @@ export async function execInGarden(
       if (signal) {
         resolve({
           success: false,
-          message: `Command terminated by signal: ${signal}`,
+          message: `Shell terminated by signal: ${signal}`,
           exitCode: 128 + (signal === "SIGTERM" ? 15 : 1),
         });
       } else {
@@ -58,16 +58,26 @@ export async function execInGarden(
   });
 }
 
-export async function execHandler(args: string[]): Promise<void> {
-  if (args.length < 2) {
-    console.error("Usage: phantom exec <garden-name> <command> [args...]");
+export async function shellHandler(args: string[]): Promise<void> {
+  if (args.length < 1) {
+    console.error("Usage: phantom shell <garden-name>");
     exit(1);
   }
 
   const gardenName = args[0];
-  const command = args.slice(1);
 
-  const result = await execInGarden(gardenName, command);
+  // Get garden path for display
+  const gardenResult = await whereGarden(gardenName);
+  if (!gardenResult.success) {
+    console.error(gardenResult.message);
+    exit(1);
+  }
+
+  // Display entering message
+  console.log(`Entering garden '${gardenName}' at ${gardenResult.path}`);
+  console.log("Type 'exit' to return to your original directory\n");
+
+  const result = await shellInGarden(gardenName);
 
   if (!result.success) {
     if (result.message) {
@@ -76,6 +86,6 @@ export async function execHandler(args: string[]): Promise<void> {
     exit(result.exitCode ?? 1);
   }
 
-  // For successful commands, exit with the same code as the child process
+  // Exit with the same code as the shell
   exit(result.exitCode ?? 0);
 }

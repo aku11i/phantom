@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
-import { execHandler } from "../commands/exec.ts";
-import { shellHandler } from "../commands/shell.ts";
 import { gardensCreateHandler } from "../gardens/commands/create.ts";
 import { gardensDeleteHandler } from "../gardens/commands/delete.ts";
 import { gardensListHandler } from "../gardens/commands/list.ts";
 import { gardensWhereHandler } from "../gardens/commands/where.ts";
+import { execHandler } from "../phantom/command/exec.ts";
+import { shellHandler } from "../phantom/command/shell.ts";
 
 interface Command {
   name: string;
