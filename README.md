@@ -205,19 +205,16 @@ To release a new version of Phantom:
 
 6. **Create GitHub release**
    ```bash
-   # Create a release with the new version tag
+   # Create a release with automatically generated notes
    gh release create v<version> \
      --title "Phantom v<version>" \
-     --notes "Release notes here" \
+     --generate-notes \
      --target main
    
    # Example for v0.1.3:
    gh release create v0.1.3 \
      --title "Phantom v0.1.3" \
-     --notes "## Changes
-   - Feature: Add new command
-   - Fix: Resolve issue with garden creation
-   - Docs: Update README" \
+     --generate-notes \
      --target main
    ```
 
