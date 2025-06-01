@@ -4,6 +4,7 @@ import { argv, exit } from "node:process";
 import { ruinsCreateHandler } from "./ruins/commands/create.ts";
 import { ruinsDeleteHandler } from "./ruins/commands/delete.ts";
 import { ruinsListHandler } from "./ruins/commands/list.ts";
+import { ruinsWhereHandler } from "./ruins/commands/where.ts";
 
 interface Command {
   name: string;
@@ -28,16 +29,9 @@ const commands: Command[] = [
         handler: ruinsListHandler,
       },
       {
-        name: "switch",
-        description: "Switch to a specific ruin",
-        handler: (args) => {
-          const name = args[0];
-          if (!name) {
-            console.error("Error: ruin name required");
-            exit(1);
-          }
-          console.log(`Switching to ruin: ${name}`);
-        },
+        name: "where",
+        description: "Output the path of a specific ruin",
+        handler: ruinsWhereHandler,
       },
       {
         name: "delete",
