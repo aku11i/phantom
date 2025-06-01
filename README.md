@@ -12,7 +12,12 @@ A CLI tool for managing Git worktrees (called "ruins") with enhanced functionali
 
 - Node.js 20 or later
 - Git
-- pnpm (for development)
+
+### Install from npm
+
+```bash
+npm install --global @aku11i/phantom
+```
 
 ### Build from source
 
@@ -23,9 +28,6 @@ cd phantom
 
 # Install dependencies
 pnpm install
-
-# Build the project
-pnpm build
 
 # Run the CLI
 pnpm start <command>
