@@ -1,4 +1,4 @@
-import { output } from "./output.js";
+import { output } from "./output.ts";
 
 export const exitCodes = {
   success: 0,

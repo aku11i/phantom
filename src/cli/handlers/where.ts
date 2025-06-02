@@ -1,6 +1,6 @@
-import { whereWorktree as whereWorktreeCore } from "../../commands/where.js";
-import { exitCodes, exitWithError, exitWithSuccess } from "../errors.js";
-import { output } from "../output.js";
+import { whereWorktree as whereWorktreeCore } from "../../commands/where.ts";
+import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
+import { output } from "../output.ts";
 
 export async function whereHandler(args: string[]): Promise<void> {
   if (args.length === 0) {

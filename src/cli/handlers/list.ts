@@ -1,7 +1,7 @@
-import { listWorktrees as listWorktreesCore } from "../../core/worktree/list.js";
-import { getGitRoot } from "../../git/libs/get-git-root.js";
-import { exitCodes, exitWithError } from "../errors.js";
-import { output } from "../output.js";
+import { listWorktrees as listWorktreesCore } from "../../core/worktree/list.ts";
+import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { exitCodes, exitWithError } from "../errors.ts";
+import { output } from "../output.ts";
 
 export async function listHandler(): Promise<void> {
   try {

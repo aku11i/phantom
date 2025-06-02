@@ -1,6 +1,6 @@
-import { shellInWorktree as shellInWorktreeCore } from "../../commands/shell.js";
-import { exitCodes, exitWithError } from "../errors.js";
-import { output } from "../output.js";
+import { shellInWorktree as shellInWorktreeCore } from "../../commands/shell.ts";
+import { exitCodes, exitWithError } from "../errors.ts";
+import { output } from "../output.ts";
 
 export async function shellHandler(args: string[]): Promise<void> {
   if (args.length === 0) {

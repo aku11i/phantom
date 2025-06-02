@@ -1,6 +1,6 @@
-import { getVersion } from "../../commands/version.js";
-import { exitWithSuccess } from "../errors.js";
-import { output } from "../output.js";
+import { getVersion } from "../../commands/version.ts";
+import { exitWithSuccess } from "../errors.ts";
+import { output } from "../output.ts";
 
 export function versionHandler(): void {
   const version = getVersion();

@@ -1,5 +1,5 @@
-import { execInWorktree as execInWorktreeCore } from "../../commands/exec.js";
-import { exitCodes, exitWithError } from "../errors.js";
+import { execInWorktree as execInWorktreeCore } from "../../commands/exec.ts";
+import { exitCodes, exitWithError } from "../errors.ts";
 
 export async function execHandler(args: string[]): Promise<void> {
   if (args.length < 2) {

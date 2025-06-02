@@ -1,8 +1,8 @@
-import { shellInWorktree } from "../../commands/shell.js";
-import { createWorktree as createWorktreeCore } from "../../core/worktree/create.js";
-import { getGitRoot } from "../../git/libs/get-git-root.js";
-import { exitCodes, exitWithError, exitWithSuccess } from "../errors.js";
-import { output } from "../output.js";
+import { shellInWorktree } from "../../commands/shell.ts";
+import { createWorktree as createWorktreeCore } from "../../core/worktree/create.ts";
+import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
+import { output } from "../output.ts";
 
 export async function createHandler(args: string[]): Promise<void> {
   const openShell = args.includes("--shell");

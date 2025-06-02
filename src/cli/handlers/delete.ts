@@ -1,7 +1,7 @@
-import { deleteWorktree as deleteWorktreeCore } from "../../core/worktree/delete.js";
-import { getGitRoot } from "../../git/libs/get-git-root.js";
-import { exitCodes, exitWithError, exitWithSuccess } from "../errors.js";
-import { output } from "../output.js";
+import { deleteWorktree as deleteWorktreeCore } from "../../core/worktree/delete.ts";
+import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
+import { output } from "../output.ts";
 
 export async function deleteHandler(args: string[]): Promise<void> {
   const forceDelete = args.includes("--force");
