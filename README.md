@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**Master Git worktrees instantly - A productivity tool that accelerates parallel development**
+**A powerful CLI tool for seamless parallel development with Git worktrees**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

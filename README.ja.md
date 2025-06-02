@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**Git worktreeを瞬時に操る - 並行開発を加速する生産性向上ツール**
+**Git worktreeを使った並行開発のためのパワフルなCLIツール**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
