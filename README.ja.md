@@ -39,11 +39,9 @@ Phantomは、Git worktreeの管理を劇的にシンプルにするCLIツール�
 # 従来の方法
 git worktree add -b feature ../project-feature origin/main
 cd ../project-feature
-npm install
 
 # Phantomを使用
-phantom create feature
-phantom shell feature
+phantom create feature --shell
 ```
 
 Phantomは、worktreeの作成、ブランチの管理、ディレクトリの移動をすべて1つのコマンドに統合します。

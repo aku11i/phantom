@@ -39,11 +39,9 @@ When using Git worktree directly, you need to specify the worktree path, branch 
 # Traditional approach
 git worktree add -b feature ../project-feature origin/main
 cd ../project-feature
-npm install
 
 # With Phantom
-phantom create feature
-phantom shell feature
+phantom create feature --shell
 ```
 
 Phantom consolidates worktree creation, branch management, and directory navigation into single, intuitive commands.
