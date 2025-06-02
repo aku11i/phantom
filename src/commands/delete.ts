@@ -1,12 +1,8 @@
-import childProcess from "node:child_process";
 import { exit } from "node:process";
-import { promisify } from "node:util";
-import { getWorktreePath } from "../core/paths.ts";
-import { validateWorktreeExists } from "../core/worktree/validate.ts";
+import { deleteWorktree as coreDeleteWorktree } from "../core/worktree/delete.ts";
 import { getGitRoot } from "../git/libs/get-git-root.ts";
 
-const execAsync = promisify(childProcess.exec);
-
+// Backward compatibility wrapper for tests
 export async function deleteWorktree(
   name: string,
   options: { force?: boolean } = {},
@@ -20,92 +16,22 @@ export async function deleteWorktree(
     return { success: false, message: "Error: worktree name required" };
   }
 
-  const { force = false } = options;
-
   try {
     const gitRoot = await getGitRoot();
-
-    // Check if worktree exists
-    const validation = await validateWorktreeExists(gitRoot, name);
-    if (!validation.exists) {
-      return {
-        success: false,
-        message: `Error: ${validation.message}`,
-      };
-    }
-
-    const worktreePath = validation.path as string;
-
-    // Check for uncommitted changes
-    let hasUncommittedChanges = false;
-    let changedFiles = 0;
-    try {
-      const { stdout } = await execAsync("git status --porcelain", {
-        cwd: worktreePath,
-      });
-      const changes = stdout.trim();
-      if (changes) {
-        hasUncommittedChanges = true;
-        changedFiles = changes.split("\n").length;
-      }
-    } catch {
-      // If git status fails, assume no changes
-      hasUncommittedChanges = false;
-    }
-
-    // If worktree has uncommitted changes and --force is not specified, refuse deletion
-    if (hasUncommittedChanges && !force) {
-      return {
-        success: false,
-        message: `Error: Worktree '${name}' has uncommitted changes (${changedFiles} files). Use --force to delete anyway.`,
-        hasUncommittedChanges: true,
-        changedFiles,
-      };
-    }
-
-    // Remove git worktree
-    try {
-      await execAsync(`git worktree remove "${worktreePath}"`, {
-        cwd: gitRoot,
-      });
-    } catch (error) {
-      // If worktree remove fails, try force removal
-      try {
-        await execAsync(`git worktree remove --force "${worktreePath}"`, {
-          cwd: gitRoot,
-        });
-      } catch {
-        return {
-          success: false,
-          message: `Error: Failed to remove worktree '${name}'`,
-        };
-      }
-    }
-
-    // Delete associated branch
-    const branchName = `phantom/worktrees/${name}`;
-    try {
-      await execAsync(`git branch -D "${branchName}"`, {
-        cwd: gitRoot,
-      });
-    } catch {
-      // Branch might not exist or already deleted - this is not an error
-      // We'll still report success for the worktree removal
-    }
-
-    let message = `Deleted worktree '${name}' and its branch '${branchName}'`;
-    if (hasUncommittedChanges) {
-      message = `Warning: Worktree '${name}' had uncommitted changes (${changedFiles} files)\n${message}`;
-    }
-
+    const result = await coreDeleteWorktree(gitRoot, name, options);
     return {
-      success: true,
-      message,
-      hasUncommittedChanges,
-      changedFiles: hasUncommittedChanges ? changedFiles : undefined,
+      ...result,
+      message: result.success ? result.message : `Error: ${result.message}`,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    // Check if this is a failed removal error
+    if (errorMessage.includes("Failed to remove worktree")) {
+      return {
+        success: false,
+        message: `Error: Failed to remove worktree '${name}'`,
+      };
+    }
     return {
       success: false,
       message: `Error deleting worktree: ${errorMessage}`,
@@ -122,12 +48,24 @@ export async function deleteHandler(args: string[]): Promise<void> {
   const filteredArgs = args.filter((arg) => arg !== "--force");
   const name = filteredArgs[0];
 
-  const result = await deleteWorktree(name, { force });
-
-  if (!result.success) {
-    console.error(result.message);
+  if (!name) {
+    console.error("Error: worktree name required");
     exit(1);
   }
 
-  console.log(result.message);
+  try {
+    const gitRoot = await getGitRoot();
+    const result = await coreDeleteWorktree(gitRoot, name, { force });
+
+    if (!result.success) {
+      console.error(`Error: ${result.message}`);
+      exit(1);
+    }
+
+    console.log(result.message);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`Error deleting worktree: ${errorMessage}`);
+    exit(1);
+  }
 }
