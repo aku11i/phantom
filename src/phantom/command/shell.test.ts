@@ -57,7 +57,7 @@ describe("shellInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -92,12 +92,12 @@ describe("shellInPhantom", () => {
     ];
     strictEqual(shell, process.env.SHELL || "/bin/sh");
     strictEqual(args.length, 0);
-    strictEqual(options.cwd, "/test/repo/.git/phantom/phantoms/test-phantom");
+    strictEqual(options.cwd, "/test/repo/.git/phantom/worktrees/test-phantom");
     strictEqual(options.stdio, "inherit");
     strictEqual(options.env.PHANTOM_NAME, "test-phantom");
     strictEqual(
       options.env.PHANTOM_PATH,
-      "/test/repo/.git/phantom/phantoms/test-phantom",
+      "/test/repo/.git/phantom/worktrees/test-phantom",
     );
   });
 
@@ -114,7 +114,7 @@ describe("shellInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -154,7 +154,7 @@ describe("shellInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -189,7 +189,7 @@ describe("shellInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -218,7 +218,7 @@ describe("shellInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 

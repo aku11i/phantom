@@ -16,7 +16,7 @@ export async function createPhantom(name: string): Promise<{
 
   try {
     const gitRoot = await getGitRoot();
-    const phantomsPath = join(gitRoot, ".git", "phantom", "phantoms");
+    const phantomsPath = join(gitRoot, ".git", "phantom", "worktrees");
     const worktreePath = join(phantomsPath, name);
 
     try {

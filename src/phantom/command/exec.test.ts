@@ -62,7 +62,7 @@ describe("execInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -97,7 +97,7 @@ describe("execInPhantom", () => {
     ];
     strictEqual(cmd, "echo");
     strictEqual(args[0], "hello");
-    strictEqual(options.cwd, "/test/repo/.git/phantom/phantoms/test-phantom");
+    strictEqual(options.cwd, "/test/repo/.git/phantom/worktrees/test-phantom");
     strictEqual(options.stdio, "inherit");
   });
 
@@ -109,7 +109,7 @@ describe("execInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -144,7 +144,7 @@ describe("execInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -173,7 +173,7 @@ describe("execInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 
@@ -211,7 +211,7 @@ describe("execInPhantom", () => {
     wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/phantoms/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
       }),
     );
 

@@ -14,7 +14,7 @@ export async function wherePhantom(name: string): Promise<{
 
   try {
     const gitRoot = await getGitRoot();
-    const phantomsPath = join(gitRoot, ".git", "phantom", "phantoms");
+    const phantomsPath = join(gitRoot, ".git", "phantom", "worktrees");
     const phantomPath = join(phantomsPath, name);
 
     // Check if phantom exists

@@ -61,10 +61,10 @@ describe("createPhantom", () => {
     execMock.mock.resetCalls();
 
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/phantoms") {
+      if (path === "/test/repo/.git/phantom/worktrees") {
         return Promise.reject(new Error("ENOENT"));
       }
-      if (path === "/test/repo/.git/phantom/phantoms/test-phantom") {
+      if (path === "/test/repo/.git/phantom/worktrees/test-phantom") {
         return Promise.reject(new Error("ENOENT"));
       }
       return Promise.resolve();
@@ -85,13 +85,13 @@ describe("createPhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Created phantom 'test-phantom' at /test/repo/.git/phantom/phantoms/test-phantom",
+      "Created phantom 'test-phantom' at /test/repo/.git/phantom/worktrees/test-phantom",
     );
-    strictEqual(result.path, "/test/repo/.git/phantom/phantoms/test-phantom");
+    strictEqual(result.path, "/test/repo/.git/phantom/worktrees/test-phantom");
 
     strictEqual(mkdirMock.mock.calls.length, 1);
     deepStrictEqual(mkdirMock.mock.calls[0].arguments, [
-      "/test/repo/.git/phantom/phantoms",
+      "/test/repo/.git/phantom/worktrees",
       { recursive: true },
     ]);
 
@@ -102,7 +102,7 @@ describe("createPhantom", () => {
     );
     strictEqual(
       execMock.mock.calls[1].arguments[0],
-      'git worktree add "/test/repo/.git/phantom/phantoms/test-phantom" -b "test-phantom" HEAD',
+      'git worktree add "/test/repo/.git/phantom/worktrees/test-phantom" -b "test-phantom" HEAD',
     );
   });
 
@@ -112,10 +112,10 @@ describe("createPhantom", () => {
     execMock.mock.resetCalls();
 
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/phantoms") {
+      if (path === "/test/repo/.git/phantom/worktrees") {
         return Promise.resolve();
       }
-      if (path === "/test/repo/.git/phantom/phantoms/existing-phantom") {
+      if (path === "/test/repo/.git/phantom/worktrees/existing-phantom") {
         return Promise.resolve();
       }
       return Promise.reject(new Error("ENOENT"));
@@ -157,10 +157,10 @@ describe("createPhantom", () => {
     execMock.mock.resetCalls();
 
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/phantoms") {
+      if (path === "/test/repo/.git/phantom/worktrees") {
         return Promise.resolve();
       }
-      if (path === "/test/repo/.git/phantom/phantoms/test-phantom") {
+      if (path === "/test/repo/.git/phantom/worktrees/test-phantom") {
         return Promise.reject(new Error("ENOENT"));
       }
       return Promise.reject(new Error("ENOENT"));

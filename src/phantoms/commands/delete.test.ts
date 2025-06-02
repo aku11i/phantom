@@ -94,7 +94,7 @@ describe("deletePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'clean-phantom' and its branch 'phantom/phantoms/clean-phantom'",
+      "Deleted phantom 'clean-phantom' and its branch 'phantom/worktrees/clean-phantom'",
     );
     strictEqual(result.hasUncommittedChanges, false);
   });
@@ -167,7 +167,7 @@ describe("deletePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Warning: Phantom 'dirty-phantom' had uncommitted changes (2 files)\nDeleted phantom 'dirty-phantom' and its branch 'phantom/phantoms/dirty-phantom'",
+      "Warning: Phantom 'dirty-phantom' had uncommitted changes (2 files)\nDeleted phantom 'dirty-phantom' and its branch 'phantom/worktrees/dirty-phantom'",
     );
     strictEqual(result.hasUncommittedChanges, true);
     strictEqual(result.changedFiles, 2);
@@ -207,7 +207,7 @@ describe("deletePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'stubborn-phantom' and its branch 'phantom/phantoms/stubborn-phantom'",
+      "Deleted phantom 'stubborn-phantom' and its branch 'phantom/worktrees/stubborn-phantom'",
     );
   });
 
@@ -242,7 +242,7 @@ describe("deletePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'branch-missing-phantom' and its branch 'phantom/phantoms/branch-missing-phantom'",
+      "Deleted phantom 'branch-missing-phantom' and its branch 'phantom/worktrees/branch-missing-phantom'",
     );
   });
 
@@ -309,7 +309,7 @@ describe("deletePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'status-error-phantom' and its branch 'phantom/phantoms/status-error-phantom'",
+      "Deleted phantom 'status-error-phantom' and its branch 'phantom/worktrees/status-error-phantom'",
     );
     strictEqual(result.hasUncommittedChanges, false);
   });

@@ -83,7 +83,7 @@ describe("wherePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.path,
-      "/test/repo/.git/phantom/phantoms/existing-phantom",
+      "/test/repo/.git/phantom/worktrees/existing-phantom",
     );
   });
 
@@ -122,7 +122,7 @@ describe("wherePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.path,
-      "/different/repo/.git/phantom/phantoms/feature-branch-123",
+      "/different/repo/.git/phantom/worktrees/feature-branch-123",
     );
   });
 
@@ -146,7 +146,7 @@ describe("wherePhantom", () => {
     strictEqual(result.success, true);
     strictEqual(
       result.path,
-      "/test/repo/.git/phantom/phantoms/feature-with-dashes_and_underscores",
+      "/test/repo/.git/phantom/worktrees/feature-with-dashes_and_underscores",
     );
   });
 });

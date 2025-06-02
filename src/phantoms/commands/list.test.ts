@@ -49,7 +49,7 @@ describe("listPhantoms", () => {
 
     // Mock phantoms directory doesn't exist
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/phantoms") {
+      if (path === "/test/repo/.git/phantom/worktrees") {
         return Promise.reject(new Error("ENOENT"));
       }
       return Promise.resolve();

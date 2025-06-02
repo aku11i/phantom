@@ -20,7 +20,7 @@ export async function listPhantoms(): Promise<{
 }> {
   try {
     const gitRoot = await getGitRoot();
-    const phantomsPath = join(gitRoot, ".git", "phantom", "phantoms");
+    const phantomsPath = join(gitRoot, ".git", "phantom", "worktrees");
 
     // Check if phantoms directory exists
     try {
