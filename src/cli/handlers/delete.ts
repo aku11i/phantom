@@ -1,5 +1,5 @@
+import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { deleteWorktree as deleteWorktreeCore } from "../../core/worktree/delete.ts";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 

@@ -1,6 +1,6 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
-import type { AddWorktreeOptions } from "../../git/libs/add-worktree.ts";
+import type { AddWorktreeOptions } from "../git/libs/add-worktree.ts";
 
 describe("createWorktree", () => {
   let accessMock: ReturnType<typeof mock.fn>;
@@ -27,7 +27,7 @@ describe("createWorktree", () => {
       },
     });
 
-    mock.module("../../git/libs/add-worktree.ts", {
+    mock.module("../git/libs/add-worktree.ts", {
       namedExports: {
         addWorktree: addWorktreeMock,
       },
@@ -84,7 +84,7 @@ describe("createWorktree", () => {
       },
     });
 
-    mock.module("../../git/libs/add-worktree.ts", {
+    mock.module("../git/libs/add-worktree.ts", {
       namedExports: {
         addWorktree: addWorktreeMock,
       },
@@ -173,7 +173,7 @@ describe("createWorktree", () => {
       },
     });
 
-    mock.module("../../git/libs/add-worktree.ts", {
+    mock.module("../git/libs/add-worktree.ts", {
       namedExports: {
         addWorktree: addWorktreeMock,
       },
@@ -223,7 +223,7 @@ describe("createWorktree", () => {
       },
     });
 
-    mock.module("../../git/libs/add-worktree.ts", {
+    mock.module("../git/libs/add-worktree.ts", {
       namedExports: {
         addWorktree: addWorktreeMock,
       },

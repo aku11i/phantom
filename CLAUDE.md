@@ -39,20 +39,20 @@ Phantom is a CLI tool for managing Git worktrees (called "phantoms") with enhanc
       - `exec.ts` - Command execution in worktree
       - `shell.ts` - Shell spawning in worktree
     - `paths.ts` - Centralized path management
-  - `git/` - Git operations layer
-    - `executor.ts` - Centralized git command execution
-    - `libs/` - Git helper libraries
-      - `add-worktree.ts` - Git worktree add wrapper
-      - `get-current-branch.ts` - Get current branch
-      - `get-git-root.ts` - Get git repository root
-  - `commands/` - Re-exports from core modules (for backward compatibility)
+    - `version.ts` - Version information
+    - `git/` - Git operations
+      - `executor.ts` - Centralized git command execution
+      - `libs/` - Git helper libraries
+        - `add-worktree.ts` - Git worktree add wrapper
+        - `get-current-branch.ts` - Get current branch
+        - `get-git-root.ts` - Get git repository root
 
 ## Architecture Principles
 - **Single Responsibility Principle**: Each module has one clear responsibility
 - **Separation of Concerns**: CLI, business logic, and git operations are separated
 - **Testability**: Core modules are framework-agnostic and easily testable
 - **No Code Duplication**: Common operations are centralized
-- **Clear Dependencies**: Dependencies flow from CLI → Core → Git
+- **Clear Dependencies**: Dependencies flow from CLI → Core (including Git operations)
 
 ## Important Notes
 - Use English for all communications and documentation

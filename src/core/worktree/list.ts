@@ -1,4 +1,4 @@
-import { executeGitCommandInDirectory } from "../../git/executor.ts";
+import { executeGitCommandInDirectory } from "../git/executor.ts";
 import { getWorktreePath } from "../paths.ts";
 import {
   listValidWorktrees,

@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { addWorktree } from "../../git/libs/add-worktree.ts";
+import { addWorktree } from "../git/libs/add-worktree.ts";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
 import { validateWorktreeDoesNotExist } from "./validate.ts";
 

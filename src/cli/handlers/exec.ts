@@ -1,5 +1,5 @@
+import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { execInWorktree as execInWorktreeCore } from "../../core/process/exec.ts";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 
 export async function execHandler(args: string[]): Promise<void> {

@@ -1,7 +1,7 @@
 import {
   executeGitCommand,
   executeGitCommandInDirectory,
-} from "../../git/executor.ts";
+} from "../git/executor.ts";
 import { validateWorktreeExists } from "./validate.ts";
 
 export interface DeleteWorktreeOptions {

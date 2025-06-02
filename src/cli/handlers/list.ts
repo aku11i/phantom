@@ -1,5 +1,5 @@
+import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { listWorktrees as listWorktreesCore } from "../../core/worktree/list.ts";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 

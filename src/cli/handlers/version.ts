@@ -1,4 +1,4 @@
-import { getVersion } from "../../commands/version.ts";
+import { getVersion } from "../../core/version.ts";
 import { exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 

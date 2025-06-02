@@ -1,6 +1,6 @@
+import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { shellInWorktree as shellInWorktreeCore } from "../../core/process/shell.ts";
 import { validateWorktreeExists } from "../../core/worktree/validate.ts";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 
