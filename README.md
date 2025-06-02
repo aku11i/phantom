@@ -27,7 +27,7 @@ Phantom is a CLI tool that dramatically simplifies Git worktree management. It's
 
 ## 🤔 Why Phantom?
 
-Modern development workflows often require working on multiple features simultaneously. While Git worktree is a powerful feature, its management can be complex and time-consuming.
+Modern development workflows often require working on multiple features simultaneously. While Git worktree is a powerful feature, it requires specifying paths and branches separately, which can be cumbersome.
 
 ### The Problem
 
