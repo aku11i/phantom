@@ -3,6 +3,7 @@
 import { argv, exit } from "node:process";
 import { execHandler } from "../phantom/command/exec.ts";
 import { shellHandler } from "../phantom/command/shell.ts";
+import { versionHandler } from "../phantom/command/version.ts";
 import { phantomsCreateHandler } from "../phantoms/commands/create.ts";
 import { phantomsDeleteHandler } from "../phantoms/commands/delete.ts";
 import { phantomsListHandler } from "../phantoms/commands/list.ts";
@@ -46,6 +47,11 @@ const commands: Command[] = [
     description: "Open interactive shell in a worktree directory",
     handler: shellHandler,
   },
+  {
+    name: "version",
+    description: "Display phantom version",
+    handler: versionHandler,
+  },
 ];
 
 function printHelp(commands: Command[]) {
@@ -88,6 +94,11 @@ const args = argv.slice(2);
 
 if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
   printHelp(commands);
+  exit(0);
+}
+
+if (args[0] === "--version" || args[0] === "-v") {
+  versionHandler();
   exit(0);
 }
 

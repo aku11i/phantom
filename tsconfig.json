@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   }
 }
