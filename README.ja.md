@@ -12,10 +12,14 @@
 
 </div>
 
-## ✨ 主な機能
+## ✨ 概要
+
+Phantomは、Git worktreeの管理を劇的にシンプルにするCLIツールです。複数の機能開発、バグ修正、PRレビューを並行して進める現代の開発ワークフローに最適化されています。
+
+### 主な特徴
 
 - 🚀 **シンプルなWorktree管理** - 直感的なコマンドでGit worktreeを作成・管理
-- 🔄 **シームレスなコンテキスト切り替え** - stashやcommitせずに異なる機能間をジャンプ
+- 🔄 **シームレスなコンテキスト切り替え** - stashやcommitせずに異なる作業間を瞬時に移動
 - 🤖 **AI対応** - 複数のAIコーディングエージェントを並行実行するのに最適
 - 🎯 **ブランチとWorktreeの同期** - 各worktreeに対応するブランチを自動作成
 - 🐚 **インタラクティブシェル** - SSH風のworktreeナビゲーション体験
@@ -23,19 +27,29 @@
 
 ## 🤔 なぜPhantom？
 
-現代の開発ワークフローでは、複数の機能を同時に作業することがよくあります。AIコーディングエージェントを並行実行したり、開発しながらPRをレビューしたり、単純に複数の機能をマルチタスクで作業したりする場合、複数のGit worktreeの管理は面倒になりがちです。
+現代の開発ワークフローでは、複数の機能を同時に作業することが一般的になっています。Git worktreeは素晴らしい機能ですが、その管理は複雑で時間がかかります。
 
-**問題点：**
-- Git worktreeコマンドは冗長で複雑
-- ブランチとworktreeを別々に管理するのはエラーが起きやすい
-- コンテキストの切り替えには複数のコマンドが必要
-- 同じコードベースで並行してAIエージェントを実行するのは困難
+### 問題点
 
-**Phantomの解決策：**
-- 1つのコマンドでworktreeとブランチの両方を作成: `phantom create feature-x`
-- 即座にコンテキストを切り替え: `phantom shell feature-x`
-- ディレクトリを変更せずにコマンドを実行: `phantom exec feature-x npm test`
-- 複数のAIエージェントとの「並行バイブコーディング」に最適
+- Git worktreeコマンドは冗長で覚えにくい
+- ブランチとworktreeを別々に管理する必要がある
+- コンテキストの切り替えに複数のコマンドが必要
+- AIエージェントを使った並行開発が困難
+
+### Phantomの解決策
+
+```bash
+# 従来の方法
+git worktree add -b feature ../project-feature origin/main
+cd ../project-feature
+npm install
+
+# Phantomを使用
+phantom create feature
+phantom shell feature
+```
+
+Phantomは、worktreeの作成、ブランチの管理、ディレクトリの移動をすべて1つのコマンドに統合します。
 
 ## 🚀 クイックスタート
 
@@ -183,10 +197,10 @@ Phantomの新しいバージョンをリリースするには：
    ```bash
    # パッチリリース（バグ修正）の場合
    npm version patch
-   
+
    # マイナーリリース（新機能）の場合
    npm version minor
-   
+
    # メジャーリリース（破壊的変更）の場合
    npm version major
    ```
@@ -208,7 +222,7 @@ Phantomの新しいバージョンをリリースするには：
      --title "Phantom v<version>" \
      --generate-notes \
      --target main
-   
+
    # v0.1.3の例:
    gh release create v0.1.3 \
      --title "Phantom v0.1.3" \
