@@ -44,7 +44,7 @@ cd ../project-feature
 phantom create feature --shell
 ```
 
-Phantomは、worktreeの作成、ブランチの管理、ディレクトリの移動をすべて1つのコマンドに統合します。
+Phantomは、worktreeとブランチの作成を1つのコマンドにまとめ、作業スペース間の移動や操作を簡単にします。
 
 ## 🚀 クイックスタート
 

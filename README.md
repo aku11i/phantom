@@ -44,7 +44,7 @@ cd ../project-feature
 phantom create feature --shell
 ```
 
-Phantom consolidates worktree creation, branch management, and directory navigation into single, intuitive commands.
+Phantom combines worktree and branch creation into a single command, making it easy to switch between and work in different workspaces.
 
 ## 🚀 Quick Start
 
