@@ -29,12 +29,9 @@ Phantom is a CLI tool that dramatically simplifies Git worktree management. It's
 
 Modern development workflows often require working on multiple features simultaneously. While Git worktree is a powerful feature, it requires specifying paths and branches separately, which can be cumbersome.
 
-### The Problem
+### The Manual Process
 
-- Git worktree commands are verbose and hard to remember
-- Managing branches and worktrees separately is error-prone
-- Context switching requires multiple commands
-- Running AI agents in parallel on the same codebase is challenging
+When using Git worktree directly, you need to specify the worktree path, branch name, and base branch each time. Additionally, switching between tasks requires navigating directories, which can be a bit tedious when frequently switching between multiple parallel tasks.
 
 ### The Phantom Solution
 
