@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**Git worktreeをファントムとして管理する並行開発のためのパワフルなCLIツール**
+**Git worktreeを使った並行開発のためのパワフルなCLIツール**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -43,17 +43,17 @@
 # Phantomをインストール
 npm install -g @aku11i/phantom
 
-# 新しいファントム（worktree）を作成
+# 新しいworktreeを作成
 phantom create feature-awesome
 
-# 新しいスペースにジャンプ
+# worktreeにジャンプ
 phantom shell feature-awesome
 
 # または直接コマンドを実行
 phantom exec feature-awesome npm install
 phantom exec feature-awesome npm test
 
-# すべてのファントムをリスト表示
+# すべてのworktreeをリスト表示
 phantom list
 
 # 完了したらクリーンアップ
@@ -90,48 +90,48 @@ npm link
 
 ### コアコンセプト
 
-**ファントム（Phantoms）** 👻 - このツールによって管理されるGit worktree。各ファントムは特定のブランチや機能のための独立したワークスペースで、競合なしに並行開発が可能です。
+**Worktree** 🌳 - Phantomによって管理されるGit worktree。各worktreeは特定のブランチや機能のための独立したワークスペースで、競合なしに並行開発が可能です。
 
 ### コマンド概要
 
-#### ファントム管理
+#### Worktree管理
 
 ```bash
-# 対応するブランチを持つ新しいファントムを作成
+# 対応するブランチを持つ新しいworktreeを作成
 phantom create <name>
 
-# すべてのファントムとその現在のステータスをリスト表示
+# すべてのworktreeとその現在のステータスをリスト表示
 phantom list
 
-# ファントムへの絶対パスを取得
+# worktreeへの絶対パスを取得
 phantom where <name>
 
-# ファントムとそのブランチを削除
+# worktreeとそのブランチを削除
 phantom delete <name>
 phantom delete <name> --force  # コミットされていない変更がある場合の強制削除
 ```
 
-#### ファントムでの作業
+#### Worktreeでの作業
 
 ```bash
-# ファントムのコンテキストで任意のコマンドを実行
-phantom exec <phantom> <command> [args...]
+# worktreeのコンテキストで任意のコマンドを実行
+phantom exec <name> <command> [args...]
 
 # 例:
 phantom exec feature-auth npm install
 phantom exec feature-auth npm run test
 phantom exec feature-auth git status
 
-# ファントムでインタラクティブシェルセッションを開く
-phantom shell <phantom>
+# worktreeでインタラクティブシェルセッションを開く
+phantom shell <name>
 ```
 
 ### 環境変数
 
-Phantomコンテキスト内で作業する際、以下の環境変数が利用可能です：
+Phantomで管理されたworktree内で作業する際、以下の環境変数が利用可能です：
 
-- `PHANTOM_NAME` - 現在のファントムの名前
-- `PHANTOM_PATH` - ファントムディレクトリへの絶対パス
+- `PHANTOM_NAME` - 現在のworktreeの名前
+- `PHANTOM_PATH` - worktreeディレクトリへの絶対パス
 
 ## 🔄 Phantom vs Git Worktree
 

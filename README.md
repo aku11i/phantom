@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**A powerful CLI tool for managing Git worktrees as phantoms for parallel development**
+**A powerful CLI tool for seamless parallel development with Git worktrees**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -43,17 +43,17 @@ Modern development workflows often require working on multiple features simultan
 # Install Phantom
 npm install -g @aku11i/phantom
 
-# Create a new phantom (worktree)
+# Create a new worktree
 phantom create feature-awesome
 
-# Jump into the new space
+# Jump into the worktree
 phantom shell feature-awesome
 
 # Or execute commands directly
 phantom exec feature-awesome npm install
 phantom exec feature-awesome npm test
 
-# List all your phantoms
+# List all your worktrees
 phantom list
 
 # Clean up when done
@@ -90,48 +90,48 @@ npm link
 
 ### Core Concepts
 
-**Phantoms** 👻 - Git worktrees managed by this tool. Each phantom is an isolated workspace for a specific branch or feature, allowing parallel development without conflicts.
+**Worktrees** 🌳 - Git worktrees managed by Phantom. Each worktree is an isolated workspace for a specific branch or feature, allowing parallel development without conflicts.
 
 ### Commands Overview
 
-#### Phantom Management
+#### Worktree Management
 
 ```bash
-# Create a new phantom with a matching branch
+# Create a new worktree with a matching branch
 phantom create <name>
 
-# List all phantoms with their current status
+# List all worktrees with their current status
 phantom list
 
-# Get the absolute path to a phantom
+# Get the absolute path to a worktree
 phantom where <name>
 
-# Delete a phantom and its branch
+# Delete a worktree and its branch
 phantom delete <name>
 phantom delete <name> --force  # Force delete with uncommitted changes
 ```
 
-#### Working with Phantoms
+#### Working with Worktrees
 
 ```bash
-# Execute any command in a phantom's context
-phantom exec <phantom> <command> [args...]
+# Execute any command in a worktree's context
+phantom exec <name> <command> [args...]
 
 # Examples:
 phantom exec feature-auth npm install
 phantom exec feature-auth npm run test
 phantom exec feature-auth git status
 
-# Open an interactive shell session in a phantom
-phantom shell <phantom>
+# Open an interactive shell session in a worktree
+phantom shell <name>
 ```
 
 ### Environment Variables
 
-When working within a Phantom context, these environment variables are available:
+When working within a worktree managed by Phantom, these environment variables are available:
 
-- `PHANTOM_NAME` - Name of the current phantom
-- `PHANTOM_PATH` - Absolute path to the phantom directory
+- `PHANTOM_NAME` - Name of the current worktree
+- `PHANTOM_PATH` - Absolute path to the worktree directory
 
 ## 🔄 Phantom vs Git Worktree
 
