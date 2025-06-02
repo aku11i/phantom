@@ -30,7 +30,7 @@
     "start": "node ./src/bin/phantom.ts",
     "phantom": "node ./src/bin/phantom.ts",
     "build": "node build.ts",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsgo --noEmit",
     "test": "node --test --experimental-strip-types --experimental-test-module-mocks src/**/*.test.ts",
     "lint": "biome check .",
     "fix": "biome check --write .",
@@ -49,6 +49,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.15.29",
+    "@typescript/native-preview": "7.0.0-dev.20250602.1",
     "esbuild": "^0.25.5",
     "typescript": "^5.8.3"
   }
