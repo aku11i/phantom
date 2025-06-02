@@ -24,13 +24,11 @@
   "author": "aku11i",
   "type": "module",
   "bin": {
-    "phantom": "./dist/phantom.js",
-    "garden": "./dist/garden.js"
+    "phantom": "./dist/phantom.js"
   },
   "scripts": {
     "start": "node ./src/bin/phantom.ts",
     "phantom": "node ./src/bin/phantom.ts",
-    "garden": "node ./src/bin/garden.ts",
     "build": "node build.ts",
     "type-check": "tsc --noEmit",
     "test": "node --test --experimental-strip-types --experimental-test-module-mocks src/**/*.test.ts",
