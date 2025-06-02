@@ -12,7 +12,11 @@
 
 </div>
 
-## ✨ Key Features
+## ✨ Overview
+
+Phantom is a CLI tool that dramatically simplifies Git worktree management. It's optimized for modern development workflows where you need to work on multiple features, bug fixes, and PR reviews in parallel.
+
+### Key Features
 
 - 🚀 **Simplified Worktree Management** - Create and manage Git worktrees with intuitive commands
 - 🔄 **Seamless Context Switching** - Jump between different features without stashing or committing
@@ -23,19 +27,29 @@
 
 ## 🤔 Why Phantom?
 
-Modern development workflows often require working on multiple features simultaneously. Whether you're running AI coding agents in parallel, reviewing PRs while developing, or simply multitasking across features, managing multiple Git worktrees can be cumbersome.
+Modern development workflows often require working on multiple features simultaneously. While Git worktree is a powerful feature, its management can be complex and time-consuming.
 
-**The Problem:**
-- Git worktree commands are verbose and complex
+### The Problem
+
+- Git worktree commands are verbose and hard to remember
 - Managing branches and worktrees separately is error-prone
-- Switching contexts requires multiple commands
-- Running parallel AI agents on the same codebase is challenging
+- Context switching requires multiple commands
+- Running AI agents in parallel on the same codebase is challenging
 
-**The Phantom Solution:**
-- One command to create both worktree and branch: `phantom create feature-x`
-- Instant context switching: `phantom shell feature-x`
-- Execute commands without changing directories: `phantom exec feature-x npm test`
-- Perfect for "parallel vibe coding" with multiple AI agents
+### The Phantom Solution
+
+```bash
+# Traditional approach
+git worktree add -b feature ../project-feature origin/main
+cd ../project-feature
+npm install
+
+# With Phantom
+phantom create feature
+phantom shell feature
+```
+
+Phantom consolidates worktree creation, branch management, and directory navigation into single, intuitive commands.
 
 ## 🚀 Quick Start
 
@@ -183,10 +197,10 @@ To release a new version of Phantom:
    ```bash
    # For patch releases (bug fixes)
    npm version patch
-   
+
    # For minor releases (new features)
    npm version minor
-   
+
    # For major releases (breaking changes)
    npm version major
    ```
@@ -208,7 +222,7 @@ To release a new version of Phantom:
      --title "Phantom v<version>" \
      --generate-notes \
      --target main
-   
+
    # Example for v0.1.3:
    gh release create v0.1.3 \
      --title "Phantom v0.1.3" \
