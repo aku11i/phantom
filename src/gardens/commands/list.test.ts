@@ -2,22 +2,11 @@ import { deepStrictEqual, strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
 describe("listGardens", () => {
-  let accessMock: ReturnType<typeof mock.fn>;
-  let readdirMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
   let listGardens: typeof import("./list.ts").listGardens;
 
   before(async () => {
-    accessMock = mock.fn();
-    readdirMock = mock.fn();
     execMock = mock.fn();
-
-    mock.module("node:fs/promises", {
-      namedExports: {
-        access: accessMock,
-        readdir: readdirMock,
-      },
-    });
 
     mock.module("node:child_process", {
       namedExports: {
@@ -34,53 +23,23 @@ describe("listGardens", () => {
     ({ listGardens } = await import("./list.ts"));
   });
 
-  it("should return empty array when gardens directory doesn't exist", async () => {
-    accessMock.mock.resetCalls();
-    readdirMock.mock.resetCalls();
+  it("should return empty array when no gardens exist", async () => {
     execMock.mock.resetCalls();
 
-    // Mock getGitRoot
+    // Mock getGitRoot and git worktree list with no gardens
     execMock.mock.mockImplementation((cmd: string) => {
       if (cmd === "git rev-parse --show-toplevel") {
         return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
       }
-      return Promise.resolve({ stdout: "", stderr: "" });
-    });
-
-    // Mock gardens directory doesn't exist
-    accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/gardens") {
-        return Promise.reject(new Error("ENOENT"));
-      }
-      return Promise.resolve();
-    });
-
-    const result = await listGardens();
-
-    strictEqual(result.success, true);
-    deepStrictEqual(result.gardens, []);
-    strictEqual(
-      result.message,
-      "No gardens found (gardens directory doesn't exist)",
-    );
-  });
-
-  it("should return empty array when gardens directory is empty", async () => {
-    accessMock.mock.resetCalls();
-    readdirMock.mock.resetCalls();
-    execMock.mock.resetCalls();
-
-    // Mock getGitRoot
-    execMock.mock.mockImplementation((cmd: string) => {
-      if (cmd === "git rev-parse --show-toplevel") {
-        return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
+      if (cmd === "git worktree list --porcelain") {
+        return Promise.resolve({
+          stdout:
+            "worktree /test/repo\nHEAD abcd1234\nbranch refs/heads/main\n",
+          stderr: "",
+        });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
-
-    // Mock gardens directory exists but is empty
-    accessMock.mock.mockImplementation(() => Promise.resolve());
-    readdirMock.mock.mockImplementation(() => Promise.resolve([]));
 
     const result = await listGardens();
 
@@ -89,9 +48,54 @@ describe("listGardens", () => {
     strictEqual(result.message, "No gardens found");
   });
 
+  it("should list gardens with slash-separated names", async () => {
+    execMock.mock.resetCalls();
+
+    // Mock getGitRoot and git worktree list with slash-separated garden names
+    execMock.mock.mockImplementation(
+      (cmd: string, options?: { cwd?: string }) => {
+        if (cmd === "git rev-parse --show-toplevel") {
+          return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
+        }
+        if (cmd === "git worktree list --porcelain") {
+          return Promise.resolve({
+            stdout: [
+              "worktree /test/repo",
+              "HEAD abcd1234",
+              "branch refs/heads/main",
+              "",
+              "worktree /test/repo/.git/phantom/gardens/test/test-1",
+              "HEAD efgh5678",
+              "branch refs/heads/feature/test-1",
+              "",
+              "worktree /test/repo/.git/phantom/gardens/feat/ui/button",
+              "HEAD ijkl9012",
+              "branch refs/heads/feat/ui/button",
+              "",
+            ].join("\n"),
+            stderr: "",
+          });
+        }
+        if (cmd === "git status --porcelain") {
+          return Promise.resolve({ stdout: "", stderr: "" });
+        }
+        return Promise.resolve({ stdout: "", stderr: "" });
+      },
+    );
+
+    const result = await listGardens();
+
+    strictEqual(result.success, true);
+    strictEqual(result.gardens?.length, 2);
+    strictEqual(result.gardens?.[0].name, "test/test-1");
+    strictEqual(result.gardens?.[0].branch, "feature/test-1");
+    strictEqual(result.gardens?.[0].status, "clean");
+    strictEqual(result.gardens?.[1].name, "feat/ui/button");
+    strictEqual(result.gardens?.[1].branch, "feat/ui/button");
+    strictEqual(result.gardens?.[1].status, "clean");
+  });
+
   it("should list gardens with clean status", async () => {
-    accessMock.mock.resetCalls();
-    readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
     // Mock getGitRoot and git commands
@@ -100,25 +104,30 @@ describe("listGardens", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git branch --show-current") {
-          if (options?.cwd?.includes("test-garden-1")) {
-            return Promise.resolve({ stdout: "feature/test\n", stderr: "" });
-          }
-          if (options?.cwd?.includes("test-garden-2")) {
-            return Promise.resolve({ stdout: "main\n", stderr: "" });
-          }
+        if (cmd === "git worktree list --porcelain") {
+          return Promise.resolve({
+            stdout: [
+              "worktree /test/repo",
+              "HEAD abcd1234",
+              "branch refs/heads/main",
+              "",
+              "worktree /test/repo/.git/phantom/gardens/test-garden-1",
+              "HEAD efgh5678",
+              "branch refs/heads/feature/test",
+              "",
+              "worktree /test/repo/.git/phantom/gardens/test-garden-2",
+              "HEAD ijkl9012",
+              "branch refs/heads/main",
+              "",
+            ].join("\n"),
+            stderr: "",
+          });
         }
         if (cmd === "git status --porcelain") {
           return Promise.resolve({ stdout: "", stderr: "" }); // Clean status
         }
         return Promise.resolve({ stdout: "", stderr: "" });
       },
-    );
-
-    // Mock gardens directory and contents
-    accessMock.mock.mockImplementation(() => Promise.resolve());
-    readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["test-garden-1", "test-garden-2"]),
     );
 
     const result = await listGardens();
@@ -134,8 +143,6 @@ describe("listGardens", () => {
   });
 
   it("should list gardens with dirty status", async () => {
-    accessMock.mock.resetCalls();
-    readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
     // Mock getGitRoot and git commands
@@ -144,8 +151,20 @@ describe("listGardens", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git branch --show-current") {
-          return Promise.resolve({ stdout: "feature/dirty\n", stderr: "" });
+        if (cmd === "git worktree list --porcelain") {
+          return Promise.resolve({
+            stdout: [
+              "worktree /test/repo",
+              "HEAD abcd1234",
+              "branch refs/heads/main",
+              "",
+              "worktree /test/repo/.git/phantom/gardens/dirty-garden",
+              "HEAD efgh5678",
+              "branch refs/heads/feature/dirty",
+              "",
+            ].join("\n"),
+            stderr: "",
+          });
         }
         if (cmd === "git status --porcelain") {
           return Promise.resolve({
@@ -155,12 +174,6 @@ describe("listGardens", () => {
         }
         return Promise.resolve({ stdout: "", stderr: "" });
       },
-    );
-
-    // Mock gardens directory and contents
-    accessMock.mock.mockImplementation(() => Promise.resolve());
-    readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["dirty-garden"]),
     );
 
     const result = await listGardens();
@@ -174,8 +187,6 @@ describe("listGardens", () => {
   });
 
   it("should handle git command errors gracefully", async () => {
-    accessMock.mock.resetCalls();
-    readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
     // Mock getGitRoot and failing git commands
@@ -183,8 +194,20 @@ describe("listGardens", () => {
       if (cmd === "git rev-parse --show-toplevel") {
         return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
       }
-      if (cmd === "git branch --show-current") {
-        return Promise.reject(new Error("Not a git repository"));
+      if (cmd === "git worktree list --porcelain") {
+        return Promise.resolve({
+          stdout: [
+            "worktree /test/repo",
+            "HEAD abcd1234",
+            "branch refs/heads/main",
+            "",
+            "worktree /test/repo/.git/phantom/gardens/error-garden",
+            "HEAD efgh5678",
+            "branch refs/heads/feature/error",
+            "",
+          ].join("\n"),
+          stderr: "",
+        });
       }
       if (cmd === "git status --porcelain") {
         return Promise.reject(new Error("Git command failed"));
@@ -192,24 +215,16 @@ describe("listGardens", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock gardens directory and contents
-    accessMock.mock.mockImplementation(() => Promise.resolve());
-    readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["error-garden"]),
-    );
-
     const result = await listGardens();
 
     strictEqual(result.success, true);
     strictEqual(result.gardens?.length, 1);
     strictEqual(result.gardens?.[0].name, "error-garden");
-    strictEqual(result.gardens?.[0].branch, "unknown");
+    strictEqual(result.gardens?.[0].branch, "feature/error");
     strictEqual(result.gardens?.[0].status, "clean");
   });
 
   it("should handle detached HEAD state", async () => {
-    accessMock.mock.resetCalls();
-    readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
     // Mock getGitRoot and git commands
@@ -217,20 +232,26 @@ describe("listGardens", () => {
       if (cmd === "git rev-parse --show-toplevel") {
         return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
       }
-      if (cmd === "git branch --show-current") {
-        return Promise.resolve({ stdout: "\n", stderr: "" }); // Empty output = detached HEAD
+      if (cmd === "git worktree list --porcelain") {
+        return Promise.resolve({
+          stdout: [
+            "worktree /test/repo",
+            "HEAD abcd1234",
+            "branch refs/heads/main",
+            "",
+            "worktree /test/repo/.git/phantom/gardens/detached-garden",
+            "HEAD efgh5678",
+            "detached",
+            "",
+          ].join("\n"),
+          stderr: "",
+        });
       }
       if (cmd === "git status --porcelain") {
         return Promise.resolve({ stdout: "", stderr: "" });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
-
-    // Mock gardens directory and contents
-    accessMock.mock.mockImplementation(() => Promise.resolve());
-    readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["detached-garden"]),
-    );
 
     const result = await listGardens();
 
@@ -239,5 +260,28 @@ describe("listGardens", () => {
     strictEqual(result.gardens?.[0].name, "detached-garden");
     strictEqual(result.gardens?.[0].branch, "detached HEAD");
     strictEqual(result.gardens?.[0].status, "clean");
+  });
+
+  it("should handle git worktree list errors", async () => {
+    execMock.mock.resetCalls();
+
+    // Mock getGitRoot and failing git worktree list
+    execMock.mock.mockImplementation((cmd: string) => {
+      if (cmd === "git rev-parse --show-toplevel") {
+        return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
+      }
+      if (cmd === "git worktree list --porcelain") {
+        return Promise.reject(new Error("fatal: not a git repository"));
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+
+    const result = await listGardens();
+
+    strictEqual(result.success, false);
+    strictEqual(
+      result.message,
+      "Error running git worktree list: fatal: not a git repository",
+    );
   });
 });

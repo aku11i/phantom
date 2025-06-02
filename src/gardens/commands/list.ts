@@ -1,8 +1,8 @@
 import { exec } from "node:child_process";
-import { access, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { getWorktrees } from "../../git/libs/get-worktrees.ts";
 
 const execAsync = promisify(exec);
 
@@ -22,45 +22,23 @@ export async function listGardens(): Promise<{
     const gitRoot = await getGitRoot();
     const gardensPath = join(gitRoot, ".git", "phantom", "gardens");
 
-    // Check if gardens directory exists
+    // Get all worktrees
+    let worktrees: Awaited<ReturnType<typeof getWorktrees>>;
     try {
-      await access(gardensPath);
-    } catch {
+      worktrees = await getWorktrees();
+    } catch (error) {
       return {
-        success: true,
-        gardens: [],
-        message: "No gardens found (gardens directory doesn't exist)",
+        success: false,
+        message: `Error running git worktree list: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
 
-    // Read gardens directory
-    let gardenNames: string[];
-    try {
-      const entries = await readdir(gardensPath);
-      // Filter entries to only include directories
-      const validEntries = await Promise.all(
-        entries.map(async (entry) => {
-          try {
-            const entryPath = join(gardensPath, entry);
-            await access(entryPath);
-            return entry;
-          } catch {
-            return null;
-          }
-        }),
-      );
-      gardenNames = validEntries.filter(
-        (entry): entry is string => entry !== null,
-      );
-    } catch {
-      return {
-        success: true,
-        gardens: [],
-        message: "No gardens found (unable to read gardens directory)",
-      };
-    }
+    // Filter worktrees to only include gardens
+    const gardenWorktrees = worktrees.filter((wt) =>
+      wt.path.includes("/.git/phantom/gardens/"),
+    );
 
-    if (gardenNames.length === 0) {
+    if (gardenWorktrees.length === 0) {
       return {
         success: true,
         gardens: [],
@@ -70,26 +48,19 @@ export async function listGardens(): Promise<{
 
     // Get detailed information for each garden
     const gardens: GardenInfo[] = await Promise.all(
-      gardenNames.map(async (name) => {
-        const gardenPath = join(gardensPath, name);
-
-        // Get current branch
-        let branch = "unknown";
-        try {
-          const { stdout } = await execAsync("git branch --show-current", {
-            cwd: gardenPath,
-          });
-          branch = stdout.trim() || "detached HEAD";
-        } catch {
-          branch = "unknown";
-        }
+      gardenWorktrees.map(async (worktree) => {
+        // Extract garden name from path
+        const gardenPathMatch = worktree.path.match(
+          /\.git\/phantom\/gardens\/(.+)$/,
+        );
+        const name = gardenPathMatch ? gardenPathMatch[1] : "unknown";
 
         // Get working directory status
         let status: "clean" | "dirty" = "clean";
         let changedFiles: number | undefined;
         try {
           const { stdout } = await execAsync("git status --porcelain", {
-            cwd: gardenPath,
+            cwd: worktree.path,
           });
           const changes = stdout.trim();
           if (changes) {
@@ -103,7 +74,9 @@ export async function listGardens(): Promise<{
 
         return {
           name,
-          branch,
+          branch: worktree.isDetached
+            ? "detached HEAD"
+            : worktree.branch || "unknown",
           status,
           changedFiles,
         };
