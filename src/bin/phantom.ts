@@ -18,32 +18,32 @@ interface Command {
 const commands: Command[] = [
   {
     name: "create",
-    description: "Create a new worktree (phantom) [--shell to open shell]",
+    description: "Create a new worktree [--shell to open shell]",
     handler: phantomsCreateHandler,
   },
   {
     name: "list",
-    description: "List all phantoms",
+    description: "List all worktrees",
     handler: phantomsListHandler,
   },
   {
     name: "where",
-    description: "Output the path of a specific phantom",
+    description: "Output the path of a specific worktree",
     handler: phantomsWhereHandler,
   },
   {
     name: "delete",
-    description: "Delete a phantom (use --force for dirty phantoms)",
+    description: "Delete a worktree (use --force for uncommitted changes)",
     handler: phantomsDeleteHandler,
   },
   {
     name: "exec",
-    description: "Execute a command in a phantom directory",
+    description: "Execute a command in a worktree directory",
     handler: execHandler,
   },
   {
     name: "shell",
-    description: "Open interactive shell in a phantom directory",
+    description: "Open interactive shell in a worktree directory",
     handler: shellHandler,
   },
 ];
