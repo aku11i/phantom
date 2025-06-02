@@ -40,7 +40,7 @@ export async function whereWorktree(name: string): Promise<{
   }
 }
 
-export async function worktreesWhereHandler(args: string[]): Promise<void> {
+export async function whereHandler(args: string[]): Promise<void> {
   const name = args[0];
   const result = await whereWorktree(name);
 

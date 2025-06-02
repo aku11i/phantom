@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
-import { worktreesCreateHandler } from "../commands/create.ts";
-import { worktreesDeleteHandler } from "../commands/delete.ts";
+import { createHandler } from "../commands/create.ts";
+import { deleteHandler } from "../commands/delete.ts";
 import { execHandler } from "../commands/exec.ts";
-import { worktreesListHandler } from "../commands/list.ts";
+import { listHandler } from "../commands/list.ts";
 import { shellHandler } from "../commands/shell.ts";
 import { versionHandler } from "../commands/version.ts";
-import { worktreesWhereHandler } from "../commands/where.ts";
+import { whereHandler } from "../commands/where.ts";
 
 interface Command {
   name: string;
@@ -20,22 +20,22 @@ const commands: Command[] = [
   {
     name: "create",
     description: "Create a new worktree [--shell to open shell]",
-    handler: worktreesCreateHandler,
+    handler: createHandler,
   },
   {
     name: "list",
     description: "List all worktrees",
-    handler: worktreesListHandler,
+    handler: listHandler,
   },
   {
     name: "where",
     description: "Output the path of a specific worktree",
-    handler: worktreesWhereHandler,
+    handler: whereHandler,
   },
   {
     name: "delete",
     description: "Delete a worktree (use --force for uncommitted changes)",
-    handler: worktreesDeleteHandler,
+    handler: deleteHandler,
   },
   {
     name: "exec",

@@ -123,7 +123,7 @@ export async function listWorktrees(): Promise<{
   }
 }
 
-export async function worktreesListHandler(): Promise<void> {
+export async function listHandler(): Promise<void> {
   const result = await listWorktrees();
 
   if (!result.success) {

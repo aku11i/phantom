@@ -55,7 +55,7 @@ export async function createWorktree(name: string): Promise<{
   }
 }
 
-export async function worktreesCreateHandler(args: string[]): Promise<void> {
+export async function createHandler(args: string[]): Promise<void> {
   const name = args[0];
   const openShell = args.includes("--shell");
 

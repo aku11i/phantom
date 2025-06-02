@@ -114,7 +114,7 @@ export async function deleteWorktree(
   }
 }
 
-export async function worktreesDeleteHandler(args: string[]): Promise<void> {
+export async function deleteHandler(args: string[]): Promise<void> {
   // Parse arguments for --force flag
   const forceIndex = args.indexOf("--force");
   const force = forceIndex !== -1;
