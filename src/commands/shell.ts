@@ -1,60 +1,48 @@
-import { spawn } from "node:child_process";
 import { exit } from "node:process";
-import { whereWorktree } from "./where.ts";
+import { type SpawnResult, spawnProcess } from "../core/process/spawn.ts";
+import { validateWorktreeExists } from "../core/worktree/validate.ts";
+import { getGitRoot } from "../git/libs/get-git-root.ts";
 
-export async function shellInWorktree(worktreeName: string): Promise<{
-  success: boolean;
-  message?: string;
-  exitCode?: number;
-}> {
+export async function shellInWorktree(
+  worktreeName: string,
+): Promise<SpawnResult> {
   if (!worktreeName) {
     return { success: false, message: "Error: worktree name required" };
   }
 
-  // Validate worktree exists and get its path
-  const worktreeResult = await whereWorktree(worktreeName);
-  if (!worktreeResult.success) {
-    return { success: false, message: worktreeResult.message };
+  // Get git root
+  let gitRoot: string;
+  try {
+    gitRoot = await getGitRoot();
+  } catch (error) {
+    return {
+      success: false,
+      message: `Error: ${error instanceof Error ? error.message : "Failed to get git root"}`,
+    };
   }
 
-  const worktreePath = worktreeResult.path as string;
+  // Validate worktree exists and get its path
+  const validation = await validateWorktreeExists(gitRoot, worktreeName);
+  if (!validation.exists) {
+    return { success: false, message: `Error: ${validation.message}` };
+  }
+
+  const worktreePath = validation.path as string;
   // Use user's preferred shell or fallback to /bin/sh
   const shell = process.env.SHELL || "/bin/sh";
 
-  return new Promise((resolve) => {
-    const childProcess = spawn(shell, [], {
+  return spawnProcess({
+    command: shell,
+    args: [],
+    options: {
       cwd: worktreePath,
-      stdio: "inherit",
       env: {
         ...process.env,
         // Add environment variable to indicate we're in a worktree
         WORKTREE_NAME: worktreeName,
         WORKTREE_PATH: worktreePath,
       },
-    });
-
-    childProcess.on("error", (error) => {
-      resolve({
-        success: false,
-        message: `Error starting shell: ${error.message}`,
-      });
-    });
-
-    childProcess.on("exit", (code, signal) => {
-      if (signal) {
-        resolve({
-          success: false,
-          message: `Shell terminated by signal: ${signal}`,
-          exitCode: 128 + (signal === "SIGTERM" ? 15 : 1),
-        });
-      } else {
-        const exitCode = code ?? 0;
-        resolve({
-          success: exitCode === 0,
-          exitCode,
-        });
-      }
-    });
+    },
   });
 }
 
@@ -66,15 +54,26 @@ export async function shellHandler(args: string[]): Promise<void> {
 
   const worktreeName = args[0];
 
+  // Get git root
+  let gitRoot: string;
+  try {
+    gitRoot = await getGitRoot();
+  } catch (error) {
+    console.error(
+      `Error: ${error instanceof Error ? error.message : "Failed to get git root"}`,
+    );
+    exit(1);
+  }
+
   // Get worktree path for display
-  const worktreeResult = await whereWorktree(worktreeName);
-  if (!worktreeResult.success) {
-    console.error(worktreeResult.message);
+  const validation = await validateWorktreeExists(gitRoot, worktreeName);
+  if (!validation.exists) {
+    console.error(`Error: ${validation.message}`);
     exit(1);
   }
 
   // Display entering message
-  console.log(`Entering worktree '${worktreeName}' at ${worktreeResult.path}`);
+  console.log(`Entering worktree '${worktreeName}' at ${validation.path}`);
   console.log("Type 'exit' to return to your original directory\n");
 
   const result = await shellInWorktree(worktreeName);

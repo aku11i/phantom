@@ -1,6 +1,5 @@
-import { access } from "node:fs/promises";
-import { join } from "node:path";
 import { exit } from "node:process";
+import { validateWorktreeExists } from "../core/worktree/validate.ts";
 import { getGitRoot } from "../git/libs/get-git-root.ts";
 
 export async function whereWorktree(name: string): Promise<{
@@ -14,22 +13,19 @@ export async function whereWorktree(name: string): Promise<{
 
   try {
     const gitRoot = await getGitRoot();
-    const worktreesPath = join(gitRoot, ".git", "phantom", "worktrees");
-    const worktreePath = join(worktreesPath, name);
 
     // Check if worktree exists
-    try {
-      await access(worktreePath);
-    } catch {
+    const validation = await validateWorktreeExists(gitRoot, name);
+    if (!validation.exists) {
       return {
         success: false,
-        message: `Error: Worktree '${name}' does not exist`,
+        message: `Error: ${validation.message}`,
       };
     }
 
     return {
       success: true,
-      path: worktreePath,
+      path: validation.path,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

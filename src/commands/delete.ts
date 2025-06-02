@@ -1,11 +1,11 @@
-import { exec } from "node:child_process";
-import { access } from "node:fs/promises";
-import { join } from "node:path";
+import childProcess from "node:child_process";
 import { exit } from "node:process";
 import { promisify } from "node:util";
+import { getWorktreePath } from "../core/paths.ts";
+import { validateWorktreeExists } from "../core/worktree/validate.ts";
 import { getGitRoot } from "../git/libs/get-git-root.ts";
 
-const execAsync = promisify(exec);
+const execAsync = promisify(childProcess.exec);
 
 export async function deleteWorktree(
   name: string,
@@ -24,18 +24,17 @@ export async function deleteWorktree(
 
   try {
     const gitRoot = await getGitRoot();
-    const worktreesPath = join(gitRoot, ".git", "phantom", "worktrees");
-    const worktreePath = join(worktreesPath, name);
 
     // Check if worktree exists
-    try {
-      await access(worktreePath);
-    } catch {
+    const validation = await validateWorktreeExists(gitRoot, name);
+    if (!validation.exists) {
       return {
         success: false,
-        message: `Error: Worktree '${name}' does not exist`,
+        message: `Error: ${validation.message}`,
       };
     }
+
+    const worktreePath = validation.path as string;
 
     // Check for uncommitted changes
     let hasUncommittedChanges = false;

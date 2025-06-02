@@ -40,9 +40,41 @@ describe("createWorktree", () => {
       },
     });
 
-    mock.module("./where.ts", {
+    // Mock new core modules
+    mock.module("../core/paths.ts", {
       namedExports: {
-        whereWorktree: mock.fn(),
+        getPhantomDirectory: mock.fn(
+          (gitRoot: string) => `${gitRoot}/.git/phantom/worktrees`,
+        ),
+        getWorktreePath: mock.fn(
+          (gitRoot: string, name: string) =>
+            `${gitRoot}/.git/phantom/worktrees/${name}`,
+        ),
+      },
+    });
+
+    mock.module("../core/worktree/validate.ts", {
+      namedExports: {
+        validateWorktreeDoesNotExist: mock.fn(
+          (gitRoot: string, name: string) => {
+            if (name === "existing-worktree") {
+              return Promise.resolve({
+                exists: true,
+                message: "Worktree 'existing-worktree' already exists",
+              });
+            }
+            return Promise.resolve({
+              exists: false,
+              path: `${gitRoot}/.git/phantom/worktrees/${name}`,
+            });
+          },
+        ),
+      },
+    });
+
+    mock.module("./shell.ts", {
+      namedExports: {
+        shellInWorktree: mock.fn(),
       },
     });
 
@@ -132,7 +164,7 @@ describe("createWorktree", () => {
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: worktree 'existing-worktree' already exists",
+      "Error: Worktree 'existing-worktree' already exists",
     );
   });
 

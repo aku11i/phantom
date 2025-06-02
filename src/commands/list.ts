@@ -1,10 +1,13 @@
-import { exec } from "node:child_process";
-import { access, readdir } from "node:fs/promises";
-import { join } from "node:path";
+import childProcess from "node:child_process";
 import { promisify } from "node:util";
+import { getPhantomDirectory, getWorktreePath } from "../core/paths.ts";
+import {
+  listValidWorktrees,
+  validatePhantomDirectoryExists,
+} from "../core/worktree/validate.ts";
 import { getGitRoot } from "../git/libs/get-git-root.ts";
 
-const execAsync = promisify(exec);
+const execAsync = promisify(childProcess.exec);
 
 export interface WorktreeInfo {
   name: string;
@@ -20,12 +23,10 @@ export async function listWorktrees(): Promise<{
 }> {
   try {
     const gitRoot = await getGitRoot();
-    const worktreesPath = join(gitRoot, ".git", "phantom", "worktrees");
+    const worktreesPath = getPhantomDirectory(gitRoot);
 
     // Check if worktrees directory exists
-    try {
-      await access(worktreesPath);
-    } catch {
+    if (!(await validatePhantomDirectoryExists(gitRoot))) {
       return {
         success: true,
         worktrees: [],
@@ -33,32 +34,8 @@ export async function listWorktrees(): Promise<{
       };
     }
 
-    // Read worktrees directory
-    let worktreeNames: string[];
-    try {
-      const entries = await readdir(worktreesPath);
-      // Filter entries to only include directories
-      const validEntries = await Promise.all(
-        entries.map(async (entry) => {
-          try {
-            const entryPath = join(worktreesPath, entry);
-            await access(entryPath);
-            return entry;
-          } catch {
-            return null;
-          }
-        }),
-      );
-      worktreeNames = validEntries.filter(
-        (entry): entry is string => entry !== null,
-      );
-    } catch {
-      return {
-        success: true,
-        worktrees: [],
-        message: "No worktrees found (unable to read worktrees directory)",
-      };
-    }
+    // Get list of valid worktrees
+    const worktreeNames = await listValidWorktrees(gitRoot);
 
     if (worktreeNames.length === 0) {
       return {
@@ -71,7 +48,7 @@ export async function listWorktrees(): Promise<{
     // Get detailed information for each worktree
     const worktrees: WorktreeInfo[] = await Promise.all(
       worktreeNames.map(async (name) => {
-        const worktreePath = join(worktreesPath, name);
+        const worktreePath = getWorktreePath(gitRoot, name);
 
         // Get current branch
         let branch = "unknown";

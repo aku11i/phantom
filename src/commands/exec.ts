@@ -1,15 +1,12 @@
-import { spawn } from "node:child_process";
 import { exit } from "node:process";
-import { whereWorktree } from "./where.ts";
+import { type SpawnResult, spawnProcess } from "../core/process/spawn.ts";
+import { validateWorktreeExists } from "../core/worktree/validate.ts";
+import { getGitRoot } from "../git/libs/get-git-root.ts";
 
 export async function execInWorktree(
   worktreeName: string,
   command: string[],
-): Promise<{
-  success: boolean;
-  message?: string;
-  exitCode?: number;
-}> {
+): Promise<SpawnResult> {
   if (!worktreeName) {
     return { success: false, message: "Error: worktree name required" };
   }
@@ -18,43 +15,32 @@ export async function execInWorktree(
     return { success: false, message: "Error: command required" };
   }
 
-  // Validate worktree exists and get its path
-  const worktreeResult = await whereWorktree(worktreeName);
-  if (!worktreeResult.success) {
-    return { success: false, message: worktreeResult.message };
+  // Get git root
+  let gitRoot: string;
+  try {
+    gitRoot = await getGitRoot();
+  } catch (error) {
+    return {
+      success: false,
+      message: `Error: ${error instanceof Error ? error.message : "Failed to get git root"}`,
+    };
   }
 
-  const worktreePath = worktreeResult.path as string;
+  // Validate worktree exists and get its path
+  const validation = await validateWorktreeExists(gitRoot, worktreeName);
+  if (!validation.exists) {
+    return { success: false, message: `Error: ${validation.message}` };
+  }
+
+  const worktreePath = validation.path as string;
   const [cmd, ...args] = command;
 
-  return new Promise((resolve) => {
-    const childProcess = spawn(cmd, args, {
+  return spawnProcess({
+    command: cmd,
+    args,
+    options: {
       cwd: worktreePath,
-      stdio: "inherit",
-    });
-
-    childProcess.on("error", (error) => {
-      resolve({
-        success: false,
-        message: `Error executing command: ${error.message}`,
-      });
-    });
-
-    childProcess.on("exit", (code, signal) => {
-      if (signal) {
-        resolve({
-          success: false,
-          message: `Command terminated by signal: ${signal}`,
-          exitCode: 128 + (signal === "SIGTERM" ? 15 : 1),
-        });
-      } else {
-        const exitCode = code ?? 0;
-        resolve({
-          success: exitCode === 0,
-          exitCode,
-        });
-      }
-    });
+    },
   });
 }
 

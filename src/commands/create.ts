@@ -1,6 +1,7 @@
-import { access, mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import fs from "node:fs/promises";
 import { exit } from "node:process";
+import { getPhantomDirectory, getWorktreePath } from "../core/paths.ts";
+import { validateWorktreeDoesNotExist } from "../core/worktree/validate.ts";
 import { addWorktree } from "../git/libs/add-worktree.ts";
 import { getGitRoot } from "../git/libs/get-git-root.ts";
 import { shellInWorktree } from "./shell.ts";
@@ -16,23 +17,22 @@ export async function createWorktree(name: string): Promise<{
 
   try {
     const gitRoot = await getGitRoot();
-    const worktreesPath = join(gitRoot, ".git", "phantom", "worktrees");
-    const worktreePath = join(worktreesPath, name);
+    const worktreesPath = getPhantomDirectory(gitRoot);
+    const worktreePath = getWorktreePath(gitRoot, name);
 
     try {
-      await access(worktreesPath);
+      await fs.access(worktreesPath);
     } catch {
-      await mkdir(worktreesPath, { recursive: true });
+      await fs.mkdir(worktreesPath, { recursive: true });
     }
 
-    try {
-      await access(worktreePath);
+    // Check if worktree already exists
+    const validation = await validateWorktreeDoesNotExist(gitRoot, name);
+    if (validation.exists) {
       return {
         success: false,
-        message: `Error: worktree '${name}' already exists`,
+        message: `Error: ${validation.message}`,
       };
-    } catch {
-      // Path doesn't exist, which is what we want
     }
 
     await addWorktree({
