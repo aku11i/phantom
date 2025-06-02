@@ -1,11 +1,11 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("createGarden", () => {
+describe("createPhantom", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let mkdirMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let createGarden: typeof import("./create.ts").createGarden;
+  let createPhantom: typeof import("./create.ts").createPhantom;
 
   before(async () => {
     accessMock = mock.fn();
@@ -40,31 +40,31 @@ describe("createGarden", () => {
       },
     });
 
-    mock.module("../../gardens/commands/where.ts", {
+    mock.module("../../phantoms/commands/where.ts", {
       namedExports: {
-        whereGarden: mock.fn(),
+        wherePhantom: mock.fn(),
       },
     });
 
-    ({ createGarden } = await import("./create.ts"));
+    ({ createPhantom } = await import("./create.ts"));
   });
 
   it("should return error when name is not provided", async () => {
-    const result = await createGarden("");
+    const result = await createPhantom("");
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: garden name required");
+    strictEqual(result.message, "Error: phantom name required");
   });
 
-  it("should create garden directory when it does not exist", async () => {
+  it("should create phantom directory when it does not exist", async () => {
     accessMock.mock.resetCalls();
     mkdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/gardens") {
+      if (path === "/test/repo/.git/phantom/phantoms") {
         return Promise.reject(new Error("ENOENT"));
       }
-      if (path === "/test/repo/.git/phantom/gardens/test-garden") {
+      if (path === "/test/repo/.git/phantom/phantoms/test-phantom") {
         return Promise.reject(new Error("ENOENT"));
       }
       return Promise.resolve();
@@ -80,18 +80,18 @@ describe("createGarden", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await createGarden("test-garden");
+    const result = await createPhantom("test-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Created garden 'test-garden' at /test/repo/.git/phantom/gardens/test-garden",
+      "Created phantom 'test-phantom' at /test/repo/.git/phantom/phantoms/test-phantom",
     );
-    strictEqual(result.path, "/test/repo/.git/phantom/gardens/test-garden");
+    strictEqual(result.path, "/test/repo/.git/phantom/phantoms/test-phantom");
 
     strictEqual(mkdirMock.mock.calls.length, 1);
     deepStrictEqual(mkdirMock.mock.calls[0].arguments, [
-      "/test/repo/.git/phantom/gardens",
+      "/test/repo/.git/phantom/phantoms",
       { recursive: true },
     ]);
 
@@ -102,20 +102,20 @@ describe("createGarden", () => {
     );
     strictEqual(
       execMock.mock.calls[1].arguments[0],
-      'git worktree add "/test/repo/.git/phantom/gardens/test-garden" -b "test-garden" HEAD',
+      'git worktree add "/test/repo/.git/phantom/phantoms/test-phantom" -b "test-phantom" HEAD',
     );
   });
 
-  it("should return error when garden already exists", async () => {
+  it("should return error when phantom already exists", async () => {
     accessMock.mock.resetCalls();
     mkdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/gardens") {
+      if (path === "/test/repo/.git/phantom/phantoms") {
         return Promise.resolve();
       }
-      if (path === "/test/repo/.git/phantom/gardens/existing-garden") {
+      if (path === "/test/repo/.git/phantom/phantoms/existing-phantom") {
         return Promise.resolve();
       }
       return Promise.reject(new Error("ENOENT"));
@@ -127,12 +127,12 @@ describe("createGarden", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await createGarden("existing-garden");
+    const result = await createPhantom("existing-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: garden 'existing-garden' already exists",
+      "Error: phantom 'existing-phantom' already exists",
     );
   });
 
@@ -145,22 +145,22 @@ describe("createGarden", () => {
       return Promise.reject(new Error("Not a git repository"));
     });
 
-    const result = await createGarden("test-garden");
+    const result = await createPhantom("test-phantom");
 
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error creating garden: Not a git repository");
+    strictEqual(result.message, "Error creating phantom: Not a git repository");
   });
 
-  it("should not create gardens directory if it already exists", async () => {
+  it("should not create phantoms directory if it already exists", async () => {
     accessMock.mock.resetCalls();
     mkdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/gardens") {
+      if (path === "/test/repo/.git/phantom/phantoms") {
         return Promise.resolve();
       }
-      if (path === "/test/repo/.git/phantom/gardens/test-garden") {
+      if (path === "/test/repo/.git/phantom/phantoms/test-phantom") {
         return Promise.reject(new Error("ENOENT"));
       }
       return Promise.reject(new Error("ENOENT"));
@@ -175,7 +175,7 @@ describe("createGarden", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await createGarden("test-garden");
+    const result = await createPhantom("test-phantom");
 
     strictEqual(result.success, true);
     strictEqual(mkdirMock.mock.calls.length, 0);

@@ -1,7 +1,7 @@
 # Claude Context for phantom
 
 ## Project Overview
-Phantom is a CLI tool for managing Git worktrees (called "gardens") with enhanced functionality. For detailed project information, features, and usage, see [](./README.md).
+Phantom is a CLI tool for managing Git worktrees (called "phantoms") with enhanced functionality. For detailed project information, features, and usage, see [](./README.md).
 
 ## Development Guidelines
 - All files, issues, and pull requests in this repository must be written in English
@@ -16,16 +16,16 @@ Phantom is a CLI tool for managing Git worktrees (called "gardens") with enhance
 - `src/` - Source code
   - `bin/` - Executable entry points
     - `phantom.ts` - Main CLI entry point
-    - `garden.ts` - Alias command for garden management
+    - `phantom.ts` - Alias command for phantom management
   - `commands/` - Top-level commands
-    - `exec.ts` - Execute commands in a garden
-    - `shell.ts` - Open interactive shell in a garden
-  - `gardens/` - Garden (worktree) management
-    - `commands/` - Garden-specific commands
-      - `create.ts` - Create new gardens
-      - `delete.ts` - Delete gardens
-      - `list.ts` - List all gardens
-      - `where.ts` - Get garden path
+    - `exec.ts` - Execute commands in a phantom
+    - `shell.ts` - Open interactive shell in a phantom
+  - `phantoms/` - Phantom (worktree) management
+    - `commands/` - Phantom-specific commands
+      - `create.ts` - Create new phantoms
+      - `delete.ts` - Delete phantoms
+      - `list.ts` - List all phantoms
+      - `where.ts` - Get phantom path
   - `git/` - Git utility functions
     - `libs/` - Git helper libraries
 

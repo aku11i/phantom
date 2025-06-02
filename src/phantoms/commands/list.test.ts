@@ -1,11 +1,11 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("listGardens", () => {
+describe("listPhantoms", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let readdirMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let listGardens: typeof import("./list.ts").listGardens;
+  let listPhantoms: typeof import("./list.ts").listPhantoms;
 
   before(async () => {
     accessMock = mock.fn();
@@ -31,10 +31,10 @@ describe("listGardens", () => {
       },
     });
 
-    ({ listGardens } = await import("./list.ts"));
+    ({ listPhantoms } = await import("./list.ts"));
   });
 
-  it("should return empty array when gardens directory doesn't exist", async () => {
+  it("should return empty array when phantoms directory doesn't exist", async () => {
     accessMock.mock.resetCalls();
     readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
@@ -47,25 +47,25 @@ describe("listGardens", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock gardens directory doesn't exist
+    // Mock phantoms directory doesn't exist
     accessMock.mock.mockImplementation((path: string) => {
-      if (path === "/test/repo/.git/phantom/gardens") {
+      if (path === "/test/repo/.git/phantom/phantoms") {
         return Promise.reject(new Error("ENOENT"));
       }
       return Promise.resolve();
     });
 
-    const result = await listGardens();
+    const result = await listPhantoms();
 
     strictEqual(result.success, true);
-    deepStrictEqual(result.gardens, []);
+    deepStrictEqual(result.phantoms, []);
     strictEqual(
       result.message,
-      "No gardens found (gardens directory doesn't exist)",
+      "No phantoms found (phantoms directory doesn't exist)",
     );
   });
 
-  it("should return empty array when gardens directory is empty", async () => {
+  it("should return empty array when phantoms directory is empty", async () => {
     accessMock.mock.resetCalls();
     readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
@@ -78,18 +78,18 @@ describe("listGardens", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock gardens directory exists but is empty
+    // Mock phantoms directory exists but is empty
     accessMock.mock.mockImplementation(() => Promise.resolve());
     readdirMock.mock.mockImplementation(() => Promise.resolve([]));
 
-    const result = await listGardens();
+    const result = await listPhantoms();
 
     strictEqual(result.success, true);
-    deepStrictEqual(result.gardens, []);
-    strictEqual(result.message, "No gardens found");
+    deepStrictEqual(result.phantoms, []);
+    strictEqual(result.message, "No phantoms found");
   });
 
-  it("should list gardens with clean status", async () => {
+  it("should list phantoms with clean status", async () => {
     accessMock.mock.resetCalls();
     readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
@@ -101,10 +101,10 @@ describe("listGardens", () => {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
         if (cmd === "git branch --show-current") {
-          if (options?.cwd?.includes("test-garden-1")) {
+          if (options?.cwd?.includes("test-phantom-1")) {
             return Promise.resolve({ stdout: "feature/test\n", stderr: "" });
           }
-          if (options?.cwd?.includes("test-garden-2")) {
+          if (options?.cwd?.includes("test-phantom-2")) {
             return Promise.resolve({ stdout: "main\n", stderr: "" });
           }
         }
@@ -115,25 +115,25 @@ describe("listGardens", () => {
       },
     );
 
-    // Mock gardens directory and contents
+    // Mock phantoms directory and contents
     accessMock.mock.mockImplementation(() => Promise.resolve());
     readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["test-garden-1", "test-garden-2"]),
+      Promise.resolve(["test-phantom-1", "test-phantom-2"]),
     );
 
-    const result = await listGardens();
+    const result = await listPhantoms();
 
     strictEqual(result.success, true);
-    strictEqual(result.gardens?.length, 2);
-    strictEqual(result.gardens?.[0].name, "test-garden-1");
-    strictEqual(result.gardens?.[0].branch, "feature/test");
-    strictEqual(result.gardens?.[0].status, "clean");
-    strictEqual(result.gardens?.[1].name, "test-garden-2");
-    strictEqual(result.gardens?.[1].branch, "main");
-    strictEqual(result.gardens?.[1].status, "clean");
+    strictEqual(result.phantoms?.length, 2);
+    strictEqual(result.phantoms?.[0].name, "test-phantom-1");
+    strictEqual(result.phantoms?.[0].branch, "feature/test");
+    strictEqual(result.phantoms?.[0].status, "clean");
+    strictEqual(result.phantoms?.[1].name, "test-phantom-2");
+    strictEqual(result.phantoms?.[1].branch, "main");
+    strictEqual(result.phantoms?.[1].status, "clean");
   });
 
-  it("should list gardens with dirty status", async () => {
+  it("should list phantoms with dirty status", async () => {
     accessMock.mock.resetCalls();
     readdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
@@ -157,20 +157,20 @@ describe("listGardens", () => {
       },
     );
 
-    // Mock gardens directory and contents
+    // Mock phantoms directory and contents
     accessMock.mock.mockImplementation(() => Promise.resolve());
     readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["dirty-garden"]),
+      Promise.resolve(["dirty-phantom"]),
     );
 
-    const result = await listGardens();
+    const result = await listPhantoms();
 
     strictEqual(result.success, true);
-    strictEqual(result.gardens?.length, 1);
-    strictEqual(result.gardens?.[0].name, "dirty-garden");
-    strictEqual(result.gardens?.[0].branch, "feature/dirty");
-    strictEqual(result.gardens?.[0].status, "dirty");
-    strictEqual(result.gardens?.[0].changedFiles, 2);
+    strictEqual(result.phantoms?.length, 1);
+    strictEqual(result.phantoms?.[0].name, "dirty-phantom");
+    strictEqual(result.phantoms?.[0].branch, "feature/dirty");
+    strictEqual(result.phantoms?.[0].status, "dirty");
+    strictEqual(result.phantoms?.[0].changedFiles, 2);
   });
 
   it("should handle git command errors gracefully", async () => {
@@ -192,19 +192,19 @@ describe("listGardens", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock gardens directory and contents
+    // Mock phantoms directory and contents
     accessMock.mock.mockImplementation(() => Promise.resolve());
     readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["error-garden"]),
+      Promise.resolve(["error-phantom"]),
     );
 
-    const result = await listGardens();
+    const result = await listPhantoms();
 
     strictEqual(result.success, true);
-    strictEqual(result.gardens?.length, 1);
-    strictEqual(result.gardens?.[0].name, "error-garden");
-    strictEqual(result.gardens?.[0].branch, "unknown");
-    strictEqual(result.gardens?.[0].status, "clean");
+    strictEqual(result.phantoms?.length, 1);
+    strictEqual(result.phantoms?.[0].name, "error-phantom");
+    strictEqual(result.phantoms?.[0].branch, "unknown");
+    strictEqual(result.phantoms?.[0].status, "clean");
   });
 
   it("should handle detached HEAD state", async () => {
@@ -226,18 +226,18 @@ describe("listGardens", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock gardens directory and contents
+    // Mock phantoms directory and contents
     accessMock.mock.mockImplementation(() => Promise.resolve());
     readdirMock.mock.mockImplementation(() =>
-      Promise.resolve(["detached-garden"]),
+      Promise.resolve(["detached-phantom"]),
     );
 
-    const result = await listGardens();
+    const result = await listPhantoms();
 
     strictEqual(result.success, true);
-    strictEqual(result.gardens?.length, 1);
-    strictEqual(result.gardens?.[0].name, "detached-garden");
-    strictEqual(result.gardens?.[0].branch, "detached HEAD");
-    strictEqual(result.gardens?.[0].status, "clean");
+    strictEqual(result.phantoms?.length, 1);
+    strictEqual(result.phantoms?.[0].name, "detached-phantom");
+    strictEqual(result.phantoms?.[0].branch, "detached HEAD");
+    strictEqual(result.phantoms?.[0].status, "clean");
   });
 });

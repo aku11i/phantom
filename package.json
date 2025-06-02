@@ -2,15 +2,15 @@
   "name": "@aku11i/phantom",
   "packageManager": "pnpm@10.8.1",
   "version": "0.2.0",
-  "description": "A CLI tool for managing Git worktrees (gardens) with enhanced functionality",
+  "description": "A powerful CLI tool for managing Git worktrees as phantoms for parallel development",
   "keywords": [
     "git",
     "worktree",
     "cli",
     "phantom",
-    "gardens",
     "workspace",
-    "development"
+    "development",
+    "parallel"
   ],
   "homepage": "https://github.com/aku11i/phantom#readme",
   "bugs": {

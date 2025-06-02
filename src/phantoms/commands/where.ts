@@ -3,46 +3,46 @@ import { join } from "node:path";
 import { exit } from "node:process";
 import { getGitRoot } from "../../git/libs/get-git-root.ts";
 
-export async function whereGarden(name: string): Promise<{
+export async function wherePhantom(name: string): Promise<{
   success: boolean;
   message?: string;
   path?: string;
 }> {
   if (!name) {
-    return { success: false, message: "Error: garden name required" };
+    return { success: false, message: "Error: phantom name required" };
   }
 
   try {
     const gitRoot = await getGitRoot();
-    const gardensPath = join(gitRoot, ".git", "phantom", "gardens");
-    const gardenPath = join(gardensPath, name);
+    const phantomsPath = join(gitRoot, ".git", "phantom", "phantoms");
+    const phantomPath = join(phantomsPath, name);
 
-    // Check if garden exists
+    // Check if phantom exists
     try {
-      await access(gardenPath);
+      await access(phantomPath);
     } catch {
       return {
         success: false,
-        message: `Error: Garden '${name}' does not exist`,
+        message: `Error: Phantom '${name}' does not exist`,
       };
     }
 
     return {
       success: true,
-      path: gardenPath,
+      path: phantomPath,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      message: `Error locating garden: ${errorMessage}`,
+      message: `Error locating phantom: ${errorMessage}`,
     };
   }
 }
 
-export async function gardensWhereHandler(args: string[]): Promise<void> {
+export async function phantomsWhereHandler(args: string[]): Promise<void> {
   const name = args[0];
-  const result = await whereGarden(name);
+  const result = await wherePhantom(name);
 
   if (!result.success) {
     console.error(result.message);

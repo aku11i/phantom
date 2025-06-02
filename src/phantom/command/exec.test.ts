@@ -1,14 +1,14 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("execInGarden", () => {
+describe("execInPhantom", () => {
   let spawnMock: ReturnType<typeof mock.fn>;
-  let whereGardenMock: ReturnType<typeof mock.fn>;
-  let execInGarden: typeof import("./exec.ts").execInGarden;
+  let wherePhantomMock: ReturnType<typeof mock.fn>;
+  let execInPhantom: typeof import("./exec.ts").execInPhantom;
 
   before(async () => {
     spawnMock = mock.fn();
-    whereGardenMock = mock.fn();
+    wherePhantomMock = mock.fn();
 
     mock.module("node:child_process", {
       namedExports: {
@@ -16,53 +16,53 @@ describe("execInGarden", () => {
       },
     });
 
-    mock.module("../../gardens/commands/where.ts", {
+    mock.module("../../phantoms/commands/where.ts", {
       namedExports: {
-        whereGarden: whereGardenMock,
+        wherePhantom: wherePhantomMock,
       },
     });
 
-    ({ execInGarden } = await import("./exec.ts"));
+    ({ execInPhantom } = await import("./exec.ts"));
   });
 
-  it("should return error when garden name is not provided", async () => {
-    const result = await execInGarden("", ["echo", "test"]);
+  it("should return error when phantom name is not provided", async () => {
+    const result = await execInPhantom("", ["echo", "test"]);
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: garden name required");
+    strictEqual(result.message, "Error: phantom name required");
   });
 
   it("should return error when command is not provided", async () => {
-    const result = await execInGarden("test-garden", []);
+    const result = await execInPhantom("test-phantom", []);
     strictEqual(result.success, false);
     strictEqual(result.message, "Error: command required");
   });
 
-  it("should return error when garden does not exist", async () => {
-    whereGardenMock.mock.resetCalls();
+  it("should return error when phantom does not exist", async () => {
+    wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    whereGardenMock.mock.mockImplementation(() =>
+    wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: false,
-        message: "Error: Garden 'nonexistent' does not exist",
+        message: "Error: Phantom 'nonexistent' does not exist",
       }),
     );
 
-    const result = await execInGarden("nonexistent", ["echo", "test"]);
+    const result = await execInPhantom("nonexistent", ["echo", "test"]);
 
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: Garden 'nonexistent' does not exist");
+    strictEqual(result.message, "Error: Phantom 'nonexistent' does not exist");
   });
 
   it("should execute command successfully with exit code 0", async () => {
-    whereGardenMock.mock.resetCalls();
+    wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    // Mock successful garden location
-    whereGardenMock.mock.mockImplementation(() =>
+    // Mock successful phantom location
+    wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/gardens/test-garden",
+        path: "/test/repo/.git/phantom/phantoms/test-phantom",
       }),
     );
 
@@ -83,7 +83,7 @@ describe("execInGarden", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInGarden("test-garden", ["echo", "hello"]);
+    const result = await execInPhantom("test-phantom", ["echo", "hello"]);
 
     strictEqual(result.success, true);
     strictEqual(result.exitCode, 0);
@@ -97,19 +97,19 @@ describe("execInGarden", () => {
     ];
     strictEqual(cmd, "echo");
     strictEqual(args[0], "hello");
-    strictEqual(options.cwd, "/test/repo/.git/phantom/gardens/test-garden");
+    strictEqual(options.cwd, "/test/repo/.git/phantom/phantoms/test-phantom");
     strictEqual(options.stdio, "inherit");
   });
 
   it("should handle command execution failure with non-zero exit code", async () => {
-    whereGardenMock.mock.resetCalls();
+    wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    // Mock successful garden location
-    whereGardenMock.mock.mockImplementation(() =>
+    // Mock successful phantom location
+    wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/gardens/test-garden",
+        path: "/test/repo/.git/phantom/phantoms/test-phantom",
       }),
     );
 
@@ -130,21 +130,21 @@ describe("execInGarden", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInGarden("test-garden", ["false"]);
+    const result = await execInPhantom("test-phantom", ["false"]);
 
     strictEqual(result.success, false);
     strictEqual(result.exitCode, 1);
   });
 
   it("should handle command execution error", async () => {
-    whereGardenMock.mock.resetCalls();
+    wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    // Mock successful garden location
-    whereGardenMock.mock.mockImplementation(() =>
+    // Mock successful phantom location
+    wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/gardens/test-garden",
+        path: "/test/repo/.git/phantom/phantoms/test-phantom",
       }),
     );
 
@@ -159,21 +159,21 @@ describe("execInGarden", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInGarden("test-garden", ["nonexistent-command"]);
+    const result = await execInPhantom("test-phantom", ["nonexistent-command"]);
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Error executing command: Command not found");
   });
 
   it("should handle signal termination", async () => {
-    whereGardenMock.mock.resetCalls();
+    wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    // Mock successful garden location
-    whereGardenMock.mock.mockImplementation(() =>
+    // Mock successful phantom location
+    wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/gardens/test-garden",
+        path: "/test/repo/.git/phantom/phantoms/test-phantom",
       }),
     );
 
@@ -194,7 +194,9 @@ describe("execInGarden", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInGarden("test-garden", ["long-running-command"]);
+    const result = await execInPhantom("test-phantom", [
+      "long-running-command",
+    ]);
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Command terminated by signal: SIGTERM");
@@ -202,14 +204,14 @@ describe("execInGarden", () => {
   });
 
   it("should parse complex commands with multiple arguments", async () => {
-    whereGardenMock.mock.resetCalls();
+    wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    // Mock successful garden location
-    whereGardenMock.mock.mockImplementation(() =>
+    // Mock successful phantom location
+    wherePhantomMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/gardens/test-garden",
+        path: "/test/repo/.git/phantom/phantoms/test-phantom",
       }),
     );
 
@@ -229,7 +231,7 @@ describe("execInGarden", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInGarden("test-garden", [
+    const result = await execInPhantom("test-phantom", [
       "npm",
       "run",
       "test",

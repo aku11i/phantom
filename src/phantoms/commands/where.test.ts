@@ -1,10 +1,10 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("whereGarden", () => {
+describe("wherePhantom", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let whereGarden: typeof import("./where.ts").whereGarden;
+  let wherePhantom: typeof import("./where.ts").wherePhantom;
 
   before(async () => {
     accessMock = mock.fn();
@@ -28,16 +28,16 @@ describe("whereGarden", () => {
       },
     });
 
-    ({ whereGarden } = await import("./where.ts"));
+    ({ wherePhantom } = await import("./where.ts"));
   });
 
   it("should return error when name is not provided", async () => {
-    const result = await whereGarden("");
+    const result = await wherePhantom("");
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: garden name required");
+    strictEqual(result.message, "Error: phantom name required");
   });
 
-  it("should return error when garden does not exist", async () => {
+  it("should return error when phantom does not exist", async () => {
     accessMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
@@ -49,21 +49,21 @@ describe("whereGarden", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock garden doesn't exist
+    // Mock phantom doesn't exist
     accessMock.mock.mockImplementation(() => {
       return Promise.reject(new Error("ENOENT"));
     });
 
-    const result = await whereGarden("nonexistent-garden");
+    const result = await wherePhantom("nonexistent-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: Garden 'nonexistent-garden' does not exist",
+      "Error: Phantom 'nonexistent-phantom' does not exist",
     );
   });
 
-  it("should return path when garden exists", async () => {
+  it("should return path when phantom exists", async () => {
     accessMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
@@ -75,13 +75,16 @@ describe("whereGarden", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock garden exists
+    // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await whereGarden("existing-garden");
+    const result = await wherePhantom("existing-phantom");
 
     strictEqual(result.success, true);
-    strictEqual(result.path, "/test/repo/.git/phantom/gardens/existing-garden");
+    strictEqual(
+      result.path,
+      "/test/repo/.git/phantom/phantoms/existing-phantom",
+    );
   });
 
   it("should handle git root detection failures", async () => {
@@ -93,13 +96,13 @@ describe("whereGarden", () => {
       return Promise.reject(new Error("Not a git repository"));
     });
 
-    const result = await whereGarden("some-garden");
+    const result = await wherePhantom("some-phantom");
 
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error locating garden: Not a git repository");
+    strictEqual(result.message, "Error locating phantom: Not a git repository");
   });
 
-  it("should handle different garden names correctly", async () => {
+  it("should handle different phantom names correctly", async () => {
     accessMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
@@ -111,19 +114,19 @@ describe("whereGarden", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock garden exists
+    // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await whereGarden("feature-branch-123");
+    const result = await wherePhantom("feature-branch-123");
 
     strictEqual(result.success, true);
     strictEqual(
       result.path,
-      "/different/repo/.git/phantom/gardens/feature-branch-123",
+      "/different/repo/.git/phantom/phantoms/feature-branch-123",
     );
   });
 
-  it("should handle special characters in garden names", async () => {
+  it("should handle special characters in phantom names", async () => {
     accessMock.mock.resetCalls();
     execMock.mock.resetCalls();
 
@@ -135,15 +138,15 @@ describe("whereGarden", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    // Mock garden exists
+    // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await whereGarden("feature-with-dashes_and_underscores");
+    const result = await wherePhantom("feature-with-dashes_and_underscores");
 
     strictEqual(result.success, true);
     strictEqual(
       result.path,
-      "/test/repo/.git/phantom/gardens/feature-with-dashes_and_underscores",
+      "/test/repo/.git/phantom/phantoms/feature-with-dashes_and_underscores",
     );
   });
 });

@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**Git worktreeを使った並行開発のためのパワフルなCLIツール**
+**Git worktreeをファントムとして管理する並行開発のためのパワフルなCLIツール**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -32,7 +32,7 @@
 - 同じコードベースで並行してAIエージェントを実行するのは困難
 
 **Phantomの解決策：**
-- 1つのコマンドでworktreeとブランチの両方を作成: `phantom garden create feature-x`
+- 1つのコマンドでworktreeとブランチの両方を作成: `phantom create feature-x`
 - 即座にコンテキストを切り替え: `phantom shell feature-x`
 - ディレクトリを変更せずにコマンドを実行: `phantom exec feature-x npm test`
 - 複数のAIエージェントとの「並行バイブコーディング」に最適
@@ -43,8 +43,8 @@
 # Phantomをインストール
 npm install -g @aku11i/phantom
 
-# 新しい開発スペース（ガーデン）を作成
-phantom garden create feature-awesome
+# 新しいファントム（worktree）を作成
+phantom create feature-awesome
 
 # 新しいスペースにジャンプ
 phantom shell feature-awesome
@@ -53,11 +53,11 @@ phantom shell feature-awesome
 phantom exec feature-awesome npm install
 phantom exec feature-awesome npm test
 
-# すべてのガーデンをリスト表示
-phantom garden list
+# すべてのファントムをリスト表示
+phantom list
 
 # 完了したらクリーンアップ
-phantom garden delete feature-awesome
+phantom delete feature-awesome
 ```
 
 ## 📦 インストール
@@ -90,60 +90,58 @@ npm link
 
 ### コアコンセプト
 
-**ガーデン（Gardens）** 🌳 - Phantomによって管理されるGit worktree。各ガーデンは特定のブランチや機能のための独立したワークスペースです。
-
-**ファントム（Phantoms）** 👻 - ガーデン内で動作するプロセスやエージェント。
+**ファントム（Phantoms）** 👻 - このツールによって管理されるGit worktree。各ファントムは特定のブランチや機能のための独立したワークスペースで、競合なしに並行開発が可能です。
 
 ### コマンド概要
 
-#### ガーデン管理
+#### ファントム管理
 
 ```bash
-# 対応するブランチを持つ新しいガーデンを作成
-phantom garden create <name>
+# 対応するブランチを持つ新しいファントムを作成
+phantom create <name>
 
-# すべてのガーデンとその現在のステータスをリスト表示
-phantom garden list
+# すべてのファントムとその現在のステータスをリスト表示
+phantom list
 
-# ガーデンへの絶対パスを取得
-phantom garden where <name>
+# ファントムへの絶対パスを取得
+phantom where <name>
 
-# ガーデンとそのブランチを削除
-phantom garden delete <name>
-phantom garden delete <name> --force  # コミットされていない変更がある場合の強制削除
+# ファントムとそのブランチを削除
+phantom delete <name>
+phantom delete <name> --force  # コミットされていない変更がある場合の強制削除
 ```
 
-#### ガーデンでの作業
+#### ファントムでの作業
 
 ```bash
-# ガーデンのコンテキストで任意のコマンドを実行
-phantom exec <garden> <command> [args...]
+# ファントムのコンテキストで任意のコマンドを実行
+phantom exec <phantom> <command> [args...]
 
 # 例:
 phantom exec feature-auth npm install
 phantom exec feature-auth npm run test
 phantom exec feature-auth git status
 
-# ガーデンでインタラクティブシェルセッションを開く
-phantom shell <garden>
+# ファントムでインタラクティブシェルセッションを開く
+phantom shell <phantom>
 ```
 
 ### 環境変数
 
 Phantomコンテキスト内で作業する際、以下の環境変数が利用可能です：
 
-- `PHANTOM_GARDEN` - 現在のガーデンの名前
-- `PHANTOM_GARDEN_PATH` - ガーデンディレクトリへの絶対パス
+- `PHANTOM_NAME` - 現在のファントムの名前
+- `PHANTOM_PATH` - ファントムディレクトリへの絶対パス
 
 ## 🔄 Phantom vs Git Worktree
 
 | 機能 | Git Worktree | Phantom |
 |---------|--------------|---------|
-| worktree + ブランチの作成 | `git worktree add -b feature ../project-feature` | `phantom garden create feature` |
-| worktreeのリスト表示 | `git worktree list` | `phantom garden list` |
+| worktree + ブランチの作成 | `git worktree add -b feature ../project-feature` | `phantom create feature` |
+| worktreeのリスト表示 | `git worktree list` | `phantom list` |
 | worktreeへの移動 | `cd ../project-feature` | `phantom shell feature` |
 | worktreeでコマンド実行 | `cd ../project-feature && npm test` | `phantom exec feature npm test` |
-| worktreeの削除 | `git worktree remove ../project-feature` | `phantom garden delete feature` |
+| worktreeの削除 | `git worktree remove ../project-feature` | `phantom delete feature` |
 
 ## 🛠️ 開発
 

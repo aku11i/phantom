@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**A powerful CLI tool for seamless parallel development with Git worktrees**
+**A powerful CLI tool for managing Git worktrees as phantoms for parallel development**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -32,7 +32,7 @@ Modern development workflows often require working on multiple features simultan
 - Running parallel AI agents on the same codebase is challenging
 
 **The Phantom Solution:**
-- One command to create both worktree and branch: `phantom garden create feature-x`
+- One command to create both worktree and branch: `phantom create feature-x`
 - Instant context switching: `phantom shell feature-x`
 - Execute commands without changing directories: `phantom exec feature-x npm test`
 - Perfect for "parallel vibe coding" with multiple AI agents
@@ -43,8 +43,8 @@ Modern development workflows often require working on multiple features simultan
 # Install Phantom
 npm install -g @aku11i/phantom
 
-# Create a new development space (garden)
-phantom garden create feature-awesome
+# Create a new phantom (worktree)
+phantom create feature-awesome
 
 # Jump into the new space
 phantom shell feature-awesome
@@ -53,11 +53,11 @@ phantom shell feature-awesome
 phantom exec feature-awesome npm install
 phantom exec feature-awesome npm test
 
-# List all your gardens
-phantom garden list
+# List all your phantoms
+phantom list
 
 # Clean up when done
-phantom garden delete feature-awesome
+phantom delete feature-awesome
 ```
 
 ## 📦 Installation
@@ -90,60 +90,58 @@ npm link
 
 ### Core Concepts
 
-**Gardens** 🌳 - Git worktrees managed by Phantom. Each garden is an isolated workspace for a specific branch or feature.
-
-**Phantoms** 👻 - Processes or agents that work within gardens.
+**Phantoms** 👻 - Git worktrees managed by this tool. Each phantom is an isolated workspace for a specific branch or feature, allowing parallel development without conflicts.
 
 ### Commands Overview
 
-#### Gardens Management
+#### Phantom Management
 
 ```bash
-# Create a new garden with a matching branch
-phantom garden create <name>
+# Create a new phantom with a matching branch
+phantom create <name>
 
-# List all gardens with their current status
-phantom garden list
+# List all phantoms with their current status
+phantom list
 
-# Get the absolute path to a garden
-phantom garden where <name>
+# Get the absolute path to a phantom
+phantom where <name>
 
-# Delete a garden and its branch
-phantom garden delete <name>
-phantom garden delete <name> --force  # Force delete with uncommitted changes
+# Delete a phantom and its branch
+phantom delete <name>
+phantom delete <name> --force  # Force delete with uncommitted changes
 ```
 
-#### Working with Gardens
+#### Working with Phantoms
 
 ```bash
-# Execute any command in a garden's context
-phantom exec <garden> <command> [args...]
+# Execute any command in a phantom's context
+phantom exec <phantom> <command> [args...]
 
 # Examples:
 phantom exec feature-auth npm install
 phantom exec feature-auth npm run test
 phantom exec feature-auth git status
 
-# Open an interactive shell session in a garden
-phantom shell <garden>
+# Open an interactive shell session in a phantom
+phantom shell <phantom>
 ```
 
 ### Environment Variables
 
 When working within a Phantom context, these environment variables are available:
 
-- `PHANTOM_GARDEN` - Name of the current garden
-- `PHANTOM_GARDEN_PATH` - Absolute path to the garden directory
+- `PHANTOM_NAME` - Name of the current phantom
+- `PHANTOM_PATH` - Absolute path to the phantom directory
 
 ## 🔄 Phantom vs Git Worktree
 
 | Feature | Git Worktree | Phantom |
 |---------|--------------|---------|
-| Create worktree + branch | `git worktree add -b feature ../project-feature` | `phantom garden create feature` |
-| List worktrees | `git worktree list` | `phantom garden list` |
+| Create worktree + branch | `git worktree add -b feature ../project-feature` | `phantom create feature` |
+| List worktrees | `git worktree list` | `phantom list` |
 | Navigate to worktree | `cd ../project-feature` | `phantom shell feature` |
 | Run command in worktree | `cd ../project-feature && npm test` | `phantom exec feature npm test` |
-| Remove worktree | `git worktree remove ../project-feature` | `phantom garden delete feature` |
+| Remove worktree | `git worktree remove ../project-feature` | `phantom delete feature` |
 
 ## 🛠️ Development
 

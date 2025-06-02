@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
-import { gardensCreateHandler } from "../gardens/commands/create.ts";
-import { gardensDeleteHandler } from "../gardens/commands/delete.ts";
-import { gardensListHandler } from "../gardens/commands/list.ts";
-import { gardensWhereHandler } from "../gardens/commands/where.ts";
 import { execHandler } from "../phantom/command/exec.ts";
 import { shellHandler } from "../phantom/command/shell.ts";
+import { phantomsCreateHandler } from "../phantoms/commands/create.ts";
+import { phantomsDeleteHandler } from "../phantoms/commands/delete.ts";
+import { phantomsListHandler } from "../phantoms/commands/list.ts";
+import { phantomsWhereHandler } from "../phantoms/commands/where.ts";
 
 interface Command {
   name: string;
@@ -17,53 +17,42 @@ interface Command {
 
 const commands: Command[] = [
   {
-    name: "garden",
-    description: "Manage git worktrees (gardens)",
-    subcommands: [
-      {
-        name: "create",
-        description: "Create a new worktree (garden) [--shell to open shell]",
-        handler: gardensCreateHandler,
-      },
-      {
-        name: "list",
-        description: "List all gardens",
-        handler: gardensListHandler,
-      },
-      {
-        name: "where",
-        description: "Output the path of a specific garden",
-        handler: gardensWhereHandler,
-      },
-      {
-        name: "delete",
-        description: "Delete a garden (use --force for dirty gardens)",
-        handler: gardensDeleteHandler,
-      },
-    ],
+    name: "create",
+    description: "Create a new worktree (phantom) [--shell to open shell]",
+    handler: phantomsCreateHandler,
+  },
+  {
+    name: "list",
+    description: "List all phantoms",
+    handler: phantomsListHandler,
+  },
+  {
+    name: "where",
+    description: "Output the path of a specific phantom",
+    handler: phantomsWhereHandler,
+  },
+  {
+    name: "delete",
+    description: "Delete a phantom (use --force for dirty phantoms)",
+    handler: phantomsDeleteHandler,
   },
   {
     name: "exec",
-    description: "Execute a command in a garden directory",
+    description: "Execute a command in a phantom directory",
     handler: execHandler,
   },
   {
     name: "shell",
-    description: "Open interactive shell in a garden directory",
+    description: "Open interactive shell in a phantom directory",
     handler: shellHandler,
   },
 ];
 
-function printHelp(commands: Command[], prefix = "") {
+function printHelp(commands: Command[]) {
   console.log("Usage: phantom <command> [options]\n");
   console.log("Commands:");
   for (const cmd of commands) {
-    console.log(`  ${prefix}${cmd.name.padEnd(20)} ${cmd.description}`);
-    if (cmd.subcommands) {
-      for (const subcmd of cmd.subcommands) {
-        console.log(`    ${subcmd.name.padEnd(18)} ${subcmd.description}`);
-      }
-    }
+    console.log(`  ${cmd.name.padEnd(12)} ${cmd.description}`);
   }
 }
 
