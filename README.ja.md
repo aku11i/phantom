@@ -133,8 +133,9 @@ phantom shell <name>
 
 ### 環境変数
 
-Phantomで管理されたworktree内で作業する際、以下の環境変数が利用可能です：
+`phantom shell`でインタラクティブシェルを開いた際、以下の環境変数が設定されます：
 
+- `PHANTOM` - phantom shellから起動されたすべてのプロセスに"1"がセットされる
 - `PHANTOM_NAME` - 現在のworktreeの名前
 - `PHANTOM_PATH` - worktreeディレクトリへの絶対パス
 

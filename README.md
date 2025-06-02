@@ -133,8 +133,9 @@ phantom shell <name>
 
 ### Environment Variables
 
-When working within a worktree managed by Phantom, these environment variables are available:
+When opening an interactive shell with `phantom shell`, these environment variables are set:
 
+- `PHANTOM` - Set to "1" for all processes spawned from phantom shell
 - `PHANTOM_NAME` - Name of the current worktree
 - `PHANTOM_PATH` - Absolute path to the worktree directory
 

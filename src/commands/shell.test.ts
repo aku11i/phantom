@@ -96,9 +96,10 @@ describe("shellInWorktree", () => {
       spawnCall.options?.cwd,
       "/test/repo/.git/phantom/worktrees/test-worktree",
     );
-    strictEqual(spawnCall.options?.env?.WORKTREE_NAME, "test-worktree");
+    strictEqual(spawnCall.options?.env?.PHANTOM, "1");
+    strictEqual(spawnCall.options?.env?.PHANTOM_NAME, "test-worktree");
     strictEqual(
-      spawnCall.options?.env?.WORKTREE_PATH,
+      spawnCall.options?.env?.PHANTOM_PATH,
       "/test/repo/.git/phantom/worktrees/test-worktree",
     );
   });

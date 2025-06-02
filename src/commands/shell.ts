@@ -39,8 +39,9 @@ export async function shellInWorktree(
       env: {
         ...process.env,
         // Add environment variable to indicate we're in a worktree
-        WORKTREE_NAME: worktreeName,
-        WORKTREE_PATH: worktreePath,
+        PHANTOM: "1",
+        PHANTOM_NAME: worktreeName,
+        PHANTOM_PATH: worktreePath,
       },
     },
   });
