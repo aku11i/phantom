@@ -1,14 +1,14 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("execInPhantom", () => {
+describe("execInWorktree", () => {
   let spawnMock: ReturnType<typeof mock.fn>;
-  let wherePhantomMock: ReturnType<typeof mock.fn>;
-  let execInPhantom: typeof import("./exec.ts").execInPhantom;
+  let whereWorktreeMock: ReturnType<typeof mock.fn>;
+  let execInWorktree: typeof import("./exec.ts").execInWorktree;
 
   before(async () => {
     spawnMock = mock.fn();
-    wherePhantomMock = mock.fn();
+    whereWorktreeMock = mock.fn();
 
     mock.module("node:child_process", {
       namedExports: {
@@ -18,51 +18,51 @@ describe("execInPhantom", () => {
 
     mock.module("./where.ts", {
       namedExports: {
-        wherePhantom: wherePhantomMock,
+        whereWorktree: whereWorktreeMock,
       },
     });
 
-    ({ execInPhantom } = await import("./exec.ts"));
+    ({ execInWorktree } = await import("./exec.ts"));
   });
 
   it("should return error when phantom name is not provided", async () => {
-    const result = await execInPhantom("", ["echo", "test"]);
+    const result = await execInWorktree("", ["echo", "test"]);
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: phantom name required");
+    strictEqual(result.message, "Error: worktree name required");
   });
 
   it("should return error when command is not provided", async () => {
-    const result = await execInPhantom("test-phantom", []);
+    const result = await execInWorktree("test-worktree", []);
     strictEqual(result.success, false);
     strictEqual(result.message, "Error: command required");
   });
 
   it("should return error when phantom does not exist", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: false,
         message: "Error: Phantom 'nonexistent' does not exist",
       }),
     );
 
-    const result = await execInPhantom("nonexistent", ["echo", "test"]);
+    const result = await execInWorktree("nonexistent", ["echo", "test"]);
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Error: Phantom 'nonexistent' does not exist");
   });
 
   it("should execute command successfully with exit code 0", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -83,7 +83,7 @@ describe("execInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInPhantom("test-phantom", ["echo", "hello"]);
+    const result = await execInWorktree("test-worktree", ["echo", "hello"]);
 
     strictEqual(result.success, true);
     strictEqual(result.exitCode, 0);
@@ -97,19 +97,19 @@ describe("execInPhantom", () => {
     ];
     strictEqual(cmd, "echo");
     strictEqual(args[0], "hello");
-    strictEqual(options.cwd, "/test/repo/.git/phantom/worktrees/test-phantom");
+    strictEqual(options.cwd, "/test/repo/.git/phantom/worktrees/test-worktree");
     strictEqual(options.stdio, "inherit");
   });
 
   it("should handle command execution failure with non-zero exit code", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -130,21 +130,21 @@ describe("execInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInPhantom("test-phantom", ["false"]);
+    const result = await execInWorktree("test-worktree", ["false"]);
 
     strictEqual(result.success, false);
     strictEqual(result.exitCode, 1);
   });
 
   it("should handle command execution error", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -159,21 +159,23 @@ describe("execInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInPhantom("test-phantom", ["nonexistent-command"]);
+    const result = await execInWorktree("test-worktree", [
+      "nonexistent-command",
+    ]);
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Error executing command: Command not found");
   });
 
   it("should handle signal termination", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -194,7 +196,7 @@ describe("execInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInPhantom("test-phantom", [
+    const result = await execInWorktree("test-worktree", [
       "long-running-command",
     ]);
 
@@ -204,14 +206,14 @@ describe("execInPhantom", () => {
   });
 
   it("should parse complex commands with multiple arguments", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -231,7 +233,7 @@ describe("execInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await execInPhantom("test-phantom", [
+    const result = await execInWorktree("test-worktree", [
       "npm",
       "run",
       "test",

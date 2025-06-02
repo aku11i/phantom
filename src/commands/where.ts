@@ -3,46 +3,46 @@ import { join } from "node:path";
 import { exit } from "node:process";
 import { getGitRoot } from "../git/libs/get-git-root.ts";
 
-export async function wherePhantom(name: string): Promise<{
+export async function whereWorktree(name: string): Promise<{
   success: boolean;
   message?: string;
   path?: string;
 }> {
   if (!name) {
-    return { success: false, message: "Error: phantom name required" };
+    return { success: false, message: "Error: worktree name required" };
   }
 
   try {
     const gitRoot = await getGitRoot();
-    const phantomsPath = join(gitRoot, ".git", "phantom", "worktrees");
-    const phantomPath = join(phantomsPath, name);
+    const worktreesPath = join(gitRoot, ".git", "phantom", "worktrees");
+    const worktreePath = join(worktreesPath, name);
 
-    // Check if phantom exists
+    // Check if worktree exists
     try {
-      await access(phantomPath);
+      await access(worktreePath);
     } catch {
       return {
         success: false,
-        message: `Error: Phantom '${name}' does not exist`,
+        message: `Error: Worktree '${name}' does not exist`,
       };
     }
 
     return {
       success: true,
-      path: phantomPath,
+      path: worktreePath,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      message: `Error locating phantom: ${errorMessage}`,
+      message: `Error locating worktree: ${errorMessage}`,
     };
   }
 }
 
-export async function phantomsWhereHandler(args: string[]): Promise<void> {
+export async function worktreesWhereHandler(args: string[]): Promise<void> {
   const name = args[0];
-  const result = await wherePhantom(name);
+  const result = await whereWorktree(name);
 
   if (!result.success) {
     console.error(result.message);

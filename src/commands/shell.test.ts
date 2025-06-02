@@ -1,15 +1,15 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("shellInPhantom", () => {
+describe("shellInWorktree", () => {
   let spawnMock: ReturnType<typeof mock.fn>;
-  let wherePhantomMock: ReturnType<typeof mock.fn>;
-  let shellInPhantom: typeof import("./shell.ts").shellInPhantom;
+  let whereWorktreeMock: ReturnType<typeof mock.fn>;
+  let shellInWorktree: typeof import("./shell.ts").shellInWorktree;
   const originalEnv = process.env;
 
   before(async () => {
     spawnMock = mock.fn();
-    wherePhantomMock = mock.fn();
+    whereWorktreeMock = mock.fn();
 
     mock.module("node:child_process", {
       namedExports: {
@@ -19,45 +19,45 @@ describe("shellInPhantom", () => {
 
     mock.module("./where.ts", {
       namedExports: {
-        wherePhantom: wherePhantomMock,
+        whereWorktree: whereWorktreeMock,
       },
     });
 
-    ({ shellInPhantom } = await import("./shell.ts"));
+    ({ shellInWorktree } = await import("./shell.ts"));
   });
 
   it("should return error when phantom name is not provided", async () => {
-    const result = await shellInPhantom("");
+    const result = await shellInWorktree("");
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: phantom name required");
+    strictEqual(result.message, "Error: worktree name required");
   });
 
   it("should return error when phantom does not exist", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: false,
         message: "Error: Phantom 'nonexistent' does not exist",
       }),
     );
 
-    const result = await shellInPhantom("nonexistent");
+    const result = await shellInWorktree("nonexistent");
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Error: Phantom 'nonexistent' does not exist");
   });
 
   it("should start shell successfully with exit code 0", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -78,7 +78,7 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await shellInWorktree("test-worktree");
 
     strictEqual(result.success, true);
     strictEqual(result.exitCode, 0);
@@ -92,17 +92,17 @@ describe("shellInPhantom", () => {
     ];
     strictEqual(shell, process.env.SHELL || "/bin/sh");
     strictEqual(args.length, 0);
-    strictEqual(options.cwd, "/test/repo/.git/phantom/worktrees/test-phantom");
+    strictEqual(options.cwd, "/test/repo/.git/phantom/worktrees/test-worktree");
     strictEqual(options.stdio, "inherit");
-    strictEqual(options.env.PHANTOM_NAME, "test-phantom");
+    strictEqual(options.env.WORKTREE_NAME, "test-worktree");
     strictEqual(
-      options.env.PHANTOM_PATH,
-      "/test/repo/.git/phantom/worktrees/test-phantom",
+      options.env.WORKTREE_PATH,
+      "/test/repo/.git/phantom/worktrees/test-worktree",
     );
   });
 
   it("should use /bin/sh when SHELL is not set", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Temporarily remove SHELL env var
@@ -111,10 +111,10 @@ describe("shellInPhantom", () => {
     delete process.env.SHELL;
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -134,7 +134,7 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    await shellInPhantom("test-phantom");
+    await shellInWorktree("test-worktree");
 
     // Verify /bin/sh was used
     const [shell] = spawnMock.mock.calls[0].arguments as [string, unknown];
@@ -147,14 +147,14 @@ describe("shellInPhantom", () => {
   });
 
   it("should handle shell execution failure with non-zero exit code", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -175,21 +175,21 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await shellInWorktree("test-worktree");
 
     strictEqual(result.success, false);
     strictEqual(result.exitCode, 1);
   });
 
   it("should handle shell startup error", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -204,21 +204,21 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await shellInWorktree("test-worktree");
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Error starting shell: Shell not found");
   });
 
   it("should handle signal termination", async () => {
-    wherePhantomMock.mock.resetCalls();
+    whereWorktreeMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
     // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
+    whereWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve({
         success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+        path: "/test/repo/.git/phantom/worktrees/test-worktree",
       }),
     );
 
@@ -239,7 +239,7 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await shellInWorktree("test-worktree");
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Shell terminated by signal: SIGTERM");

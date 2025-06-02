@@ -1,10 +1,10 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("deletePhantom", () => {
+describe("deleteWorktree", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let deletePhantom: typeof import("./delete.ts").deletePhantom;
+  let deleteWorktree: typeof import("./delete.ts").deleteWorktree;
 
   before(async () => {
     accessMock = mock.fn();
@@ -28,13 +28,13 @@ describe("deletePhantom", () => {
       },
     });
 
-    ({ deletePhantom } = await import("./delete.ts"));
+    ({ deleteWorktree } = await import("./delete.ts"));
   });
 
   it("should return error when name is not provided", async () => {
-    const result = await deletePhantom("");
+    const result = await deleteWorktree("");
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: phantom name required");
+    strictEqual(result.message, "Error: worktree name required");
   });
 
   it("should return error when phantom does not exist", async () => {
@@ -54,12 +54,12 @@ describe("deletePhantom", () => {
       return Promise.reject(new Error("ENOENT"));
     });
 
-    const result = await deletePhantom("nonexistent-phantom");
+    const result = await deleteWorktree("nonexistent-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: Phantom 'nonexistent-phantom' does not exist",
+      "Error: Worktree 'nonexistent-phantom' does not exist",
     );
   });
 
@@ -89,12 +89,12 @@ describe("deletePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deletePhantom("clean-phantom");
+    const result = await deleteWorktree("clean-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'clean-phantom' and its branch 'phantom/worktrees/clean-phantom'",
+      "Deleted worktree 'clean-phantom' and its branch 'phantom/worktrees/clean-phantom'",
     );
     strictEqual(result.hasUncommittedChanges, false);
   });
@@ -122,12 +122,12 @@ describe("deletePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deletePhantom("dirty-phantom");
+    const result = await deleteWorktree("dirty-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: Phantom 'dirty-phantom' has uncommitted changes (2 files). Use --force to delete anyway.",
+      "Error: Worktree 'dirty-phantom' has uncommitted changes (2 files). Use --force to delete anyway.",
     );
     strictEqual(result.hasUncommittedChanges, true);
     strictEqual(result.changedFiles, 2);
@@ -162,12 +162,12 @@ describe("deletePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deletePhantom("dirty-phantom", { force: true });
+    const result = await deleteWorktree("dirty-phantom", { force: true });
 
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Warning: Phantom 'dirty-phantom' had uncommitted changes (2 files)\nDeleted phantom 'dirty-phantom' and its branch 'phantom/worktrees/dirty-phantom'",
+      "Warning: Worktree 'dirty-phantom' had uncommitted changes (2 files)\nDeleted worktree 'dirty-phantom' and its branch 'phantom/worktrees/dirty-phantom'",
     );
     strictEqual(result.hasUncommittedChanges, true);
     strictEqual(result.changedFiles, 2);
@@ -202,12 +202,12 @@ describe("deletePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deletePhantom("stubborn-phantom");
+    const result = await deleteWorktree("stubborn-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'stubborn-phantom' and its branch 'phantom/worktrees/stubborn-phantom'",
+      "Deleted worktree 'stubborn-phantom' and its branch 'phantom/worktrees/stubborn-phantom'",
     );
   });
 
@@ -237,12 +237,12 @@ describe("deletePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deletePhantom("branch-missing-phantom");
+    const result = await deleteWorktree("branch-missing-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'branch-missing-phantom' and its branch 'phantom/worktrees/branch-missing-phantom'",
+      "Deleted worktree 'branch-missing-phantom' and its branch 'phantom/worktrees/branch-missing-phantom'",
     );
   });
 
@@ -269,12 +269,12 @@ describe("deletePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deletePhantom("impossible-phantom");
+    const result = await deleteWorktree("impossible-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: Failed to remove worktree for phantom 'impossible-phantom'",
+      "Error: Failed to remove worktree 'impossible-phantom'",
     );
   });
 
@@ -304,12 +304,12 @@ describe("deletePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deletePhantom("status-error-phantom");
+    const result = await deleteWorktree("status-error-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
       result.message,
-      "Deleted phantom 'status-error-phantom' and its branch 'phantom/worktrees/status-error-phantom'",
+      "Deleted worktree 'status-error-phantom' and its branch 'phantom/worktrees/status-error-phantom'",
     );
     strictEqual(result.hasUncommittedChanges, false);
   });

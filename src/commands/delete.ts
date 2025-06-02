@@ -7,7 +7,7 @@ import { getGitRoot } from "../git/libs/get-git-root.ts";
 
 const execAsync = promisify(exec);
 
-export async function deletePhantom(
+export async function deleteWorktree(
   name: string,
   options: { force?: boolean } = {},
 ): Promise<{
@@ -17,23 +17,23 @@ export async function deletePhantom(
   changedFiles?: number;
 }> {
   if (!name) {
-    return { success: false, message: "Error: phantom name required" };
+    return { success: false, message: "Error: worktree name required" };
   }
 
   const { force = false } = options;
 
   try {
     const gitRoot = await getGitRoot();
-    const phantomsPath = join(gitRoot, ".git", "phantom", "worktrees");
-    const phantomPath = join(phantomsPath, name);
+    const worktreesPath = join(gitRoot, ".git", "phantom", "worktrees");
+    const worktreePath = join(worktreesPath, name);
 
-    // Check if phantom exists
+    // Check if worktree exists
     try {
-      await access(phantomPath);
+      await access(worktreePath);
     } catch {
       return {
         success: false,
-        message: `Error: Phantom '${name}' does not exist`,
+        message: `Error: Worktree '${name}' does not exist`,
       };
     }
 
@@ -42,7 +42,7 @@ export async function deletePhantom(
     let changedFiles = 0;
     try {
       const { stdout } = await execAsync("git status --porcelain", {
-        cwd: phantomPath,
+        cwd: worktreePath,
       });
       const changes = stdout.trim();
       if (changes) {
@@ -54,11 +54,11 @@ export async function deletePhantom(
       hasUncommittedChanges = false;
     }
 
-    // If phantom has uncommitted changes and --force is not specified, refuse deletion
+    // If worktree has uncommitted changes and --force is not specified, refuse deletion
     if (hasUncommittedChanges && !force) {
       return {
         success: false,
-        message: `Error: Phantom '${name}' has uncommitted changes (${changedFiles} files). Use --force to delete anyway.`,
+        message: `Error: Worktree '${name}' has uncommitted changes (${changedFiles} files). Use --force to delete anyway.`,
         hasUncommittedChanges: true,
         changedFiles,
       };
@@ -66,19 +66,19 @@ export async function deletePhantom(
 
     // Remove git worktree
     try {
-      await execAsync(`git worktree remove "${phantomPath}"`, {
+      await execAsync(`git worktree remove "${worktreePath}"`, {
         cwd: gitRoot,
       });
     } catch (error) {
       // If worktree remove fails, try force removal
       try {
-        await execAsync(`git worktree remove --force "${phantomPath}"`, {
+        await execAsync(`git worktree remove --force "${worktreePath}"`, {
           cwd: gitRoot,
         });
       } catch {
         return {
           success: false,
-          message: `Error: Failed to remove worktree for phantom '${name}'`,
+          message: `Error: Failed to remove worktree '${name}'`,
         };
       }
     }
@@ -94,9 +94,9 @@ export async function deletePhantom(
       // We'll still report success for the worktree removal
     }
 
-    let message = `Deleted phantom '${name}' and its branch '${branchName}'`;
+    let message = `Deleted worktree '${name}' and its branch '${branchName}'`;
     if (hasUncommittedChanges) {
-      message = `Warning: Phantom '${name}' had uncommitted changes (${changedFiles} files)\n${message}`;
+      message = `Warning: Worktree '${name}' had uncommitted changes (${changedFiles} files)\n${message}`;
     }
 
     return {
@@ -109,21 +109,21 @@ export async function deletePhantom(
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      message: `Error deleting phantom: ${errorMessage}`,
+      message: `Error deleting worktree: ${errorMessage}`,
     };
   }
 }
 
-export async function phantomsDeleteHandler(args: string[]): Promise<void> {
+export async function worktreesDeleteHandler(args: string[]): Promise<void> {
   // Parse arguments for --force flag
   const forceIndex = args.indexOf("--force");
   const force = forceIndex !== -1;
 
-  // Remove --force from args to get the phantom name
+  // Remove --force from args to get the worktree name
   const filteredArgs = args.filter((arg) => arg !== "--force");
   const name = filteredArgs[0];
 
-  const result = await deletePhantom(name, { force });
+  const result = await deleteWorktree(name, { force });
 
   if (!result.success) {
     console.error(result.message);

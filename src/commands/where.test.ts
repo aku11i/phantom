@@ -1,10 +1,10 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("wherePhantom", () => {
+describe("whereWorktree", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let wherePhantom: typeof import("./where.ts").wherePhantom;
+  let whereWorktree: typeof import("./where.ts").whereWorktree;
 
   before(async () => {
     accessMock = mock.fn();
@@ -28,13 +28,13 @@ describe("wherePhantom", () => {
       },
     });
 
-    ({ wherePhantom } = await import("./where.ts"));
+    ({ whereWorktree } = await import("./where.ts"));
   });
 
   it("should return error when name is not provided", async () => {
-    const result = await wherePhantom("");
+    const result = await whereWorktree("");
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: phantom name required");
+    strictEqual(result.message, "Error: worktree name required");
   });
 
   it("should return error when phantom does not exist", async () => {
@@ -54,12 +54,12 @@ describe("wherePhantom", () => {
       return Promise.reject(new Error("ENOENT"));
     });
 
-    const result = await wherePhantom("nonexistent-phantom");
+    const result = await whereWorktree("nonexistent-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: Phantom 'nonexistent-phantom' does not exist",
+      "Error: Worktree 'nonexistent-phantom' does not exist",
     );
   });
 
@@ -78,12 +78,12 @@ describe("wherePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await wherePhantom("existing-phantom");
+    const result = await whereWorktree("existing-worktree");
 
     strictEqual(result.success, true);
     strictEqual(
       result.path,
-      "/test/repo/.git/phantom/worktrees/existing-phantom",
+      "/test/repo/.git/phantom/worktrees/existing-worktree",
     );
   });
 
@@ -96,10 +96,13 @@ describe("wherePhantom", () => {
       return Promise.reject(new Error("Not a git repository"));
     });
 
-    const result = await wherePhantom("some-phantom");
+    const result = await whereWorktree("some-phantom");
 
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error locating phantom: Not a git repository");
+    strictEqual(
+      result.message,
+      "Error locating worktree: Not a git repository",
+    );
   });
 
   it("should handle different phantom names correctly", async () => {
@@ -117,7 +120,7 @@ describe("wherePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await wherePhantom("feature-branch-123");
+    const result = await whereWorktree("feature-branch-123");
 
     strictEqual(result.success, true);
     strictEqual(
@@ -141,7 +144,7 @@ describe("wherePhantom", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await wherePhantom("feature-with-dashes_and_underscores");
+    const result = await whereWorktree("feature-with-dashes_and_underscores");
 
     strictEqual(result.success, true);
     strictEqual(

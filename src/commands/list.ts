@@ -6,42 +6,42 @@ import { getGitRoot } from "../git/libs/get-git-root.ts";
 
 const execAsync = promisify(exec);
 
-export interface PhantomInfo {
+export interface WorktreeInfo {
   name: string;
   branch: string;
   status: "clean" | "dirty";
   changedFiles?: number;
 }
 
-export async function listPhantoms(): Promise<{
+export async function listWorktrees(): Promise<{
   success: boolean;
   message?: string;
-  phantoms?: PhantomInfo[];
+  worktrees?: WorktreeInfo[];
 }> {
   try {
     const gitRoot = await getGitRoot();
-    const phantomsPath = join(gitRoot, ".git", "phantom", "worktrees");
+    const worktreesPath = join(gitRoot, ".git", "phantom", "worktrees");
 
-    // Check if phantoms directory exists
+    // Check if worktrees directory exists
     try {
-      await access(phantomsPath);
+      await access(worktreesPath);
     } catch {
       return {
         success: true,
-        phantoms: [],
-        message: "No phantoms found (phantoms directory doesn't exist)",
+        worktrees: [],
+        message: "No worktrees found (worktrees directory doesn't exist)",
       };
     }
 
-    // Read phantoms directory
-    let phantomNames: string[];
+    // Read worktrees directory
+    let worktreeNames: string[];
     try {
-      const entries = await readdir(phantomsPath);
+      const entries = await readdir(worktreesPath);
       // Filter entries to only include directories
       const validEntries = await Promise.all(
         entries.map(async (entry) => {
           try {
-            const entryPath = join(phantomsPath, entry);
+            const entryPath = join(worktreesPath, entry);
             await access(entryPath);
             return entry;
           } catch {
@@ -49,35 +49,35 @@ export async function listPhantoms(): Promise<{
           }
         }),
       );
-      phantomNames = validEntries.filter(
+      worktreeNames = validEntries.filter(
         (entry): entry is string => entry !== null,
       );
     } catch {
       return {
         success: true,
-        phantoms: [],
-        message: "No phantoms found (unable to read phantoms directory)",
+        worktrees: [],
+        message: "No worktrees found (unable to read worktrees directory)",
       };
     }
 
-    if (phantomNames.length === 0) {
+    if (worktreeNames.length === 0) {
       return {
         success: true,
-        phantoms: [],
-        message: "No phantoms found",
+        worktrees: [],
+        message: "No worktrees found",
       };
     }
 
-    // Get detailed information for each phantom
-    const phantoms: PhantomInfo[] = await Promise.all(
-      phantomNames.map(async (name) => {
-        const phantomPath = join(phantomsPath, name);
+    // Get detailed information for each worktree
+    const worktrees: WorktreeInfo[] = await Promise.all(
+      worktreeNames.map(async (name) => {
+        const worktreePath = join(worktreesPath, name);
 
         // Get current branch
         let branch = "unknown";
         try {
           const { stdout } = await execAsync("git branch --show-current", {
-            cwd: phantomPath,
+            cwd: worktreePath,
           });
           branch = stdout.trim() || "detached HEAD";
         } catch {
@@ -89,7 +89,7 @@ export async function listPhantoms(): Promise<{
         let changedFiles: number | undefined;
         try {
           const { stdout } = await execAsync("git status --porcelain", {
-            cwd: phantomPath,
+            cwd: worktreePath,
           });
           const changes = stdout.trim();
           if (changes) {
@@ -112,41 +112,41 @@ export async function listPhantoms(): Promise<{
 
     return {
       success: true,
-      phantoms,
+      worktrees,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      message: `Error listing phantoms: ${errorMessage}`,
+      message: `Error listing worktrees: ${errorMessage}`,
     };
   }
 }
 
-export async function phantomsListHandler(): Promise<void> {
-  const result = await listPhantoms();
+export async function worktreesListHandler(): Promise<void> {
+  const result = await listWorktrees();
 
   if (!result.success) {
     console.error(result.message);
     return;
   }
 
-  if (!result.phantoms || result.phantoms.length === 0) {
-    console.log(result.message || "No phantoms found");
+  if (!result.worktrees || result.worktrees.length === 0) {
+    console.log(result.message || "No worktrees found");
     return;
   }
 
-  console.log("Phantoms:");
-  for (const phantom of result.phantoms) {
+  console.log("Worktrees:");
+  for (const worktree of result.worktrees) {
     const statusText =
-      phantom.status === "clean"
+      worktree.status === "clean"
         ? "[clean]"
-        : `[dirty: ${phantom.changedFiles} files]`;
+        : `[dirty: ${worktree.changedFiles} files]`;
 
     console.log(
-      `  ${phantom.name.padEnd(20)} (branch: ${phantom.branch.padEnd(20)}) ${statusText}`,
+      `  ${worktree.name.padEnd(20)} (branch: ${worktree.branch.padEnd(20)}) ${statusText}`,
     );
   }
 
-  console.log(`\nTotal: ${result.phantoms.length} phantoms`);
+  console.log(`\nTotal: ${result.worktrees.length} worktrees`);
 }
