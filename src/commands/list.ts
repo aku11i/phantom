@@ -2,7 +2,7 @@ import { exec } from "node:child_process";
 import { access, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { getGitRoot } from "../git/libs/get-git-root.ts";
 
 const execAsync = promisify(exec);
 

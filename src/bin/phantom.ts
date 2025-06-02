@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
-import { execHandler } from "../phantom/command/exec.ts";
-import { shellHandler } from "../phantom/command/shell.ts";
-import { versionHandler } from "../phantom/command/version.ts";
-import { phantomsCreateHandler } from "../phantoms/commands/create.ts";
-import { phantomsDeleteHandler } from "../phantoms/commands/delete.ts";
-import { phantomsListHandler } from "../phantoms/commands/list.ts";
-import { phantomsWhereHandler } from "../phantoms/commands/where.ts";
+import { phantomsCreateHandler } from "../commands/create.ts";
+import { phantomsDeleteHandler } from "../commands/delete.ts";
+import { execHandler } from "../commands/exec.ts";
+import { phantomsListHandler } from "../commands/list.ts";
+import { shellHandler } from "../commands/shell.ts";
+import { versionHandler } from "../commands/version.ts";
+import { phantomsWhereHandler } from "../commands/where.ts";
 
 interface Command {
   name: string;

@@ -1,7 +1,7 @@
 import { access } from "node:fs/promises";
 import { join } from "node:path";
 import { exit } from "node:process";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { getGitRoot } from "../git/libs/get-git-root.ts";
 
 export async function wherePhantom(name: string): Promise<{
   success: boolean;

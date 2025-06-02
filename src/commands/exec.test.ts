@@ -1,11 +1,10 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
 
-describe("shellInPhantom", () => {
+describe("execInPhantom", () => {
   let spawnMock: ReturnType<typeof mock.fn>;
   let wherePhantomMock: ReturnType<typeof mock.fn>;
-  let shellInPhantom: typeof import("./shell.ts").shellInPhantom;
-  const originalEnv = process.env;
+  let execInPhantom: typeof import("./exec.ts").execInPhantom;
 
   before(async () => {
     spawnMock = mock.fn();
@@ -17,19 +16,25 @@ describe("shellInPhantom", () => {
       },
     });
 
-    mock.module("../../phantoms/commands/where.ts", {
+    mock.module("./where.ts", {
       namedExports: {
         wherePhantom: wherePhantomMock,
       },
     });
 
-    ({ shellInPhantom } = await import("./shell.ts"));
+    ({ execInPhantom } = await import("./exec.ts"));
   });
 
   it("should return error when phantom name is not provided", async () => {
-    const result = await shellInPhantom("");
+    const result = await execInPhantom("", ["echo", "test"]);
     strictEqual(result.success, false);
     strictEqual(result.message, "Error: phantom name required");
+  });
+
+  it("should return error when command is not provided", async () => {
+    const result = await execInPhantom("test-phantom", []);
+    strictEqual(result.success, false);
+    strictEqual(result.message, "Error: command required");
   });
 
   it("should return error when phantom does not exist", async () => {
@@ -43,13 +48,13 @@ describe("shellInPhantom", () => {
       }),
     );
 
-    const result = await shellInPhantom("nonexistent");
+    const result = await execInPhantom("nonexistent", ["echo", "test"]);
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Error: Phantom 'nonexistent' does not exist");
   });
 
-  it("should start shell successfully with exit code 0", async () => {
+  it("should execute command successfully with exit code 0", async () => {
     wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
@@ -61,7 +66,7 @@ describe("shellInPhantom", () => {
       }),
     );
 
-    // Mock successful shell session
+    // Mock successful command execution
     const mockChildProcess = {
       on: mock.fn(
         (
@@ -69,7 +74,7 @@ describe("shellInPhantom", () => {
           callback: (code: number | null, signal: string | null) => void,
         ) => {
           if (event === "exit") {
-            // Simulate successful shell exit
+            // Simulate successful command (exit code 0)
             setTimeout(() => callback(0, null), 0);
           }
         },
@@ -78,75 +83,25 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await execInPhantom("test-phantom", ["echo", "hello"]);
 
     strictEqual(result.success, true);
     strictEqual(result.exitCode, 0);
 
     // Verify spawn was called with correct arguments
     strictEqual(spawnMock.mock.calls.length, 1);
-    const [shell, args, options] = spawnMock.mock.calls[0].arguments as [
+    const [cmd, args, options] = spawnMock.mock.calls[0].arguments as [
       string,
       string[],
-      { cwd: string; stdio: string; env: NodeJS.ProcessEnv },
+      { cwd: string; stdio: string },
     ];
-    strictEqual(shell, process.env.SHELL || "/bin/sh");
-    strictEqual(args.length, 0);
+    strictEqual(cmd, "echo");
+    strictEqual(args[0], "hello");
     strictEqual(options.cwd, "/test/repo/.git/phantom/worktrees/test-phantom");
     strictEqual(options.stdio, "inherit");
-    strictEqual(options.env.PHANTOM_NAME, "test-phantom");
-    strictEqual(
-      options.env.PHANTOM_PATH,
-      "/test/repo/.git/phantom/worktrees/test-phantom",
-    );
   });
 
-  it("should use /bin/sh when SHELL is not set", async () => {
-    wherePhantomMock.mock.resetCalls();
-    spawnMock.mock.resetCalls();
-
-    // Temporarily remove SHELL env var
-    const originalShell = process.env.SHELL;
-    // biome-ignore lint/performance/noDelete: Need to actually delete for test
-    delete process.env.SHELL;
-
-    // Mock successful phantom location
-    wherePhantomMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        success: true,
-        path: "/test/repo/.git/phantom/worktrees/test-phantom",
-      }),
-    );
-
-    // Mock successful shell session
-    const mockChildProcess = {
-      on: mock.fn(
-        (
-          event: string,
-          callback: (code: number | null, signal: string | null) => void,
-        ) => {
-          if (event === "exit") {
-            setTimeout(() => callback(0, null), 0);
-          }
-        },
-      ),
-    };
-
-    spawnMock.mock.mockImplementation(() => mockChildProcess);
-
-    await shellInPhantom("test-phantom");
-
-    // Verify /bin/sh was used
-    const [shell] = spawnMock.mock.calls[0].arguments as [string, unknown];
-    strictEqual(shell, "/bin/sh");
-
-    // Restore SHELL env var
-    if (originalShell !== undefined) {
-      process.env.SHELL = originalShell;
-    }
-  });
-
-  it("should handle shell execution failure with non-zero exit code", async () => {
+  it("should handle command execution failure with non-zero exit code", async () => {
     wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
@@ -158,7 +113,7 @@ describe("shellInPhantom", () => {
       }),
     );
 
-    // Mock failed shell session
+    // Mock failed command execution
     const mockChildProcess = {
       on: mock.fn(
         (
@@ -166,7 +121,7 @@ describe("shellInPhantom", () => {
           callback: (code: number | null, signal: string | null) => void,
         ) => {
           if (event === "exit") {
-            // Simulate failed shell exit
+            // Simulate failed command (exit code 1)
             setTimeout(() => callback(1, null), 0);
           }
         },
@@ -175,13 +130,13 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await execInPhantom("test-phantom", ["false"]);
 
     strictEqual(result.success, false);
     strictEqual(result.exitCode, 1);
   });
 
-  it("should handle shell startup error", async () => {
+  it("should handle command execution error", async () => {
     wherePhantomMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
@@ -193,21 +148,21 @@ describe("shellInPhantom", () => {
       }),
     );
 
-    // Mock shell startup error
+    // Mock command execution error
     const mockChildProcess = {
       on: mock.fn((event: string, callback: (error: Error) => void) => {
         if (event === "error") {
-          setTimeout(() => callback(new Error("Shell not found")), 0);
+          setTimeout(() => callback(new Error("Command not found")), 0);
         }
       }),
     };
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await execInPhantom("test-phantom", ["nonexistent-command"]);
 
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error starting shell: Shell not found");
+    strictEqual(result.message, "Error executing command: Command not found");
   });
 
   it("should handle signal termination", async () => {
@@ -239,10 +194,65 @@ describe("shellInPhantom", () => {
 
     spawnMock.mock.mockImplementation(() => mockChildProcess);
 
-    const result = await shellInPhantom("test-phantom");
+    const result = await execInPhantom("test-phantom", [
+      "long-running-command",
+    ]);
 
     strictEqual(result.success, false);
-    strictEqual(result.message, "Shell terminated by signal: SIGTERM");
+    strictEqual(result.message, "Command terminated by signal: SIGTERM");
     strictEqual(result.exitCode, 143); // 128 + 15 (SIGTERM)
+  });
+
+  it("should parse complex commands with multiple arguments", async () => {
+    wherePhantomMock.mock.resetCalls();
+    spawnMock.mock.resetCalls();
+
+    // Mock successful phantom location
+    wherePhantomMock.mock.mockImplementation(() =>
+      Promise.resolve({
+        success: true,
+        path: "/test/repo/.git/phantom/worktrees/test-phantom",
+      }),
+    );
+
+    // Mock successful command execution
+    const mockChildProcess = {
+      on: mock.fn(
+        (
+          event: string,
+          callback: (code: number | null, signal: string | null) => void,
+        ) => {
+          if (event === "exit") {
+            setTimeout(() => callback(0, null), 0);
+          }
+        },
+      ),
+    };
+
+    spawnMock.mock.mockImplementation(() => mockChildProcess);
+
+    const result = await execInPhantom("test-phantom", [
+      "npm",
+      "run",
+      "test",
+      "--",
+      "--verbose",
+    ]);
+
+    strictEqual(result.success, true);
+    strictEqual(result.exitCode, 0);
+
+    // Verify spawn was called with correct arguments
+    const [cmd, args] = spawnMock.mock.calls[0].arguments as [
+      string,
+      string[],
+      object,
+    ];
+    strictEqual(cmd, "npm");
+    strictEqual(args.length, 4);
+    strictEqual(args[0], "run");
+    strictEqual(args[1], "test");
+    strictEqual(args[2], "--");
+    strictEqual(args[3], "--verbose");
   });
 });

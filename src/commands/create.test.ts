@@ -40,7 +40,7 @@ describe("createPhantom", () => {
       },
     });
 
-    mock.module("../../phantoms/commands/where.ts", {
+    mock.module("./where.ts", {
       namedExports: {
         wherePhantom: mock.fn(),
       },

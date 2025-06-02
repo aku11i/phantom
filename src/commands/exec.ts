@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { exit } from "node:process";
-import { wherePhantom } from "../../phantoms/commands/where.ts";
+import { wherePhantom } from "./where.ts";
 
 export async function execInPhantom(
   phantomName: string,

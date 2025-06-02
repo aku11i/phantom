@@ -3,7 +3,7 @@ import { access } from "node:fs/promises";
 import { join } from "node:path";
 import { exit } from "node:process";
 import { promisify } from "node:util";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
+import { getGitRoot } from "../git/libs/get-git-root.ts";
 
 const execAsync = promisify(exec);
 

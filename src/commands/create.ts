@@ -1,9 +1,9 @@
 import { access, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { exit } from "node:process";
-import { addWorktree } from "../../git/libs/add-worktree.ts";
-import { getGitRoot } from "../../git/libs/get-git-root.ts";
-import { shellInPhantom } from "../../phantom/command/shell.ts";
+import { addWorktree } from "../git/libs/add-worktree.ts";
+import { getGitRoot } from "../git/libs/get-git-root.ts";
+import { shellInPhantom } from "./shell.ts";
 
 export async function createPhantom(name: string): Promise<{
   success: boolean;
