@@ -2,13 +2,13 @@
 
 <div align="center">
 
-**Git worktreeを使った並行開発のためのパワフルなCLIツール**
+**Git worktreeを瞬時に操る - 並行開発を加速する生産性向上ツール**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@aku11i/phantom.svg)](https://nodejs.org)
 
-[インストール](#-インストール) • [クイックスタート](#-クイックスタート) • [なぜPhantom？](#-なぜphantom) • [ドキュメント](#-ドキュメント)
+[インストール](#-インストール) • [基本的な使い方](#-基本的な使い方) • [なぜPhantom？](#-なぜphantom) • [ドキュメント](#-ドキュメント)
 
 </div>
 
@@ -46,7 +46,7 @@ phantom create feature --shell
 
 Phantomは、worktreeとブランチの作成を1つのコマンドにまとめ、作業スペース間の移動や操作を簡単にします。
 
-## 🚀 クイックスタート
+## 🚀 基本的な使い方
 
 ```bash
 # Phantomをインストール
@@ -97,10 +97,6 @@ npm link
 
 ## 📖 ドキュメント
 
-### コアコンセプト
-
-**Worktree** 🌳 - Phantomによって管理されるGit worktree。各worktreeは特定のブランチや機能のための独立したワークスペースで、競合なしに並行開発が可能です。
-
 ### コマンド概要
 
 #### Worktree管理
@@ -141,6 +137,46 @@ Phantomで管理されたworktree内で作業する際、以下の環境変数�
 
 - `PHANTOM_NAME` - 現在のworktreeの名前
 - `PHANTOM_PATH` - worktreeディレクトリへの絶対パス
+
+## 💡 ユースケース
+
+Phantomは単なるworktreeラッパーではなく、開発生産性を劇的に向上させるツールです。以下に実際の使用例を紹介します。
+
+### tmuxとの統合
+
+tmuxとPhantomを組み合わせることで、驚くほど効率的なワークフローを実現できます：
+
+```bash
+# 新しいtmuxウィンドウを開いて、同時にworktreeを作成
+tmux new-window 'phantom create new-feature --shell'
+```
+
+このたった1行のコマンドで：
+1. `new-feature`用の新しいGit worktreeを作成 ✨
+2. 新しいtmuxウィンドウを開く 🪟
+3. 新しいworktreeでインタラクティブシェルを起動 🚀
+
+複数の機能を並行して開発する際に、各機能を独立したtmuxウィンドウで管理できます。
+
+### VS Codeとの統合
+
+```bash
+# worktreeを作成してすぐにVS Codeで開く
+phantom create feature-auth
+phantom exec feature-auth code .
+```
+
+### 並行開発ワークフロー
+
+```bash
+# 機能開発中にバグレポートが来た場合
+phantom create hotfix-critical  # バグ修正用のworktreeを作成
+phantom shell hotfix-critical   # すぐに作業開始
+
+# 修正後、元の機能開発に戻る
+exit  # hotfixシェルを終了
+phantom shell feature-awesome  # 機能開発を続行
+```
 
 ## 🔄 Phantom vs Git Worktree
 

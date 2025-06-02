@@ -2,13 +2,13 @@
 
 <div align="center">
 
-**A powerful CLI tool for seamless parallel development with Git worktrees**
+**Master Git worktrees instantly - A productivity tool that accelerates parallel development**
 
 [![npm version](https://img.shields.io/npm/v/@aku11i/phantom.svg)](https://www.npmjs.com/package/@aku11i/phantom)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@aku11i/phantom.svg)](https://nodejs.org)
 
-[Installation](#-installation) • [Quick Start](#-quick-start) • [Why Phantom?](#-why-phantom) • [Documentation](#-documentation) • [日本語](./README.ja.md)
+[Installation](#-installation) • [Basic Usage](#-basic-usage) • [Why Phantom?](#-why-phantom) • [Documentation](#-documentation) • [日本語](./README.ja.md)
 
 </div>
 
@@ -46,7 +46,7 @@ phantom create feature --shell
 
 Phantom combines worktree and branch creation into a single command, making it easy to switch between and work in different workspaces.
 
-## 🚀 Quick Start
+## 🚀 Basic Usage
 
 ```bash
 # Install Phantom
@@ -97,10 +97,6 @@ npm link
 
 ## 📖 Documentation
 
-### Core Concepts
-
-**Worktrees** 🌳 - Git worktrees managed by Phantom. Each worktree is an isolated workspace for a specific branch or feature, allowing parallel development without conflicts.
-
 ### Commands Overview
 
 #### Worktree Management
@@ -141,6 +137,46 @@ When working within a worktree managed by Phantom, these environment variables a
 
 - `PHANTOM_NAME` - Name of the current worktree
 - `PHANTOM_PATH` - Absolute path to the worktree directory
+
+## 💡 Use Cases
+
+Phantom is more than just a worktree wrapper - it's a productivity multiplier. Here are some real-world examples:
+
+### tmux Integration
+
+Combine tmux with Phantom for an incredibly efficient workflow:
+
+```bash
+# Open a new tmux window and create a worktree in one command
+tmux new-window 'phantom create new-feature --shell'
+```
+
+This single line:
+1. Creates a new Git worktree for `new-feature` ✨
+2. Opens a new tmux window 🪟
+3. Starts an interactive shell in the new worktree 🚀
+
+When developing multiple features in parallel, you can manage each feature in its own tmux window.
+
+### VS Code Integration
+
+```bash
+# Create a worktree and immediately open it in VS Code
+phantom create feature-auth
+phantom exec feature-auth code .
+```
+
+### Parallel Development Workflow
+
+```bash
+# When a bug report comes in during feature development
+phantom create hotfix-critical  # Create worktree for the fix
+phantom shell hotfix-critical   # Start working immediately
+
+# After fixing, return to your feature
+exit  # Exit the hotfix shell
+phantom shell feature-awesome  # Continue feature development
+```
 
 ## 🔄 Phantom vs Git Worktree
 
