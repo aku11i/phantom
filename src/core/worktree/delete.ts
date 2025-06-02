@@ -1,8 +1,8 @@
-import childProcess from "node:child_process";
-import { promisify } from "node:util";
+import {
+  executeGitCommand,
+  executeGitCommandInDirectory,
+} from "../../git/executor.ts";
 import { validateWorktreeExists } from "./validate.ts";
-
-const execAsync = promisify(childProcess.exec);
 
 export interface DeleteWorktreeOptions {
   force?: boolean;
@@ -24,14 +24,14 @@ export async function getWorktreeStatus(
   worktreePath: string,
 ): Promise<WorktreeStatus> {
   try {
-    const { stdout } = await execAsync("git status --porcelain", {
-      cwd: worktreePath,
-    });
-    const changes = stdout.trim();
-    if (changes) {
+    const { stdout } = await executeGitCommandInDirectory(
+      worktreePath,
+      "status --porcelain",
+    );
+    if (stdout) {
       return {
         hasUncommittedChanges: true,
-        changedFiles: changes.split("\n").length,
+        changedFiles: stdout.split("\n").length,
       };
     }
   } catch {
@@ -49,13 +49,13 @@ export async function removeWorktree(
   force = false,
 ): Promise<void> {
   try {
-    await execAsync(`git worktree remove "${worktreePath}"`, {
+    await executeGitCommand(`worktree remove "${worktreePath}"`, {
       cwd: gitRoot,
     });
   } catch (error) {
     // Always try force removal if the regular removal fails
     try {
-      await execAsync(`git worktree remove --force "${worktreePath}"`, {
+      await executeGitCommand(`worktree remove --force "${worktreePath}"`, {
         cwd: gitRoot,
       });
     } catch {
@@ -69,9 +69,7 @@ export async function deleteBranch(
   branchName: string,
 ): Promise<boolean> {
   try {
-    await execAsync(`git branch -D "${branchName}"`, {
-      cwd: gitRoot,
-    });
+    await executeGitCommand(`branch -D "${branchName}"`, { cwd: gitRoot });
     return true;
   } catch {
     // Branch might not exist or already deleted - this is not an error

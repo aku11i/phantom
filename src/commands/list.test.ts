@@ -5,7 +5,7 @@ describe("listWorktrees", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let readdirMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let listWorktrees: typeof import("./list.ts").listWorktrees;
+  let listWorktrees: typeof import("../core/worktree/list.ts").listWorktrees;
 
   before(async () => {
     accessMock = mock.fn();
@@ -31,7 +31,36 @@ describe("listWorktrees", () => {
       },
     });
 
-    ({ listWorktrees } = await import("./list.ts"));
+    mock.module("../core/worktree/validate.ts", {
+      namedExports: {
+        validatePhantomDirectoryExists: mock.fn((gitRoot: string) => {
+          if (gitRoot === "/test/repo") {
+            return Promise.resolve(
+              accessMock(`${gitRoot}/.git/phantom/worktrees`)
+                .then(() => true)
+                .catch(() => false),
+            );
+          }
+          return Promise.resolve(false);
+        }),
+        listValidWorktrees: mock.fn((gitRoot: string) => {
+          return readdirMock(`${gitRoot}/.git/phantom/worktrees`)
+            .then((files: string[]) => files)
+            .catch(() => []);
+        }),
+      },
+    });
+
+    mock.module("../core/paths.ts", {
+      namedExports: {
+        getWorktreePath: mock.fn(
+          (gitRoot: string, name: string) =>
+            `${gitRoot}/.git/phantom/worktrees/${name}`,
+        ),
+      },
+    });
+
+    ({ listWorktrees } = await import("../core/worktree/list.ts"));
   });
 
   it("should return empty array when worktrees directory doesn't exist", async () => {
@@ -55,7 +84,7 @@ describe("listWorktrees", () => {
       return Promise.resolve();
     });
 
-    const result = await listWorktrees();
+    const result = await listWorktrees("/test/repo");
 
     strictEqual(result.success, true);
     deepStrictEqual(result.worktrees, []);
@@ -82,7 +111,7 @@ describe("listWorktrees", () => {
     accessMock.mock.mockImplementation(() => Promise.resolve());
     readdirMock.mock.mockImplementation(() => Promise.resolve([]));
 
-    const result = await listWorktrees();
+    const result = await listWorktrees("/test/repo");
 
     strictEqual(result.success, true);
     deepStrictEqual(result.worktrees, []);
@@ -100,15 +129,15 @@ describe("listWorktrees", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git branch --show-current") {
-          if (options?.cwd?.includes("test-worktree-1")) {
+        if (cmd.includes("git -C") && cmd.includes("branch --show-current")) {
+          if (cmd.includes("test-worktree-1")) {
             return Promise.resolve({ stdout: "feature/test\n", stderr: "" });
           }
-          if (options?.cwd?.includes("test-worktree-2")) {
+          if (cmd.includes("test-worktree-2")) {
             return Promise.resolve({ stdout: "main\n", stderr: "" });
           }
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({ stdout: "", stderr: "" }); // Clean status
         }
         return Promise.resolve({ stdout: "", stderr: "" });
@@ -121,16 +150,16 @@ describe("listWorktrees", () => {
       Promise.resolve(["test-worktree-1", "test-worktree-2"]),
     );
 
-    const result = await listWorktrees();
+    const result = await listWorktrees("/test/repo");
 
     strictEqual(result.success, true);
     strictEqual(result.worktrees?.length, 2);
     strictEqual(result.worktrees?.[0].name, "test-worktree-1");
     strictEqual(result.worktrees?.[0].branch, "feature/test");
-    strictEqual(result.worktrees?.[0].status, "clean");
+    strictEqual(result.worktrees?.[0].isClean, true);
     strictEqual(result.worktrees?.[1].name, "test-worktree-2");
     strictEqual(result.worktrees?.[1].branch, "main");
-    strictEqual(result.worktrees?.[1].status, "clean");
+    strictEqual(result.worktrees?.[1].isClean, true);
   });
 
   it("should list worktrees with dirty status", async () => {
@@ -144,10 +173,10 @@ describe("listWorktrees", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git branch --show-current") {
+        if (cmd.includes("git -C") && cmd.includes("branch --show-current")) {
           return Promise.resolve({ stdout: "feature/dirty\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({
             stdout: " M file1.ts\n?? file2.ts\n",
             stderr: "",
@@ -163,14 +192,13 @@ describe("listWorktrees", () => {
       Promise.resolve(["dirty-phantom"]),
     );
 
-    const result = await listWorktrees();
+    const result = await listWorktrees("/test/repo");
 
     strictEqual(result.success, true);
     strictEqual(result.worktrees?.length, 1);
     strictEqual(result.worktrees?.[0].name, "dirty-phantom");
     strictEqual(result.worktrees?.[0].branch, "feature/dirty");
-    strictEqual(result.worktrees?.[0].status, "dirty");
-    strictEqual(result.worktrees?.[0].changedFiles, 2);
+    strictEqual(result.worktrees?.[0].isClean, false);
   });
 
   it("should handle git command errors gracefully", async () => {
@@ -183,10 +211,10 @@ describe("listWorktrees", () => {
       if (cmd === "git rev-parse --show-toplevel") {
         return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
       }
-      if (cmd === "git branch --show-current") {
+      if (cmd.includes("git -C") && cmd.includes("branch --show-current")) {
         return Promise.reject(new Error("Not a git repository"));
       }
-      if (cmd === "git status --porcelain") {
+      if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
         return Promise.reject(new Error("Git command failed"));
       }
       return Promise.resolve({ stdout: "", stderr: "" });
@@ -198,13 +226,13 @@ describe("listWorktrees", () => {
       Promise.resolve(["error-phantom"]),
     );
 
-    const result = await listWorktrees();
+    const result = await listWorktrees("/test/repo");
 
     strictEqual(result.success, true);
     strictEqual(result.worktrees?.length, 1);
     strictEqual(result.worktrees?.[0].name, "error-phantom");
     strictEqual(result.worktrees?.[0].branch, "unknown");
-    strictEqual(result.worktrees?.[0].status, "clean");
+    strictEqual(result.worktrees?.[0].isClean, true);
   });
 
   it("should handle detached HEAD state", async () => {
@@ -217,10 +245,10 @@ describe("listWorktrees", () => {
       if (cmd === "git rev-parse --show-toplevel") {
         return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
       }
-      if (cmd === "git branch --show-current") {
+      if (cmd.includes("git -C") && cmd.includes("branch --show-current")) {
         return Promise.resolve({ stdout: "\n", stderr: "" }); // Empty output = detached HEAD
       }
-      if (cmd === "git status --porcelain") {
+      if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
         return Promise.resolve({ stdout: "", stderr: "" });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
@@ -232,12 +260,12 @@ describe("listWorktrees", () => {
       Promise.resolve(["detached-phantom"]),
     );
 
-    const result = await listWorktrees();
+    const result = await listWorktrees("/test/repo");
 
     strictEqual(result.success, true);
     strictEqual(result.worktrees?.length, 1);
     strictEqual(result.worktrees?.[0].name, "detached-phantom");
-    strictEqual(result.worktrees?.[0].branch, "detached HEAD");
-    strictEqual(result.worktrees?.[0].status, "clean");
+    strictEqual(result.worktrees?.[0].branch, "(detached HEAD)");
+    strictEqual(result.worktrees?.[0].isClean, true);
   });
 });

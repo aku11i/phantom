@@ -1,18 +1,15 @@
-import childProcess from "node:child_process";
-import { promisify } from "node:util";
+import { executeGitCommandInDirectory } from "../../git/executor.ts";
 import { getWorktreePath } from "../paths.ts";
 import {
   listValidWorktrees,
   validatePhantomDirectoryExists,
 } from "./validate.ts";
 
-const execAsync = promisify(childProcess.exec);
-
 export interface WorktreeInfo {
   name: string;
+  path: string;
   branch: string;
-  status: "clean" | "dirty";
-  changedFiles?: number;
+  isClean: boolean;
 }
 
 export interface ListWorktreesResult {
@@ -23,10 +20,11 @@ export interface ListWorktreesResult {
 
 export async function getWorktreeBranch(worktreePath: string): Promise<string> {
   try {
-    const { stdout } = await execAsync("git branch --show-current", {
-      cwd: worktreePath,
-    });
-    return stdout.trim() || "detached HEAD";
+    const { stdout } = await executeGitCommandInDirectory(
+      worktreePath,
+      "branch --show-current",
+    );
+    return stdout || "(detached HEAD)";
   } catch {
     return "unknown";
   }
@@ -34,22 +32,17 @@ export async function getWorktreeBranch(worktreePath: string): Promise<string> {
 
 export async function getWorktreeStatus(
   worktreePath: string,
-): Promise<{ status: "clean" | "dirty"; changedFiles?: number }> {
+): Promise<boolean> {
   try {
-    const { stdout } = await execAsync("git status --porcelain", {
-      cwd: worktreePath,
-    });
-    const changes = stdout.trim();
-    if (changes) {
-      return {
-        status: "dirty",
-        changedFiles: changes.split("\n").length,
-      };
-    }
+    const { stdout } = await executeGitCommandInDirectory(
+      worktreePath,
+      "status --porcelain",
+    );
+    return !stdout; // Clean if no output
   } catch {
     // If git status fails, assume clean
+    return true;
   }
-  return { status: "clean" };
 }
 
 export async function getWorktreeInfo(
@@ -58,15 +51,16 @@ export async function getWorktreeInfo(
 ): Promise<WorktreeInfo> {
   const worktreePath = getWorktreePath(gitRoot, name);
 
-  const [branch, statusInfo] = await Promise.all([
+  const [branch, isClean] = await Promise.all([
     getWorktreeBranch(worktreePath),
     getWorktreeStatus(worktreePath),
   ]);
 
   return {
     name,
+    path: worktreePath,
     branch,
-    ...statusInfo,
+    isClean,
   };
 }
 

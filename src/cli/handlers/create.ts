@@ -1,4 +1,4 @@
-import { shellInWorktree } from "../../commands/shell.ts";
+import { shellInWorktree } from "../../core/process/shell.ts";
 import { createWorktree as createWorktreeCore } from "../../core/worktree/create.ts";
 import { getGitRoot } from "../../git/libs/get-git-root.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
@@ -19,7 +19,7 @@ export async function createHandler(args: string[]): Promise<void> {
 
   try {
     const gitRoot = await getGitRoot();
-    const result = await createWorktreeCore(worktreeName, gitRoot);
+    const result = await createWorktreeCore(gitRoot, worktreeName);
 
     if (!result.success) {
       exitWithError(result.message, exitCodes.generalError);
@@ -27,9 +27,20 @@ export async function createHandler(args: string[]): Promise<void> {
 
     output.log(result.message);
 
-    if (openShell) {
-      output.log("Opening shell in new worktree...");
-      await shellInWorktree(worktreeName);
+    if (openShell && result.path) {
+      output.log(`\nEntering worktree '${worktreeName}' at ${result.path}`);
+      output.log("Type 'exit' to return to your original directory\n");
+
+      const shellResult = await shellInWorktree(gitRoot, worktreeName);
+
+      if (!shellResult.success) {
+        if (shellResult.message) {
+          output.error(shellResult.message);
+        }
+        exitWithError("", shellResult.exitCode ?? exitCodes.generalError);
+      }
+
+      process.exit(shellResult.exitCode ?? 0);
     }
 
     exitWithSuccess();

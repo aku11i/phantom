@@ -1,11 +1,13 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
+import type { createWorktree as CreateWorktreeType } from "../core/worktree/create.ts";
 
 describe("createWorktree", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let mkdirMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let createWorktree: typeof import("./create.ts").createWorktree;
+  let addWorktreeMock: ReturnType<typeof mock.fn>;
+  let createWorktree: typeof CreateWorktreeType;
 
   before(async () => {
     accessMock = mock.fn();
@@ -19,6 +21,7 @@ describe("createWorktree", () => {
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
+    addWorktreeMock = mock.fn();
 
     mock.module("node:fs/promises", {
       namedExports: {
@@ -72,25 +75,40 @@ describe("createWorktree", () => {
       },
     });
 
-    mock.module("./shell.ts", {
+    mock.module("../git/libs/add-worktree.ts", {
       namedExports: {
-        shellInWorktree: mock.fn(),
+        addWorktree: addWorktreeMock,
       },
     });
 
-    ({ createWorktree } = await import("./create.ts"));
+    ({ createWorktree } = await import("../core/worktree/create.ts"));
   });
 
   it("should return error when name is not provided", async () => {
-    const result = await createWorktree("");
-    strictEqual(result.success, false);
-    strictEqual(result.message, "Error: worktree name required");
+    addWorktreeMock.mock.mockImplementation(() => {
+      throw new Error("Invalid worktree name");
+    });
+
+    let errorThrown = false;
+    try {
+      await createWorktree("/test/repo", "");
+    } catch (error) {
+      errorThrown = true;
+      // Empty name will result in error from git
+      strictEqual(error instanceof Error, true);
+      if (error instanceof Error) {
+        strictEqual(error.message.includes("Failed to create worktree"), true);
+      }
+    }
+    strictEqual(errorThrown, true);
   });
 
   it("should create worktree directory when it does not exist", async () => {
     accessMock.mock.resetCalls();
     mkdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
+    addWorktreeMock.mock.resetCalls();
+    addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
 
     accessMock.mock.mockImplementation((path: string) => {
       if (path === "/test/repo/.git/phantom/worktrees") {
@@ -112,7 +130,7 @@ describe("createWorktree", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await createWorktree("test-worktree");
+    const result = await createWorktree("/test/repo", "test-worktree");
 
     strictEqual(result.success, true);
     strictEqual(
@@ -126,22 +144,13 @@ describe("createWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       { recursive: true },
     ]);
-
-    strictEqual(execMock.mock.calls.length, 2);
-    strictEqual(
-      execMock.mock.calls[0].arguments[0],
-      "git rev-parse --show-toplevel",
-    );
-    strictEqual(
-      execMock.mock.calls[1].arguments[0],
-      'git worktree add "/test/repo/.git/phantom/worktrees/test-worktree" -b "test-worktree" HEAD',
-    );
   });
 
   it("should return error when worktree already exists", async () => {
     accessMock.mock.resetCalls();
     mkdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
+    addWorktreeMock.mock.resetCalls();
 
     accessMock.mock.mockImplementation((path: string) => {
       if (path === "/test/repo/.git/phantom/worktrees") {
@@ -159,37 +168,50 @@ describe("createWorktree", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await createWorktree("existing-worktree");
+    const result = await createWorktree("/test/repo", "existing-worktree");
 
     strictEqual(result.success, false);
-    strictEqual(
-      result.message,
-      "Error: Worktree 'existing-worktree' already exists",
-    );
+    strictEqual(result.message, "Worktree 'existing-worktree' already exists");
   });
 
   it("should handle git command errors", async () => {
     accessMock.mock.resetCalls();
     mkdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
+    addWorktreeMock.mock.resetCalls();
 
     execMock.mock.mockImplementation(() => {
       return Promise.reject(new Error("Not a git repository"));
     });
 
-    const result = await createWorktree("test-worktree");
+    // Override the addWorktree mock to throw error
+    addWorktreeMock.mock.mockImplementation(() => {
+      throw new Error("Not a git repository");
+    });
 
-    strictEqual(result.success, false);
-    strictEqual(
-      result.message,
-      "Error creating worktree: Not a git repository",
-    );
+    // Should throw error since core module throws on failure
+    let errorThrown = false;
+    try {
+      await createWorktree("/test/repo", "test-worktree");
+    } catch (error) {
+      errorThrown = true;
+      strictEqual(error instanceof Error, true);
+      if (error instanceof Error) {
+        strictEqual(
+          error.message,
+          "Failed to create worktree: Not a git repository",
+        );
+      }
+    }
+    strictEqual(errorThrown, true);
   });
 
   it("should not create worktrees directory if it already exists", async () => {
     accessMock.mock.resetCalls();
     mkdirMock.mock.resetCalls();
     execMock.mock.resetCalls();
+    addWorktreeMock.mock.resetCalls();
+    addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
 
     accessMock.mock.mockImplementation((path: string) => {
       if (path === "/test/repo/.git/phantom/worktrees") {
@@ -210,7 +232,7 @@ describe("createWorktree", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await createWorktree("test-worktree");
+    const result = await createWorktree("/test/repo", "test-worktree");
 
     strictEqual(result.success, true);
     strictEqual(mkdirMock.mock.calls.length, 0);

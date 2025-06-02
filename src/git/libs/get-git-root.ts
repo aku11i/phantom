@@ -1,9 +1,6 @@
-import childProcess from "node:child_process";
-import { promisify } from "node:util";
-
-const execAsync = promisify(childProcess.exec);
+import { executeGitCommand } from "../executor.ts";
 
 export async function getGitRoot(): Promise<string> {
-  const { stdout } = await execAsync("git rev-parse --show-toplevel");
-  return stdout.trim();
+  const { stdout } = await executeGitCommand("rev-parse --show-toplevel");
+  return stdout;
 }

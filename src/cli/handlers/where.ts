@@ -1,4 +1,5 @@
-import { whereWorktree as whereWorktreeCore } from "../../commands/where.ts";
+import { whereWorktree as whereWorktreeCore } from "../../core/worktree/where.ts";
+import { getGitRoot } from "../../git/libs/get-git-root.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -10,7 +11,8 @@ export async function whereHandler(args: string[]): Promise<void> {
   const worktreeName = args[0];
 
   try {
-    const result = await whereWorktreeCore(worktreeName);
+    const gitRoot = await getGitRoot();
+    const result = await whereWorktreeCore(gitRoot, worktreeName);
 
     if (!result.success || !result.path) {
       exitWithError(result.message || "Worktree not found", exitCodes.notFound);

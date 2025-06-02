@@ -1,10 +1,11 @@
 import { strictEqual } from "node:assert";
 import { before, describe, it, mock } from "node:test";
+import type { deleteWorktree as DeleteWorktreeType } from "../core/worktree/delete.ts";
 
 describe("deleteWorktree", () => {
   let accessMock: ReturnType<typeof mock.fn>;
   let execMock: ReturnType<typeof mock.fn>;
-  let deleteWorktree: typeof import("./delete.ts").deleteWorktree;
+  let deleteWorktree: typeof DeleteWorktreeType;
 
   before(async () => {
     accessMock = mock.fn();
@@ -28,13 +29,31 @@ describe("deleteWorktree", () => {
       },
     });
 
-    ({ deleteWorktree } = await import("./delete.ts"));
+    mock.module("../core/worktree/validate.ts", {
+      namedExports: {
+        validateWorktreeExists: mock.fn((gitRoot: string, name: string) => {
+          if (name === "" || name === "nonexistent-phantom") {
+            return Promise.resolve({
+              exists: false,
+              message: `Worktree '${name}' does not exist`,
+            });
+          }
+          return Promise.resolve({
+            exists: true,
+            path: `${gitRoot}/.git/phantom/worktrees/${name}`,
+          });
+        }),
+      },
+    });
+
+    ({ deleteWorktree } = await import("../core/worktree/delete.ts"));
   });
 
   it("should return error when name is not provided", async () => {
-    const result = await deleteWorktree("");
+    // Core module returns error when name is empty because validation fails
+    const result = await deleteWorktree("/test/repo", "");
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: worktree name required");
+    strictEqual(result.message, "Worktree '' does not exist");
   });
 
   it("should return error when phantom does not exist", async () => {
@@ -54,12 +73,12 @@ describe("deleteWorktree", () => {
       return Promise.reject(new Error("ENOENT"));
     });
 
-    const result = await deleteWorktree("nonexistent-phantom");
+    const result = await deleteWorktree("/test/repo", "nonexistent-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: Worktree 'nonexistent-phantom' does not exist",
+      "Worktree 'nonexistent-phantom' does not exist",
     );
   });
 
@@ -73,7 +92,7 @@ describe("deleteWorktree", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({ stdout: "", stderr: "" }); // Clean status
         }
         if (cmd.includes("git worktree remove")) {
@@ -89,7 +108,7 @@ describe("deleteWorktree", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteWorktree("clean-phantom");
+    const result = await deleteWorktree("/test/repo", "clean-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
@@ -109,11 +128,11 @@ describe("deleteWorktree", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({
-            stdout: " M file1.ts\n?? file2.ts\n",
+            stdout: " M file1.ts\n?? file2.ts",
             stderr: "",
-          }); // Dirty status with 2 files
+          }); // Dirty status with 2 files - trim removes trailing newline
         }
         return Promise.resolve({ stdout: "", stderr: "" });
       },
@@ -122,12 +141,12 @@ describe("deleteWorktree", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteWorktree("dirty-phantom");
+    const result = await deleteWorktree("/test/repo", "dirty-phantom");
 
     strictEqual(result.success, false);
     strictEqual(
       result.message,
-      "Error: Worktree 'dirty-phantom' has uncommitted changes (2 files). Use --force to delete anyway.",
+      "Worktree 'dirty-phantom' has uncommitted changes (2 files). Use --force to delete anyway.",
     );
     strictEqual(result.hasUncommittedChanges, true);
     strictEqual(result.changedFiles, 2);
@@ -143,11 +162,11 @@ describe("deleteWorktree", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({
-            stdout: " M file1.ts\n?? file2.ts\n",
+            stdout: " M file1.ts\n?? file2.ts",
             stderr: "",
-          }); // Dirty status with 2 files
+          }); // Dirty status with 2 files - trim removes trailing newline
         }
         if (cmd.includes("git worktree remove")) {
           return Promise.resolve({ stdout: "", stderr: "" });
@@ -162,7 +181,9 @@ describe("deleteWorktree", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteWorktree("dirty-phantom", { force: true });
+    const result = await deleteWorktree("/test/repo", "dirty-phantom", {
+      force: true,
+    });
 
     strictEqual(result.success, true);
     strictEqual(
@@ -183,7 +204,7 @@ describe("deleteWorktree", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({ stdout: "", stderr: "" });
         }
         if (cmd.includes("git worktree remove") && !cmd.includes("--force")) {
@@ -202,7 +223,7 @@ describe("deleteWorktree", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteWorktree("stubborn-phantom");
+    const result = await deleteWorktree("/test/repo", "stubborn-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
@@ -221,7 +242,7 @@ describe("deleteWorktree", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({ stdout: "", stderr: "" });
         }
         if (cmd.includes("git worktree remove")) {
@@ -237,7 +258,7 @@ describe("deleteWorktree", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteWorktree("branch-missing-phantom");
+    const result = await deleteWorktree("/test/repo", "branch-missing-phantom");
 
     strictEqual(result.success, true);
     strictEqual(
@@ -256,7 +277,7 @@ describe("deleteWorktree", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.resolve({ stdout: "", stderr: "" });
         }
         if (cmd.includes("git worktree remove")) {
@@ -269,13 +290,20 @@ describe("deleteWorktree", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteWorktree("impossible-phantom");
-
-    strictEqual(result.success, false);
-    strictEqual(
-      result.message,
-      "Error: Failed to remove worktree 'impossible-phantom'",
-    );
+    let errorThrown = false;
+    try {
+      await deleteWorktree("/test/repo", "impossible-phantom");
+    } catch (error) {
+      errorThrown = true;
+      strictEqual(error instanceof Error, true);
+      if (error instanceof Error) {
+        strictEqual(
+          error.message,
+          "Failed to delete worktree: Failed to remove worktree",
+        );
+      }
+    }
+    strictEqual(errorThrown, true);
   });
 
   it("should handle git status errors gracefully", async () => {
@@ -288,7 +316,7 @@ describe("deleteWorktree", () => {
         if (cmd === "git rev-parse --show-toplevel") {
           return Promise.resolve({ stdout: "/test/repo\n", stderr: "" });
         }
-        if (cmd === "git status --porcelain") {
+        if (cmd.includes("git -C") && cmd.includes("status --porcelain")) {
           return Promise.reject(new Error("Git status failed"));
         }
         if (cmd.includes("git worktree remove")) {
@@ -304,7 +332,7 @@ describe("deleteWorktree", () => {
     // Mock phantom exists
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
-    const result = await deleteWorktree("status-error-phantom");
+    const result = await deleteWorktree("/test/repo", "status-error-phantom");
 
     strictEqual(result.success, true);
     strictEqual(

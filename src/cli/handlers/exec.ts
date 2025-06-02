@@ -1,4 +1,5 @@
-import { execInWorktree as execInWorktreeCore } from "../../commands/exec.ts";
+import { execInWorktree as execInWorktreeCore } from "../../core/process/exec.ts";
+import { getGitRoot } from "../../git/libs/get-git-root.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 
 export async function execHandler(args: string[]): Promise<void> {
@@ -12,7 +13,13 @@ export async function execHandler(args: string[]): Promise<void> {
   const [worktreeName, ...commandArgs] = args;
 
   try {
-    const result = await execInWorktreeCore(worktreeName, commandArgs);
+    const gitRoot = await getGitRoot();
+    const result = await execInWorktreeCore(gitRoot, worktreeName, commandArgs);
+
+    if (!result.success && result.message) {
+      exitWithError(result.message, result.exitCode || exitCodes.generalError);
+    }
+
     process.exit(result.exitCode || 0);
   } catch (error) {
     exitWithError(

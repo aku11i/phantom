@@ -1,17 +1,17 @@
 import { strictEqual } from "node:assert";
 import type { SpawnOptions } from "node:child_process";
 import { before, describe, it, mock } from "node:test";
+import type { shellInWorktree as ShellInWorktreeType } from "../core/process/shell.ts";
+import type { SpawnConfig } from "../core/process/spawn.ts";
 
 describe("shellInWorktree", () => {
   let spawnProcessMock: ReturnType<typeof mock.fn>;
   let validateWorktreeExistsMock: ReturnType<typeof mock.fn>;
-  let getGitRootMock: ReturnType<typeof mock.fn>;
-  let shellInWorktree: typeof import("./shell.ts").shellInWorktree;
+  let shellInWorktree: typeof ShellInWorktreeType;
 
   before(async () => {
     spawnProcessMock = mock.fn();
     validateWorktreeExistsMock = mock.fn();
-    getGitRootMock = mock.fn();
 
     mock.module("../core/process/spawn.ts", {
       namedExports: {
@@ -25,47 +25,45 @@ describe("shellInWorktree", () => {
       },
     });
 
-    mock.module("../git/libs/get-git-root.ts", {
-      namedExports: {
-        getGitRoot: getGitRootMock,
-      },
-    });
-
-    ({ shellInWorktree } = await import("./shell.ts"));
+    ({ shellInWorktree } = await import("../core/process/shell.ts"));
   });
 
   it("should return error when phantom name is not provided", async () => {
-    const result = await shellInWorktree("");
-    strictEqual(result.success, false);
-    strictEqual(result.message, "Error: worktree name required");
-  });
-
-  it("should return error when phantom does not exist", async () => {
-    getGitRootMock.mock.resetCalls();
     validateWorktreeExistsMock.mock.resetCalls();
     spawnProcessMock.mock.resetCalls();
-
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
 
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve({
         exists: false,
-        message: "Phantom 'nonexistent' does not exist",
+        message: "Worktree '' not found",
       }),
     );
 
-    const result = await shellInWorktree("nonexistent");
-
+    const result = await shellInWorktree("/test/repo", "");
     strictEqual(result.success, false);
-    strictEqual(result.message, "Error: Phantom 'nonexistent' does not exist");
+    strictEqual(result.message, "Worktree '' not found");
   });
 
-  it("should start shell successfully with exit code 0", async () => {
-    getGitRootMock.mock.resetCalls();
+  it("should return error when phantom does not exist", async () => {
     validateWorktreeExistsMock.mock.resetCalls();
     spawnProcessMock.mock.resetCalls();
 
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      Promise.resolve({
+        exists: false,
+        message: "Worktree 'nonexistent' not found",
+      }),
+    );
+
+    const result = await shellInWorktree("/test/repo", "nonexistent");
+
+    strictEqual(result.success, false);
+    strictEqual(result.message, "Worktree 'nonexistent' not found");
+  });
+
+  it("should start shell successfully with exit code 0", async () => {
+    validateWorktreeExistsMock.mock.resetCalls();
+    spawnProcessMock.mock.resetCalls();
 
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve({
@@ -78,18 +76,15 @@ describe("shellInWorktree", () => {
       Promise.resolve({ success: true, exitCode: 0 }),
     );
 
-    const result = await shellInWorktree("test-worktree");
+    const result = await shellInWorktree("/test/repo", "test-worktree");
 
     strictEqual(result.success, true);
     strictEqual(result.exitCode, 0);
 
     // Verify spawnProcess was called with correct arguments
     strictEqual(spawnProcessMock.mock.calls.length, 1);
-    const spawnCall = spawnProcessMock.mock.calls[0].arguments[0] as {
-      command: string;
-      args?: string[];
-      options?: SpawnOptions & { env?: Record<string, string> };
-    };
+    const spawnCall = spawnProcessMock.mock.calls[0]
+      .arguments[0] as SpawnConfig;
     strictEqual(spawnCall.command, process.env.SHELL || "/bin/sh");
     strictEqual(spawnCall.args?.length, 0);
     strictEqual(
@@ -105,7 +100,6 @@ describe("shellInWorktree", () => {
   });
 
   it("should use /bin/sh when SHELL is not set", async () => {
-    getGitRootMock.mock.resetCalls();
     validateWorktreeExistsMock.mock.resetCalls();
     spawnProcessMock.mock.resetCalls();
 
@@ -113,8 +107,6 @@ describe("shellInWorktree", () => {
     const originalShell = process.env.SHELL;
     // biome-ignore lint/performance/noDelete: Need to actually delete for test
     delete process.env.SHELL;
-
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
 
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve({
@@ -127,14 +119,11 @@ describe("shellInWorktree", () => {
       Promise.resolve({ success: true, exitCode: 0 }),
     );
 
-    await shellInWorktree("test-worktree");
+    await shellInWorktree("/test/repo", "test-worktree");
 
     // Verify /bin/sh was used
-    const spawnCall = spawnProcessMock.mock.calls[0].arguments[0] as {
-      command: string;
-      args?: string[];
-      options?: SpawnOptions;
-    };
+    const spawnCall = spawnProcessMock.mock.calls[0]
+      .arguments[0] as SpawnConfig;
     strictEqual(spawnCall.command, "/bin/sh");
 
     // Restore SHELL env var
@@ -144,11 +133,8 @@ describe("shellInWorktree", () => {
   });
 
   it("should handle shell execution failure with non-zero exit code", async () => {
-    getGitRootMock.mock.resetCalls();
     validateWorktreeExistsMock.mock.resetCalls();
     spawnProcessMock.mock.resetCalls();
-
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
 
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve({
@@ -161,18 +147,15 @@ describe("shellInWorktree", () => {
       Promise.resolve({ success: false, exitCode: 1 }),
     );
 
-    const result = await shellInWorktree("test-worktree");
+    const result = await shellInWorktree("/test/repo", "test-worktree");
 
     strictEqual(result.success, false);
     strictEqual(result.exitCode, 1);
   });
 
   it("should handle shell startup error", async () => {
-    getGitRootMock.mock.resetCalls();
     validateWorktreeExistsMock.mock.resetCalls();
     spawnProcessMock.mock.resetCalls();
-
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
 
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve({
@@ -188,18 +171,15 @@ describe("shellInWorktree", () => {
       }),
     );
 
-    const result = await shellInWorktree("test-worktree");
+    const result = await shellInWorktree("/test/repo", "test-worktree");
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Error starting shell: Shell not found");
   });
 
   it("should handle signal termination", async () => {
-    getGitRootMock.mock.resetCalls();
     validateWorktreeExistsMock.mock.resetCalls();
     spawnProcessMock.mock.resetCalls();
-
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
 
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve({
@@ -216,25 +196,10 @@ describe("shellInWorktree", () => {
       }),
     );
 
-    const result = await shellInWorktree("test-worktree");
+    const result = await shellInWorktree("/test/repo", "test-worktree");
 
     strictEqual(result.success, false);
     strictEqual(result.message, "Shell terminated by signal: SIGTERM");
     strictEqual(result.exitCode, 143); // 128 + 15 (SIGTERM)
-  });
-
-  it("should handle git root error", async () => {
-    getGitRootMock.mock.resetCalls();
-    validateWorktreeExistsMock.mock.resetCalls();
-    spawnProcessMock.mock.resetCalls();
-
-    getGitRootMock.mock.mockImplementation(() =>
-      Promise.reject(new Error("Not a git repository")),
-    );
-
-    const result = await shellInWorktree("test-worktree");
-
-    strictEqual(result.success, false);
-    strictEqual(result.message, "Error: Not a git repository");
   });
 });
