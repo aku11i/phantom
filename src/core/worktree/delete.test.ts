@@ -1,7 +1,11 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 import { isErr, isOk } from "../types/result.ts";
-import { WorktreeError, WorktreeNotFoundError } from "./errors.ts";
+import {
+  GitOperationError,
+  WorktreeError,
+  WorktreeNotFoundError,
+} from "./errors.ts";
 
 describe("deleteWorktree", () => {
   it("should delete worktree and report when branch deletion fails", async () => {
@@ -46,7 +50,7 @@ describe("deleteWorktree", () => {
     if (isOk(result)) {
       strictEqual(
         result.value.message,
-        "Deleted worktree 'feature'\nNote: Branch 'feature' could not be deleted: error: branch 'feature' not found.",
+        "Deleted worktree 'feature'\nNote: Branch 'feature' could not be deleted: Git branch delete failed: error: branch 'feature' not found.",
       );
       strictEqual(result.value.hasUncommittedChanges, false);
       strictEqual(result.value.changedFiles, undefined);
@@ -446,8 +450,10 @@ describe("deleteBranch", () => {
 
     const result = await deleteBranch("/test/repo", "feature");
 
-    strictEqual(result.deleted, true);
-    strictEqual(result.error, undefined);
+    strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      strictEqual(result.value, true);
+    }
     strictEqual(executeGitCommandMock.mock.calls.length, 1);
     deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments, [
       'branch -D "feature"',
@@ -457,7 +463,7 @@ describe("deleteBranch", () => {
     mock.reset();
   });
 
-  it("should return false with error message when branch deletion fails", async () => {
+  it("should return error when branch deletion fails", async () => {
     const executeGitCommandMock = mock.fn(() =>
       Promise.reject(new Error("Branch not found")),
     );
@@ -473,8 +479,14 @@ describe("deleteBranch", () => {
 
     const result = await deleteBranch("/test/repo", "feature");
 
-    strictEqual(result.deleted, false);
-    strictEqual(result.error, "Branch not found");
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error instanceof GitOperationError, true);
+      strictEqual(
+        result.error.message,
+        "Git branch delete failed: Branch not found",
+      );
+    }
     strictEqual(executeGitCommandMock.mock.calls.length, 1);
 
     mock.reset();
