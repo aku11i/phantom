@@ -9,5 +9,5 @@ export interface AddWorktreeOptions {
 export async function addWorktree(options: AddWorktreeOptions): Promise<void> {
   const { path, branch, commitish = "HEAD" } = options;
 
-  await executeGitCommand(`worktree add "${path}" -b "${branch}" ${commitish}`);
+  await executeGitCommand(["worktree", "add", path, "-b", branch, commitish]);
 }

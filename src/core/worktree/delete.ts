@@ -29,10 +29,10 @@ export async function getWorktreeStatus(
   worktreePath: string,
 ): Promise<WorktreeStatus> {
   try {
-    const { stdout } = await executeGitCommandInDirectory(
-      worktreePath,
-      "status --porcelain",
-    );
+    const { stdout } = await executeGitCommandInDirectory(worktreePath, [
+      "status",
+      "--porcelain",
+    ]);
     if (stdout) {
       return {
         hasUncommittedChanges: true,
@@ -54,13 +54,13 @@ export async function removeWorktree(
   force = false,
 ): Promise<void> {
   try {
-    await executeGitCommand(`worktree remove "${worktreePath}"`, {
+    await executeGitCommand(["worktree", "remove", worktreePath], {
       cwd: gitRoot,
     });
   } catch (error) {
     // Always try force removal if the regular removal fails
     try {
-      await executeGitCommand(`worktree remove --force "${worktreePath}"`, {
+      await executeGitCommand(["worktree", "remove", "--force", worktreePath], {
         cwd: gitRoot,
       });
     } catch {
@@ -74,7 +74,7 @@ export async function deleteBranch(
   branchName: string,
 ): Promise<Result<boolean, GitOperationError>> {
   try {
-    await executeGitCommand(`branch -D "${branchName}"`, { cwd: gitRoot });
+    await executeGitCommand(["branch", "-D", branchName], { cwd: gitRoot });
     return ok(true);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

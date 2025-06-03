@@ -20,10 +20,10 @@ export interface ListWorktreesSuccess {
 
 export async function getWorktreeBranch(worktreePath: string): Promise<string> {
   try {
-    const { stdout } = await executeGitCommandInDirectory(
-      worktreePath,
-      "branch --show-current",
-    );
+    const { stdout } = await executeGitCommandInDirectory(worktreePath, [
+      "branch",
+      "--show-current",
+    ]);
     return stdout || "(detached HEAD)";
   } catch {
     return "unknown";
@@ -34,10 +34,10 @@ export async function getWorktreeStatus(
   worktreePath: string,
 ): Promise<boolean> {
   try {
-    const { stdout } = await executeGitCommandInDirectory(
-      worktreePath,
-      "status --porcelain",
-    );
+    const { stdout } = await executeGitCommandInDirectory(worktreePath, [
+      "status",
+      "--porcelain",
+    ]);
     return !stdout; // Clean if no output
   } catch {
     // If git status fails, assume clean

@@ -1,7 +1,7 @@
-import { exec as execCallback } from "node:child_process";
+import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 
-const exec = promisify(execCallback);
+const execFile = promisify(execFileCallback);
 
 export interface GitExecutorOptions {
   cwd?: string;
@@ -17,13 +17,11 @@ export interface GitExecutorResult {
  * Execute a git command with consistent error handling
  */
 export async function executeGitCommand(
-  command: string,
+  args: string[],
   options: GitExecutorOptions = {},
 ): Promise<GitExecutorResult> {
-  const gitCommand = `git ${command}`;
-
   try {
-    const result = await exec(gitCommand, {
+    const result = await execFile("git", args, {
       cwd: options.cwd,
       env: options.env || process.env,
       encoding: "utf8",
@@ -70,7 +68,7 @@ export async function executeGitCommand(
  */
 export async function executeGitCommandInDirectory(
   directory: string,
-  command: string,
+  args: string[],
 ): Promise<GitExecutorResult> {
-  return executeGitCommand(`-C "${directory}" ${command}`);
+  return executeGitCommand(["-C", directory, ...args], {});
 }
