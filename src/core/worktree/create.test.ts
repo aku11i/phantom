@@ -1,7 +1,7 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 import type { AddWorktreeOptions } from "../git/libs/add-worktree.ts";
-import { isErr, isOk } from "../types/result.ts";
+import { err, isErr, isOk, ok } from "../types/result.ts";
 import { GitOperationError, WorktreeAlreadyExistsError } from "./errors.ts";
 
 describe("createWorktree", () => {
@@ -26,6 +26,7 @@ describe("createWorktree", () => {
     mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeDoesNotExist: validateMock,
+        validateWorktreeName: mock.fn(() => ok(undefined)),
       },
     });
 
@@ -85,6 +86,7 @@ describe("createWorktree", () => {
     mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeDoesNotExist: validateMock,
+        validateWorktreeName: mock.fn(() => ok(undefined)),
       },
     });
 
@@ -135,6 +137,7 @@ describe("createWorktree", () => {
     mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeDoesNotExist: validateMock,
+        validateWorktreeName: mock.fn(() => ok(undefined)),
       },
     });
 
@@ -175,6 +178,7 @@ describe("createWorktree", () => {
     mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeDoesNotExist: validateMock,
+        validateWorktreeName: mock.fn(() => ok(undefined)),
       },
     });
 
@@ -225,6 +229,7 @@ describe("createWorktree", () => {
     mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeDoesNotExist: validateMock,
+        validateWorktreeName: mock.fn(() => ok(undefined)),
       },
     });
 

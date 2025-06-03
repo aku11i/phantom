@@ -1,9 +1,12 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "../git/libs/add-worktree.ts";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
-import { type Result, err, ok } from "../types/result.ts";
+import { type Result, err, isErr, ok } from "../types/result.ts";
 import { GitOperationError, WorktreeAlreadyExistsError } from "./errors.ts";
-import { validateWorktreeDoesNotExist } from "./validate.ts";
+import {
+  validateWorktreeDoesNotExist,
+  validateWorktreeName,
+} from "./validate.ts";
 
 export interface CreateWorktreeOptions {
   branch?: string;
@@ -22,6 +25,11 @@ export async function createWorktree(
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | GitOperationError>
 > {
+  const nameValidation = validateWorktreeName(name);
+  if (isErr(nameValidation)) {
+    return nameValidation;
+  }
+
   const { branch = name, commitish = "HEAD" } = options;
 
   const worktreesPath = getPhantomDirectory(gitRoot);
