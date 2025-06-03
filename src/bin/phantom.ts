@@ -19,7 +19,7 @@ interface Command {
 const commands: Command[] = [
   {
     name: "create",
-    description: "Create a new worktree [--shell to open shell]",
+    description: "Create a new worktree [--shell | --exec <command>]",
     handler: createHandler,
   },
   {

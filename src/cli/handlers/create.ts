@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
+import { execInWorktree } from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
 import { isErr, isOk } from "../../core/types/result.ts";
 import { createWorktree as createWorktreeCore } from "../../core/worktree/create.ts";
@@ -15,6 +16,10 @@ export async function createHandler(args: string[]): Promise<void> {
         type: "boolean",
         short: "s",
       },
+      exec: {
+        type: "string",
+        short: "x",
+      },
     },
     strict: true,
     allowPositionals: true,
@@ -29,6 +34,14 @@ export async function createHandler(args: string[]): Promise<void> {
 
   const worktreeName = positionals[0];
   const openShell = values.shell ?? false;
+  const execCommand = values.exec;
+
+  if (openShell && execCommand) {
+    exitWithError(
+      "Cannot use --shell and --exec together",
+      exitCodes.validationError,
+    );
+  }
 
   try {
     const gitRoot = await getGitRoot();
@@ -43,6 +56,30 @@ export async function createHandler(args: string[]): Promise<void> {
     }
 
     output.log(result.value.message);
+
+    if (execCommand && isOk(result)) {
+      output.log(
+        `\nExecuting command in worktree '${worktreeName}': ${execCommand}`,
+      );
+
+      const shell = process.env.SHELL || "/bin/sh";
+      const execResult = await execInWorktree(gitRoot, worktreeName, [
+        shell,
+        "-c",
+        execCommand,
+      ]);
+
+      if (isErr(execResult)) {
+        output.error(execResult.error.message);
+        const exitCode =
+          "exitCode" in execResult.error
+            ? (execResult.error.exitCode ?? exitCodes.generalError)
+            : exitCodes.generalError;
+        exitWithError("", exitCode);
+      }
+
+      process.exit(execResult.value.exitCode ?? 0);
+    }
 
     if (openShell && isOk(result)) {
       output.log(
