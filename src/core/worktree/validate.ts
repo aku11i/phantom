@@ -59,27 +59,3 @@ export async function validatePhantomDirectoryExists(
     return false;
   }
 }
-
-export async function listValidWorktrees(gitRoot: string): Promise<string[]> {
-  const phantomDir = getPhantomDirectory(gitRoot);
-
-  if (!(await validatePhantomDirectoryExists(gitRoot))) {
-    return [];
-  }
-
-  try {
-    const entries = await fs.readdir(phantomDir);
-    const validWorktrees: string[] = [];
-
-    for (const entry of entries) {
-      const result = await validateWorktreeExists(gitRoot, entry);
-      if (result.exists) {
-        validWorktrees.push(entry);
-      }
-    }
-
-    return validWorktrees;
-  } catch {
-    return [];
-  }
-}

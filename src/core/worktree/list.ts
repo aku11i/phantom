@@ -1,10 +1,7 @@
 import { executeGitCommandInDirectory } from "../git/executor.ts";
-import { getWorktreePath } from "../paths.ts";
+import { listWorktrees as gitListWorktrees } from "../git/libs/list-worktrees.ts";
+import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
 import { type Result, ok } from "../types/result.ts";
-import {
-  listValidWorktrees,
-  validatePhantomDirectoryExists,
-} from "./validate.ts";
 
 export interface WorktreeInfo {
   name: string;
@@ -67,25 +64,33 @@ export async function getWorktreeInfo(
 export async function listWorktrees(
   gitRoot: string,
 ): Promise<Result<ListWorktreesSuccess, never>> {
-  if (!(await validatePhantomDirectoryExists(gitRoot))) {
-    return ok({
-      worktrees: [],
-      message: "No worktrees found (worktrees directory doesn't exist)",
-    });
-  }
-
-  const worktreeNames = await listValidWorktrees(gitRoot);
-
-  if (worktreeNames.length === 0) {
-    return ok({
-      worktrees: [],
-      message: "No worktrees found",
-    });
-  }
-
   try {
+    const gitWorktrees = await gitListWorktrees(gitRoot);
+    const phantomDir = getPhantomDirectory(gitRoot);
+
+    const phantomWorktrees = gitWorktrees.filter((worktree) =>
+      worktree.path.startsWith(phantomDir),
+    );
+
+    if (phantomWorktrees.length === 0) {
+      return ok({
+        worktrees: [],
+        message: "No worktrees found",
+      });
+    }
+
     const worktrees = await Promise.all(
-      worktreeNames.map((name) => getWorktreeInfo(gitRoot, name)),
+      phantomWorktrees.map(async (gitWorktree) => {
+        const name = gitWorktree.path.substring(phantomDir.length + 1);
+        const isClean = await getWorktreeStatus(gitWorktree.path);
+
+        return {
+          name,
+          path: gitWorktree.path,
+          branch: gitWorktree.branch || "(detached HEAD)",
+          isClean,
+        };
+      }),
     );
 
     return ok({
