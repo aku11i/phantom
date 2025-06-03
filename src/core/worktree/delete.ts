@@ -72,13 +72,13 @@ export async function removeWorktree(
 export async function deleteBranch(
   gitRoot: string,
   branchName: string,
-): Promise<boolean> {
+): Promise<{ deleted: boolean; error?: string }> {
   try {
     await executeGitCommand(`branch -D "${branchName}"`, { cwd: gitRoot });
-    return true;
-  } catch {
-    // Branch might not exist or already deleted - this is not an error
-    return false;
+    return { deleted: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return { deleted: false, error: errorMessage };
   }
 }
 
@@ -114,11 +114,18 @@ export async function deleteWorktree(
   try {
     await removeWorktree(gitRoot, worktreePath, force);
 
-    const branchName = `phantom/worktrees/${name}`;
-    const branchDeleted = await deleteBranch(gitRoot, branchName);
+    const branchName = name;
+    const branchResult = await deleteBranch(gitRoot, branchName);
 
-    // Always report as if branch was deleted for backward compatibility
-    let message = `Deleted worktree '${name}' and its branch '${branchName}'`;
+    let message: string;
+    if (branchResult.deleted) {
+      message = `Deleted worktree '${name}' and its branch '${branchName}'`;
+    } else {
+      message = `Deleted worktree '${name}'`;
+      if (branchResult.error) {
+        message += `\nNote: Branch '${branchName}' could not be deleted: ${branchResult.error}`;
+      }
+    }
 
     if (status.hasUncommittedChanges) {
       message = `Warning: Worktree '${name}' had uncommitted changes (${status.changedFiles} files)\n${message}`;
