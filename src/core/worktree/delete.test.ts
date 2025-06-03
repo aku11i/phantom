@@ -55,8 +55,6 @@ describe("deleteWorktree", () => {
       strictEqual(result.value.hasUncommittedChanges, false);
       strictEqual(result.value.changedFiles, undefined);
     }
-
-    mock.reset();
   });
 
   it("should delete a worktree successfully when no uncommitted changes", async () => {
@@ -128,8 +126,6 @@ describe("deleteWorktree", () => {
       'branch -D "feature"',
       { cwd: "/test/repo" },
     ]);
-
-    mock.reset();
   });
 
   it("should fail when worktree does not exist", async () => {
@@ -155,8 +151,6 @@ describe("deleteWorktree", () => {
       strictEqual(result.error instanceof WorktreeNotFoundError, true);
       strictEqual(result.error.message, "Worktree 'nonexistent' not found");
     }
-
-    mock.reset();
   });
 
   it("should fail when uncommitted changes exist without force", async () => {
@@ -199,8 +193,6 @@ describe("deleteWorktree", () => {
         "Worktree 'feature' has uncommitted changes (3 files). Use --force to delete anyway.",
       );
     }
-
-    mock.reset();
   });
 
   it("should delete worktree with uncommitted changes when force is true", async () => {
@@ -255,8 +247,6 @@ describe("deleteWorktree", () => {
       strictEqual(result.value.hasUncommittedChanges, true);
       strictEqual(result.value.changedFiles, 2);
     }
-
-    mock.reset();
   });
 });
 
@@ -285,8 +275,6 @@ describe("getWorktreeStatus", () => {
       "/test/worktree",
       "status --porcelain",
     ]);
-
-    mock.reset();
   });
 
   it("should return uncommitted changes when git status shows changes", async () => {
@@ -310,8 +298,6 @@ describe("getWorktreeStatus", () => {
 
     strictEqual(status.hasUncommittedChanges, true);
     strictEqual(status.changedFiles, 3);
-
-    mock.reset();
   });
 
   it("should return no changes when git status fails", async () => {
@@ -332,8 +318,6 @@ describe("getWorktreeStatus", () => {
 
     strictEqual(status.hasUncommittedChanges, false);
     strictEqual(status.changedFiles, 0);
-
-    mock.reset();
   });
 });
 
@@ -362,8 +346,6 @@ describe("removeWorktree", () => {
       'worktree remove "/test/repo/.git/phantom/worktrees/feature"',
       { cwd: "/test/repo" },
     ]);
-
-    mock.reset();
   });
 
   it("should use force removal when regular removal fails", async () => {
@@ -399,8 +381,6 @@ describe("removeWorktree", () => {
       'worktree remove --force "/test/repo/.git/phantom/worktrees/feature"',
       { cwd: "/test/repo" },
     ]);
-
-    mock.reset();
   });
 
   it("should throw error when both regular and force removal fail", async () => {
@@ -428,8 +408,6 @@ describe("removeWorktree", () => {
     }
 
     strictEqual(executeGitCommandMock.mock.calls.length, 2);
-
-    mock.reset();
   });
 });
 
@@ -459,8 +437,6 @@ describe("deleteBranch", () => {
       'branch -D "feature"',
       { cwd: "/test/repo" },
     ]);
-
-    mock.reset();
   });
 
   it("should return error when branch deletion fails", async () => {
@@ -488,7 +464,5 @@ describe("deleteBranch", () => {
       );
     }
     strictEqual(executeGitCommandMock.mock.calls.length, 1);
-
-    mock.reset();
   });
 });
