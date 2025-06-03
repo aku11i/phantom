@@ -5,13 +5,13 @@ import { getWorktreePath } from "../paths.ts";
 import type { Result } from "../types/result.ts";
 import { err, isErr, ok } from "../types/result.ts";
 import { BranchNotFoundError, WorktreeAlreadyExistsError } from "./errors.ts";
-import { validatePhantomName } from "./validate.ts";
+import { validateWorktreeName } from "./validate.ts";
 
 export async function attachWorktreeCore(
   gitRoot: string,
   name: string,
 ): Promise<Result<string, Error>> {
-  const validation = validatePhantomName(name);
+  const validation = validateWorktreeName(name);
   if (isErr(validation)) {
     return validation;
   }

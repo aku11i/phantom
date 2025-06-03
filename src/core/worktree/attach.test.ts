@@ -5,14 +5,14 @@ import { BranchNotFoundError, WorktreeAlreadyExistsError } from "./errors.ts";
 
 describe("attachWorktreeCore", () => {
   it("should attach to existing branch successfully", async () => {
-    const validatePhantomNameMock = mock.fn(() => ok(undefined));
+    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
     const existsSyncMock = mock.fn(() => false);
     const branchExistsMock = mock.fn(() => Promise.resolve(ok(true)));
     const attachWorktreeMock = mock.fn(() => Promise.resolve(ok(undefined)));
 
     mock.module("./validate.ts", {
       namedExports: {
-        validatePhantomName: validatePhantomNameMock,
+        validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
@@ -66,13 +66,13 @@ describe("attachWorktreeCore", () => {
   });
 
   it("should fail if phantom name is invalid", async () => {
-    const validatePhantomNameMock = mock.fn(() =>
+    const validateWorktreeNameMock = mock.fn(() =>
       err(new Error("Invalid name")),
     );
 
     mock.module("./validate.ts", {
       namedExports: {
-        validatePhantomName: validatePhantomNameMock,
+        validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
@@ -87,12 +87,12 @@ describe("attachWorktreeCore", () => {
   });
 
   it("should fail if worktree already exists", async () => {
-    const validatePhantomNameMock = mock.fn(() => ok(undefined));
+    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
     const existsSyncMock = mock.fn(() => true);
 
     mock.module("./validate.ts", {
       namedExports: {
-        validatePhantomName: validatePhantomNameMock,
+        validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
@@ -126,13 +126,13 @@ describe("attachWorktreeCore", () => {
   });
 
   it("should fail if branch does not exist", async () => {
-    const validatePhantomNameMock = mock.fn(() => ok(undefined));
+    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
     const existsSyncMock = mock.fn(() => false);
     const branchExistsMock = mock.fn(() => Promise.resolve(ok(false)));
 
     mock.module("./validate.ts", {
       namedExports: {
-        validatePhantomName: validatePhantomNameMock,
+        validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
@@ -169,7 +169,7 @@ describe("attachWorktreeCore", () => {
   });
 
   it("should propagate git errors", async () => {
-    const validatePhantomNameMock = mock.fn(() => ok(undefined));
+    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
     const existsSyncMock = mock.fn(() => false);
     const branchExistsMock = mock.fn(() => Promise.resolve(ok(true)));
     const attachWorktreeMock = mock.fn(() =>
@@ -178,7 +178,7 @@ describe("attachWorktreeCore", () => {
 
     mock.module("./validate.ts", {
       namedExports: {
-        validatePhantomName: validatePhantomNameMock,
+        validateWorktreeName: validateWorktreeNameMock,
       },
     });
 

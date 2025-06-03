@@ -61,7 +61,7 @@ export async function validatePhantomDirectoryExists(
   }
 }
 
-export function validatePhantomName(name: string): Result<void, Error> {
+export function validateWorktreeName(name: string): Result<void, Error> {
   if (!name || name.trim() === "") {
     return err(new Error("Phantom name cannot be empty"));
   }
