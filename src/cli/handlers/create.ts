@@ -1,3 +1,4 @@
+import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
 import { createWorktree as createWorktreeCore } from "../../core/worktree/create.ts";
@@ -5,17 +6,27 @@ import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
 export async function createHandler(args: string[]): Promise<void> {
-  const openShell = args.includes("--shell");
-  const filteredArgs = args.filter((arg) => arg !== "--shell");
+  const { values, positionals } = parseArgs({
+    args,
+    options: {
+      shell: {
+        type: "boolean",
+        short: "s",
+      },
+    },
+    strict: true,
+    allowPositionals: true,
+  });
 
-  if (filteredArgs.length === 0) {
+  if (positionals.length === 0) {
     exitWithError(
       "Please provide a name for the new worktree",
       exitCodes.validationError,
     );
   }
 
-  const worktreeName = filteredArgs[0];
+  const worktreeName = positionals[0];
+  const openShell = values.shell ?? false;
 
   try {
     const gitRoot = await getGitRoot();

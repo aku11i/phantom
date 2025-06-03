@@ -1,3 +1,4 @@
+import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { shellInWorktree as shellInWorktreeCore } from "../../core/process/shell.ts";
 import { validateWorktreeExists } from "../../core/worktree/validate.ts";
@@ -5,14 +6,21 @@ import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 
 export async function shellHandler(args: string[]): Promise<void> {
-  if (args.length === 0) {
+  const { positionals } = parseArgs({
+    args,
+    options: {},
+    strict: true,
+    allowPositionals: true,
+  });
+
+  if (positionals.length === 0) {
     exitWithError(
       "Usage: phantom shell <worktree-name>",
       exitCodes.validationError,
     );
   }
 
-  const worktreeName = args[0];
+  const worktreeName = positionals[0];
 
   try {
     const gitRoot = await getGitRoot();
