@@ -32,3 +32,10 @@ export class GitOperationError extends WorktreeError {
     this.name = "GitOperationError";
   }
 }
+
+export class BranchNotFoundError extends WorktreeError {
+  constructor(branchName: string) {
+    super(`Branch '${branchName}' not found`);
+    this.name = "BranchNotFoundError";
+  }
+}

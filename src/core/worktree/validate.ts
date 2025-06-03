@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
+import { type Result, err, ok } from "../types/result.ts";
 
 export interface ValidationResult {
   exists: boolean;
@@ -58,4 +59,20 @@ export async function validatePhantomDirectoryExists(
   } catch {
     return false;
   }
+}
+
+export function validatePhantomName(name: string): Result<void, Error> {
+  if (!name || name.trim() === "") {
+    return err(new Error("Phantom name cannot be empty"));
+  }
+
+  if (name.includes("/")) {
+    return err(new Error("Phantom name cannot contain slashes"));
+  }
+
+  if (name.startsWith(".")) {
+    return err(new Error("Phantom name cannot start with a dot"));
+  }
+
+  return ok(undefined);
 }

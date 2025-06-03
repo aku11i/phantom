@@ -55,6 +55,9 @@ npm install -g @aku11i/phantom
 # Create a new worktree
 phantom create feature-awesome
 
+# Attach to an existing branch
+phantom attach existing-branch
+
 # Jump into the worktree
 phantom shell feature-awesome
 
@@ -104,6 +107,9 @@ npm link
 ```bash
 # Create a new worktree with a matching branch
 phantom create <name>
+
+# Attach to an existing branch as a worktree
+phantom attach <branch-name>
 
 # List all worktrees with their current status
 phantom list
@@ -165,6 +171,9 @@ When developing multiple features in parallel, you can manage each feature in it
 # Create a worktree and immediately open it in VS Code
 phantom create --exec "code ." new-feature
 phantom create --exec "cursor ." new-feature # also works with cursor!!
+
+# Attach to existing branch and open in VS Code
+phantom attach --exec "code ." feature/existing-branch
 ```
 
 ### Parallel Development Workflow
@@ -184,6 +193,7 @@ phantom shell feature-awesome  # Continue feature development
 | Feature | Git Worktree | Phantom |
 |---------|--------------|---------|
 | Create worktree + branch | `git worktree add -b feature ../project-feature` | `phantom create feature` |
+| Attach to existing branch | `git worktree add ../project-feature feature` | `phantom attach feature` |
 | List worktrees | `git worktree list` | `phantom list` |
 | Navigate to worktree | `cd ../project-feature` | `phantom shell feature` |
 | Run command in worktree | `cd ../project-feature && npm test` | `phantom exec feature npm test` |

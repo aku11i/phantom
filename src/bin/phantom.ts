@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
+import { attachHandler } from "../cli/handlers/attach.ts";
 import { createHandler } from "../cli/handlers/create.ts";
 import { deleteHandler } from "../cli/handlers/delete.ts";
 import { execHandler } from "../cli/handlers/exec.ts";
@@ -21,6 +22,11 @@ const commands: Command[] = [
     name: "create",
     description: "Create a new worktree [--shell | --exec <command>]",
     handler: createHandler,
+  },
+  {
+    name: "attach",
+    description: "Attach to an existing branch [--shell | --exec <command>]",
+    handler: attachHandler,
   },
   {
     name: "list",

@@ -55,6 +55,9 @@ npm install -g @aku11i/phantom
 # 新しいworktreeを作成
 phantom create feature-awesome
 
+# 既存のブランチにアタッチ
+phantom attach existing-branch
+
 # worktreeにジャンプ
 phantom shell feature-awesome
 
@@ -104,6 +107,9 @@ npm link
 ```bash
 # 対応するブランチを持つ新しいworktreeを作成
 phantom create <name>
+
+# 既存のブランチにworktreeとしてアタッチ
+phantom attach <branch-name>
 
 # すべてのworktreeとその現在のステータスをリスト表示
 phantom list
