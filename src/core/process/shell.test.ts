@@ -1,5 +1,8 @@
-import { deepStrictEqual } from "node:assert";
+import { deepStrictEqual, strictEqual } from "node:assert";
 import { beforeEach, describe, it, mock } from "node:test";
+import { isErr, isOk } from "../types/result.ts";
+import { WorktreeNotFoundError } from "../worktree/errors.ts";
+import { ProcessSpawnError } from "./errors.ts";
 import type { SpawnConfig } from "./spawn.ts";
 
 describe("shellInWorktree", () => {
@@ -23,8 +26,8 @@ describe("shellInWorktree", () => {
 
     spawnMock = mock.fn(() =>
       Promise.resolve({
-        success: true,
-        exitCode: 0,
+        ok: true,
+        value: { exitCode: 0 },
       }),
     );
 
@@ -43,10 +46,10 @@ describe("shellInWorktree", () => {
     const { shellInWorktree } = await import("./shell.ts");
     const result = await shellInWorktree("/test/repo", "my-feature");
 
-    deepStrictEqual(result, {
-      success: true,
-      exitCode: 0,
-    });
+    strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      deepStrictEqual(result.value, { exitCode: 0 });
+    }
 
     const spawnCall = spawnMock.mock.calls[0].arguments[0] as SpawnConfig;
     deepStrictEqual(spawnCall.command, "/bin/bash");
@@ -78,8 +81,8 @@ describe("shellInWorktree", () => {
 
     spawnMock = mock.fn(() =>
       Promise.resolve({
-        success: true,
-        exitCode: 0,
+        ok: true,
+        value: { exitCode: 0 },
       }),
     );
 
@@ -129,10 +132,11 @@ describe("shellInWorktree", () => {
     const { shellInWorktree } = await import("./shell.ts");
     const result = await shellInWorktree("/test/repo", "non-existent");
 
-    deepStrictEqual(result, {
-      success: false,
-      message: "Worktree 'non-existent' not found",
-    });
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error instanceof WorktreeNotFoundError, true);
+      strictEqual(result.error.message, "Worktree 'non-existent' not found");
+    }
 
     deepStrictEqual(spawnMock.mock.calls.length, 0);
   });
@@ -147,9 +151,8 @@ describe("shellInWorktree", () => {
 
     spawnMock = mock.fn(() =>
       Promise.resolve({
-        success: false,
-        exitCode: 127,
-        message: "Shell not found",
+        ok: false,
+        error: new ProcessSpawnError("/bin/sh", "Shell not found"),
       }),
     );
 
@@ -168,10 +171,13 @@ describe("shellInWorktree", () => {
     const { shellInWorktree } = await import("./shell.ts");
     const result = await shellInWorktree("/test/repo", "feature");
 
-    deepStrictEqual(result, {
-      success: false,
-      exitCode: 127,
-      message: "Shell not found",
-    });
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error instanceof ProcessSpawnError, true);
+      strictEqual(
+        result.error.message,
+        "Error executing command '/bin/sh': Shell not found",
+      );
+    }
   });
 });

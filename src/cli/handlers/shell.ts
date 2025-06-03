@@ -1,5 +1,7 @@
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { shellInWorktree as shellInWorktreeCore } from "../../core/process/shell.ts";
+import { isErr } from "../../core/types/result.ts";
+import { WorktreeNotFoundError } from "../../core/worktree/errors.ts";
 import { validateWorktreeExists } from "../../core/worktree/validate.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
@@ -31,11 +33,15 @@ export async function shellHandler(args: string[]): Promise<void> {
 
     const result = await shellInWorktreeCore(gitRoot, worktreeName);
 
-    if (!result.success && result.message) {
-      exitWithError(result.message, result.exitCode || exitCodes.generalError);
+    if (isErr(result)) {
+      const exitCode =
+        result.error instanceof WorktreeNotFoundError
+          ? exitCodes.notFound
+          : result.error.exitCode || exitCodes.generalError;
+      exitWithError(result.error.message, exitCode);
     }
 
-    process.exit(result.exitCode || 0);
+    process.exit(result.value.exitCode);
   } catch (error) {
     exitWithError(
       error instanceof Error ? error.message : String(error),

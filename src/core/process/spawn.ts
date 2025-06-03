@@ -3,11 +3,16 @@ import {
   type SpawnOptions,
   spawn as nodeSpawn,
 } from "node:child_process";
+import { type Result, err, ok } from "../types/result.ts";
+import {
+  type ProcessError,
+  ProcessExecutionError,
+  ProcessSignalError,
+  ProcessSpawnError,
+} from "./errors.ts";
 
-export interface SpawnResult {
-  success: boolean;
-  message?: string;
-  exitCode?: number;
+export interface SpawnSuccess {
+  exitCode: number;
 }
 
 export interface SpawnConfig {
@@ -16,7 +21,9 @@ export interface SpawnConfig {
   options?: SpawnOptions;
 }
 
-export async function spawnProcess(config: SpawnConfig): Promise<SpawnResult> {
+export async function spawnProcess(
+  config: SpawnConfig,
+): Promise<Result<SpawnSuccess, ProcessError>> {
   return new Promise((resolve) => {
     const { command, args = [], options = {} } = config;
 
@@ -26,25 +33,19 @@ export async function spawnProcess(config: SpawnConfig): Promise<SpawnResult> {
     });
 
     childProcess.on("error", (error) => {
-      resolve({
-        success: false,
-        message: `Error executing command: ${error.message}`,
-      });
+      resolve(err(new ProcessSpawnError(command, error.message)));
     });
 
     childProcess.on("exit", (code, signal) => {
       if (signal) {
-        resolve({
-          success: false,
-          message: `Command terminated by signal: ${signal}`,
-          exitCode: 128 + (signal === "SIGTERM" ? 15 : 1),
-        });
+        resolve(err(new ProcessSignalError(signal)));
       } else {
         const exitCode = code ?? 0;
-        resolve({
-          success: exitCode === 0,
-          exitCode,
-        });
+        if (exitCode === 0) {
+          resolve(ok({ exitCode }));
+        } else {
+          resolve(err(new ProcessExecutionError(command, exitCode)));
+        }
       }
     });
   });

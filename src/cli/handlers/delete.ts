@@ -1,5 +1,10 @@
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
+import { isErr } from "../../core/types/result.ts";
 import { deleteWorktree as deleteWorktreeCore } from "../../core/worktree/delete.ts";
+import {
+  WorktreeError,
+  WorktreeNotFoundError,
+} from "../../core/worktree/errors.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -22,11 +27,18 @@ export async function deleteHandler(args: string[]): Promise<void> {
       force: forceDelete,
     });
 
-    if (!result.success) {
-      exitWithError(result.message, exitCodes.generalError);
+    if (isErr(result)) {
+      const exitCode =
+        result.error instanceof WorktreeNotFoundError
+          ? exitCodes.validationError
+          : result.error instanceof WorktreeError &&
+              result.error.message.includes("uncommitted changes")
+            ? exitCodes.validationError
+            : exitCodes.generalError;
+      exitWithError(result.error.message, exitCode);
     }
 
-    output.log(result.message);
+    output.log(result.value.message);
     exitWithSuccess();
   } catch (error) {
     exitWithError(

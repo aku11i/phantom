@@ -1,6 +1,8 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 import type { AddWorktreeOptions } from "../git/libs/add-worktree.ts";
+import { isErr, isOk } from "../types/result.ts";
+import { GitOperationError, WorktreeAlreadyExistsError } from "./errors.ts";
 
 describe("createWorktree", () => {
   let accessMock: ReturnType<typeof mock.fn>;
@@ -48,12 +50,14 @@ describe("createWorktree", () => {
     const { createWorktree } = await import("./create.ts");
     const result = await createWorktree("/test/repo", "feature-branch");
 
-    deepStrictEqual(result, {
-      success: true,
-      message:
-        "Created worktree 'feature-branch' at /test/repo/.git/phantom/worktrees/feature-branch",
-      path: "/test/repo/.git/phantom/worktrees/feature-branch",
-    });
+    strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      deepStrictEqual(result.value, {
+        message:
+          "Created worktree 'feature-branch' at /test/repo/.git/phantom/worktrees/feature-branch",
+        path: "/test/repo/.git/phantom/worktrees/feature-branch",
+      });
+    }
 
     const worktreeOptions = addWorktreeMock.mock.calls[0]
       .arguments[0] as AddWorktreeOptions;
@@ -149,10 +153,11 @@ describe("createWorktree", () => {
     const { createWorktree } = await import("./create.ts");
     const result = await createWorktree("/test/repo", "existing");
 
-    deepStrictEqual(result, {
-      success: false,
-      message: "Worktree 'existing' already exists",
-    });
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error instanceof WorktreeAlreadyExistsError, true);
+      strictEqual(result.error.message, "Worktree 'existing' already exists");
+    }
   });
 
   it("should use custom branch and commitish when provided", async () => {
@@ -203,7 +208,7 @@ describe("createWorktree", () => {
     strictEqual(worktreeOptions2.commitish, "main");
   });
 
-  it("should throw error when git worktree add fails", async () => {
+  it("should return error when git worktree add fails", async () => {
     accessMock = mock.fn(() => Promise.resolve());
     validateMock = mock.fn(() => Promise.resolve({ exists: false }));
     addWorktreeMock = mock.fn(() =>
@@ -242,14 +247,14 @@ describe("createWorktree", () => {
     });
 
     const { createWorktree } = await import("./create.ts");
+    const result = await createWorktree("/test/repo", "bad-branch");
 
-    try {
-      await createWorktree("/test/repo", "bad-branch");
-      throw new Error("Should have thrown");
-    } catch (error) {
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error instanceof GitOperationError, true);
       strictEqual(
-        (error as Error).message,
-        "Failed to create worktree: fatal: branch already exists",
+        result.error.message,
+        "Git worktree add failed: fatal: branch already exists",
       );
     }
   });

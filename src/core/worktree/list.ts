@@ -1,5 +1,6 @@
 import { executeGitCommandInDirectory } from "../git/executor.ts";
 import { getWorktreePath } from "../paths.ts";
+import { type Result, ok } from "../types/result.ts";
 import {
   listValidWorktrees,
   validatePhantomDirectoryExists,
@@ -12,8 +13,7 @@ export interface WorktreeInfo {
   isClean: boolean;
 }
 
-export interface ListWorktreesResult {
-  success: boolean;
+export interface ListWorktreesSuccess {
   worktrees: WorktreeInfo[];
   message?: string;
 }
@@ -66,23 +66,21 @@ export async function getWorktreeInfo(
 
 export async function listWorktrees(
   gitRoot: string,
-): Promise<ListWorktreesResult> {
+): Promise<Result<ListWorktreesSuccess, never>> {
   if (!(await validatePhantomDirectoryExists(gitRoot))) {
-    return {
-      success: true,
+    return ok({
       worktrees: [],
       message: "No worktrees found (worktrees directory doesn't exist)",
-    };
+    });
   }
 
   const worktreeNames = await listValidWorktrees(gitRoot);
 
   if (worktreeNames.length === 0) {
-    return {
-      success: true,
+    return ok({
       worktrees: [],
       message: "No worktrees found",
-    };
+    });
   }
 
   try {
@@ -90,10 +88,9 @@ export async function listWorktrees(
       worktreeNames.map((name) => getWorktreeInfo(gitRoot, name)),
     );
 
-    return {
-      success: true,
+    return ok({
       worktrees,
-    };
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to list worktrees: ${errorMessage}`);

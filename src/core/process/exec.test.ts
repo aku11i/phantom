@@ -1,5 +1,8 @@
-import { deepStrictEqual } from "node:assert";
+import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
+import { isErr, isOk } from "../types/result.ts";
+import { WorktreeNotFoundError } from "../worktree/errors.ts";
+import { ProcessExecutionError } from "./errors.ts";
 
 describe("execInWorktree", () => {
   let validateMock: ReturnType<typeof mock.fn>;
@@ -15,8 +18,8 @@ describe("execInWorktree", () => {
 
     spawnMock = mock.fn(() =>
       Promise.resolve({
-        success: true,
-        exitCode: 0,
+        ok: true,
+        value: { exitCode: 0 },
       }),
     );
 
@@ -38,10 +41,10 @@ describe("execInWorktree", () => {
       "test",
     ]);
 
-    deepStrictEqual(result, {
-      success: true,
-      exitCode: 0,
-    });
+    strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      deepStrictEqual(result.value, { exitCode: 0 });
+    }
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0], {
       command: "npm",
@@ -78,10 +81,11 @@ describe("execInWorktree", () => {
       "test",
     ]);
 
-    deepStrictEqual(result, {
-      success: false,
-      message: "Worktree 'non-existent' not found",
-    });
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error instanceof WorktreeNotFoundError, true);
+      strictEqual(result.error.message, "Worktree 'non-existent' not found");
+    }
 
     deepStrictEqual(spawnMock.mock.calls.length, 0);
   });
@@ -96,8 +100,8 @@ describe("execInWorktree", () => {
 
     spawnMock = mock.fn(() =>
       Promise.resolve({
-        success: true,
-        exitCode: 0,
+        ok: true,
+        value: { exitCode: 0 },
       }),
     );
 
@@ -114,7 +118,7 @@ describe("execInWorktree", () => {
     });
 
     const { execInWorktree } = await import("./exec.ts");
-    const result = await execInWorktree("/test/repo", "feature", ["ls"]);
+    await execInWorktree("/test/repo", "feature", ["ls"]);
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0], {
       command: "ls",
@@ -135,9 +139,8 @@ describe("execInWorktree", () => {
 
     spawnMock = mock.fn(() =>
       Promise.resolve({
-        success: false,
-        exitCode: 1,
-        message: "Command failed",
+        ok: false,
+        error: new ProcessExecutionError("false", 1),
       }),
     );
 
@@ -156,10 +159,12 @@ describe("execInWorktree", () => {
     const { execInWorktree } = await import("./exec.ts");
     const result = await execInWorktree("/test/repo", "feature", ["false"]);
 
-    deepStrictEqual(result, {
-      success: false,
-      exitCode: 1,
-      message: "Command failed",
-    });
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error instanceof ProcessExecutionError, true);
+      if (result.error instanceof ProcessExecutionError) {
+        strictEqual(result.error.exitCode, 1);
+      }
+    }
   });
 });

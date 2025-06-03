@@ -1,6 +1,8 @@
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
+import { isErr, isOk } from "../../core/types/result.ts";
 import { createWorktree as createWorktreeCore } from "../../core/worktree/create.ts";
+import { WorktreeAlreadyExistsError } from "../../core/worktree/errors.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -21,26 +23,34 @@ export async function createHandler(args: string[]): Promise<void> {
     const gitRoot = await getGitRoot();
     const result = await createWorktreeCore(gitRoot, worktreeName);
 
-    if (!result.success) {
-      exitWithError(result.message, exitCodes.generalError);
+    if (isErr(result)) {
+      const exitCode =
+        result.error instanceof WorktreeAlreadyExistsError
+          ? exitCodes.validationError
+          : exitCodes.generalError;
+      exitWithError(result.error.message, exitCode);
     }
 
-    output.log(result.message);
+    output.log(result.value.message);
 
-    if (openShell && result.path) {
-      output.log(`\nEntering worktree '${worktreeName}' at ${result.path}`);
+    if (openShell && isOk(result)) {
+      output.log(
+        `\nEntering worktree '${worktreeName}' at ${result.value.path}`,
+      );
       output.log("Type 'exit' to return to your original directory\n");
 
       const shellResult = await shellInWorktree(gitRoot, worktreeName);
 
-      if (!shellResult.success) {
-        if (shellResult.message) {
-          output.error(shellResult.message);
-        }
-        exitWithError("", shellResult.exitCode ?? exitCodes.generalError);
+      if (isErr(shellResult)) {
+        output.error(shellResult.error.message);
+        const exitCode =
+          "exitCode" in shellResult.error
+            ? (shellResult.error.exitCode ?? exitCodes.generalError)
+            : exitCodes.generalError;
+        exitWithError("", exitCode);
       }
 
-      process.exit(shellResult.exitCode ?? 0);
+      process.exit(shellResult.value.exitCode ?? 0);
     }
 
     exitWithSuccess();

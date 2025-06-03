@@ -1,6 +1,8 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "../git/libs/add-worktree.ts";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
+import { type Result, err, ok } from "../types/result.ts";
+import { GitOperationError, WorktreeAlreadyExistsError } from "./errors.ts";
 import { validateWorktreeDoesNotExist } from "./validate.ts";
 
 export interface CreateWorktreeOptions {
@@ -8,17 +10,18 @@ export interface CreateWorktreeOptions {
   commitish?: string;
 }
 
-export interface CreateWorktreeResult {
-  success: boolean;
+export interface CreateWorktreeSuccess {
   message: string;
-  path?: string;
+  path: string;
 }
 
 export async function createWorktree(
   gitRoot: string,
   name: string,
   options: CreateWorktreeOptions = {},
-): Promise<CreateWorktreeResult> {
+): Promise<
+  Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | GitOperationError>
+> {
   const { branch = name, commitish = "HEAD" } = options;
 
   const worktreesPath = getPhantomDirectory(gitRoot);
@@ -32,10 +35,7 @@ export async function createWorktree(
 
   const validation = await validateWorktreeDoesNotExist(gitRoot, name);
   if (validation.exists) {
-    return {
-      success: false,
-      message: validation.message || `Worktree '${name}' already exists`,
-    };
+    return err(new WorktreeAlreadyExistsError(name));
   }
 
   try {
@@ -45,13 +45,12 @@ export async function createWorktree(
       commitish,
     });
 
-    return {
-      success: true,
+    return ok({
       message: `Created worktree '${name}' at ${worktreePath}`,
       path: worktreePath,
-    };
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to create worktree: ${errorMessage}`);
+    return err(new GitOperationError("worktree add", errorMessage));
   }
 }

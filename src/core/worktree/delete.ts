@@ -2,14 +2,19 @@ import {
   executeGitCommand,
   executeGitCommandInDirectory,
 } from "../git/executor.ts";
+import { type Result, err, ok } from "../types/result.ts";
+import {
+  GitOperationError,
+  WorktreeError,
+  WorktreeNotFoundError,
+} from "./errors.ts";
 import { validateWorktreeExists } from "./validate.ts";
 
 export interface DeleteWorktreeOptions {
   force?: boolean;
 }
 
-export interface DeleteWorktreeResult {
-  success: boolean;
+export interface DeleteWorktreeSuccess {
   message: string;
   hasUncommittedChanges?: boolean;
   changedFiles?: number;
@@ -81,15 +86,17 @@ export async function deleteWorktree(
   gitRoot: string,
   name: string,
   options: DeleteWorktreeOptions = {},
-): Promise<DeleteWorktreeResult> {
+): Promise<
+  Result<
+    DeleteWorktreeSuccess,
+    WorktreeNotFoundError | WorktreeError | GitOperationError
+  >
+> {
   const { force = false } = options;
 
   const validation = await validateWorktreeExists(gitRoot, name);
   if (!validation.exists) {
-    return {
-      success: false,
-      message: validation.message || `Worktree '${name}' does not exist`,
-    };
+    return err(new WorktreeNotFoundError(name));
   }
 
   const worktreePath = validation.path as string;
@@ -97,12 +104,11 @@ export async function deleteWorktree(
   const status = await getWorktreeStatus(worktreePath);
 
   if (status.hasUncommittedChanges && !force) {
-    return {
-      success: false,
-      message: `Worktree '${name}' has uncommitted changes (${status.changedFiles} files). Use --force to delete anyway.`,
-      hasUncommittedChanges: true,
-      changedFiles: status.changedFiles,
-    };
+    return err(
+      new WorktreeError(
+        `Worktree '${name}' has uncommitted changes (${status.changedFiles} files). Use --force to delete anyway.`,
+      ),
+    );
   }
 
   try {
@@ -118,16 +124,15 @@ export async function deleteWorktree(
       message = `Warning: Worktree '${name}' had uncommitted changes (${status.changedFiles} files)\n${message}`;
     }
 
-    return {
-      success: true,
+    return ok({
       message,
       hasUncommittedChanges: status.hasUncommittedChanges,
       changedFiles: status.hasUncommittedChanges
         ? status.changedFiles
         : undefined,
-    };
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to delete worktree: ${errorMessage}`);
+    return err(new GitOperationError("worktree remove", errorMessage));
   }
 }

@@ -1,19 +1,21 @@
+import { type Result, err } from "../types/result.ts";
+import { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { validateWorktreeExists } from "../worktree/validate.ts";
-import { type SpawnResult, spawnProcess } from "./spawn.ts";
+import type { ProcessError } from "./errors.ts";
+import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
 
-export interface ExecInWorktreeResult extends SpawnResult {}
+export type ExecInWorktreeSuccess = SpawnSuccess;
 
 export async function execInWorktree(
   gitRoot: string,
   worktreeName: string,
   command: string[],
-): Promise<ExecInWorktreeResult> {
+): Promise<
+  Result<ExecInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
+> {
   const validation = await validateWorktreeExists(gitRoot, worktreeName);
   if (!validation.exists) {
-    return {
-      success: false,
-      message: validation.message || `Worktree '${worktreeName}' not found`,
-    };
+    return err(new WorktreeNotFoundError(worktreeName));
   }
 
   const worktreePath = validation.path as string;
