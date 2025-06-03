@@ -171,6 +171,9 @@ tmux new-window 'phantom create --shell new-feature'
 # worktreeを作成してすぐにVS Codeで開く
 phantom create --exec "code ." new-feature
 phantom create --exec "cursor ." new-feature # Cursorでも動作します！
+
+# 既存のブランチにアタッチしてVS Codeで開く
+phantom attach --exec "code ." feature/existing-branch
 ```
 
 ### 並行開発ワークフロー
@@ -190,6 +193,7 @@ phantom shell feature-awesome  # 機能開発を続行
 | 機能 | Git Worktree | Phantom |
 |---------|--------------|---------|
 | worktree + ブランチの作成 | `git worktree add -b feature ../project-feature` | `phantom create feature` |
+| 既存のブランチにアタッチ | `git worktree add ../project-feature feature` | `phantom attach feature` |
 | worktreeのリスト表示 | `git worktree list` | `phantom list` |
 | worktreeへの移動 | `cd ../project-feature` | `phantom shell feature` |
 | worktreeでコマンド実行 | `cd ../project-feature && npm test` | `phantom exec feature npm test` |
