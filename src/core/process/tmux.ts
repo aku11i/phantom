@@ -16,6 +16,22 @@ export async function isInsideTmux(): Promise<boolean> {
   return process.env.TMUX !== undefined;
 }
 
+export function buildWorktreeShellCommand(
+  worktreePath: string,
+  worktreeName: string,
+  shell: string = process.env.SHELL || "/bin/sh",
+): string {
+  const envVars = [
+    `cd ${worktreePath}`,
+    "PHANTOM=1",
+    `PHANTOM_NAME=${worktreeName}`,
+    `PHANTOM_PATH=${worktreePath}`,
+    `exec ${shell}`,
+  ].join(" && ");
+
+  return `${shell} -c '${envVars}'`;
+}
+
 export async function executeTmuxCommand(
   options: TmuxOptions,
 ): Promise<Result<TmuxSuccess, ProcessError>> {

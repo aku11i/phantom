@@ -1,6 +1,6 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { isInsideTmux } from "./tmux.ts";
+import { buildWorktreeShellCommand, isInsideTmux } from "./tmux.ts";
 
 describe("tmux", () => {
   describe("isInsideTmux", () => {
@@ -30,6 +30,56 @@ describe("tmux", () => {
       if (originalTmux !== undefined) {
         process.env.TMUX = originalTmux;
       }
+    });
+  });
+
+  describe("buildWorktreeShellCommand", () => {
+    it("should build correct command with default shell", () => {
+      const originalShell = process.env.SHELL;
+      process.env.SHELL = "/bin/bash";
+
+      const command = buildWorktreeShellCommand(
+        "/path/to/worktree",
+        "feature-branch",
+      );
+
+      strictEqual(
+        command,
+        "/bin/bash -c 'cd /path/to/worktree && PHANTOM=1 && PHANTOM_NAME=feature-branch && PHANTOM_PATH=/path/to/worktree && exec /bin/bash'",
+      );
+
+      if (originalShell === undefined) {
+        // biome-ignore lint/performance/noDelete: Need to actually remove env var for test
+        delete process.env.SHELL;
+      } else {
+        process.env.SHELL = originalShell;
+      }
+    });
+
+    it("should use custom shell when provided", () => {
+      const command = buildWorktreeShellCommand(
+        "/path/to/worktree",
+        "feature-branch",
+        "/usr/bin/zsh",
+      );
+
+      strictEqual(
+        command,
+        "/usr/bin/zsh -c 'cd /path/to/worktree && PHANTOM=1 && PHANTOM_NAME=feature-branch && PHANTOM_PATH=/path/to/worktree && exec /usr/bin/zsh'",
+      );
+    });
+
+    it("should handle paths with spaces", () => {
+      const command = buildWorktreeShellCommand(
+        "/path with spaces/worktree",
+        "feature branch",
+        "/bin/sh",
+      );
+
+      strictEqual(
+        command,
+        "/bin/sh -c 'cd /path with spaces/worktree && PHANTOM=1 && PHANTOM_NAME=feature branch && PHANTOM_PATH=/path with spaces/worktree && exec /bin/sh'",
+      );
     });
   });
 });
