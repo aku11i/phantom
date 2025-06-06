@@ -227,8 +227,7 @@ Phantomはリポジトリルートの`phantom.config.json`ファイルによる�
     "copyFiles": [
       ".env",
       ".env.local",
-      "config/local.json",
-      "*.local.settings.json"
+      "config/local.json"
     ]
   }
 }
