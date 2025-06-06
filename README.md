@@ -109,9 +109,16 @@ npm link
 ```bash
 # Create a new worktree with a matching branch
 phantom create <name>
+phantom create <name> --shell  # Create and enter interactive shell
+phantom create <name> --exec <command>  # Create and execute command
+phantom create <name> --tmux  # Create and open in new tmux window
+phantom create <name> --tmux vertical  # Create and split tmux pane vertically
+phantom create <name> --tmux horizontal  # Create and split tmux pane horizontally
 
 # Attach to an existing branch as a worktree
 phantom attach <branch-name>
+phantom attach <branch-name> --shell  # Attach and enter interactive shell
+phantom attach <branch-name> --exec <command>  # Attach and execute command
 
 # List all worktrees with their current status
 phantom list

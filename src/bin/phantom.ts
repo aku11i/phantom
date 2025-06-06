@@ -20,7 +20,8 @@ interface Command {
 const commands: Command[] = [
   {
     name: "create",
-    description: "Create a new worktree [--shell | --exec <command>]",
+    description:
+      "Create a new worktree [--shell | --exec <command> | --tmux [new|vertical|horizontal]]",
     handler: createHandler,
   },
   {

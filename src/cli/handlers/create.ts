@@ -2,6 +2,11 @@ import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { execInWorktree } from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
+import {
+  executeTmuxCommand,
+  isInsideTmux,
+  parseTmuxDirection,
+} from "../../core/process/tmux.ts";
 import { isErr, isOk } from "../../core/types/result.ts";
 import { createWorktree as createWorktreeCore } from "../../core/worktree/create.ts";
 import { WorktreeAlreadyExistsError } from "../../core/worktree/errors.ts";
@@ -20,6 +25,10 @@ export async function createHandler(args: string[]): Promise<void> {
         type: "string",
         short: "x",
       },
+      tmux: {
+        type: "string",
+        short: "t",
+      },
     },
     strict: true,
     allowPositionals: true,
@@ -35,10 +44,22 @@ export async function createHandler(args: string[]): Promise<void> {
   const worktreeName = positionals[0];
   const openShell = values.shell ?? false;
   const execCommand = values.exec;
+  const tmuxOption = values.tmux;
 
-  if (openShell && execCommand) {
+  if (
+    [openShell, execCommand !== undefined, tmuxOption !== undefined].filter(
+      Boolean,
+    ).length > 1
+  ) {
     exitWithError(
-      "Cannot use --shell and --exec together",
+      "Cannot use --shell, --exec, and --tmux options together",
+      exitCodes.validationError,
+    );
+  }
+
+  if (tmuxOption !== undefined && !(await isInsideTmux())) {
+    exitWithError(
+      "The --tmux option can only be used inside a tmux session",
       exitCodes.validationError,
     );
   }
@@ -99,6 +120,32 @@ export async function createHandler(args: string[]): Promise<void> {
       }
 
       process.exit(shellResult.value.exitCode ?? 0);
+    }
+
+    if (tmuxOption !== undefined && isOk(result)) {
+      const direction = parseTmuxDirection(
+        tmuxOption === "" ? true : tmuxOption,
+      );
+      const shell = process.env.SHELL || "/bin/sh";
+
+      output.log(
+        `\nOpening worktree '${worktreeName}' in tmux ${direction === "new" ? "window" : "pane"}...`,
+      );
+
+      const tmuxResult = await executeTmuxCommand({
+        direction,
+        command: `${shell} -c 'cd ${result.value.path} && PHANTOM=1 PHANTOM_NAME=${worktreeName} PHANTOM_PATH=${result.value.path} exec ${shell}'`,
+        cwd: result.value.path,
+      });
+
+      if (isErr(tmuxResult)) {
+        output.error(tmuxResult.error.message);
+        const exitCode =
+          "exitCode" in tmuxResult.error
+            ? (tmuxResult.error.exitCode ?? exitCodes.generalError)
+            : exitCodes.generalError;
+        exitWithError("", exitCode);
+      }
     }
 
     exitWithSuccess();
