@@ -112,8 +112,10 @@ phantom create <name>
 phantom create <name> --shell  # 作成してインタラクティブシェルに入る
 phantom create <name> --exec <command>  # 作成してコマンドを実行
 phantom create <name> --tmux  # 作成して新しいtmuxウィンドウで開く
-phantom create <name> --tmux vertical  # 作成してtmuxペインを縦に分割
-phantom create <name> --tmux horizontal  # 作成してtmuxペインを横に分割
+phantom create <name> --tmux-vertical  # 作成してtmuxペインを縦に分割
+phantom create <name> --tmux-v  # --tmux-verticalの短縮形
+phantom create <name> --tmux-horizontal  # 作成してtmuxペインを横に分割
+phantom create <name> --tmux-h  # --tmux-horizontalの短縮形
 
 # 既存のブランチにworktreeとしてアタッチ
 phantom attach <branch-name>

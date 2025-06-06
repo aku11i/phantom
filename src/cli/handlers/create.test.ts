@@ -282,7 +282,6 @@ describe("createHandler", () => {
     mock.module("../../core/process/tmux.ts", {
       namedExports: {
         isInsideTmux: mock.fn(() => Promise.resolve(false)),
-        parseTmuxDirection: mock.fn(),
         executeTmuxCommand: mock.fn(),
       },
     });
@@ -351,9 +350,6 @@ describe("createHandler", () => {
     mock.module("../../core/process/tmux.ts", {
       namedExports: {
         isInsideTmux: mock.fn(() => Promise.resolve(true)),
-        parseTmuxDirection: mock.fn((value) =>
-          value === "" || value === true ? "new" : value,
-        ),
         executeTmuxCommand: executeTmuxCommandMock,
       },
     });
@@ -441,7 +437,6 @@ describe("createHandler", () => {
     mock.module("../../core/process/tmux.ts", {
       namedExports: {
         isInsideTmux: mock.fn(() => Promise.resolve(true)),
-        parseTmuxDirection: mock.fn((value) => value),
         executeTmuxCommand: executeTmuxCommandMock,
       },
     });
@@ -467,7 +462,7 @@ describe("createHandler", () => {
     });
 
     const { createHandler } = await import("./create.ts");
-    await createHandler(["feature", "--tmux", "vertical"]);
+    await createHandler(["feature", "--tmux-vertical"]);
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(executeTmuxCommandMock.mock.calls.length, 1);

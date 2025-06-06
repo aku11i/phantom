@@ -21,7 +21,7 @@ const commands: Command[] = [
   {
     name: "create",
     description:
-      "Create a new worktree [--shell | --exec <command> | --tmux [new|vertical|horizontal]]",
+      "Create a new worktree [--shell | --exec <command> | --tmux | --tmux-vertical | --tmux-horizontal]",
     handler: createHandler,
   },
   {

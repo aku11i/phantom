@@ -2,7 +2,7 @@ import type { Result } from "../types/result.ts";
 import type { ProcessError } from "./errors.ts";
 import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
 
-export type TmuxSplitDirection = "new" | "vertical" | "horizontal" | "v" | "h";
+export type TmuxSplitDirection = "new" | "vertical" | "horizontal";
 
 export interface TmuxOptions {
   direction: TmuxSplitDirection;
@@ -28,15 +28,11 @@ export async function executeTmuxCommand(
       tmuxArgs.push("new-window");
       break;
     case "vertical":
-    case "v":
       tmuxArgs.push("split-window", "-v");
       break;
     case "horizontal":
-    case "h":
       tmuxArgs.push("split-window", "-h");
       break;
-    default:
-      tmuxArgs.push("new-window");
   }
 
   if (cwd) {
@@ -51,20 +47,4 @@ export async function executeTmuxCommand(
   });
 
   return result;
-}
-
-export function parseTmuxDirection(
-  value: string | boolean,
-): TmuxSplitDirection {
-  if (value === true || value === "") {
-    return "new";
-  }
-
-  const normalized = typeof value === "string" ? value.toLowerCase() : "new";
-
-  if (["new", "vertical", "horizontal", "v", "h"].includes(normalized)) {
-    return normalized as TmuxSplitDirection;
-  }
-
-  return "new";
 }

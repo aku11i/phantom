@@ -112,8 +112,10 @@ phantom create <name>
 phantom create <name> --shell  # Create and enter interactive shell
 phantom create <name> --exec <command>  # Create and execute command
 phantom create <name> --tmux  # Create and open in new tmux window
-phantom create <name> --tmux vertical  # Create and split tmux pane vertically
-phantom create <name> --tmux horizontal  # Create and split tmux pane horizontally
+phantom create <name> --tmux-vertical  # Create and split tmux pane vertically
+phantom create <name> --tmux-v  # Shorthand for --tmux-vertical
+phantom create <name> --tmux-horizontal  # Create and split tmux pane horizontally
+phantom create <name> --tmux-h  # Shorthand for --tmux-horizontal
 
 # Attach to an existing branch as a worktree
 phantom attach <branch-name>

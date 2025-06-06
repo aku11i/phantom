@@ -1,6 +1,6 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { isInsideTmux, parseTmuxDirection } from "./tmux.ts";
+import { isInsideTmux } from "./tmux.ts";
 
 describe("tmux", () => {
   describe("isInsideTmux", () => {
@@ -30,37 +30,6 @@ describe("tmux", () => {
       if (originalTmux !== undefined) {
         process.env.TMUX = originalTmux;
       }
-    });
-  });
-
-  describe("parseTmuxDirection", () => {
-    it("should parse valid directions", () => {
-      strictEqual(parseTmuxDirection("new"), "new");
-      strictEqual(parseTmuxDirection("vertical"), "vertical");
-      strictEqual(parseTmuxDirection("horizontal"), "horizontal");
-      strictEqual(parseTmuxDirection("v"), "v");
-      strictEqual(parseTmuxDirection("h"), "h");
-    });
-
-    it("should return 'new' for boolean true", () => {
-      strictEqual(parseTmuxDirection(true), "new");
-    });
-
-    it("should return 'new' for empty string", () => {
-      strictEqual(parseTmuxDirection(""), "new");
-    });
-
-    it("should return 'new' for invalid values", () => {
-      strictEqual(parseTmuxDirection("invalid"), "new");
-      strictEqual(parseTmuxDirection("diagonal"), "new");
-    });
-
-    it("should be case insensitive", () => {
-      strictEqual(parseTmuxDirection("NEW"), "new");
-      strictEqual(parseTmuxDirection("Vertical"), "vertical");
-      strictEqual(parseTmuxDirection("HORIZONTAL"), "horizontal");
-      strictEqual(parseTmuxDirection("V"), "v");
-      strictEqual(parseTmuxDirection("H"), "h");
     });
   });
 });
