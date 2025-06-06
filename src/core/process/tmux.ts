@@ -8,6 +8,7 @@ export interface TmuxOptions {
   direction: TmuxSplitDirection;
   command: string;
   cwd?: string;
+  env?: Record<string, string>;
 }
 
 export type TmuxSuccess = SpawnSuccess;
@@ -16,29 +17,10 @@ export async function isInsideTmux(): Promise<boolean> {
   return process.env.TMUX !== undefined;
 }
 
-export function buildWorktreeShellCommand(
-  worktreePath: string,
-  worktreeName: string,
-  shell: string = process.env.SHELL || "/bin/sh",
-): string {
-  // Quote values that may contain spaces
-  const quotedName = worktreeName.includes(" ")
-    ? `"${worktreeName}"`
-    : worktreeName;
-  const quotedPath = worktreePath.includes(" ")
-    ? `"${worktreePath}"`
-    : worktreePath;
-
-  // Set environment variables and execute the shell
-  const command = `PHANTOM=1 PHANTOM_NAME=${quotedName} PHANTOM_PATH=${quotedPath} exec ${shell}`;
-
-  return `${shell} -c '${command}'`;
-}
-
 export async function executeTmuxCommand(
   options: TmuxOptions,
 ): Promise<Result<TmuxSuccess, ProcessError>> {
-  const { direction, command, cwd } = options;
+  const { direction, command, cwd, env } = options;
 
   const tmuxArgs: string[] = [];
 
@@ -56,6 +38,13 @@ export async function executeTmuxCommand(
 
   if (cwd) {
     tmuxArgs.push("-c", cwd);
+  }
+
+  // Add environment variables safely
+  if (env) {
+    for (const [key, value] of Object.entries(env)) {
+      tmuxArgs.push("-e", `${key}=${value}`);
+    }
   }
 
   tmuxArgs.push(command);

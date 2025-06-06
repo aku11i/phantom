@@ -2,11 +2,7 @@ import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { execInWorktree } from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
-import {
-  buildWorktreeShellCommand,
-  executeTmuxCommand,
-  isInsideTmux,
-} from "../../core/process/tmux.ts";
+import { executeTmuxCommand, isInsideTmux } from "../../core/process/tmux.ts";
 import { isErr, isOk } from "../../core/types/result.ts";
 import { createWorktree as createWorktreeCore } from "../../core/worktree/create.ts";
 import { WorktreeAlreadyExistsError } from "../../core/worktree/errors.ts";
@@ -154,15 +150,17 @@ export async function createHandler(args: string[]): Promise<void> {
         `\nOpening worktree '${worktreeName}' in tmux ${tmuxDirection === "new" ? "window" : "pane"}...`,
       );
 
-      const command = buildWorktreeShellCommand(
-        result.value.path,
-        worktreeName,
-      );
+      const shell = process.env.SHELL || "/bin/sh";
 
       const tmuxResult = await executeTmuxCommand({
         direction: tmuxDirection,
-        command,
+        command: shell,
         cwd: result.value.path,
+        env: {
+          PHANTOM: "1",
+          PHANTOM_NAME: worktreeName,
+          PHANTOM_PATH: result.value.path,
+        },
       });
 
       if (isErr(tmuxResult)) {
