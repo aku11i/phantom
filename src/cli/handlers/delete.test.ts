@@ -71,7 +71,9 @@ describe("deleteHandler", () => {
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[1], "feature");
-    const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[2] as { force: boolean };
+    const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[2] as {
+      force: boolean;
+    };
     strictEqual(deleteOptions.force, false);
 
     strictEqual(consoleLogMock.mock.calls.length, 1);
@@ -156,7 +158,9 @@ describe("deleteHandler", () => {
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[1], "issue-93");
-    const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[2] as { force: boolean };
+    const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[2] as {
+      force: boolean;
+    };
     strictEqual(deleteOptions.force, false);
 
     strictEqual(consoleLogMock.mock.calls.length, 1);
@@ -356,7 +360,9 @@ describe("deleteHandler", () => {
     await deleteHandler(["--current", "--force"]);
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
-    const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[2] as { force: boolean };
+    const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[2] as {
+      force: boolean;
+    };
     strictEqual(deleteOptions.force, true);
 
     strictEqual(consoleLogMock.mock.calls.length, 1);
