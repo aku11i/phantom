@@ -117,6 +117,9 @@ phantom create <name> --tmux-v  # --tmux-verticalの短縮形
 phantom create <name> --tmux-horizontal  # 作成してtmuxペインを横に分割
 phantom create <name> --tmux-h  # --tmux-horizontalの短縮形
 
+# worktreeを作成し、特定のファイルをコピー
+phantom create <name> --copy-files=".env,.env.local"
+
 # 既存のブランチにworktreeとしてアタッチ
 phantom attach <branch-name>
 phantom attach <branch-name> --shell  # アタッチしてインタラクティブシェルに入る
@@ -209,6 +212,47 @@ phantom shell feature-awesome  # 機能開発を続行
 | worktreeへの移動 | `cd ../project-feature` | `phantom shell feature` |
 | worktreeでコマンド実行 | `cd ../project-feature && npm test` | `phantom exec feature npm test` |
 | worktreeの削除 | `git worktree remove ../project-feature` | `phantom delete feature` |
+
+## ⚙️ 設定
+
+Phantomはリポジトリルートの`phantom.config.json`ファイルによる設定をサポートします。これにより、新しいworktreeを作成する際に自動的にコピーされるファイルを定義できます。
+
+### 設定ファイル
+
+リポジトリルートに`phantom.config.json`ファイルを作成します：
+
+```json
+{
+  "postCreate": {
+    "copyFiles": [
+      ".env",
+      ".env.local",
+      "config/local.json",
+      "*.local.settings.json"
+    ]
+  }
+}
+```
+
+### ファイルコピー機能
+
+新しいworktreeを作成する際、Phantomは現在のworktreeから新しいworktreeへ指定されたファイルを自動的にコピーできます。これは以下のような場合に特に便利です：
+
+- 環境設定ファイル（`.env`、`.env.local`）
+- ローカル開発設定
+- gitignoreされているシークレットファイル
+
+ファイルのコピーは2つの方法で指定できます：
+
+1. **コマンドラインオプションを使用：**
+   ```bash
+   phantom create feature --copy-files=".env,.env.local,config/local.json"
+   ```
+
+2. **設定ファイルを使用：**
+   `phantom.config.json`で一度設定すれば、すべての新しいworktreeに適用されます。
+
+> **注意：** 現在、globパターンはサポートされていません。ファイルはリポジトリルートからの相対パスで正確に指定する必要があります。
 
 ## 🛠️ 開発
 
