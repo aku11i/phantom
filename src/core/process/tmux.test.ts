@@ -45,7 +45,7 @@ describe("tmux", () => {
 
       strictEqual(
         command,
-        "/bin/bash -c 'cd /path/to/worktree && PHANTOM=1 && PHANTOM_NAME=feature-branch && PHANTOM_PATH=/path/to/worktree && exec /bin/bash'",
+        "/bin/bash -c 'PHANTOM=1 && PHANTOM_NAME=feature-branch && PHANTOM_PATH=/path/to/worktree && exec /bin/bash'",
       );
 
       if (originalShell === undefined) {
@@ -65,7 +65,7 @@ describe("tmux", () => {
 
       strictEqual(
         command,
-        "/usr/bin/zsh -c 'cd /path/to/worktree && PHANTOM=1 && PHANTOM_NAME=feature-branch && PHANTOM_PATH=/path/to/worktree && exec /usr/bin/zsh'",
+        "/usr/bin/zsh -c 'PHANTOM=1 && PHANTOM_NAME=feature-branch && PHANTOM_PATH=/path/to/worktree && exec /usr/bin/zsh'",
       );
     });
 
@@ -78,7 +78,7 @@ describe("tmux", () => {
 
       strictEqual(
         command,
-        "/bin/sh -c 'cd /path with spaces/worktree && PHANTOM=1 && PHANTOM_NAME=feature branch && PHANTOM_PATH=/path with spaces/worktree && exec /bin/sh'",
+        "/bin/sh -c 'PHANTOM=1 && PHANTOM_NAME=feature branch && PHANTOM_PATH=/path with spaces/worktree && exec /bin/sh'",
       );
     });
   });

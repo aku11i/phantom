@@ -22,7 +22,6 @@ export function buildWorktreeShellCommand(
   shell: string = process.env.SHELL || "/bin/sh",
 ): string {
   const envVars = [
-    `cd ${worktreePath}`,
     "PHANTOM=1",
     `PHANTOM_NAME=${worktreeName}`,
     `PHANTOM_PATH=${worktreePath}`,
