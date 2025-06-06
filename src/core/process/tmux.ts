@@ -21,14 +21,18 @@ export function buildWorktreeShellCommand(
   worktreeName: string,
   shell: string = process.env.SHELL || "/bin/sh",
 ): string {
-  const envVars = [
-    "PHANTOM=1",
-    `PHANTOM_NAME=${worktreeName}`,
-    `PHANTOM_PATH=${worktreePath}`,
-    `exec ${shell}`,
-  ].join(" && ");
+  // Quote values that may contain spaces
+  const quotedName = worktreeName.includes(" ")
+    ? `"${worktreeName}"`
+    : worktreeName;
+  const quotedPath = worktreePath.includes(" ")
+    ? `"${worktreePath}"`
+    : worktreePath;
 
-  return `${shell} -c '${envVars}'`;
+  // Set environment variables and execute the shell
+  const command = `PHANTOM=1 PHANTOM_NAME=${quotedName} PHANTOM_PATH=${quotedPath} exec ${shell}`;
+
+  return `${shell} -c '${command}'`;
 }
 
 export async function executeTmuxCommand(
