@@ -122,6 +122,8 @@ phantom where <name>
 # Delete a worktree and its branch
 phantom delete <name>
 phantom delete <name> --force  # Force delete with uncommitted changes
+phantom delete --current        # Delete the current worktree (when inside one)
+phantom delete --current --force # Force delete current worktree
 ```
 
 #### Working with Worktrees
@@ -200,6 +202,7 @@ phantom shell feature-awesome  # Continue feature development
 | Navigate to worktree | `cd ../project-feature` | `phantom shell feature` |
 | Run command in worktree | `cd ../project-feature && npm test` | `phantom exec feature npm test` |
 | Remove worktree | `git worktree remove ../project-feature` | `phantom delete feature` |
+| Remove current worktree | `cd .. && git worktree remove project-feature` | `phantom delete --current` |
 
 ## 🛠️ Development
 
