@@ -1,4 +1,5 @@
 import { parseArgs } from "node:util";
+import { ConfigNotFoundError, loadConfig } from "../../core/config/loader.ts";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { execInWorktree } from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
@@ -37,6 +38,10 @@ export async function createHandler(args: string[]): Promise<void> {
       "tmux-h": {
         type: "boolean",
       },
+      "copy-file": {
+        type: "string",
+        multiple: true,
+      },
     },
     strict: true,
     allowPositionals: true,
@@ -52,6 +57,7 @@ export async function createHandler(args: string[]): Promise<void> {
   const worktreeName = positionals[0];
   const openShell = values.shell ?? false;
   const execCommand = values.exec;
+  const copyFileOptions = values["copy-file"];
 
   // Determine tmux option
   const tmuxOption =
@@ -89,7 +95,27 @@ export async function createHandler(args: string[]): Promise<void> {
 
   try {
     const gitRoot = await getGitRoot();
-    const result = await createWorktreeCore(gitRoot, worktreeName);
+
+    let filesToCopy: string[] = [];
+
+    // Load files from config
+    const configResult = await loadConfig(gitRoot);
+    if (isOk(configResult) && configResult.value.postCreate?.copyFiles) {
+      filesToCopy = [...configResult.value.postCreate.copyFiles];
+    }
+
+    // Add files from CLI options
+    if (copyFileOptions && copyFileOptions.length > 0) {
+      const cliFiles = Array.isArray(copyFileOptions)
+        ? copyFileOptions
+        : [copyFileOptions];
+      // Merge with config files, removing duplicates
+      filesToCopy = [...new Set([...filesToCopy, ...cliFiles])];
+    }
+
+    const result = await createWorktreeCore(gitRoot, worktreeName, {
+      copyFiles: filesToCopy.length > 0 ? filesToCopy : undefined,
+    });
 
     if (isErr(result)) {
       const exitCode =
@@ -100,6 +126,12 @@ export async function createHandler(args: string[]): Promise<void> {
     }
 
     output.log(result.value.message);
+
+    if (result.value.copyError) {
+      output.error(
+        `\nWarning: Failed to copy some files: ${result.value.copyError}`,
+      );
+    }
 
     if (execCommand && isOk(result)) {
       output.log(

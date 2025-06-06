@@ -1,8 +1,9 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "../git/libs/add-worktree.ts";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
-import { type Result, err, isErr, ok } from "../types/result.ts";
+import { type Result, err, isErr, isOk, ok } from "../types/result.ts";
 import { GitOperationError, WorktreeAlreadyExistsError } from "./errors.ts";
+import { copyFiles } from "./file-copier.ts";
 import {
   validateWorktreeDoesNotExist,
   validateWorktreeName,
@@ -11,11 +12,14 @@ import {
 export interface CreateWorktreeOptions {
   branch?: string;
   commitish?: string;
+  copyFiles?: string[];
 }
 
 export interface CreateWorktreeSuccess {
   message: string;
   path: string;
+  copiedFiles?: string[];
+  copyError?: string;
 }
 
 export async function createWorktree(
@@ -53,9 +57,28 @@ export async function createWorktree(
       commitish,
     });
 
+    let copiedFiles: string[] | undefined;
+    let copyError: string | undefined;
+
+    if (options.copyFiles && options.copyFiles.length > 0) {
+      const copyResult = await copyFiles(
+        gitRoot,
+        worktreePath,
+        options.copyFiles,
+      );
+
+      if (isOk(copyResult)) {
+        copiedFiles = copyResult.value.copiedFiles;
+      } else {
+        copyError = copyResult.error.message;
+      }
+    }
+
     return ok({
       message: `Created worktree '${name}' at ${worktreePath}`,
       path: worktreePath,
+      copiedFiles,
+      copyError,
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

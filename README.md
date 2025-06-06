@@ -117,6 +117,9 @@ phantom create <name> --tmux-v  # Shorthand for --tmux-vertical
 phantom create <name> --tmux-horizontal  # Create and split tmux pane horizontally
 phantom create <name> --tmux-h  # Shorthand for --tmux-horizontal
 
+# Create a worktree and copy specific files
+phantom create <name> --copy-file ".env" --copy-file ".env.local"
+
 # Attach to an existing branch as a worktree
 phantom attach <branch-name>
 phantom attach <branch-name> --shell  # Attach and enter interactive shell
@@ -212,6 +215,49 @@ phantom shell feature-awesome  # Continue feature development
 | Run command in worktree | `cd ../project-feature && npm test` | `phantom exec feature npm test` |
 | Remove worktree | `git worktree remove ../project-feature` | `phantom delete feature` |
 | Remove current worktree | `cd .. && git worktree remove project-feature` | `phantom delete --current` |
+
+## ⚙️ Configuration
+
+Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied when creating new worktrees.
+
+### Configuration File
+
+Create a `phantom.config.json` file in your repository root:
+
+```json
+{
+  "postCreate": {
+    "copyFiles": [
+      ".env",
+      ".env.local",
+      "config/local.json"
+    ]
+  }
+}
+```
+
+### Copy Files Feature
+
+When creating a new worktree, Phantom can automatically copy specified files from your current worktree to the new one. This is particularly useful for:
+
+- Environment configuration files (`.env`, `.env.local`)
+- Local development settings
+- Secret files that are gitignored
+
+You can specify files to copy in two ways:
+
+1. **Using the command line option:**
+   ```bash
+   phantom create feature --copy-file ".env" --copy-file ".env.local" --copy-file "config/local.json"
+   ```
+
+2. **Using the configuration file:**
+   Configure once in `phantom.config.json` and it will apply to all new worktrees.
+
+3. **Using both:**
+   Files specified in both the configuration file and command line options are merged together (duplicates are removed).
+
+> **Note:** Currently, glob patterns are not supported. Files must be specified with their exact paths relative to the repository root.
 
 ## 🛠️ Development
 
