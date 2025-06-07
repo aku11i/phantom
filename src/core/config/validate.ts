@@ -1,4 +1,5 @@
 import { type Result, err, ok } from "../types/result.ts";
+import { isObject } from "../utils/type-guards.ts";
 import type { PhantomConfig } from "./loader.ts";
 
 export class ConfigValidationError extends Error {
@@ -11,22 +12,18 @@ export class ConfigValidationError extends Error {
 export function validateConfig(
   config: unknown,
 ): Result<PhantomConfig, ConfigValidationError> {
-  if (typeof config !== "object" || config === null || Array.isArray(config)) {
+  if (!isObject(config)) {
     return err(new ConfigValidationError("Configuration must be an object"));
   }
 
-  const cfg = config as Record<string, unknown>;
+  const cfg = config;
 
   if (cfg.postCreate !== undefined) {
-    if (
-      typeof cfg.postCreate !== "object" ||
-      cfg.postCreate === null ||
-      Array.isArray(cfg.postCreate)
-    ) {
+    if (!isObject(cfg.postCreate)) {
       return err(new ConfigValidationError("postCreate must be an object"));
     }
 
-    const postCreate = cfg.postCreate as Record<string, unknown>;
+    const postCreate = cfg.postCreate;
     if (postCreate.copyFiles !== undefined) {
       if (!Array.isArray(postCreate.copyFiles)) {
         return err(
