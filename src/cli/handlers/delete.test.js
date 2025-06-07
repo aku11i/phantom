@@ -180,13 +180,13 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler(["feature", "--current"]),
-      /Exit with code 3: Cannot specify both a worktree name and --current option/,
+      /Exit with code 3: Cannot specify --current with a worktree name or --fzf option/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot specify both a worktree name and --current option",
+      "Error: Cannot specify --current with a worktree name or --fzf option",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });
@@ -196,13 +196,13 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler([]),
-      /Exit with code 3: Please provide a worktree name to delete or use --current to delete the current worktree/,
+      /Exit with code 3: Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Please provide a worktree name to delete or use --current to delete the current worktree",
+      "Error: Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });

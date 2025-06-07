@@ -7,6 +7,7 @@ import {
   WorktreeError,
   WorktreeNotFoundError,
 } from "../../core/worktree/errors.ts";
+import { selectWorktreeWithFzf } from "../../core/worktree/select.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -21,23 +22,35 @@ export async function deleteHandler(args: string[]): Promise<void> {
       current: {
         type: "boolean",
       },
+      fzf: {
+        type: "boolean",
+        default: false,
+      },
     },
     strict: true,
     allowPositionals: true,
   });
 
   const deleteCurrent = values.current ?? false;
+  const useFzf = values.fzf ?? false;
 
-  if (positionals.length === 0 && !deleteCurrent) {
+  if (positionals.length === 0 && !deleteCurrent && !useFzf) {
     exitWithError(
-      "Please provide a worktree name to delete or use --current to delete the current worktree",
+      "Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection",
       exitCodes.validationError,
     );
   }
 
-  if (positionals.length > 0 && deleteCurrent) {
+  if ((positionals.length > 0 || useFzf) && deleteCurrent) {
     exitWithError(
-      "Cannot specify both a worktree name and --current option",
+      "Cannot specify --current with a worktree name or --fzf option",
+      exitCodes.validationError,
+    );
+  }
+
+  if (positionals.length > 0 && useFzf) {
+    exitWithError(
+      "Cannot specify both a worktree name and --fzf option",
       exitCodes.validationError,
     );
   }
@@ -57,6 +70,15 @@ export async function deleteHandler(args: string[]): Promise<void> {
         );
       }
       worktreeName = currentWorktree;
+    } else if (useFzf) {
+      const selectResult = await selectWorktreeWithFzf(gitRoot);
+      if (isErr(selectResult)) {
+        exitWithError(selectResult.error.message, exitCodes.generalError);
+      }
+      if (!selectResult.value) {
+        exitWithSuccess();
+      }
+      worktreeName = selectResult.value.name;
     } else {
       worktreeName = positionals[0];
     }
