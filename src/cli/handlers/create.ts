@@ -6,10 +6,7 @@ import {
 } from "../../core/config/loader.ts";
 import { ConfigValidationError } from "../../core/config/validate.ts";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
-import {
-  execInWorktree,
-  execInWorktreeWithOutput,
-} from "../../core/process/exec.ts";
+import { execInWorktree } from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
 import { executeTmuxCommand, isInsideTmux } from "../../core/process/tmux.ts";
 import { isErr, isOk } from "../../core/types/result.ts";
@@ -159,12 +156,11 @@ export async function createHandler(args: string[]): Promise<void> {
       for (const command of commands) {
         output.log(`Executing: ${command}`);
         const shell = process.env.SHELL || "/bin/sh";
-        const cmdResult = await execInWorktreeWithOutput(
+        const cmdResult = await execInWorktree(
           gitRoot,
           worktreeName,
           [shell, "-c", command],
-          (data) => process.stdout.write(data),
-          (data) => process.stderr.write(data),
+          { stdio: "pipe" },
         );
 
         if (isErr(cmdResult)) {
