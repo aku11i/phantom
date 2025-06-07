@@ -1,8 +1,8 @@
 import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { isErr } from "../../core/types/result.ts";
-import { selectWithFzf } from "../../core/utils/fzf.ts";
 import { listWorktrees as listWorktreesCore } from "../../core/worktree/list.ts";
+import { selectWorktreeWithFzf } from "../../core/worktree/select.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -20,40 +20,31 @@ export async function listHandler(args: string[] = []): Promise<void> {
   });
   try {
     const gitRoot = await getGitRoot();
-    const result = await listWorktreesCore(gitRoot);
-
-    if (isErr(result)) {
-      exitWithError("Failed to list worktrees", exitCodes.generalError);
-    }
-
-    const { worktrees, message } = result.value;
-
-    if (worktrees.length === 0) {
-      output.log(message || "No worktrees found.");
-      process.exit(exitCodes.success);
-    }
 
     if (values.fzf) {
-      const list = worktrees.map((wt) => {
-        const branchInfo = wt.branch ? `(${wt.branch})` : "";
-        const status = !wt.isClean ? " [dirty]" : "";
-        return `${wt.name} ${branchInfo}${status}`;
-      });
+      const selectResult = await selectWorktreeWithFzf(gitRoot);
 
-      const fzfResult = await selectWithFzf(list, {
-        prompt: "Select worktree> ",
-        header: "Git Worktrees (Phantoms)",
-      });
-
-      if (isErr(fzfResult)) {
-        exitWithError(fzfResult.error.message, exitCodes.generalError);
+      if (isErr(selectResult)) {
+        exitWithError(selectResult.error.message, exitCodes.generalError);
       }
 
-      if (fzfResult.value) {
-        const selectedName = fzfResult.value.split(" ")[0];
-        output.log(selectedName);
+      if (selectResult.value) {
+        output.log(selectResult.value.name);
       }
     } else {
+      const result = await listWorktreesCore(gitRoot);
+
+      if (isErr(result)) {
+        exitWithError("Failed to list worktrees", exitCodes.generalError);
+      }
+
+      const { worktrees, message } = result.value;
+
+      if (worktrees.length === 0) {
+        output.log(message || "No worktrees found.");
+        process.exit(exitCodes.success);
+      }
+
       const maxNameLength = Math.max(...worktrees.map((wt) => wt.name.length));
 
       for (const worktree of worktrees) {
