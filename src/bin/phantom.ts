@@ -9,64 +9,81 @@ import { listHandler } from "../cli/handlers/list.ts";
 import { shellHandler } from "../cli/handlers/shell.ts";
 import { versionHandler } from "../cli/handlers/version.ts";
 import { whereHandler } from "../cli/handlers/where.ts";
+import { type CommandHelp, helpFormatter } from "../cli/help.ts";
+import { attachHelp } from "../cli/help/attach.ts";
+import { createHelp } from "../cli/help/create.ts";
+import { deleteHelp } from "../cli/help/delete.ts";
+import { execHelp } from "../cli/help/exec.ts";
+import { listHelp } from "../cli/help/list.ts";
+import { shellHelp } from "../cli/help/shell.ts";
+import { versionHelp } from "../cli/help/version.ts";
+import { whereHelp } from "../cli/help/where.ts";
 
 interface Command {
   name: string;
   description: string;
   subcommands?: Command[];
   handler?: (args: string[]) => void | Promise<void>;
+  help?: CommandHelp;
 }
 
 const commands: Command[] = [
   {
     name: "create",
-    description:
-      "Create a new worktree [--shell | --exec <command> | --tmux | --tmux-vertical | --tmux-horizontal] [--copy-file <file>]...",
+    description: "Create a new Git worktree (phantom)",
     handler: createHandler,
+    help: createHelp,
   },
   {
     name: "attach",
-    description: "Attach to an existing branch [--shell | --exec <command>]",
+    description: "Attach to an existing branch by creating a new worktree",
     handler: attachHandler,
+    help: attachHelp,
   },
   {
     name: "list",
-    description: "List all worktrees",
+    description: "List all Git worktrees (phantoms)",
     handler: listHandler,
+    help: listHelp,
   },
   {
     name: "where",
-    description: "Output the path of a specific worktree",
+    description: "Output the filesystem path of a specific worktree",
     handler: whereHandler,
+    help: whereHelp,
   },
   {
     name: "delete",
-    description: "Delete a worktree (use --force for uncommitted changes)",
+    description: "Delete a Git worktree (phantom)",
     handler: deleteHandler,
+    help: deleteHelp,
   },
   {
     name: "exec",
     description: "Execute a command in a worktree directory",
     handler: execHandler,
+    help: execHelp,
   },
   {
     name: "shell",
-    description: "Open interactive shell in a worktree directory",
+    description: "Open an interactive shell in a worktree directory",
     handler: shellHandler,
+    help: shellHelp,
   },
   {
     name: "version",
-    description: "Display phantom version",
+    description: "Display phantom version information",
     handler: versionHandler,
+    help: versionHelp,
   },
 ];
 
 function printHelp(commands: Command[]) {
-  console.log("Usage: phantom <command> [options]\n");
-  console.log("Commands:");
-  for (const cmd of commands) {
-    console.log(`  ${cmd.name.padEnd(12)} ${cmd.description}`);
-  }
+  const simpleCommands = commands.map((cmd) => ({
+    name: cmd.name,
+    description: cmd.description,
+  }));
+  console.log(helpFormatter.formatMainHelp(simpleCommands));
 }
 
 function findCommand(
@@ -115,6 +132,16 @@ if (!command || !command.handler) {
   console.error(`Error: Unknown command '${args.join(" ")}'\n`);
   printHelp(commands);
   exit(1);
+}
+
+// Check if user is requesting help for a specific command
+if (remainingArgs.includes("--help") || remainingArgs.includes("-h")) {
+  if (command.help) {
+    console.log(helpFormatter.formatCommandHelp(command.help));
+  } else {
+    console.log(`Help not available for command '${command.name}'`);
+  }
+  exit(0);
 }
 
 try {
