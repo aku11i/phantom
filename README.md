@@ -270,6 +270,9 @@ pnpm install
 # Run tests
 pnpm test
 
+# Run a specific test file
+pnpm test:file src/core/worktree/create.test.js
+
 # Type checking
 pnpm typecheck
 

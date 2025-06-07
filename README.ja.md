@@ -267,6 +267,9 @@ pnpm install
 # テストの実行
 pnpm test
 
+# 特定のテストファイルを実行
+pnpm test:file src/core/worktree/create.test.js
+
 # 型チェック
 pnpm typecheck
 
