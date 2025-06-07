@@ -25,10 +25,10 @@ describe("generateBashCompletion", () => {
       true,
     );
     strictEqual(script.includes("-f --force --help -h"), true);
-    strictEqual(script.includes("--format --help -h"), true);
+    strictEqual(script.includes("--names --help -h"), true);
 
     // Check dynamic completions
-    strictEqual(script.includes("phantom list --format=names"), true);
+    strictEqual(script.includes("phantom list --names"), true);
     strictEqual(script.includes("bash zsh fish"), true);
   });
 

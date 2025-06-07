@@ -334,7 +334,6 @@ The shell completions provide:
 - Tab completion for all commands (create, delete, exec, list, etc.)
 - Tab completion for command options (--help, --force, --shell, etc.)
 - Dynamic completion of phantom names for commands like `exec`, `shell`, `delete`, and `where`
-- Completion for the `--format` option values in the `list` command
 - Shell type completion for the `completion` command itself
 
 ## 🛠️ Development

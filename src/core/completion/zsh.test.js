@@ -25,7 +25,7 @@ describe("generateZshCompletion", () => {
     );
 
     // Check dynamic completions
-    strictEqual(script.includes("phantom list --format=names"), true);
+    strictEqual(script.includes("phantom list --names"), true);
   });
 
   it("should have proper zsh completion structure", () => {
@@ -43,11 +43,6 @@ describe("generateZshCompletion", () => {
     // Check option specifications
     strictEqual(script.includes("(-b --branch)'{-b,--branch}"), true);
     strictEqual(script.includes("(-f --force)'{-f,--force}"), true);
-    strictEqual(
-      script.includes(
-        "'--format[Output format]:format:(default simple names json)'",
-      ),
-      true,
-    );
+    strictEqual(script.includes("'--names[Output only phantom names]'"), true);
   });
 });

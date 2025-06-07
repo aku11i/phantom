@@ -11,9 +11,9 @@ export const listHelp: CommandHelp = {
       description: "Use fzf for interactive selection",
     },
     {
-      name: "--format",
-      description: "Output format (default, simple, names, json)",
-      type: "string",
+      name: "--names",
+      type: "boolean",
+      description: "Output only phantom names (for scripts and completion)",
     },
   ],
   examples: [
@@ -27,17 +27,13 @@ export const listHelp: CommandHelp = {
     },
     {
       description: "List only worktree names",
-      command: "phantom list --format=names",
-    },
-    {
-      description: "Output as JSON",
-      command: "phantom list --format=json",
+      command: "phantom list --names",
     },
   ],
   notes: [
     "Shows all worktrees with their paths and associated branches",
     "The main worktree is marked as '(bare)' if using a bare repository",
     "With --fzf, outputs only the selected worktree name",
-    "Use --format=names for shell completion scripts",
+    "Use --names for shell completion scripts and automation",
   ],
 };

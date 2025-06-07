@@ -28,7 +28,7 @@ _phantom() {
         COMPREPLY=($(compgen -W "-f --force --help -h" -- "$cur"))
       else
         # Get phantom names for completion
-        local phantoms=$(phantom list --format=names 2>/dev/null)
+        local phantoms=$(phantom list --names 2>/dev/null)
         COMPREPLY=($(compgen -W "$phantoms" -- "$cur"))
       fi
       ;;
@@ -37,15 +37,13 @@ _phantom() {
         COMPREPLY=($(compgen -W "--help -h" -- "$cur"))
       elif [[ $cword -eq 2 ]]; then
         # Get phantom names for completion
-        local phantoms=$(phantom list --format=names 2>/dev/null)
+        local phantoms=$(phantom list --names 2>/dev/null)
         COMPREPLY=($(compgen -W "$phantoms" -- "$cur"))
       fi
       ;;
     list)
       if [[ "$cur" == -* ]]; then
-        COMPREPLY=($(compgen -W "--fzf --format --help -h" -- "$cur"))
-      elif [[ "$prev" == "--format" ]]; then
-        COMPREPLY=($(compgen -W "default simple names json" -- "$cur"))
+        COMPREPLY=($(compgen -W "--fzf --names --help -h" -- "$cur"))
       fi
       ;;
     where)
@@ -53,7 +51,7 @@ _phantom() {
         COMPREPLY=($(compgen -W "--help -h" -- "$cur"))
       else
         # Get phantom names for completion
-        local phantoms=$(phantom list --format=names 2>/dev/null)
+        local phantoms=$(phantom list --names 2>/dev/null)
         COMPREPLY=($(compgen -W "$phantoms" -- "$cur"))
       fi
       ;;

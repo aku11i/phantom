@@ -14,8 +14,9 @@ export async function listHandler(args: string[] = []): Promise<void> {
         type: "boolean",
         default: false,
       },
-      format: {
-        type: "string",
+      names: {
+        type: "boolean",
+        default: false,
       },
     },
     strict: true,
@@ -44,27 +45,16 @@ export async function listHandler(args: string[] = []): Promise<void> {
       const { worktrees, message } = result.value;
 
       if (worktrees.length === 0) {
-        if (values.format !== "names") {
+        if (!values.names) {
           output.log(message || "No worktrees found.");
         }
         process.exit(exitCodes.success);
       }
 
-      // Handle different output formats
-      if (values.format === "names") {
-        // Simple names output for shell completion
+      if (values.names) {
+        // Names only output for shell completion and scripts
         for (const worktree of worktrees) {
           output.log(worktree.name);
-        }
-      } else if (values.format === "json") {
-        // JSON output
-        output.log(JSON.stringify(worktrees, null, 2));
-      } else if (values.format === "simple") {
-        // Simple format without padding
-        for (const worktree of worktrees) {
-          const branchInfo = worktree.branch ? ` (${worktree.branch})` : "";
-          const status = !worktree.isClean ? " [dirty]" : "";
-          output.log(`${worktree.name}${branchInfo}${status}`);
         }
       } else {
         // Default format with padding

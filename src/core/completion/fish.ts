@@ -26,21 +26,21 @@ complete -c phantom -n "__fish_seen_subcommand_from create" -l no-copy -d "Do no
 
 # delete command
 complete -c phantom -n "__fish_seen_subcommand_from delete" -s f -l force -d "Force deletion"
-complete -c phantom -n "__fish_seen_subcommand_from delete; and not __fish_seen_subcommand_from delete help" -a "(phantom list --format=names 2>/dev/null)"
+complete -c phantom -n "__fish_seen_subcommand_from delete; and not __fish_seen_subcommand_from delete help" -a "(phantom list --names 2>/dev/null)"
 
 # exec command
-complete -c phantom -n "__fish_seen_subcommand_from exec; and __fish_is_first_arg" -a "(phantom list --format=names 2>/dev/null)"
+complete -c phantom -n "__fish_seen_subcommand_from exec; and __fish_is_first_arg" -a "(phantom list --names 2>/dev/null)"
 complete -c phantom -n "__fish_seen_subcommand_from exec; and not __fish_is_first_arg" -a "(__fish_complete_command)"
 
 # shell command
-complete -c phantom -n "__fish_seen_subcommand_from shell" -a "(phantom list --format=names 2>/dev/null)"
+complete -c phantom -n "__fish_seen_subcommand_from shell" -a "(phantom list --names 2>/dev/null)"
 
 # list command
 complete -c phantom -n "__fish_seen_subcommand_from list" -l fzf -d "Use fzf for interactive selection"
-complete -c phantom -n "__fish_seen_subcommand_from list" -l format -d "Output format" -a "default simple names json"
+complete -c phantom -n "__fish_seen_subcommand_from list" -l names -d "Output only phantom names"
 
 # where command
-complete -c phantom -n "__fish_seen_subcommand_from where" -a "(phantom list --format=names 2>/dev/null)"
+complete -c phantom -n "__fish_seen_subcommand_from where" -a "(phantom list --names 2>/dev/null)"
 
 # attach command
 complete -c phantom -n "__fish_seen_subcommand_from attach" -a "(__fish_complete_directories)"

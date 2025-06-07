@@ -36,10 +36,13 @@ describe("generateFishCompletion", () => {
       true,
     );
     strictEqual(script.includes('-s f -l force -d "Force deletion"'), true);
-    strictEqual(script.includes('-l format -d "Output format"'), true);
+    strictEqual(
+      script.includes('-l names -d "Output only phantom names"'),
+      true,
+    );
 
     // Check dynamic completions
-    strictEqual(script.includes("phantom list --format=names"), true);
+    strictEqual(script.includes("phantom list --names"), true);
     strictEqual(script.includes('"bash zsh fish"'), true);
 
     // Check helper function

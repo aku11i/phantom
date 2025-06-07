@@ -41,7 +41,7 @@ _phantom() {
         list)
           _arguments \\
             '--fzf[Use fzf for interactive selection]' \\
-            '--format[Output format]:format:(default simple names json)' \\
+            '--names[Output only phantom names]' \\
             '(-h --help)'{-h,--help}'[Show help]'
           ;;
         where)
@@ -90,7 +90,7 @@ _phantom_commands() {
 
 _phantom_names() {
   local phantoms
-  phantoms=(\${(f)"$(phantom list --format=names 2>/dev/null)"})
+  phantoms=(\${(f)"$(phantom list --names 2>/dev/null)"})
   _describe 'phantom' phantoms
 }
 
