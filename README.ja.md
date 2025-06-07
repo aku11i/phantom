@@ -118,7 +118,7 @@ phantom create <name> --tmux-horizontal  # 作成してtmuxペインを横に分
 phantom create <name> --tmux-h  # --tmux-horizontalの短縮形
 
 # worktreeを作成し、特定のファイルをコピー
-phantom create <name> --copy-files=".env,.env.local"
+phantom create <name> --copy-file ".env" --copy-file ".env.local"
 
 # 既存のブランチにworktreeとしてアタッチ
 phantom attach <branch-name>
@@ -245,7 +245,7 @@ Phantomはリポジトリルートの`phantom.config.json`ファイルによる�
 
 1. **コマンドラインオプションを使用：**
    ```bash
-   phantom create feature --copy-files=".env,.env.local,config/local.json"
+   phantom create feature --copy-file ".env" --copy-file ".env.local" --copy-file "config/local.json"
    ```
 
 2. **設定ファイルを使用：**

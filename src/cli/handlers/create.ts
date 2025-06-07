@@ -133,12 +133,6 @@ export async function createHandler(args: string[]): Promise<void> {
       );
     }
 
-    if (result.value.copyError) {
-      output.error(
-        `\nWarning: Failed to copy some files: ${result.value.copyError}`,
-      );
-    }
-
     if (execCommand && isOk(result)) {
       output.log(
         `\nExecuting command in worktree '${worktreeName}': ${execCommand}`,
