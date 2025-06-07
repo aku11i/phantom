@@ -3,7 +3,6 @@ import { describe, it, mock } from "node:test";
 import { isErr, isOk } from "../types/result.ts";
 import { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { ProcessSpawnError } from "./errors.ts";
-// import type { SpawnConfig } from "./spawn.ts";
 
 const validateMock = mock.fn();
 const spawnMock = mock.fn();

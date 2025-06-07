@@ -1,4 +1,4 @@
-import { strictEqual, rejects } from "node:assert";
+import { rejects, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 import { err, ok } from "../../core/types/result.ts";
 
@@ -123,7 +123,7 @@ describe("createHandler", () => {
 
     await rejects(
       async () => await createHandler(["feature", "--exec", "echo hello"]),
-      /Exit with code 0/
+      /Exit with code 0/,
     );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
@@ -175,7 +175,7 @@ describe("createHandler", () => {
 
     await rejects(
       async () => await createHandler(["feature", "--exec", "false"]),
-      /Exit with code 1/
+      /Exit with code 1/,
     );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
@@ -190,8 +190,9 @@ describe("createHandler", () => {
   it("should error when --shell and --exec are used together", async () => {
     resetMocks();
     await rejects(
-      async () => await createHandler(["feature", "--shell", "--exec", "echo hello"]),
-      /Exit with code 2/
+      async () =>
+        await createHandler(["feature", "--shell", "--exec", "echo hello"]),
+      /Exit with code 2/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
@@ -221,7 +222,7 @@ describe("createHandler", () => {
 
     await rejects(
       async () => await createHandler(["feature", "--exec", "echo hello"]),
-      /Exit with code 0/
+      /Exit with code 0/,
     );
 
     const execArgs = execInWorktreeMock.mock.calls[0].arguments[2];
@@ -234,7 +235,7 @@ describe("createHandler", () => {
 
     await rejects(
       async () => await createHandler(["feature", "--tmux"]),
-      /Exit with code 2/
+      /Exit with code 2/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
@@ -266,7 +267,7 @@ describe("createHandler", () => {
 
     await rejects(
       async () => await createHandler(["feature", "--tmux"]),
-      /Exit with code 0/
+      /Exit with code 0/,
     );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
@@ -310,7 +311,7 @@ describe("createHandler", () => {
 
     await rejects(
       async () => await createHandler(["feature", "--tmux-vertical"]),
-      /Exit with code 0/
+      /Exit with code 0/,
     );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
@@ -337,7 +338,7 @@ describe("createHandler", () => {
     resetMocks();
     await rejects(
       async () => await createHandler(["feature", "--shell", "--tmux"]),
-      /Exit with code 2/
+      /Exit with code 2/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);

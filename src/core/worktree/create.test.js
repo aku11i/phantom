@@ -1,6 +1,5 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
-// import type { AddWorktreeOptions } from "../git/libs/add-worktree.ts";
 import { err, isErr, isOk, ok } from "../types/result.ts";
 import { GitOperationError, WorktreeAlreadyExistsError } from "./errors.ts";
 

@@ -84,10 +84,7 @@ describe("attachHandler", () => {
   it("should exit with error when no branch name provided", async () => {
     exitWithErrorMock.mock.resetCalls();
 
-    await rejects(
-      async () => await attachHandler([]),
-      /Exit with code 3/,
-    );
+    await rejects(async () => await attachHandler([]), /Exit with code 3/);
 
     deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
       "Missing required argument: branch name",

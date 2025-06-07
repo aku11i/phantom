@@ -1,4 +1,4 @@
-import { strictEqual, rejects } from "node:assert";
+import { rejects, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 import { err, ok } from "../../core/types/result.ts";
 import { WorktreeNotFoundError } from "../../core/worktree/errors.ts";
@@ -92,7 +92,7 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler(["feature"]),
-      /Exit with code 0: success/
+      /Exit with code 0: success/,
     );
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
@@ -126,7 +126,7 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler(["--current"]),
-      /Exit with code 0: success/
+      /Exit with code 0: success/,
     );
 
     strictEqual(getCurrentWorktreeMock.mock.calls.length, 1);
@@ -157,7 +157,7 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler(["--current"]),
-      /Exit with code 3: Not in a worktree directory/
+      /Exit with code 3: Not in a worktree directory/,
     );
 
     strictEqual(getCurrentWorktreeMock.mock.calls.length, 1);
@@ -180,7 +180,7 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler(["feature", "--current"]),
-      /Exit with code 3: Cannot specify both a worktree name and --current option/
+      /Exit with code 3: Cannot specify both a worktree name and --current option/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
@@ -196,7 +196,7 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler([]),
-      /Exit with code 3: Please provide a worktree name to delete or use --current to delete the current worktree/
+      /Exit with code 3: Please provide a worktree name to delete or use --current to delete the current worktree/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
@@ -226,7 +226,7 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler(["--current", "--force"]),
-      /Exit with code 0: success/
+      /Exit with code 0: success/,
     );
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
@@ -246,7 +246,7 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler(["feature"]),
-      /Exit with code 3: Worktree 'feature' not found/
+      /Exit with code 3: Worktree 'feature' not found/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 2); // exitWithError is called twice
