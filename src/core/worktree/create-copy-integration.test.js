@@ -14,9 +14,9 @@ import { isOk } from "../types/result.ts";
 import { copyFiles } from "./file-copier.ts";
 
 describe("copyFiles integration", () => {
-  let tempDir: string;
-  let sourceDir: string;
-  let targetDir: string;
+  let tempDir;
+  let sourceDir;
+  let targetDir;
 
   beforeEach(async () => {
     tempDir = await mkdtemp(path.join(tmpdir(), "phantom-test-"));

@@ -4,38 +4,40 @@ import { isErr, isOk } from "../types/result.ts";
 import { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { ProcessExecutionError } from "./errors.ts";
 
-describe("execInWorktree", () => {
-  let validateMock: ReturnType<typeof mock.fn>;
-  let spawnMock: ReturnType<typeof mock.fn>;
+const validateMock = mock.fn();
+const spawnMock = mock.fn();
 
+mock.module("../worktree/validate.ts", {
+  namedExports: {
+    validateWorktreeExists: validateMock,
+  },
+});
+
+mock.module("./spawn.ts", {
+  namedExports: {
+    spawnProcess: spawnMock,
+  },
+});
+
+const { execInWorktree } = await import("./exec.ts");
+
+describe("execInWorktree", () => {
   it("should execute command successfully when worktree exists", async () => {
-    validateMock = mock.fn(() =>
+    validateMock.mock.resetCalls();
+    spawnMock.mock.resetCalls();
+    validateMock.mock.mockImplementation(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/my-feature",
       }),
     );
-
-    spawnMock = mock.fn(() =>
+    spawnMock.mock.mockImplementation(() =>
       Promise.resolve({
         ok: true,
         value: { exitCode: 0 },
       }),
     );
 
-    mock.module("../worktree/validate.ts", {
-      namedExports: {
-        validateWorktreeExists: validateMock,
-      },
-    });
-
-    mock.module("./spawn.ts", {
-      namedExports: {
-        spawnProcess: spawnMock,
-      },
-    });
-
-    const { execInWorktree } = await import("./exec.ts");
     const result = await execInWorktree("/test/repo", "my-feature", [
       "npm",
       "test",
@@ -56,26 +58,15 @@ describe("execInWorktree", () => {
   });
 
   it("should return error when worktree does not exist", async () => {
-    validateMock = mock.fn(() =>
+    validateMock.mock.resetCalls();
+    spawnMock.mock.resetCalls();
+    validateMock.mock.mockImplementation(() =>
       Promise.resolve({
         exists: false,
         message: "Worktree 'non-existent' not found",
       }),
     );
 
-    mock.module("../worktree/validate.ts", {
-      namedExports: {
-        validateWorktreeExists: validateMock,
-      },
-    });
-
-    mock.module("./spawn.ts", {
-      namedExports: {
-        spawnProcess: spawnMock,
-      },
-    });
-
-    const { execInWorktree } = await import("./exec.ts");
     const result = await execInWorktree("/test/repo", "non-existent", [
       "npm",
       "test",
@@ -91,33 +82,21 @@ describe("execInWorktree", () => {
   });
 
   it("should handle command with single argument", async () => {
-    validateMock = mock.fn(() =>
+    validateMock.mock.resetCalls();
+    spawnMock.mock.resetCalls();
+    validateMock.mock.mockImplementation(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/feature",
       }),
     );
-
-    spawnMock = mock.fn(() =>
+    spawnMock.mock.mockImplementation(() =>
       Promise.resolve({
         ok: true,
         value: { exitCode: 0 },
       }),
     );
 
-    mock.module("../worktree/validate.ts", {
-      namedExports: {
-        validateWorktreeExists: validateMock,
-      },
-    });
-
-    mock.module("./spawn.ts", {
-      namedExports: {
-        spawnProcess: spawnMock,
-      },
-    });
-
-    const { execInWorktree } = await import("./exec.ts");
     await execInWorktree("/test/repo", "feature", ["ls"]);
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0], {
@@ -130,33 +109,21 @@ describe("execInWorktree", () => {
   });
 
   it("should pass through spawn process errors", async () => {
-    validateMock = mock.fn(() =>
+    validateMock.mock.resetCalls();
+    spawnMock.mock.resetCalls();
+    validateMock.mock.mockImplementation(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/feature",
       }),
     );
-
-    spawnMock = mock.fn(() =>
+    spawnMock.mock.mockImplementation(() =>
       Promise.resolve({
         ok: false,
         error: new ProcessExecutionError("false", 1),
       }),
     );
 
-    mock.module("../worktree/validate.ts", {
-      namedExports: {
-        validateWorktreeExists: validateMock,
-      },
-    });
-
-    mock.module("./spawn.ts", {
-      namedExports: {
-        spawnProcess: spawnMock,
-      },
-    });
-
-    const { execInWorktree } = await import("./exec.ts");
     const result = await execInWorktree("/test/repo", "feature", ["false"]);
 
     strictEqual(isErr(result), true);

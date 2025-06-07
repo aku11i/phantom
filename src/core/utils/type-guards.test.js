@@ -39,8 +39,8 @@ describe("isObject", () => {
 
   test("should return true for class instances", () => {
     class TestClass {
-      value: number;
-      constructor(value: number) {
+      value;
+      constructor(value) {
         this.value = value;
       }
     }

@@ -7,9 +7,9 @@ import { isErr, isOk } from "../types/result.ts";
 import { FileCopyError, copyFiles } from "./file-copier.ts";
 
 describe("copyFiles", () => {
-  let tempDir: string;
-  let sourceDir: string;
-  let targetDir: string;
+  let tempDir;
+  let sourceDir;
+  let targetDir;
 
   beforeEach(async () => {
     tempDir = await mkdtemp(path.join(tmpdir(), "phantom-test-"));

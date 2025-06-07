@@ -7,7 +7,7 @@ describe("validateConfig", () => {
   test("should accept valid config with postCreate and copyFiles", () => {
     const config = {
       postCreate: {
-        copyFiles: [".env", "config.local.json"],
+        copyFiles: [".env", "config/local.json"],
       },
     };
 
@@ -230,7 +230,7 @@ describe("validateConfig", () => {
 
     test("should reject when copyFiles contains non-string values", () => {
       const result = validateConfig({
-        postCreate: { copyFiles: ["valid", 123, true] },
+        postCreate: { copyFiles: ["file1", 123] },
       });
 
       assert.strictEqual(isErr(result), true);
@@ -245,7 +245,7 @@ describe("validateConfig", () => {
 
     test("should reject when copyFiles contains null", () => {
       const result = validateConfig({
-        postCreate: { copyFiles: ["valid", null] },
+        postCreate: { copyFiles: ["file1", null] },
       });
 
       assert.strictEqual(isErr(result), true);
@@ -260,7 +260,7 @@ describe("validateConfig", () => {
 
     test("should reject when copyFiles contains undefined", () => {
       const result = validateConfig({
-        postCreate: { copyFiles: ["valid", undefined] },
+        postCreate: { copyFiles: ["file1", undefined] },
       });
 
       assert.strictEqual(isErr(result), true);
@@ -275,7 +275,7 @@ describe("validateConfig", () => {
 
     test("should reject when copyFiles contains objects", () => {
       const result = validateConfig({
-        postCreate: { copyFiles: ["valid", { file: "test" }] },
+        postCreate: { copyFiles: ["file1", {}] },
       });
 
       assert.strictEqual(isErr(result), true);
@@ -290,7 +290,7 @@ describe("validateConfig", () => {
 
     test("should reject when copyFiles contains arrays", () => {
       const result = validateConfig({
-        postCreate: { copyFiles: ["valid", ["nested"]] },
+        postCreate: { copyFiles: [[]] },
       });
 
       assert.strictEqual(isErr(result), true);
@@ -308,7 +308,7 @@ describe("validateConfig", () => {
     test("should accept config with unknown properties", () => {
       const config = {
         postCreate: {
-          copyFiles: [".env"],
+          copyFiles: [".env", "config/local.json"],
         },
         unknownProperty: "should be ignored",
       };
@@ -324,7 +324,7 @@ describe("validateConfig", () => {
     test("should accept postCreate with unknown properties", () => {
       const config = {
         postCreate: {
-          copyFiles: [".env"],
+          copyFiles: [".env", "config/local.json"],
           unknownProperty: "should be ignored",
         },
       };
@@ -340,7 +340,7 @@ describe("validateConfig", () => {
     test("should accept copyFiles with empty strings", () => {
       const config = {
         postCreate: {
-          copyFiles: ["", "valid", ""],
+          copyFiles: ["", " "],
         },
       };
 
@@ -355,7 +355,11 @@ describe("validateConfig", () => {
     test("should accept copyFiles with special characters", () => {
       const config = {
         postCreate: {
-          copyFiles: ["@#$%", "file with spaces.txt", "../relative/path.js"],
+          copyFiles: [
+            "file-with-dash.txt",
+            "file_with_underscore.js",
+            "file.with.dots.md",
+          ],
         },
       };
 

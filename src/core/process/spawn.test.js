@@ -1,5 +1,5 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
-import type { ChildProcess } from "node:child_process";
+// import type { ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { describe, it, mock } from "node:test";
 import { isErr, isOk } from "../types/result.ts";
@@ -9,24 +9,26 @@ import {
   ProcessSpawnError,
 } from "./errors.ts";
 
+const spawnMock = mock.fn();
+
+mock.module("node:child_process", {
+  namedExports: {
+    spawn: spawnMock,
+  },
+});
+
+const { spawnProcess } = await import("./spawn.ts");
+
 describe("spawnProcess", () => {
   it("should spawn a process successfully with exit code 0", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("exit", 0, null);
       }, 0);
       return mockChildProcess;
     });
-
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
 
     const result = await spawnProcess({
       command: "echo",
@@ -48,22 +50,14 @@ describe("spawnProcess", () => {
   });
 
   it("should handle process with non-zero exit code", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("exit", 1, null);
       }, 0);
       return mockChildProcess;
     });
-
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
 
     const result = await spawnProcess({
       command: "false",
@@ -90,26 +84,18 @@ describe("spawnProcess", () => {
   });
 
   it("should handle process termination by SIGTERM signal", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("exit", null, "SIGTERM");
       }, 0);
       return mockChildProcess;
     });
 
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
-
     const result = await spawnProcess({
       command: "sleep",
-      args: ["10"],
+      args: ["100"],
     });
 
     strictEqual(isErr(result), true);
@@ -126,26 +112,18 @@ describe("spawnProcess", () => {
   });
 
   it("should handle process termination by other signals", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("exit", null, "SIGKILL");
       }, 0);
       return mockChildProcess;
     });
 
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
-
     const result = await spawnProcess({
       command: "sleep",
-      args: ["10"],
+      args: ["100"],
     });
 
     strictEqual(isErr(result), true);
@@ -162,22 +140,14 @@ describe("spawnProcess", () => {
   });
 
   it("should handle spawn errors", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("error", new Error("Command not found"));
       }, 0);
       return mockChildProcess;
     });
-
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
 
     const result = await spawnProcess({
       command: "nonexistent-command",
@@ -195,22 +165,14 @@ describe("spawnProcess", () => {
   });
 
   it("should use default values when args and options are not provided", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("exit", 0, null);
       }, 0);
       return mockChildProcess;
     });
-
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
 
     const result = await spawnProcess({
       command: "ls",
@@ -229,23 +191,15 @@ describe("spawnProcess", () => {
     ]);
   });
 
-  it("should handle null exit code as 0", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+  it("should handle null exit code0", async () => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("exit", null, null);
       }, 0);
       return mockChildProcess;
     });
-
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
 
     const result = await spawnProcess({
       command: "echo",
@@ -258,22 +212,14 @@ describe("spawnProcess", () => {
   });
 
   it("should merge provided options with default stdio option", async () => {
-    const mockChildProcess = new EventEmitter() as ChildProcess;
-
-    const spawnMock = mock.fn(() => {
+    const mockChildProcess = new EventEmitter();
+    spawnMock.mock.resetCalls();
+    spawnMock.mock.mockImplementation(() => {
       setTimeout(() => {
         mockChildProcess.emit("exit", 0, null);
       }, 0);
       return mockChildProcess;
     });
-
-    mock.module("node:child_process", {
-      namedExports: {
-        spawn: spawnMock,
-      },
-    });
-
-    const { spawnProcess } = await import("./spawn.ts");
 
     const customEnv = { PATH: "/usr/bin", CUSTOM: "value" };
 

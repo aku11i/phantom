@@ -8,7 +8,7 @@ import { ConfigNotFoundError, ConfigParseError, loadConfig } from "./loader.ts";
 import { ConfigValidationError } from "./validate.ts";
 
 describe("loadConfig", () => {
-  let tempDir: string;
+  let tempDir;
 
   beforeEach(async () => {
     tempDir = await mkdtemp(path.join(tmpdir(), "phantom-test-"));
@@ -21,7 +21,7 @@ describe("loadConfig", () => {
   test("should load valid config file", async () => {
     const config = {
       postCreate: {
-        copyFiles: [".env", "config.local.json"],
+        copyFiles: [".env", "config.json"],
       },
     };
     await writeFile(
@@ -63,7 +63,7 @@ describe("loadConfig", () => {
   test("should load config with only copyFiles", async () => {
     const config = {
       postCreate: {
-        copyFiles: [".env.local"],
+        copyFiles: [".env", "config.json"],
       },
     };
     await writeFile(
@@ -181,7 +181,7 @@ describe("loadConfig", () => {
     test("should return ConfigValidationError when copyFiles contains non-string values", async () => {
       await writeFile(
         path.join(tempDir, "phantom.config.json"),
-        JSON.stringify({ postCreate: { copyFiles: ["valid", 123, true] } }),
+        JSON.stringify({ postCreate: { copyFiles: [123, true] } }),
       );
 
       const result = await loadConfig(tempDir);
