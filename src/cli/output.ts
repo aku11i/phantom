@@ -9,6 +9,10 @@ export const output = {
     console.error(message);
   },
 
+  warn: (message: string) => {
+    console.warn(message);
+  },
+
   table: (data: unknown) => {
     console.table(data);
   },

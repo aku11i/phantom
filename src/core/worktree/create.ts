@@ -19,6 +19,7 @@ export interface CreateWorktreeSuccess {
   message: string;
   path: string;
   copiedFiles?: string[];
+  skippedFiles?: string[];
   copyError?: string;
 }
 
@@ -58,6 +59,7 @@ export async function createWorktree(
     });
 
     let copiedFiles: string[] | undefined;
+    let skippedFiles: string[] | undefined;
     let copyError: string | undefined;
 
     if (options.copyFiles && options.copyFiles.length > 0) {
@@ -69,6 +71,7 @@ export async function createWorktree(
 
       if (isOk(copyResult)) {
         copiedFiles = copyResult.value.copiedFiles;
+        skippedFiles = copyResult.value.skippedFiles;
       } else {
         copyError = copyResult.error.message;
       }
@@ -78,6 +81,7 @@ export async function createWorktree(
       message: `Created worktree '${name}' at ${worktreePath}`,
       path: worktreePath,
       copiedFiles,
+      skippedFiles,
       copyError,
     });
   } catch (error) {

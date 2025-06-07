@@ -133,6 +133,12 @@ export async function createHandler(args: string[]): Promise<void> {
       );
     }
 
+    if (result.value.skippedFiles && result.value.skippedFiles.length > 0) {
+      output.warn(
+        `\nSkipped files (not found or directories): ${result.value.skippedFiles.join(", ")}`,
+      );
+    }
+
     if (execCommand && isOk(result)) {
       output.log(
         `\nExecuting command in worktree '${worktreeName}': ${execCommand}`,
