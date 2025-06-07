@@ -289,6 +289,54 @@ Example use cases:
 }
 ```
 
+## 🐚 Shell Completions
+
+Phantom supports tab completion for Bash, Zsh, and Fish shells, making it even easier to use.
+
+### Installation
+
+#### Bash
+
+```bash
+# Add to ~/.bashrc
+eval "$(phantom completion bash)"
+
+# Or save to completion directory (path may vary by system)
+phantom completion bash > /usr/local/etc/bash_completion.d/phantom
+```
+
+#### Zsh
+
+```bash
+# Add to ~/.zshrc
+eval "$(phantom completion zsh)"
+
+# Or save to custom completion directory
+phantom completion zsh > ~/.zsh/completions/_phantom
+# Then add to ~/.zshrc:
+fpath=(~/.zsh/completions $fpath)
+autoload -U compinit && compinit
+```
+
+#### Fish
+
+```bash
+# Save to completions directory
+phantom completion fish > ~/.config/fish/completions/phantom.fish
+
+# Or source temporarily for current session
+phantom completion fish | source
+```
+
+### Features
+
+The shell completions provide:
+- Tab completion for all commands (create, delete, exec, list, etc.)
+- Tab completion for command options (--help, --force, --shell, etc.)
+- Dynamic completion of phantom names for commands like `exec`, `shell`, `delete`, and `where`
+- Completion for the `--format` option values in the `list` command
+- Shell type completion for the `completion` command itself
+
 ## 🛠️ Development
 
 ```bash

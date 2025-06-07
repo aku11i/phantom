@@ -2,6 +2,7 @@
 
 import { argv, exit } from "node:process";
 import { attachHandler } from "../cli/handlers/attach.ts";
+import { completionHandler } from "../cli/handlers/completion.ts";
 import { createHandler } from "../cli/handlers/create.ts";
 import { deleteHandler } from "../cli/handlers/delete.ts";
 import { execHandler } from "../cli/handlers/exec.ts";
@@ -11,6 +12,7 @@ import { versionHandler } from "../cli/handlers/version.ts";
 import { whereHandler } from "../cli/handlers/where.ts";
 import { type CommandHelp, helpFormatter } from "../cli/help.ts";
 import { attachHelp } from "../cli/help/attach.ts";
+import { completionHelp } from "../cli/help/completion.ts";
 import { createHelp } from "../cli/help/create.ts";
 import { deleteHelp } from "../cli/help/delete.ts";
 import { execHelp } from "../cli/help/exec.ts";
@@ -69,6 +71,12 @@ const commands: Command[] = [
     description: "Open an interactive shell in a worktree directory",
     handler: shellHandler,
     help: shellHelp,
+  },
+  {
+    name: "completion",
+    description: "Generate shell completion script",
+    handler: completionHandler,
+    help: completionHelp,
   },
   {
     name: "version",

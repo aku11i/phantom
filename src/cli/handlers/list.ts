@@ -14,6 +14,9 @@ export async function listHandler(args: string[] = []): Promise<void> {
         type: "boolean",
         default: false,
       },
+      format: {
+        type: "string",
+      },
     },
     strict: true,
     allowPositionals: false,
@@ -41,18 +44,41 @@ export async function listHandler(args: string[] = []): Promise<void> {
       const { worktrees, message } = result.value;
 
       if (worktrees.length === 0) {
-        output.log(message || "No worktrees found.");
+        if (values.format !== "names") {
+          output.log(message || "No worktrees found.");
+        }
         process.exit(exitCodes.success);
       }
 
-      const maxNameLength = Math.max(...worktrees.map((wt) => wt.name.length));
+      // Handle different output formats
+      if (values.format === "names") {
+        // Simple names output for shell completion
+        for (const worktree of worktrees) {
+          output.log(worktree.name);
+        }
+      } else if (values.format === "json") {
+        // JSON output
+        output.log(JSON.stringify(worktrees, null, 2));
+      } else if (values.format === "simple") {
+        // Simple format without padding
+        for (const worktree of worktrees) {
+          const branchInfo = worktree.branch ? ` (${worktree.branch})` : "";
+          const status = !worktree.isClean ? " [dirty]" : "";
+          output.log(`${worktree.name}${branchInfo}${status}`);
+        }
+      } else {
+        // Default format with padding
+        const maxNameLength = Math.max(
+          ...worktrees.map((wt) => wt.name.length),
+        );
 
-      for (const worktree of worktrees) {
-        const paddedName = worktree.name.padEnd(maxNameLength + 2);
-        const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
-        const status = !worktree.isClean ? " [dirty]" : "";
+        for (const worktree of worktrees) {
+          const paddedName = worktree.name.padEnd(maxNameLength + 2);
+          const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
+          const status = !worktree.isClean ? " [dirty]" : "";
 
-        output.log(`${paddedName} ${branchInfo}${status}`);
+          output.log(`${paddedName} ${branchInfo}${status}`);
+        }
       }
     }
 
