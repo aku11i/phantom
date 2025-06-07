@@ -3,29 +3,57 @@ import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { shellInWorktree as shellInWorktreeCore } from "../../core/process/shell.ts";
 import { isErr } from "../../core/types/result.ts";
 import { WorktreeNotFoundError } from "../../core/worktree/errors.ts";
+import { selectWorktreeWithFzf } from "../../core/worktree/select.ts";
 import { validateWorktreeExists } from "../../core/worktree/validate.ts";
-import { exitCodes, exitWithError } from "../errors.ts";
+import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
 export async function shellHandler(args: string[]): Promise<void> {
-  const { positionals } = parseArgs({
+  const { positionals, values } = parseArgs({
     args,
-    options: {},
+    options: {
+      fzf: {
+        type: "boolean",
+        default: false,
+      },
+    },
     strict: true,
     allowPositionals: true,
   });
 
-  if (positionals.length === 0) {
+  const useFzf = values.fzf ?? false;
+
+  if (positionals.length === 0 && !useFzf) {
     exitWithError(
-      "Usage: phantom shell <worktree-name>",
+      "Usage: phantom shell <worktree-name> or phantom shell --fzf",
       exitCodes.validationError,
     );
   }
 
-  const worktreeName = positionals[0];
+  if (positionals.length > 0 && useFzf) {
+    exitWithError(
+      "Cannot specify both a worktree name and --fzf option",
+      exitCodes.validationError,
+    );
+  }
+
+  let worktreeName: string;
 
   try {
     const gitRoot = await getGitRoot();
+
+    if (useFzf) {
+      const selectResult = await selectWorktreeWithFzf(gitRoot);
+      if (isErr(selectResult)) {
+        exitWithError(selectResult.error.message, exitCodes.generalError);
+      }
+      if (!selectResult.value) {
+        exitWithSuccess();
+      }
+      worktreeName = selectResult.value.name;
+    } else {
+      worktreeName = positionals[0];
+    }
 
     // Get worktree path for display
     const validation = await validateWorktreeExists(gitRoot, worktreeName);
