@@ -1,4 +1,4 @@
-import { copyFile, stat } from "node:fs/promises";
+import { copyFile, mkdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { type Result, err, ok } from "../types/result.ts";
 
@@ -37,9 +37,7 @@ export async function copyFiles(
       }
 
       const targetDirPath = path.dirname(targetPath);
-      await stat(targetDirPath).catch(() => {
-        throw new Error(`Target directory does not exist: ${targetDirPath}`);
-      });
+      await mkdir(targetDirPath, { recursive: true });
 
       await copyFile(sourcePath, targetPath);
       copiedFiles.push(file);

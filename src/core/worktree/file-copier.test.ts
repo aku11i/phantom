@@ -89,18 +89,24 @@ describe("copyFiles", () => {
     }
   });
 
-  test("should return error when target directory doesn't exist for nested file", async () => {
+  test("should create target directory if it doesn't exist for nested file", async () => {
     const sourceSubdir = path.join(sourceDir, "nested");
     await mkdir(sourceSubdir);
     await writeFile(path.join(sourceSubdir, "file.txt"), "content");
 
     const result = await copyFiles(sourceDir, targetDir, ["nested/file.txt"]);
 
-    assert.strictEqual(isErr(result), true);
-    if (isErr(result)) {
-      assert.ok(result.error instanceof FileCopyError);
-      assert.strictEqual(result.error.file, "nested/file.txt");
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value.copiedFiles, ["nested/file.txt"]);
+      assert.deepStrictEqual(result.value.skippedFiles, []);
     }
+
+    const copiedFile = await readFile(
+      path.join(targetDir, "nested", "file.txt"),
+      "utf-8",
+    );
+    assert.strictEqual(copiedFile, "content");
   });
 
   test("should copy files in subdirectories if target directory exists", async () => {
