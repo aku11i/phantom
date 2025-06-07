@@ -58,7 +58,8 @@ export class HelpFormatter {
     lines.push(this.section("GLOBAL OPTIONS"));
     const helpOption = "-h, --help";
     const versionOption = "-v, --version";
-    const globalOptionWidth = Math.max(helpOption.length, versionOption.length) + 2;
+    const globalOptionWidth =
+      Math.max(helpOption.length, versionOption.length) + 2;
     lines.push(
       `${this.indent}${this.cyan(helpOption.padEnd(globalOptionWidth))}Show help`,
     );
