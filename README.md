@@ -153,19 +153,8 @@ phantom exec feature-auth git status
 phantom shell <name>
 ```
 
-#### Shell Completion
-
-```bash
-# Generate shell completion scripts
-phantom completion <shell>
-
-# Examples:
-phantom completion fish > ~/.config/fish/completions/phantom.fish
-phantom completion zsh > ~/.zsh/completions/_phantom
-
 # Display version information
 phantom version
-```
 
 ### Environment Variables
 

@@ -151,19 +151,8 @@ phantom exec feature-auth git status
 phantom shell <name>
 ```
 
-#### シェル補完
-
-```bash
-# シェル補完スクリプトを生成
-phantom completion <shell>
-
-# 例:
-phantom completion fish > ~/.config/fish/completions/phantom.fish
-phantom completion zsh > ~/.zsh/completions/_phantom
-
 # バージョン情報を表示
 phantom version
-```
 
 ### 環境変数
 
