@@ -1,4 +1,4 @@
-import { strictEqual } from "node:assert";
+import { strictEqual, rejects } from "node:assert";
 import { describe, it, mock } from "node:test";
 import { err, ok } from "../../core/types/result.ts";
 import { WorktreeNotFoundError } from "../../core/worktree/errors.ts";
@@ -90,11 +90,10 @@ describe("deleteHandler", () => {
       ),
     );
 
-    try {
-      await deleteHandler(["feature"]);
-    } catch (error) {
-      // Expected to throw on success
-    }
+    await rejects(
+      async () => await deleteHandler(["feature"]),
+      /Exit with code 0: success/
+    );
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
@@ -125,11 +124,10 @@ describe("deleteHandler", () => {
       ),
     );
 
-    try {
-      await deleteHandler(["--current"]);
-    } catch (error) {
-      // Expected to throw on success
-    }
+    await rejects(
+      async () => await deleteHandler(["--current"]),
+      /Exit with code 0: success/
+    );
 
     strictEqual(getCurrentWorktreeMock.mock.calls.length, 1);
     strictEqual(
@@ -157,11 +155,10 @@ describe("deleteHandler", () => {
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
     getCurrentWorktreeMock.mock.mockImplementation(() => Promise.resolve(null));
 
-    try {
-      await deleteHandler(["--current"]);
-    } catch (error) {
-      // Expected to throw
-    }
+    await rejects(
+      async () => await deleteHandler(["--current"]),
+      /Exit with code 3: Not in a worktree directory/
+    );
 
     strictEqual(getCurrentWorktreeMock.mock.calls.length, 1);
     strictEqual(consoleErrorMock.mock.calls.length, 2); // exitWithError is called twice - once in the handler, once in the catch block
@@ -181,11 +178,10 @@ describe("deleteHandler", () => {
   it("should error when both name and --current are provided", async () => {
     resetMocks();
 
-    try {
-      await deleteHandler(["feature", "--current"]);
-    } catch (error) {
-      // Expected to throw
-    }
+    await rejects(
+      async () => await deleteHandler(["feature", "--current"]),
+      /Exit with code 3: Cannot specify both a worktree name and --current option/
+    );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
@@ -198,11 +194,10 @@ describe("deleteHandler", () => {
   it("should error when no arguments are provided", async () => {
     resetMocks();
 
-    try {
-      await deleteHandler([]);
-    } catch (error) {
-      // Expected to throw
-    }
+    await rejects(
+      async () => await deleteHandler([]),
+      /Exit with code 3: Please provide a worktree name to delete or use --current to delete the current worktree/
+    );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
@@ -229,11 +224,10 @@ describe("deleteHandler", () => {
       ),
     );
 
-    try {
-      await deleteHandler(["--current", "--force"]);
-    } catch (error) {
-      // Expected to throw on success
-    }
+    await rejects(
+      async () => await deleteHandler(["--current", "--force"]),
+      /Exit with code 0: success/
+    );
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[2];
@@ -250,11 +244,10 @@ describe("deleteHandler", () => {
       Promise.resolve(err(new WorktreeNotFoundError("feature"))),
     );
 
-    try {
-      await deleteHandler(["feature"]);
-    } catch (error) {
-      // Expected to throw
-    }
+    await rejects(
+      async () => await deleteHandler(["feature"]),
+      /Exit with code 3: Worktree 'feature' not found/
+    );
 
     strictEqual(consoleErrorMock.mock.calls.length, 2); // exitWithError is called twice
     strictEqual(

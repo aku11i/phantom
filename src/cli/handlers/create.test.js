@@ -1,4 +1,4 @@
-import { strictEqual } from "node:assert";
+import { strictEqual, rejects } from "node:assert";
 import { describe, it, mock } from "node:test";
 import { err, ok } from "../../core/types/result.ts";
 
@@ -121,11 +121,10 @@ describe("createHandler", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    try {
-      await createHandler(["feature", "--exec", "echo hello"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--exec", "echo hello"]),
+      /Exit with code 0/
+    );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
@@ -174,11 +173,10 @@ describe("createHandler", () => {
       ),
     );
 
-    try {
-      await createHandler(["feature", "--exec", "false"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--exec", "false"]),
+      /Exit with code 1/
+    );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(execInWorktreeMock.mock.calls.length, 1);
@@ -191,11 +189,10 @@ describe("createHandler", () => {
 
   it("should error when --shell and --exec are used together", async () => {
     resetMocks();
-    try {
-      await createHandler(["feature", "--shell", "--exec", "echo hello"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--shell", "--exec", "echo hello"]),
+      /Exit with code 2/
+    );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
@@ -222,11 +219,10 @@ describe("createHandler", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    try {
-      await createHandler(["feature", "--exec", "echo hello"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--exec", "echo hello"]),
+      /Exit with code 0/
+    );
 
     const execArgs = execInWorktreeMock.mock.calls[0].arguments[2];
     strictEqual(execArgs[0], "/bin/sh");
@@ -236,11 +232,10 @@ describe("createHandler", () => {
     resetMocks();
     isInsideTmuxMock.mock.mockImplementation(() => Promise.resolve(false));
 
-    try {
-      await createHandler(["feature", "--tmux"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--tmux"]),
+      /Exit with code 2/
+    );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
@@ -269,11 +264,10 @@ describe("createHandler", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    try {
-      await createHandler(["feature", "--tmux"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--tmux"]),
+      /Exit with code 0/
+    );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(executeTmuxCommandMock.mock.calls.length, 1);
@@ -314,11 +308,10 @@ describe("createHandler", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    try {
-      await createHandler(["feature", "--tmux-vertical"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--tmux-vertical"]),
+      /Exit with code 0/
+    );
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(executeTmuxCommandMock.mock.calls.length, 1);
@@ -342,11 +335,10 @@ describe("createHandler", () => {
 
   it("should error when multiple action options are used together", async () => {
     resetMocks();
-    try {
-      await createHandler(["feature", "--shell", "--tmux"]);
-    } catch (error) {
-      // Expected to throw on exit
-    }
+    await rejects(
+      async () => await createHandler(["feature", "--shell", "--tmux"]),
+      /Exit with code 2/
+    );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(

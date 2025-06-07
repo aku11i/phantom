@@ -1,4 +1,4 @@
-import { deepStrictEqual } from "node:assert";
+import { deepStrictEqual, rejects } from "node:assert";
 import { describe, it, mock } from "node:test";
 import { err, ok } from "../../core/types/result.ts";
 import {
@@ -84,11 +84,10 @@ describe("attachHandler", () => {
   it("should exit with error when no branch name provided", async () => {
     exitWithErrorMock.mock.resetCalls();
 
-    try {
-      await attachHandler([]);
-    } catch (error) {
-      // Expected to throw
-    }
+    await rejects(
+      async () => await attachHandler([]),
+      /Exit with code 3/,
+    );
 
     deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
       "Missing required argument: branch name",
@@ -101,11 +100,10 @@ describe("attachHandler", () => {
     getGitRootMock.mock.resetCalls();
     attachWorktreeCoreMock.mock.resetCalls();
 
-    try {
-      await attachHandler(["feature", "--shell", "--exec", "ls"]);
-    } catch (error) {
-      // Expected to throw
-    }
+    await rejects(
+      async () => await attachHandler(["feature", "--shell", "--exec", "ls"]),
+      /Exit with code 3/,
+    );
 
     deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
       "Cannot use both --shell and --exec options",
@@ -122,11 +120,10 @@ describe("attachHandler", () => {
       Promise.resolve(err(new BranchNotFoundError("nonexistent"))),
     );
 
-    try {
-      await attachHandler(["nonexistent"]);
-    } catch (error) {
-      // Expected to throw
-    }
+    await rejects(
+      async () => await attachHandler(["nonexistent"]),
+      /Exit with code 2/,
+    );
 
     deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
       "Branch 'nonexistent' not found",
