@@ -1,5 +1,10 @@
 import { parseArgs } from "node:util";
-import { ConfigNotFoundError, loadConfig } from "../../core/config/loader.ts";
+import {
+  ConfigNotFoundError,
+  ConfigParseError,
+  loadConfig,
+} from "../../core/config/loader.ts";
+import { ConfigValidationError } from "../../core/config/validate.ts";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
 import { execInWorktree } from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
@@ -100,8 +105,18 @@ export async function createHandler(args: string[]): Promise<void> {
 
     // Load files from config
     const configResult = await loadConfig(gitRoot);
-    if (isOk(configResult) && configResult.value.postCreate?.copyFiles) {
-      filesToCopy = [...configResult.value.postCreate.copyFiles];
+    if (isOk(configResult)) {
+      if (configResult.value.postCreate?.copyFiles) {
+        filesToCopy = [...configResult.value.postCreate.copyFiles];
+      }
+    } else {
+      // Display warning for validation and parse errors
+      if (configResult.error instanceof ConfigValidationError) {
+        output.warn(`Configuration warning: ${configResult.error.message}`);
+      } else if (configResult.error instanceof ConfigParseError) {
+        output.warn(`Configuration warning: ${configResult.error.message}`);
+      }
+      // ConfigNotFoundError remains silent as the config file is optional
     }
 
     // Add files from CLI options
