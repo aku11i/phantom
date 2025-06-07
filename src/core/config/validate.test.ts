@@ -1,0 +1,370 @@
+import assert from "node:assert";
+import { describe, test } from "node:test";
+import { isErr, isOk } from "../types/result.ts";
+import { ConfigValidationError, validateConfig } from "./validate.ts";
+
+describe("validateConfig", () => {
+  test("should accept valid config with postCreate and copyFiles", () => {
+    const config = {
+      postCreate: {
+        copyFiles: [".env", "config.local.json"],
+      },
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  test("should accept empty config object", () => {
+    const config = {};
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  test("should accept config with empty postCreate", () => {
+    const config = {
+      postCreate: {},
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  test("should accept config with empty copyFiles array", () => {
+    const config = {
+      postCreate: {
+        copyFiles: [],
+      },
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  describe("error cases", () => {
+    test("should reject string config", () => {
+      const result = validateConfig("not an object");
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should reject number config", () => {
+      const result = validateConfig(123);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should reject boolean config", () => {
+      const result = validateConfig(true);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should reject null config", () => {
+      const result = validateConfig(null);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should reject undefined config", () => {
+      const result = validateConfig(undefined);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should reject array config", () => {
+      const result = validateConfig([]);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should reject when postCreate is string", () => {
+      const result = validateConfig({ postCreate: "invalid" });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate must be an object",
+        );
+      }
+    });
+
+    test("should reject when postCreate is number", () => {
+      const result = validateConfig({ postCreate: 123 });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate must be an object",
+        );
+      }
+    });
+
+    test("should reject when postCreate is array", () => {
+      const result = validateConfig({ postCreate: [] });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate must be an object",
+        );
+      }
+    });
+
+    test("should reject when postCreate is null", () => {
+      const result = validateConfig({ postCreate: null });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate must be an object",
+        );
+      }
+    });
+
+    test("should reject when copyFiles is string", () => {
+      const result = validateConfig({ postCreate: { copyFiles: "invalid" } });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must be an array",
+        );
+      }
+    });
+
+    test("should reject when copyFiles is number", () => {
+      const result = validateConfig({ postCreate: { copyFiles: 123 } });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must be an array",
+        );
+      }
+    });
+
+    test("should reject when copyFiles is object", () => {
+      const result = validateConfig({ postCreate: { copyFiles: {} } });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must be an array",
+        );
+      }
+    });
+
+    test("should reject when copyFiles contains non-string values", () => {
+      const result = validateConfig({
+        postCreate: { copyFiles: ["valid", 123, true] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when copyFiles contains null", () => {
+      const result = validateConfig({
+        postCreate: { copyFiles: ["valid", null] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when copyFiles contains undefined", () => {
+      const result = validateConfig({
+        postCreate: { copyFiles: ["valid", undefined] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when copyFiles contains objects", () => {
+      const result = validateConfig({
+        postCreate: { copyFiles: ["valid", { file: "test" }] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when copyFiles contains arrays", () => {
+      const result = validateConfig({
+        postCreate: { copyFiles: ["valid", ["nested"]] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+        );
+      }
+    });
+  });
+
+  describe("edge cases", () => {
+    test("should accept config with unknown properties", () => {
+      const config = {
+        postCreate: {
+          copyFiles: [".env"],
+        },
+        unknownProperty: "should be ignored",
+      };
+
+      const result = validateConfig(config);
+
+      assert.strictEqual(isOk(result), true);
+      if (isOk(result)) {
+        assert.deepStrictEqual(result.value, config);
+      }
+    });
+
+    test("should accept postCreate with unknown properties", () => {
+      const config = {
+        postCreate: {
+          copyFiles: [".env"],
+          unknownProperty: "should be ignored",
+        },
+      };
+
+      const result = validateConfig(config);
+
+      assert.strictEqual(isOk(result), true);
+      if (isOk(result)) {
+        assert.deepStrictEqual(result.value, config);
+      }
+    });
+
+    test("should accept copyFiles with empty strings", () => {
+      const config = {
+        postCreate: {
+          copyFiles: ["", "valid", ""],
+        },
+      };
+
+      const result = validateConfig(config);
+
+      assert.strictEqual(isOk(result), true);
+      if (isOk(result)) {
+        assert.deepStrictEqual(result.value, config);
+      }
+    });
+
+    test("should accept copyFiles with special characters", () => {
+      const config = {
+        postCreate: {
+          copyFiles: ["@#$%", "file with spaces.txt", "../relative/path.js"],
+        },
+      };
+
+      const result = validateConfig(config);
+
+      assert.strictEqual(isOk(result), true);
+      if (isOk(result)) {
+        assert.deepStrictEqual(result.value, config);
+      }
+    });
+  });
+});

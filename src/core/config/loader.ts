@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { type Result, err, ok } from "../types/result.ts";
+import { type ConfigValidationError, validateConfig } from "./validate.ts";
 
 export interface PhantomConfig {
   postCreate?: {
@@ -24,14 +25,25 @@ export class ConfigParseError extends Error {
 
 export async function loadConfig(
   gitRoot: string,
-): Promise<Result<PhantomConfig, ConfigNotFoundError | ConfigParseError>> {
+): Promise<
+  Result<
+    PhantomConfig,
+    ConfigNotFoundError | ConfigParseError | ConfigValidationError
+  >
+> {
   const configPath = path.join(gitRoot, "phantom.config.json");
 
   try {
     const content = await fs.readFile(configPath, "utf-8");
     try {
-      const config = JSON.parse(content) as PhantomConfig;
-      return ok(config);
+      const parsed = JSON.parse(content);
+      const validationResult = validateConfig(parsed);
+
+      if (!validationResult.ok) {
+        return err(validationResult.error);
+      }
+
+      return ok(validationResult.value);
     } catch (error) {
       return err(
         new ConfigParseError(

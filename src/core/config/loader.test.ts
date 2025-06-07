@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, test } from "node:test";
 import { isErr, isOk } from "../types/result.ts";
 import { ConfigNotFoundError, ConfigParseError, loadConfig } from "./loader.ts";
+import { ConfigValidationError } from "./validate.ts";
 
 describe("loadConfig", () => {
   let tempDir: string;
@@ -87,5 +88,144 @@ describe("loadConfig", () => {
     if (isOk(result)) {
       assert.deepStrictEqual(result.value, {});
     }
+  });
+
+  describe("validation", () => {
+    test("should return ConfigValidationError when config is not an object", async () => {
+      await writeFile(
+        path.join(tempDir, "phantom.config.json"),
+        JSON.stringify("string config"),
+      );
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should return ConfigValidationError when config is null", async () => {
+      await writeFile(path.join(tempDir, "phantom.config.json"), "null");
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
+
+    test("should return ConfigValidationError when postCreate is not an object", async () => {
+      await writeFile(
+        path.join(tempDir, "phantom.config.json"),
+        JSON.stringify({ postCreate: "invalid" }),
+      );
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate must be an object",
+        );
+      }
+    });
+
+    test("should return ConfigValidationError when postCreate is null", async () => {
+      await writeFile(
+        path.join(tempDir, "phantom.config.json"),
+        JSON.stringify({ postCreate: null }),
+      );
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate must be an object",
+        );
+      }
+    });
+
+    test("should return ConfigValidationError when copyFiles is not an array", async () => {
+      await writeFile(
+        path.join(tempDir, "phantom.config.json"),
+        JSON.stringify({ postCreate: { copyFiles: "invalid" } }),
+      );
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must be an array",
+        );
+      }
+    });
+
+    test("should return ConfigValidationError when copyFiles contains non-string values", async () => {
+      await writeFile(
+        path.join(tempDir, "phantom.config.json"),
+        JSON.stringify({ postCreate: { copyFiles: ["valid", 123, true] } }),
+      );
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+        );
+      }
+    });
+
+    test("should accept valid config with postCreate but no copyFiles", async () => {
+      await writeFile(
+        path.join(tempDir, "phantom.config.json"),
+        JSON.stringify({ postCreate: {} }),
+      );
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isOk(result), true);
+      if (isOk(result)) {
+        assert.deepStrictEqual(result.value, { postCreate: {} });
+      }
+    });
+
+    test("should return ConfigValidationError when config is an array", async () => {
+      await writeFile(
+        path.join(tempDir, "phantom.config.json"),
+        JSON.stringify([]),
+      );
+
+      const result = await loadConfig(tempDir);
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Configuration must be an object",
+        );
+      }
+    });
   });
 });
