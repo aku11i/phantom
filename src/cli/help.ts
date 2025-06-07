@@ -56,12 +56,14 @@ export class HelpFormatter {
 
     lines.push("");
     lines.push(this.section("GLOBAL OPTIONS"));
-    const globalOptionWidth = Math.max("-h, --help".length, "-v, --version".length) + 2;
+    const helpOption = "-h, --help";
+    const versionOption = "-v, --version";
+    const globalOptionWidth = Math.max(helpOption.length, versionOption.length) + 2;
     lines.push(
-      `${this.indent}${this.cyan("-h, --help".padEnd(globalOptionWidth))}Show help`,
+      `${this.indent}${this.cyan(helpOption.padEnd(globalOptionWidth))}Show help`,
     );
     lines.push(
-      `${this.indent}${this.cyan("-v, --version".padEnd(globalOptionWidth))}Show version`,
+      `${this.indent}${this.cyan(versionOption.padEnd(globalOptionWidth))}Show version`,
     );
     lines.push("");
     lines.push(
