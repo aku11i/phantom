@@ -10,6 +10,11 @@ export const listHelp: CommandHelp = {
       type: "boolean",
       description: "Use fzf for interactive selection",
     },
+    {
+      name: "--names",
+      type: "boolean",
+      description: "Output only phantom names (for scripts and completion)",
+    },
   ],
   examples: [
     {
@@ -20,10 +25,15 @@ export const listHelp: CommandHelp = {
       description: "List worktrees with interactive fzf selection",
       command: "phantom list --fzf",
     },
+    {
+      description: "List only worktree names",
+      command: "phantom list --names",
+    },
   ],
   notes: [
     "Shows all worktrees with their paths and associated branches",
     "The main worktree is marked as '(bare)' if using a bare repository",
     "With --fzf, outputs only the selected worktree name",
+    "Use --names for shell completion scripts and automation",
   ],
 };

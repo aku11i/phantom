@@ -14,6 +14,10 @@ export async function listHandler(args: string[] = []): Promise<void> {
         type: "boolean",
         default: false,
       },
+      names: {
+        type: "boolean",
+        default: false,
+      },
     },
     strict: true,
     allowPositionals: false,
@@ -41,18 +45,28 @@ export async function listHandler(args: string[] = []): Promise<void> {
       const { worktrees, message } = result.value;
 
       if (worktrees.length === 0) {
-        output.log(message || "No worktrees found.");
+        if (!values.names) {
+          output.log(message || "No worktrees found.");
+        }
         process.exit(exitCodes.success);
       }
 
-      const maxNameLength = Math.max(...worktrees.map((wt) => wt.name.length));
+      if (values.names) {
+        for (const worktree of worktrees) {
+          output.log(worktree.name);
+        }
+      } else {
+        const maxNameLength = Math.max(
+          ...worktrees.map((wt) => wt.name.length),
+        );
 
-      for (const worktree of worktrees) {
-        const paddedName = worktree.name.padEnd(maxNameLength + 2);
-        const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
-        const status = !worktree.isClean ? " [dirty]" : "";
+        for (const worktree of worktrees) {
+          const paddedName = worktree.name.padEnd(maxNameLength + 2);
+          const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
+          const status = !worktree.isClean ? " [dirty]" : "";
 
-        output.log(`${paddedName} ${branchInfo}${status}`);
+          output.log(`${paddedName} ${branchInfo}${status}`);
+        }
       }
     }
 
