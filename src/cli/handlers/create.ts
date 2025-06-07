@@ -135,7 +135,7 @@ export async function createHandler(args: string[]): Promise<void> {
 
     if (result.value.skippedFiles && result.value.skippedFiles.length > 0) {
       output.warn(
-        `\nSkipped files (not found or directories): ${result.value.skippedFiles.join(", ")}`,
+        `\nSkipped copying these files (not found or directories): ${result.value.skippedFiles.join(", ")}`,
       );
     }
 
