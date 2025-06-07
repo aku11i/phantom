@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "node ./src/bin/phantom.ts",
-    "phantom": "node ./src/bin/phantom.ts",
+    "phantom": "NODE_NO_WARNINGS=1 node ./src/bin/phantom.ts",
     "build": "node build.ts",
     "typecheck": "tsgo --noEmit",
     "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
