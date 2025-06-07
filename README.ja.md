@@ -151,9 +151,6 @@ phantom exec feature-auth git status
 phantom shell <name>
 ```
 
-# バージョン情報を表示
-phantom version
-
 ### 環境変数
 
 `phantom shell`でインタラクティブシェルを開いた際、以下の環境変数が設定されます：

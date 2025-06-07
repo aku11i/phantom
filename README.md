@@ -153,9 +153,6 @@ phantom exec feature-auth git status
 phantom shell <name>
 ```
 
-# Display version information
-phantom version
-
 ### Environment Variables
 
 When opening an interactive shell with `phantom shell`, these environment variables are set:
