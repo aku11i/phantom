@@ -71,6 +71,7 @@ export async function attachHandler(args: string[]): Promise<void> {
       gitRoot,
       branchName,
       values.exec.split(" "),
+      { interactive: true },
     );
     if (isErr(execResult)) {
       exitWithError(execResult.error.message, exitCodes.generalError);

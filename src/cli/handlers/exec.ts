@@ -24,7 +24,12 @@ export async function execHandler(args: string[]): Promise<void> {
 
   try {
     const gitRoot = await getGitRoot();
-    const result = await execInWorktreeCore(gitRoot, worktreeName, commandArgs);
+    const result = await execInWorktreeCore(
+      gitRoot,
+      worktreeName,
+      commandArgs,
+      { interactive: true },
+    );
 
     if (isErr(result)) {
       const exitCode =

@@ -8,7 +8,7 @@ import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
 export type ExecInWorktreeSuccess = SpawnSuccess;
 
 export interface ExecInWorktreeOptions {
-  stdio?: "inherit" | "pipe";
+  interactive?: boolean;
 }
 
 export async function execInWorktree(
@@ -27,8 +27,9 @@ export async function execInWorktree(
   const worktreePath = validation.path as string;
   const [cmd, ...args] = command;
 
-  const stdio: StdioOptions =
-    options.stdio === "pipe" ? ["ignore", "inherit", "inherit"] : "inherit";
+  const stdio: StdioOptions = options.interactive
+    ? "inherit"
+    : ["ignore", "inherit", "inherit"];
 
   return spawnProcess({
     command: cmd,

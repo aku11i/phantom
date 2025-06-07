@@ -53,7 +53,7 @@ describe("execInWorktree", () => {
       args: ["test"],
       options: {
         cwd: "/test/repo/.git/phantom/worktrees/my-feature",
-        stdio: "inherit",
+        stdio: ["ignore", "inherit", "inherit"],
       },
     });
   });
@@ -105,12 +105,12 @@ describe("execInWorktree", () => {
       args: [],
       options: {
         cwd: "/test/repo/.git/phantom/worktrees/feature",
-        stdio: "inherit",
+        stdio: ["ignore", "inherit", "inherit"],
       },
     });
   });
 
-  it("should use inherit stdio for stdout/stderr when pipe specified", async () => {
+  it("should use inherit stdio for stdout/stderr when interactive", async () => {
     validateMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
@@ -127,7 +127,7 @@ describe("execInWorktree", () => {
     );
 
     await execInWorktree("/test/repo", "feature", ["echo", "test"], {
-      stdio: "pipe",
+      interactive: true,
     });
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0], {
@@ -135,7 +135,7 @@ describe("execInWorktree", () => {
       args: ["test"],
       options: {
         cwd: "/test/repo/.git/phantom/worktrees/feature",
-        stdio: ["ignore", "inherit", "inherit"],
+        stdio: "inherit",
       },
     });
   });

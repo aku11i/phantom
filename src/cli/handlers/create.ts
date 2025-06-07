@@ -156,12 +156,11 @@ export async function createHandler(args: string[]): Promise<void> {
       for (const command of commands) {
         output.log(`Executing: ${command}`);
         const shell = process.env.SHELL || "/bin/sh";
-        const cmdResult = await execInWorktree(
-          gitRoot,
-          worktreeName,
-          [shell, "-c", command],
-          { stdio: "pipe" },
-        );
+        const cmdResult = await execInWorktree(gitRoot, worktreeName, [
+          shell,
+          "-c",
+          command,
+        ]);
 
         if (isErr(cmdResult)) {
           output.error(`Failed to execute command: ${cmdResult.error.message}`);
@@ -188,11 +187,12 @@ export async function createHandler(args: string[]): Promise<void> {
       );
 
       const shell = process.env.SHELL || "/bin/sh";
-      const execResult = await execInWorktree(gitRoot, worktreeName, [
-        shell,
-        "-c",
-        execCommand,
-      ]);
+      const execResult = await execInWorktree(
+        gitRoot,
+        worktreeName,
+        [shell, "-c", execCommand],
+        { interactive: true },
+      );
 
       if (isErr(execResult)) {
         output.error(execResult.error.message);
@@ -228,7 +228,9 @@ export async function createHandler(args: string[]): Promise<void> {
 
     if (tmuxDirection && isOk(result)) {
       output.log(
-        `\nOpening worktree '${worktreeName}' in tmux ${tmuxDirection === "new" ? "window" : "pane"}...`,
+        `\nOpening worktree '${worktreeName}' in tmux ${
+          tmuxDirection === "new" ? "window" : "pane"
+        }...`,
       );
 
       const shell = process.env.SHELL || "/bin/sh";
