@@ -1,42 +1,42 @@
 import { deepStrictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { describe, it } from "node:test";
 import { err, ok } from "../types/result.ts";
 import { BranchNotFoundError, WorktreeAlreadyExistsError } from "./errors.ts";
 
 describe("attachWorktreeCore", () => {
-  it("should attach to existing branch successfully", async () => {
-    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
-    const existsSyncMock = mock.fn(() => false);
-    const branchExistsMock = mock.fn(() => Promise.resolve(ok(true)));
-    const attachWorktreeMock = mock.fn(() => Promise.resolve(ok(undefined)));
+  it("should attach to existing branch successfully", async (t) => {
+    const validateWorktreeNameMock = t.mock.fn(() => ok(undefined));
+    const existsSyncMock = t.mock.fn(() => false);
+    const branchExistsMock = t.mock.fn(() => Promise.resolve(ok(true)));
+    const attachWorktreeMock = t.mock.fn(() => Promise.resolve(ok(undefined)));
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
-    mock.module("node:fs", {
+    t.mock.module("node:fs", {
       namedExports: {
         existsSync: existsSyncMock,
       },
     });
 
-    mock.module("../git/libs/branch-exists.ts", {
+    t.mock.module("../git/libs/branch-exists.ts", {
       namedExports: {
         branchExists: branchExistsMock,
       },
     });
 
-    mock.module("../git/libs/attach-worktree.ts", {
+    t.mock.module("../git/libs/attach-worktree.ts", {
       namedExports: {
         attachWorktree: attachWorktreeMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomWorktreePath: mock.fn(
+        getPhantomWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
@@ -65,12 +65,12 @@ describe("attachWorktreeCore", () => {
     ]);
   });
 
-  it("should fail if phantom name is invalid", async () => {
-    const validateWorktreeNameMock = mock.fn(() =>
+  it("should fail if phantom name is invalid", async (t) => {
+    const validateWorktreeNameMock = t.mock.fn(() =>
       err(new Error("Invalid name")),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeName: validateWorktreeNameMock,
       },
@@ -86,25 +86,25 @@ describe("attachWorktreeCore", () => {
     }
   });
 
-  it("should fail if worktree already exists", async () => {
-    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
-    const existsSyncMock = mock.fn(() => true);
+  it("should fail if worktree already exists", async (t) => {
+    const validateWorktreeNameMock = t.mock.fn(() => ok(undefined));
+    const existsSyncMock = t.mock.fn(() => true);
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
-    mock.module("node:fs", {
+    t.mock.module("node:fs", {
       namedExports: {
         existsSync: existsSyncMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomWorktreePath: mock.fn(
+        getPhantomWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
@@ -125,32 +125,32 @@ describe("attachWorktreeCore", () => {
     }
   });
 
-  it("should fail if branch does not exist", async () => {
-    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
-    const existsSyncMock = mock.fn(() => false);
-    const branchExistsMock = mock.fn(() => Promise.resolve(ok(false)));
+  it("should fail if branch does not exist", async (t) => {
+    const validateWorktreeNameMock = t.mock.fn(() => ok(undefined));
+    const existsSyncMock = t.mock.fn(() => false);
+    const branchExistsMock = t.mock.fn(() => Promise.resolve(ok(false)));
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
-    mock.module("node:fs", {
+    t.mock.module("node:fs", {
       namedExports: {
         existsSync: existsSyncMock,
       },
     });
 
-    mock.module("../git/libs/branch-exists.ts", {
+    t.mock.module("../git/libs/branch-exists.ts", {
       namedExports: {
         branchExists: branchExistsMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomWorktreePath: mock.fn(
+        getPhantomWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
@@ -168,41 +168,41 @@ describe("attachWorktreeCore", () => {
     }
   });
 
-  it("should propagate git errors", async () => {
-    const validateWorktreeNameMock = mock.fn(() => ok(undefined));
-    const existsSyncMock = mock.fn(() => false);
-    const branchExistsMock = mock.fn(() => Promise.resolve(ok(true)));
-    const attachWorktreeMock = mock.fn(() =>
+  it("should propagate git errors", async (t) => {
+    const validateWorktreeNameMock = t.mock.fn(() => ok(undefined));
+    const existsSyncMock = t.mock.fn(() => false);
+    const branchExistsMock = t.mock.fn(() => Promise.resolve(ok(true)));
+    const attachWorktreeMock = t.mock.fn(() =>
       Promise.resolve(err(new Error("Git operation failed"))),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeName: validateWorktreeNameMock,
       },
     });
 
-    mock.module("node:fs", {
+    t.mock.module("node:fs", {
       namedExports: {
         existsSync: existsSyncMock,
       },
     });
 
-    mock.module("../git/libs/branch-exists.ts", {
+    t.mock.module("../git/libs/branch-exists.ts", {
       namedExports: {
         branchExists: branchExistsMock,
       },
     });
 
-    mock.module("../git/libs/attach-worktree.ts", {
+    t.mock.module("../git/libs/attach-worktree.ts", {
       namedExports: {
         attachWorktree: attachWorktreeMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomWorktreePath: mock.fn(
+        getPhantomWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),

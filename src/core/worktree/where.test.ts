@@ -1,17 +1,17 @@
 import { deepStrictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { describe, it } from "node:test";
 import { whereWorktree } from "./where.ts";
 
 describe("whereWorktree", () => {
-  it("should return path when worktree exists", async () => {
-    const validateMock = mock.fn(() =>
+  it("should return path when worktree exists", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/my-feature",
       }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },
@@ -31,15 +31,15 @@ describe("whereWorktree", () => {
     ]);
   });
 
-  it("should return error when worktree does not exist", async () => {
-    const validateMock = mock.fn(() =>
+  it("should return error when worktree does not exist", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: false,
         message: "Worktree 'non-existent' not found",
       }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },
@@ -54,14 +54,14 @@ describe("whereWorktree", () => {
     });
   });
 
-  it("should provide default message when validation message is missing", async () => {
-    const validateMock = mock.fn(() =>
+  it("should provide default message when validation message is missing", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: false,
       }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },

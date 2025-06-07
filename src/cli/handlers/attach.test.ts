@@ -1,5 +1,5 @@
 import { deepStrictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { describe, it } from "node:test";
 import { err, ok } from "../../core/types/result.ts";
 import {
   BranchNotFoundError,
@@ -7,22 +7,15 @@ import {
 } from "../../core/worktree/errors.ts";
 
 describe("attachHandler", () => {
-  let exitWithErrorMock: ReturnType<typeof mock.fn>;
-  let outputLogMock: ReturnType<typeof mock.fn>;
-  let getGitRootMock: ReturnType<typeof mock.fn>;
-  let attachWorktreeCoreMock: ReturnType<typeof mock.fn>;
-  let shellInWorktreeMock: ReturnType<typeof mock.fn>;
-  let execInWorktreeMock: ReturnType<typeof mock.fn>;
-
-  it("should attach to existing branch successfully", async () => {
-    exitWithErrorMock = mock.fn();
-    outputLogMock = mock.fn();
-    getGitRootMock = mock.fn(() => Promise.resolve("/repo"));
-    attachWorktreeCoreMock = mock.fn(() =>
+  it("should attach to existing branch successfully", async (t) => {
+    const exitWithErrorMock = t.mock.fn();
+    const outputLogMock = t.mock.fn();
+    const getGitRootMock = t.mock.fn(() => Promise.resolve("/repo"));
+    const attachWorktreeCoreMock = t.mock.fn(() =>
       Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
     );
 
-    mock.module("../errors.ts", {
+    t.mock.module("../errors.ts", {
       namedExports: {
         exitWithError: exitWithErrorMock,
         exitCodes: {
@@ -34,33 +27,33 @@ describe("attachHandler", () => {
       },
     });
 
-    mock.module("../output.ts", {
+    t.mock.module("../output.ts", {
       namedExports: {
         output: { log: outputLogMock },
       },
     });
 
-    mock.module("../../core/git/libs/get-git-root.ts", {
+    t.mock.module("../../core/git/libs/get-git-root.ts", {
       namedExports: {
         getGitRoot: getGitRootMock,
       },
     });
 
-    mock.module("../../core/worktree/attach.ts", {
+    t.mock.module("../../core/worktree/attach.ts", {
       namedExports: {
         attachWorktreeCore: attachWorktreeCoreMock,
       },
     });
 
-    mock.module("../../core/process/shell.ts", {
+    t.mock.module("../../core/process/shell.ts", {
       namedExports: {
-        shellInWorktree: mock.fn(),
+        shellInWorktree: t.mock.fn(),
       },
     });
 
-    mock.module("../../core/process/exec.ts", {
+    t.mock.module("../../core/process/exec.ts", {
       namedExports: {
-        execInWorktree: mock.fn(),
+        execInWorktree: t.mock.fn(),
       },
     });
 
@@ -79,10 +72,10 @@ describe("attachHandler", () => {
     ]);
   });
 
-  it("should exit with error when no branch name provided", async () => {
-    exitWithErrorMock = mock.fn();
+  it("should exit with error when no branch name provided", async (t) => {
+    const exitWithErrorMock = t.mock.fn();
 
-    mock.module("../errors.ts", {
+    t.mock.module("../errors.ts", {
       namedExports: {
         exitWithError: exitWithErrorMock,
         exitCodes: {
@@ -101,10 +94,10 @@ describe("attachHandler", () => {
     ]);
   });
 
-  it("should exit with error when both --shell and --exec are provided", async () => {
-    exitWithErrorMock = mock.fn();
+  it("should exit with error when both --shell and --exec are provided", async (t) => {
+    const exitWithErrorMock = t.mock.fn();
 
-    mock.module("../errors.ts", {
+    t.mock.module("../errors.ts", {
       namedExports: {
         exitWithError: exitWithErrorMock,
         exitCodes: {
@@ -123,14 +116,14 @@ describe("attachHandler", () => {
     ]);
   });
 
-  it("should handle BranchNotFoundError", async () => {
-    exitWithErrorMock = mock.fn();
-    getGitRootMock = mock.fn(() => Promise.resolve("/repo"));
-    attachWorktreeCoreMock = mock.fn(() =>
+  it("should handle BranchNotFoundError", async (t) => {
+    const exitWithErrorMock = t.mock.fn();
+    const getGitRootMock = t.mock.fn(() => Promise.resolve("/repo"));
+    const attachWorktreeCoreMock = t.mock.fn(() =>
       Promise.resolve(err(new BranchNotFoundError("nonexistent"))),
     );
 
-    mock.module("../errors.ts", {
+    t.mock.module("../errors.ts", {
       namedExports: {
         exitWithError: exitWithErrorMock,
         exitCodes: {
@@ -142,13 +135,13 @@ describe("attachHandler", () => {
       },
     });
 
-    mock.module("../../core/git/libs/get-git-root.ts", {
+    t.mock.module("../../core/git/libs/get-git-root.ts", {
       namedExports: {
         getGitRoot: getGitRootMock,
       },
     });
 
-    mock.module("../../core/worktree/attach.ts", {
+    t.mock.module("../../core/worktree/attach.ts", {
       namedExports: {
         attachWorktreeCore: attachWorktreeCoreMock,
       },
@@ -164,16 +157,18 @@ describe("attachHandler", () => {
     ]);
   });
 
-  it("should spawn shell when --shell flag is provided", async () => {
-    exitWithErrorMock = mock.fn();
-    outputLogMock = mock.fn();
-    shellInWorktreeMock = mock.fn(() => Promise.resolve(ok({ exitCode: 0 })));
-    getGitRootMock = mock.fn(() => Promise.resolve("/repo"));
-    attachWorktreeCoreMock = mock.fn(() =>
+  it("should spawn shell when --shell flag is provided", async (t) => {
+    const exitWithErrorMock = t.mock.fn();
+    const outputLogMock = t.mock.fn();
+    const shellInWorktreeMock = t.mock.fn(() =>
+      Promise.resolve(ok({ exitCode: 0 })),
+    );
+    const getGitRootMock = t.mock.fn(() => Promise.resolve("/repo"));
+    const attachWorktreeCoreMock = t.mock.fn(() =>
       Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
     );
 
-    mock.module("../errors.ts", {
+    t.mock.module("../errors.ts", {
       namedExports: {
         exitWithError: exitWithErrorMock,
         exitCodes: {
@@ -185,33 +180,33 @@ describe("attachHandler", () => {
       },
     });
 
-    mock.module("../output.ts", {
+    t.mock.module("../output.ts", {
       namedExports: {
         output: { log: outputLogMock },
       },
     });
 
-    mock.module("../../core/git/libs/get-git-root.ts", {
+    t.mock.module("../../core/git/libs/get-git-root.ts", {
       namedExports: {
         getGitRoot: getGitRootMock,
       },
     });
 
-    mock.module("../../core/worktree/attach.ts", {
+    t.mock.module("../../core/worktree/attach.ts", {
       namedExports: {
         attachWorktreeCore: attachWorktreeCoreMock,
       },
     });
 
-    mock.module("../../core/process/shell.ts", {
+    t.mock.module("../../core/process/shell.ts", {
       namedExports: {
         shellInWorktree: shellInWorktreeMock,
       },
     });
 
-    mock.module("../../core/process/exec.ts", {
+    t.mock.module("../../core/process/exec.ts", {
       namedExports: {
-        execCommand: mock.fn(),
+        execCommand: t.mock.fn(),
       },
     });
 

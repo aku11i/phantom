@@ -1,5 +1,5 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { describe, it } from "node:test";
 import { isErr, isOk } from "../types/result.ts";
 import {
   GitOperationError,
@@ -8,15 +8,15 @@ import {
 } from "./errors.ts";
 
 describe("deleteWorktree", () => {
-  it("should delete worktree and report when branch deletion fails", async () => {
-    const validateMock = mock.fn(() =>
+  it("should delete worktree and report when branch deletion fails", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/feature",
       }),
     );
 
-    const executeGitCommandMock = mock.fn((command: string) => {
+    const executeGitCommandMock = t.mock.fn((command: string) => {
       if (command.includes("worktree remove")) {
         return Promise.resolve({ stdout: "", stderr: "" });
       }
@@ -25,17 +25,17 @@ describe("deleteWorktree", () => {
       }
       return Promise.reject(new Error("Unexpected command"));
     });
-    const executeGitCommandInDirectoryMock = mock.fn(() =>
+    const executeGitCommandInDirectoryMock = t.mock.fn(() =>
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },
     });
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
         executeGitCommandInDirectory: executeGitCommandInDirectoryMock,
@@ -57,15 +57,15 @@ describe("deleteWorktree", () => {
     }
   });
 
-  it("should delete a worktree successfully when no uncommitted changes", async () => {
-    const validateMock = mock.fn(() =>
+  it("should delete a worktree successfully when no uncommitted changes", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/feature",
       }),
     );
 
-    const executeGitCommandMock = mock.fn((command: string) => {
+    const executeGitCommandMock = t.mock.fn((command: string) => {
       if (command.includes("worktree remove")) {
         return Promise.resolve({ stdout: "", stderr: "" });
       }
@@ -74,17 +74,17 @@ describe("deleteWorktree", () => {
       }
       return Promise.reject(new Error("Unexpected command"));
     });
-    const executeGitCommandInDirectoryMock = mock.fn(() =>
+    const executeGitCommandInDirectoryMock = t.mock.fn(() =>
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },
     });
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
         executeGitCommandInDirectory: executeGitCommandInDirectoryMock,
@@ -128,15 +128,15 @@ describe("deleteWorktree", () => {
     ]);
   });
 
-  it("should fail when worktree does not exist", async () => {
-    const validateMock = mock.fn(() =>
+  it("should fail when worktree does not exist", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: false,
         message: "Worktree 'nonexistent' does not exist",
       }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },
@@ -153,30 +153,30 @@ describe("deleteWorktree", () => {
     }
   });
 
-  it("should fail when uncommitted changes exist without force", async () => {
-    const validateMock = mock.fn(() =>
+  it("should fail when uncommitted changes exist without force", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/feature",
       }),
     );
 
-    const executeGitCommandInDirectoryMock = mock.fn(() =>
+    const executeGitCommandInDirectoryMock = t.mock.fn(() =>
       Promise.resolve({
         stdout: "M file1.txt\nA file2.txt\n?? file3.txt",
         stderr: "",
       }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },
     });
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
-        executeGitCommand: mock.fn(),
+        executeGitCommand: t.mock.fn(),
         executeGitCommandInDirectory: executeGitCommandInDirectoryMock,
       },
     });
@@ -195,15 +195,15 @@ describe("deleteWorktree", () => {
     }
   });
 
-  it("should delete worktree with uncommitted changes when force is true", async () => {
-    const validateMock = mock.fn(() =>
+  it("should delete worktree with uncommitted changes when force is true", async (t) => {
+    const validateMock = t.mock.fn(() =>
       Promise.resolve({
         exists: true,
         path: "/test/repo/.git/phantom/worktrees/feature",
       }),
     );
 
-    const executeGitCommandMock = mock.fn((command: string) => {
+    const executeGitCommandMock = t.mock.fn((command: string) => {
       if (command.includes("worktree remove")) {
         return Promise.resolve({ stdout: "", stderr: "" });
       }
@@ -212,20 +212,20 @@ describe("deleteWorktree", () => {
       }
       return Promise.reject(new Error("Unexpected command"));
     });
-    const executeGitCommandInDirectoryMock = mock.fn(() =>
+    const executeGitCommandInDirectoryMock = t.mock.fn(() =>
       Promise.resolve({
         stdout: "M file1.txt\nA file2.txt",
         stderr: "",
       }),
     );
 
-    mock.module("./validate.ts", {
+    t.mock.module("./validate.ts", {
       namedExports: {
         validateWorktreeExists: validateMock,
       },
     });
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
         executeGitCommandInDirectory: executeGitCommandInDirectoryMock,
@@ -251,14 +251,14 @@ describe("deleteWorktree", () => {
 });
 
 describe("getWorktreeStatus", () => {
-  it("should return no uncommitted changes when git status is clean", async () => {
-    const executeGitCommandInDirectoryMock = mock.fn(() =>
+  it("should return no uncommitted changes when git status is clean", async (t) => {
+    const executeGitCommandInDirectoryMock = t.mock.fn(() =>
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
-        executeGitCommand: mock.fn(),
+        executeGitCommand: t.mock.fn(),
         executeGitCommandInDirectory: executeGitCommandInDirectoryMock,
       },
     });
@@ -277,17 +277,17 @@ describe("getWorktreeStatus", () => {
     ]);
   });
 
-  it("should return uncommitted changes when git status shows changes", async () => {
-    const executeGitCommandInDirectoryMock = mock.fn(() =>
+  it("should return uncommitted changes when git status shows changes", async (t) => {
+    const executeGitCommandInDirectoryMock = t.mock.fn(() =>
       Promise.resolve({
         stdout: "M file1.txt\nA file2.txt\n?? file3.txt",
         stderr: "",
       }),
     );
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
-        executeGitCommand: mock.fn(),
+        executeGitCommand: t.mock.fn(),
         executeGitCommandInDirectory: executeGitCommandInDirectoryMock,
       },
     });
@@ -300,14 +300,14 @@ describe("getWorktreeStatus", () => {
     strictEqual(status.changedFiles, 3);
   });
 
-  it("should return no changes when git status fails", async () => {
-    const executeGitCommandInDirectoryMock = mock.fn(() =>
+  it("should return no changes when git status fails", async (t) => {
+    const executeGitCommandInDirectoryMock = t.mock.fn(() =>
       Promise.reject(new Error("Not a git repository")),
     );
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
-        executeGitCommand: mock.fn(),
+        executeGitCommand: t.mock.fn(),
         executeGitCommandInDirectory: executeGitCommandInDirectoryMock,
       },
     });
@@ -322,15 +322,15 @@ describe("getWorktreeStatus", () => {
 });
 
 describe("removeWorktree", () => {
-  it("should remove worktree successfully", async () => {
-    const executeGitCommandMock = mock.fn(() =>
+  it("should remove worktree successfully", async (t) => {
+    const executeGitCommandMock = t.mock.fn(() =>
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
-        executeGitCommandInDirectory: mock.fn(),
+        executeGitCommandInDirectory: t.mock.fn(),
       },
     });
 
@@ -348,9 +348,9 @@ describe("removeWorktree", () => {
     ]);
   });
 
-  it("should use force removal when regular removal fails", async () => {
+  it("should use force removal when regular removal fails", async (t) => {
     let callCount = 0;
-    const executeGitCommandMock = mock.fn(() => {
+    const executeGitCommandMock = t.mock.fn(() => {
       callCount++;
       if (callCount === 1) {
         return Promise.reject(new Error("Worktree is dirty"));
@@ -358,10 +358,10 @@ describe("removeWorktree", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
-        executeGitCommandInDirectory: mock.fn(),
+        executeGitCommandInDirectory: t.mock.fn(),
       },
     });
 
@@ -383,15 +383,15 @@ describe("removeWorktree", () => {
     ]);
   });
 
-  it("should throw error when both regular and force removal fail", async () => {
-    const executeGitCommandMock = mock.fn(() =>
+  it("should throw error when both regular and force removal fail", async (t) => {
+    const executeGitCommandMock = t.mock.fn(() =>
       Promise.reject(new Error("Permission denied")),
     );
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
-        executeGitCommandInDirectory: mock.fn(),
+        executeGitCommandInDirectory: t.mock.fn(),
       },
     });
 
@@ -412,15 +412,15 @@ describe("removeWorktree", () => {
 });
 
 describe("deleteBranch", () => {
-  it("should delete branch successfully", async () => {
-    const executeGitCommandMock = mock.fn(() =>
+  it("should delete branch successfully", async (t) => {
+    const executeGitCommandMock = t.mock.fn(() =>
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
-        executeGitCommandInDirectory: mock.fn(),
+        executeGitCommandInDirectory: t.mock.fn(),
       },
     });
 
@@ -439,15 +439,15 @@ describe("deleteBranch", () => {
     ]);
   });
 
-  it("should return error when branch deletion fails", async () => {
-    const executeGitCommandMock = mock.fn(() =>
+  it("should return error when branch deletion fails", async (t) => {
+    const executeGitCommandMock = t.mock.fn(() =>
       Promise.reject(new Error("Branch not found")),
     );
 
-    mock.module("../git/executor.ts", {
+    t.mock.module("../git/executor.ts", {
       namedExports: {
         executeGitCommand: executeGitCommandMock,
-        executeGitCommandInDirectory: mock.fn(),
+        executeGitCommandInDirectory: t.mock.fn(),
       },
     });
 

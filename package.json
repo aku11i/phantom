@@ -31,7 +31,7 @@
     "phantom": "node ./src/bin/phantom.ts",
     "build": "node build.ts",
     "typecheck": "tsgo --noEmit",
-    "test": "node --test --experimental-strip-types --experimental-test-module-mocks src/**/*.test.ts",
+    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.ts\"",
     "lint": "biome check .",
     "fix": "biome check --write .",
     "ready": "pnpm fix && pnpm typecheck && pnpm test",

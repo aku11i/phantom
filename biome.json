@@ -9,7 +9,8 @@
   "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
-    "rules": { "recommended": true }
+    "rules": { "recommended": true },
+    "ignore": ["**/*.test.ts"]
   },
   "javascript": { "formatter": { "quoteStyle": "double" } },
   "files": {

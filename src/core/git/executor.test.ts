@@ -1,9 +1,9 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { describe, it } from "node:test";
 
 describe("executeGitCommand", () => {
-  it("should execute git command successfully", async () => {
-    const execFileMock = mock.fn(
+  it("should execute git command successfully", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.resolve({
           stdout: "feature-branch\n",
@@ -11,7 +11,7 @@ describe("executeGitCommand", () => {
         }),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -34,7 +34,7 @@ describe("executeGitCommand", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
@@ -59,9 +59,9 @@ describe("executeGitCommand", () => {
     ]);
   });
 
-  it("should execute git command with custom cwd and env", async () => {
+  it("should execute git command with custom cwd and env", async (t) => {
     const customEnv = { PATH: "/usr/bin", GIT_AUTHOR_NAME: "Test" };
-    const execFileMock = mock.fn(
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.resolve({
           stdout: "commit message",
@@ -69,7 +69,7 @@ describe("executeGitCommand", () => {
         }),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -92,7 +92,7 @@ describe("executeGitCommand", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
@@ -119,8 +119,8 @@ describe("executeGitCommand", () => {
     ]);
   });
 
-  it("should handle git command with stderr but successful exit", async () => {
-    const execFileMock = mock.fn(
+  it("should handle git command with stderr but successful exit", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.reject({
           stdout: "diff output",
@@ -129,7 +129,7 @@ describe("executeGitCommand", () => {
         }),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -152,7 +152,7 @@ describe("executeGitCommand", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
@@ -166,8 +166,8 @@ describe("executeGitCommand", () => {
     strictEqual(result.stderr, "");
   });
 
-  it("should throw error when git command has stderr content", async () => {
-    const execFileMock = mock.fn(
+  it("should throw error when git command has stderr content", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.reject({
           stdout: "",
@@ -176,7 +176,7 @@ describe("executeGitCommand", () => {
         }),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -199,7 +199,7 @@ describe("executeGitCommand", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
@@ -215,13 +215,13 @@ describe("executeGitCommand", () => {
     }
   });
 
-  it("should rethrow non-exec errors", async () => {
-    const execFileMock = mock.fn(
+  it("should rethrow non-exec errors", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.reject(new Error("Network error")),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -244,7 +244,7 @@ describe("executeGitCommand", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
@@ -260,8 +260,8 @@ describe("executeGitCommand", () => {
     }
   });
 
-  it("should trim stdout and stderr output", async () => {
-    const execFileMock = mock.fn(
+  it("should trim stdout and stderr output", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.resolve({
           stdout: "  output with whitespace  \n",
@@ -269,7 +269,7 @@ describe("executeGitCommand", () => {
         }),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -292,7 +292,7 @@ describe("executeGitCommand", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
@@ -308,8 +308,8 @@ describe("executeGitCommand", () => {
 });
 
 describe("executeGitCommandInDirectory", () => {
-  it("should execute git command in specific directory", async () => {
-    const execFileMock = mock.fn(
+  it("should execute git command in specific directory", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.resolve({
           stdout: "On branch main",
@@ -317,7 +317,7 @@ describe("executeGitCommandInDirectory", () => {
         }),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -340,7 +340,7 @@ describe("executeGitCommandInDirectory", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
@@ -364,8 +364,8 @@ describe("executeGitCommandInDirectory", () => {
     ]);
   });
 
-  it("should handle commands with complex arguments", async () => {
-    const execFileMock = mock.fn(
+  it("should handle commands with complex arguments", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) =>
         Promise.resolve({
           stdout: "commit hash",
@@ -373,7 +373,7 @@ describe("executeGitCommandInDirectory", () => {
         }),
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -396,7 +396,7 @@ describe("executeGitCommandInDirectory", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },

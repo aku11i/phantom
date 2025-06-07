@@ -1,9 +1,9 @@
 import { ok as assertOk, deepStrictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { describe, it } from "node:test";
 
 describe("listWorktrees", () => {
-  it("should return empty array when no phantom worktrees exist", async () => {
-    const execFileMock = mock.fn(
+  it("should return empty array when no phantom worktrees exist", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) => {
         if (_args.includes("worktree") && _args.includes("list")) {
           return Promise.resolve({
@@ -16,7 +16,7 @@ describe("listWorktrees", () => {
       },
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -39,18 +39,18 @@ describe("listWorktrees", () => {
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomDirectory: mock.fn(
+        getPhantomDirectory: t.mock.fn(
           (gitRoot: string) => `${gitRoot}/.git/phantom/worktrees`,
         ),
-        getWorktreePath: mock.fn(
+        getWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
@@ -67,8 +67,8 @@ describe("listWorktrees", () => {
     }
   });
 
-  it("should list worktrees with clean status", async () => {
-    const execFileMock = mock.fn(
+  it("should list worktrees with clean status", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) => {
         if (_args.includes("worktree") && _args.includes("list")) {
           return Promise.resolve({
@@ -94,7 +94,7 @@ branch refs/heads/feature-2
       },
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -117,18 +117,18 @@ branch refs/heads/feature-2
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomDirectory: mock.fn(
+        getPhantomDirectory: t.mock.fn(
           (gitRoot: string) => `${gitRoot}/.git/phantom/worktrees`,
         ),
-        getWorktreePath: mock.fn(
+        getWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
@@ -157,8 +157,8 @@ branch refs/heads/feature-2
     }
   });
 
-  it("should handle worktrees with dirty status", async () => {
-    const execFileMock = mock.fn(
+  it("should handle worktrees with dirty status", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) => {
         if (_args.includes("worktree") && _args.includes("list")) {
           return Promise.resolve({
@@ -180,7 +180,7 @@ branch refs/heads/dirty-feature
       },
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -203,18 +203,18 @@ branch refs/heads/dirty-feature
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomDirectory: mock.fn(
+        getPhantomDirectory: t.mock.fn(
           (gitRoot: string) => `${gitRoot}/.git/phantom/worktrees`,
         ),
-        getWorktreePath: mock.fn(
+        getWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
@@ -237,8 +237,8 @@ branch refs/heads/dirty-feature
     }
   });
 
-  it("should handle detached HEAD state", async () => {
-    const execFileMock = mock.fn(
+  it("should handle detached HEAD state", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) => {
         if (_args.includes("worktree") && _args.includes("list")) {
           return Promise.resolve({
@@ -260,7 +260,7 @@ detached
       },
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -283,18 +283,18 @@ detached
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomDirectory: mock.fn(
+        getPhantomDirectory: t.mock.fn(
           (gitRoot: string) => `${gitRoot}/.git/phantom/worktrees`,
         ),
-        getWorktreePath: mock.fn(
+        getWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
@@ -317,8 +317,8 @@ detached
     }
   });
 
-  it("should filter out non-phantom worktrees", async () => {
-    const execFileMock = mock.fn(
+  it("should filter out non-phantom worktrees", async (t) => {
+    const execFileMock = t.mock.fn(
       (_cmd: string, _args: string[], _options: Record<string, unknown>) => {
         if (_args.includes("worktree") && _args.includes("list")) {
           return Promise.resolve({
@@ -344,7 +344,7 @@ branch refs/heads/other-feature
       },
     );
 
-    mock.module("node:child_process", {
+    t.mock.module("node:child_process", {
       namedExports: {
         execFile: (
           cmd: string,
@@ -367,18 +367,18 @@ branch refs/heads/other-feature
       },
     });
 
-    mock.module("node:util", {
+    t.mock.module("node:util", {
       namedExports: {
         promisify: () => execFileMock,
       },
     });
 
-    mock.module("../paths.ts", {
+    t.mock.module("../paths.ts", {
       namedExports: {
-        getPhantomDirectory: mock.fn(
+        getPhantomDirectory: t.mock.fn(
           (gitRoot: string) => `${gitRoot}/.git/phantom/worktrees`,
         ),
-        getWorktreePath: mock.fn(
+        getWorktreePath: t.mock.fn(
           (gitRoot: string, name: string) =>
             `${gitRoot}/.git/phantom/worktrees/${name}`,
         ),
