@@ -110,7 +110,7 @@ describe("execInWorktree", () => {
     });
   });
 
-  it("should use pipe stdio when specified", async () => {
+  it("should use inherit stdio for stdout/stderr when pipe specified", async () => {
     validateMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
@@ -135,7 +135,7 @@ describe("execInWorktree", () => {
       args: ["test"],
       options: {
         cwd: "/test/repo/.git/phantom/worktrees/feature",
-        stdio: ["ignore", "pipe", "pipe"],
+        stdio: ["ignore", "inherit", "inherit"],
       },
     });
   });

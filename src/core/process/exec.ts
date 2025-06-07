@@ -28,7 +28,7 @@ export async function execInWorktree(
   const [cmd, ...args] = command;
 
   const stdio: StdioOptions =
-    options.stdio === "pipe" ? ["ignore", "pipe", "pipe"] : "inherit";
+    options.stdio === "pipe" ? ["ignore", "inherit", "inherit"] : "inherit";
 
   return spawnProcess({
     command: cmd,
