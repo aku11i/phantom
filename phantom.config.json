@@ -1,5 +1,6 @@
 {
   "postCreate": {
-    "copyFiles": [".claude/settings.local.json"]
+    "copyFiles": [".claude/settings.local.json"],
+    "commands": ["pnpm install"]
   }
 }

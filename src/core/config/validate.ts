@@ -39,6 +39,22 @@ export function validateConfig(
         );
       }
     }
+
+    if (postCreate.commands !== undefined) {
+      if (!Array.isArray(postCreate.commands)) {
+        return err(
+          new ConfigValidationError("postCreate.commands must be an array"),
+        );
+      }
+
+      if (!postCreate.commands.every((c: unknown) => typeof c === "string")) {
+        return err(
+          new ConfigValidationError(
+            "postCreate.commands must contain only strings",
+          ),
+        );
+      }
+    }
   }
 
   return ok(config as PhantomConfig);

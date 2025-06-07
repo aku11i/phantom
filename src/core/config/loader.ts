@@ -6,6 +6,7 @@ import { type ConfigValidationError, validateConfig } from "./validate.ts";
 export interface PhantomConfig {
   postCreate?: {
     copyFiles?: string[];
+    commands?: string[];
   };
 }
 

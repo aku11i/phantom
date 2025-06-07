@@ -58,6 +58,52 @@ describe("validateConfig", () => {
     }
   });
 
+  test("should accept valid config with postCreate and commands", () => {
+    const config = {
+      postCreate: {
+        commands: ["pnpm install", "pnpm build"],
+      },
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  test("should accept config with both copyFiles and commands", () => {
+    const config = {
+      postCreate: {
+        copyFiles: [".env"],
+        commands: ["pnpm install"],
+      },
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  test("should accept config with empty commands array", () => {
+    const config = {
+      postCreate: {
+        commands: [],
+      },
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
   describe("error cases", () => {
     test("should reject string config", () => {
       const result = validateConfig("not an object");
@@ -299,6 +345,90 @@ describe("validateConfig", () => {
         assert.strictEqual(
           result.error.message,
           "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when commands is string", () => {
+      const result = validateConfig({ postCreate: { commands: "invalid" } });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.commands must be an array",
+        );
+      }
+    });
+
+    test("should reject when commands is number", () => {
+      const result = validateConfig({ postCreate: { commands: 123 } });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.commands must be an array",
+        );
+      }
+    });
+
+    test("should reject when commands is object", () => {
+      const result = validateConfig({ postCreate: { commands: {} } });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.commands must be an array",
+        );
+      }
+    });
+
+    test("should reject when commands contains non-string values", () => {
+      const result = validateConfig({
+        postCreate: { commands: ["pnpm install", 123] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.commands must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when commands contains null", () => {
+      const result = validateConfig({
+        postCreate: { commands: ["pnpm install", null] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.commands must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when commands contains objects", () => {
+      const result = validateConfig({
+        postCreate: { commands: ["pnpm install", {}] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.commands must contain only strings",
         );
       }
     });

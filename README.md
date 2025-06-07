@@ -218,7 +218,7 @@ phantom shell feature-awesome  # Continue feature development
 
 ## ⚙️ Configuration
 
-Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied when creating new worktrees.
+Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied and commands to be executed when creating new worktrees.
 
 ### Configuration File
 
@@ -231,6 +231,10 @@ Create a `phantom.config.json` file in your repository root:
       ".env",
       ".env.local",
       "config/local.json"
+    ],
+    "commands": [
+      "pnpm install",
+      "pnpm build"
     ]
   }
 }
@@ -258,6 +262,32 @@ You can specify files to copy in two ways:
    Files specified in both the configuration file and command line options are merged together (duplicates are removed).
 
 > **Note:** Currently, glob patterns are not supported. Files must be specified with their exact paths relative to the repository root.
+
+### Post-Create Commands
+
+Phantom can automatically execute commands after creating a new worktree. This is useful for:
+
+- Installing dependencies (`pnpm install`, `npm install`, `yarn install`)
+- Building the project
+- Setting up the development environment
+- Running database migrations
+- Any other setup tasks specific to your project
+
+Commands are executed in the order they are specified in the configuration file. If a command fails, the creation process will stop and report the error.
+
+Example use cases:
+```json
+{
+  "postCreate": {
+    "commands": [
+      "pnpm install",           // Install dependencies
+      "pnpm db:migrate",        // Run database migrations
+      "cp .env.example .env",   // Create environment file from template
+      "pnpm build"              // Build the project
+    ]
+  }
+}
+```
 
 ## 🛠️ Development
 

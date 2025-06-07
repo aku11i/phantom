@@ -148,6 +148,31 @@ export async function createHandler(args: string[]): Promise<void> {
       );
     }
 
+    // Execute post-create commands from config
+    if (isOk(configResult) && configResult.value.postCreate?.commands) {
+      const commands = configResult.value.postCreate.commands;
+      output.log("\nRunning post-create commands...");
+
+      for (const command of commands) {
+        output.log(`Executing: ${command}`);
+        const shell = process.env.SHELL || "/bin/sh";
+        const cmdResult = await execInWorktree(gitRoot, worktreeName, [
+          shell,
+          "-c",
+          command,
+        ]);
+
+        if (isErr(cmdResult)) {
+          output.error(`Failed to execute command: ${cmdResult.error.message}`);
+          const exitCode =
+            "exitCode" in cmdResult.error
+              ? (cmdResult.error.exitCode ?? exitCodes.generalError)
+              : exitCodes.generalError;
+          exitWithError(`Post-create command failed: ${command}`, exitCode);
+        }
+      }
+    }
+
     if (execCommand && isOk(result)) {
       output.log(
         `\nExecuting command in worktree '${worktreeName}': ${execCommand}`,
