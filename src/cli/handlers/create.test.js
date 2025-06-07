@@ -8,6 +8,7 @@ const consoleErrorMock = mock.fn();
 const getGitRootMock = mock.fn();
 const createWorktreeMock = mock.fn();
 const execInWorktreeMock = mock.fn();
+const execInWorktreeWithOutputMock = mock.fn();
 const shellInWorktreeMock = mock.fn();
 const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
@@ -45,6 +46,7 @@ mock.module("../../core/worktree/create.ts", {
 mock.module("../../core/process/exec.ts", {
   namedExports: {
     execInWorktree: execInWorktreeMock,
+    execInWorktreeWithOutput: execInWorktreeWithOutputMock,
   },
 });
 
@@ -92,6 +94,7 @@ describe("createHandler", () => {
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
     execInWorktreeMock.mock.resetCalls();
+    execInWorktreeWithOutputMock.mock.resetCalls();
     shellInWorktreeMock.mock.resetCalls();
     isInsideTmuxMock.mock.resetCalls();
     executeTmuxCommandMock.mock.resetCalls();

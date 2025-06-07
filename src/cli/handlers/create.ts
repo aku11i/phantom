@@ -6,7 +6,10 @@ import {
 } from "../../core/config/loader.ts";
 import { ConfigValidationError } from "../../core/config/validate.ts";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
-import { execInWorktree } from "../../core/process/exec.ts";
+import {
+  execInWorktree,
+  execInWorktreeWithOutput,
+} from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
 import { executeTmuxCommand, isInsideTmux } from "../../core/process/tmux.ts";
 import { isErr, isOk } from "../../core/types/result.ts";
@@ -156,11 +159,11 @@ export async function createHandler(args: string[]): Promise<void> {
       for (const command of commands) {
         output.log(`Executing: ${command}`);
         const shell = process.env.SHELL || "/bin/sh";
-        const cmdResult = await execInWorktree(gitRoot, worktreeName, [
-          shell,
-          "-c",
-          command,
-        ]);
+        const cmdResult = await execInWorktreeWithOutput(
+          gitRoot,
+          worktreeName,
+          [shell, "-c", command],
+        );
 
         if (isErr(cmdResult)) {
           output.error(`Failed to execute command: ${cmdResult.error.message}`);
@@ -169,6 +172,24 @@ export async function createHandler(args: string[]): Promise<void> {
               ? (cmdResult.error.exitCode ?? exitCodes.generalError)
               : exitCodes.generalError;
           exitWithError(`Post-create command failed: ${command}`, exitCode);
+        }
+
+        // Display stdout if present
+        if (cmdResult.value.stdout.trim()) {
+          output.log(cmdResult.value.stdout);
+        }
+
+        // Display stderr if present
+        if (cmdResult.value.stderr.trim()) {
+          output.error(cmdResult.value.stderr);
+        }
+
+        // Check exit code
+        if (cmdResult.value.exitCode !== 0) {
+          exitWithError(
+            `Post-create command failed: ${command}`,
+            cmdResult.value.exitCode,
+          );
         }
       }
     }
