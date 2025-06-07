@@ -1,9 +1,13 @@
-import { execFile as execFileCallback } from "node:child_process";
+import { execFile as execFileCallback, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import { type Result, err, ok } from "../types/result.ts";
 import { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { validateWorktreeExists } from "../worktree/validate.ts";
-import { type ProcessError, ProcessExecutionError } from "./errors.ts";
+import {
+  type ProcessError,
+  ProcessExecutionError,
+  ProcessSignalError,
+} from "./errors.ts";
 import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
 
 const execFile = promisify(execFileCallback);
@@ -44,6 +48,8 @@ export async function execInWorktreeWithOutput(
   gitRoot: string,
   worktreeName: string,
   command: string[],
+  onStdout?: (data: string) => void,
+  onStderr?: (data: string) => void,
 ): Promise<
   Result<ExecWithOutputSuccess, WorktreeNotFoundError | ProcessError>
 > {
@@ -55,38 +61,48 @@ export async function execInWorktreeWithOutput(
   const worktreePath = validation.path as string;
   const [cmd, ...args] = command;
 
-  try {
-    const result = await execFile(cmd, args, {
+  return new Promise((resolve) => {
+    const childProcess = spawn(cmd, args, {
       cwd: worktreePath,
-      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
     });
 
-    return ok({
-      exitCode: 0,
-      stdout: result.stdout,
-      stderr: result.stderr,
+    let stdout = "";
+    let stderr = "";
+
+    childProcess.stdout?.on("data", (data: Buffer) => {
+      const text = data.toString();
+      stdout += text;
+      if (onStdout) {
+        onStdout(text);
+      }
     });
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "stdout" in error &&
-      "stderr" in error &&
-      "code" in error
-    ) {
-      const execError = error as {
-        stdout: string;
-        stderr: string;
-        code?: number;
-      };
 
-      return ok({
-        exitCode: execError.code ?? 1,
-        stdout: execError.stdout || "",
-        stderr: execError.stderr || "",
-      });
-    }
+    childProcess.stderr?.on("data", (data: Buffer) => {
+      const text = data.toString();
+      stderr += text;
+      if (onStderr) {
+        onStderr(text);
+      }
+    });
 
-    return err(new ProcessExecutionError(cmd, 1));
-  }
+    childProcess.on("error", (error) => {
+      resolve(err(new ProcessExecutionError(cmd, 1)));
+    });
+
+    childProcess.on("exit", (code, signal) => {
+      if (signal) {
+        resolve(err(new ProcessSignalError(signal)));
+      } else {
+        const exitCode = code ?? 0;
+        resolve(
+          ok({
+            exitCode,
+            stdout,
+            stderr,
+          }),
+        );
+      }
+    });
+  });
 }

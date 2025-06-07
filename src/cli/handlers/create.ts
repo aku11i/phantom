@@ -163,6 +163,8 @@ export async function createHandler(args: string[]): Promise<void> {
           gitRoot,
           worktreeName,
           [shell, "-c", command],
+          (data) => process.stdout.write(data),
+          (data) => process.stderr.write(data),
         );
 
         if (isErr(cmdResult)) {
@@ -172,16 +174,6 @@ export async function createHandler(args: string[]): Promise<void> {
               ? (cmdResult.error.exitCode ?? exitCodes.generalError)
               : exitCodes.generalError;
           exitWithError(`Post-create command failed: ${command}`, exitCode);
-        }
-
-        // Display stdout if present
-        if (cmdResult.value.stdout.trim()) {
-          output.log(cmdResult.value.stdout);
-        }
-
-        // Display stderr if present
-        if (cmdResult.value.stderr.trim()) {
-          output.error(cmdResult.value.stderr);
         }
 
         // Check exit code
