@@ -74,17 +74,17 @@ Git worktrees are powerful but require manual management of paths and branches. 
 
 ```bash
 # Without Phantom
-git worktree add -b feature-auth ../project-feature-auth origin/main
-cd ../project-feature-auth
+git worktree add -b feature-awesome ../project-feature-awesome origin/main
+cd ../project-feature-awesome
 
 # With Phantom
-phantom create feature-auth --shell
+phantom create feature-awesome --shell
 ```
 
 ### How Phantom Works
 
-When you run `phantom create feature-auth`:
-1. A directory is automatically created at `.git/phantom/feature-auth/`
+When you run `phantom create feature-awesome`:
+1. A directory is automatically created at `.git/phantom/feature-awesome/`
 2. A worktree with the same name as the branch is created in this location
 3. All worktrees are centrally managed under `.git/phantom/`
 

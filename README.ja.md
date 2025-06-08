@@ -74,17 +74,17 @@ Git worktreeは強力ですが、パスとブランチの手動管理が必要�
 
 ```bash
 # Phantomなし
-git worktree add -b feature-auth ../project-feature-auth origin/main
-cd ../project-feature-auth
+git worktree add -b feature-awesome ../project-feature-awesome origin/main
+cd ../project-feature-awesome
 
 # Phantomあり
-phantom create feature-auth --shell
+phantom create feature-awesome --shell
 ```
 
 ### Phantomの仕組み
 
-`phantom create feature-auth`を実行すると：
-1. `.git/phantom/feature-auth/`ディレクトリが自動作成されます
+`phantom create feature-awesome`を実行すると：
+1. `.git/phantom/feature-awesome/`ディレクトリが自動作成されます
 2. ブランチ名と同じ名前のworktreeがこの場所に作成されます
 3. すべてのworktreeが`.git/phantom/`配下で一元管理されます
 
