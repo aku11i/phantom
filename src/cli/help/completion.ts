@@ -11,8 +11,16 @@ export const completionHelp: CommandHelp = {
       description: "Generate and install Fish completion",
     },
     {
+      command: "phantom completion fish | source",
+      description: "Load Fish completion in current session",
+    },
+    {
       command: "phantom completion zsh > ~/.zsh/completions/_phantom",
       description: "Generate and install Zsh completion",
+    },
+    {
+      command: "eval \"$(phantom completion zsh)\"",
+      description: "Load Zsh completion in current session",
     },
   ],
   notes: [
