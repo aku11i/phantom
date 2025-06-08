@@ -50,7 +50,7 @@ npm install -g @aku11i/phantom
 # 新しい機能ブランチを独自のworktreeに作成
 phantom create feature-awesome
 
-# worktreeにジャンプ
+# worktreeで新しいシェルを起動
 phantom shell feature-awesome
 
 # どこからでも任意のworktreeでコマンドを実行

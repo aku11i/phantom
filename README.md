@@ -50,7 +50,7 @@ npm install -g @aku11i/phantom
 # Create a new feature branch in its own worktree
 phantom create feature-awesome
 
-# Jump into the worktree
+# Start a new shell in the worktree
 phantom shell feature-awesome
 
 # Run commands in any worktree from anywhere
