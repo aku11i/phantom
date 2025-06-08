@@ -95,9 +95,7 @@ your-project/
 │       ├── feature-awesome/  # branch name = worktree name
 │       ├── bugfix-login/     # another worktree
 │       └── hotfix-critical/  # yet another worktree
-├── src/                      # main worktree (usually main branch)
-├── package.json
-└── ...
+└── ...                       # main worktree (usually main branch)
 ```
 
 This convention means you never need to remember worktree paths - just use the branch name with `phantom shell` or `phantom exec` for instant access.

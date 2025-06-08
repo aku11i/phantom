@@ -95,9 +95,7 @@ your-project/
 │       ├── feature-awesome/  # ブランチ名 = worktree名
 │       ├── bugfix-login/     # 別のworktree
 │       └── hotfix-critical/  # さらに別のworktree
-├── src/                      # メインのworktree（通常はmainブランチ）
-├── package.json
-└── ...
+└── ...                       # メインのworktree（通常はmainブランチ）
 ```
 
 この規約により、worktreeの場所を覚える必要がなくなり、`phantom shell`や`phantom exec`でブランチ名だけで簡単にアクセスできます。
