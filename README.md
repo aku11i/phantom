@@ -94,7 +94,6 @@ phantom create feature-z --tmux-horizontal
 # Open existing worktrees in tmux
 phantom shell feature-x --tmux
 phantom shell feature-y --tmux-v
-phantom shell feature-z --tmux-h
 
 # Result: Multiple worktrees displayed simultaneously, each allowing independent work
 ```

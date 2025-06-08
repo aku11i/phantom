@@ -85,13 +85,17 @@ Phantomはfishとzshの完全なシェル補完をサポートしています。
 ワークツリーを作成する際にtmuxを使用して新しいウィンドウやペインで開くことができます。これにより、複数の作業環境を同時に管理できます。
 
 ```bash
-# 新しいウィンドウでworktreeを開く
+# 新しいウィンドウでworktreeを作成して開く
 phantom create feature-x --tmux
-# ペインを分割して開く
+# ペインを分割して作成
 phantom create feature-y --tmux-vertical
 phantom create feature-z --tmux-horizontal
 
-# 結果: 3つのworktreeが同時に表示され、それぞれで独立した作業が可能
+# 既存のworktreeをtmuxで開く
+phantom shell feature-x --tmux
+phantom shell feature-y --tmux-v
+
+# 結果: 複数のworktreeが同時に表示され、それぞれで独立した作業が可能
 ```
 
 #### エディタ統合
