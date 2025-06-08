@@ -31,11 +31,15 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 
 ### Installation
 
-```bash
-# Using Homebrew (recommended)
-brew install aku11i/tap/phantom
+#### Using Homebrew (recommended)
 
-# Using npm
+```bash
+brew install aku11i/tap/phantom
+```
+
+#### Using npm
+
+```bash
 npm install -g @aku11i/phantom
 ```
 

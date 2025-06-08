@@ -31,11 +31,15 @@ Phantomは、Git worktreeをシンプルかつパワフルに操り、開発生�
 
 ### インストール
 
-```bash
-# Homebrewを使用（推奨）
-brew install aku11i/tap/phantom
+#### Homebrewを使用（推奨）
 
-# npmを使用
+```bash
+brew install aku11i/tap/phantom
+```
+
+#### npmを使用
+
+```bash
 npm install -g @aku11i/phantom
 ```
 
