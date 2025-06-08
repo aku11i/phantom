@@ -15,7 +15,7 @@
 
 ## ✨ What is Phantom?
 
-Phantom makes working with Git worktrees as simple as `phantom create feature`. It's designed for developers who need to work on multiple features, review PRs, and fix bugs in parallel without the overhead of stashing, committing, or managing multiple clones.
+Phantom maximizes your productivity with Git worktrees by eliminating friction in parallel development workflows. It's the perfect companion for AI-powered coding assistants, enabling seamless context switching between multiple tasks without losing state. Whether you're juggling feature development, reviewing PRs, or fixing urgent bugs, Phantom keeps each task isolated and instantly accessible.
 
 ### Key Features
 
