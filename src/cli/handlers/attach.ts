@@ -67,10 +67,11 @@ export async function attachHandler(args: string[]): Promise<void> {
       exitWithError(shellResult.error.message, exitCodes.generalError);
     }
   } else if (values.exec) {
+    const shell = process.env.SHELL || "/bin/sh";
     const execResult = await execInWorktree(
       gitRoot,
       branchName,
-      values.exec.split(" "),
+      [shell, "-c", values.exec],
       { interactive: true },
     );
     if (isErr(execResult)) {
