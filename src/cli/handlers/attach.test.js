@@ -147,4 +147,27 @@ describe("attachHandler", () => {
       "feature",
     ]);
   });
+
+  it("should execute command when --exec flag is provided", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    execInWorktreeMock.mock.resetCalls();
+    execInWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(ok({ exitCode: 0 })),
+    );
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+
+    process.env.SHELL = "/bin/bash";
+    await attachHandler(["feature", "--exec", "echo hello"]);
+
+    deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[0], "/repo");
+    deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[1], "feature");
+    const execArgs = execInWorktreeMock.mock.calls[0].arguments[2];
+    deepStrictEqual(execArgs[0], "/bin/bash");
+    deepStrictEqual(execArgs[1], "-c");
+    deepStrictEqual(execArgs[2], "echo hello");
+  });
 });
