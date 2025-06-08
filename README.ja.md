@@ -27,6 +27,37 @@ Phantomは、Git worktreeをシンプルかつパワフルに操り、開発生�
 - 🎮 **シェル補完** - FishとZshの完全な自動補完サポート
 - ⚡ **ゼロ依存** - 高速で軽量
 
+## 🤔 なぜPhantom？
+
+Git worktreeは強力ですが、パスとブランチの手動管理が必要です。また、複数のワークツリーを移動するのも大変です。Phantomはこの問題を解消します：
+
+```bash
+# Phantomなし
+git worktree add -b feature-awesome ../project-feature-awesome origin/main
+cd ../project-feature-awesome
+
+# Phantomあり
+phantom create feature-awesome --shell
+```
+
+### Phantomの仕組み
+
+`phantom create feature-awesome`を実行すると、`.git/phantom/worktrees/`に`feature-awesome`という名前の新しいGit worktreeが作成されます。
+phantomを使って作成されたすべてのワークツリーがこの場所で一元管理されます
+
+```
+your-project/    # Gitリポジトリ
+├── .git/
+│   └── phantom/
+│       └── worktrees/        # Phantomが管理するディレクトリ
+│           ├── feature-awesome/  # ブランチ名 = worktree名
+│           ├── bugfix-login/     # 別のworktree
+│           └── hotfix-critical/  # さらに別のworktree
+└── ...
+```
+
+このルールにより、worktreeの場所を覚える必要がなくなり、ブランチ名だけで簡単にワークツリーの操作ができます。
+
 ## 🚀 クイックスタート
 
 ### インストール
@@ -46,17 +77,35 @@ npm install -g @aku11i/phantom
 
 ### 基本的な使い方
 
+#### 新しいワークツリーの作成
+
 ```bash
-# 新しい機能ブランチを独自のworktreeに作成
 phantom create feature-awesome
 
-# worktreeで新しいシェルを起動
+phantom list
+```
+
+#### worktreeで新しいシェルを起動
+
+```bash
 phantom shell feature-awesome
 
-# どこからでも任意のworktreeでコマンドを実行
-phantom exec feature-awesome npm test
+# 開発作業を開始
 
-# 完了したらクリーンアップ
+# 作業が終わったらシェルを終了
+exit
+```
+
+#### 任意のworktreeでコマンドを実行
+
+```bash
+phantom exec feature-awesome {実行したいコマンド}
+# 例: phantom exec feature-awesome npm run build
+```
+
+#### 完了したらクリーンアップ
+
+```bash
 phantom delete feature-awesome
 ```
 
@@ -68,43 +117,6 @@ phantom delete feature-awesome
 - **[設定](./docs/configuration.md)** - 自動ファイルコピーと作成後コマンドの設定
 - **[統合](./docs/integrations.md)** - tmux、fzf、エディタなど
 
-## 🤔 なぜPhantom？
-
-Git worktreeは強力ですが、パスとブランチの手動管理が必要です。Phantomはこの摩擦を解消します：
-
-```bash
-# Phantomなし
-git worktree add -b feature-awesome ../project-feature-awesome origin/main
-cd ../project-feature-awesome
-
-# Phantomあり
-phantom create feature-awesome --shell
-```
-
-### Phantomの仕組み
-
-`phantom create feature-awesome`を実行すると：
-1. `.git/phantom/feature-awesome/`ディレクトリが自動作成されます
-2. ブランチ名と同じ名前のworktreeがこの場所に作成されます
-3. すべてのworktreeが`.git/phantom/`配下で一元管理されます
-
-```
-your-project/
-├── .git/
-│   └── phantom/              # Phantomが管理するディレクトリ
-│       ├── feature-awesome/  # ブランチ名 = worktree名
-│       ├── bugfix-login/     # 別のworktree
-│       └── hotfix-critical/  # さらに別のworktree
-└── ...                       # メインのworktree（通常はmainブランチ）
-```
-
-この規約により、worktreeの場所を覚える必要がなくなり、`phantom shell`や`phantom exec`でブランチ名だけで簡単にアクセスできます。
-
-以下に最適：
-- 複数の機能を同時に作業
-- 作業を中断せずにPRレビュー
-- アプリの異なるバージョンを並行実行
-- 開発中も`main` worktreeをクリーンに保つ
 
 ## 🤝 コントリビュート
 
