@@ -85,13 +85,18 @@ Phantom supports full shell completion for fish and zsh. Use tab key to complete
 When creating worktrees, you can use tmux to open them in new windows or panes. This allows you to manage multiple work environments simultaneously.
 
 ```bash
-# Open worktree in new window
+# Create and open worktree in new window
 phantom create feature-x --tmux
-# Open with split panes
+# Create with split panes
 phantom create feature-y --tmux-vertical
 phantom create feature-z --tmux-horizontal
 
-# Result: 3 worktrees displayed simultaneously, each allowing independent work
+# Open existing worktrees in tmux
+phantom shell feature-x --tmux
+phantom shell feature-y --tmux-v
+phantom shell feature-z --tmux-h
+
+# Result: Multiple worktrees displayed simultaneously, each allowing independent work
 ```
 
 #### Editor Integration

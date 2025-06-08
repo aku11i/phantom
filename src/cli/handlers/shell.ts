@@ -1,6 +1,8 @@
 import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
+import { getWorktreePath } from "../../core/paths.ts";
 import { shellInWorktree as shellInWorktreeCore } from "../../core/process/shell.ts";
+import { executeTmuxCommand, isInsideTmux } from "../../core/process/tmux.ts";
 import { isErr } from "../../core/types/result.ts";
 import { WorktreeNotFoundError } from "../../core/worktree/errors.ts";
 import { selectWorktreeWithFzf } from "../../core/worktree/select.ts";
@@ -16,12 +18,45 @@ export async function shellHandler(args: string[]): Promise<void> {
         type: "boolean",
         default: false,
       },
+      tmux: {
+        type: "boolean",
+        short: "t",
+      },
+      "tmux-vertical": {
+        type: "boolean",
+      },
+      "tmux-v": {
+        type: "boolean",
+      },
+      "tmux-horizontal": {
+        type: "boolean",
+      },
+      "tmux-h": {
+        type: "boolean",
+      },
     },
     strict: true,
     allowPositionals: true,
   });
 
   const useFzf = values.fzf ?? false;
+
+  // Determine tmux option
+  const tmuxOption =
+    values.tmux ||
+    values["tmux-vertical"] ||
+    values["tmux-v"] ||
+    values["tmux-horizontal"] ||
+    values["tmux-h"];
+
+  let tmuxDirection: "new" | "vertical" | "horizontal" | undefined;
+  if (values.tmux) {
+    tmuxDirection = "new";
+  } else if (values["tmux-vertical"] || values["tmux-v"]) {
+    tmuxDirection = "vertical";
+  } else if (values["tmux-horizontal"] || values["tmux-h"]) {
+    tmuxDirection = "horizontal";
+  }
 
   if (positionals.length === 0 && !useFzf) {
     exitWithError(
@@ -37,10 +72,24 @@ export async function shellHandler(args: string[]): Promise<void> {
     );
   }
 
+  if (useFzf && tmuxOption) {
+    exitWithError(
+      "Cannot use --fzf with tmux options",
+      exitCodes.validationError,
+    );
+  }
+
   let worktreeName: string;
 
   try {
     const gitRoot = await getGitRoot();
+
+    if (tmuxOption && !(await isInsideTmux())) {
+      exitWithError(
+        "The --tmux option can only be used inside a tmux session",
+        exitCodes.validationError,
+      );
+    }
 
     if (useFzf) {
       const selectResult = await selectWorktreeWithFzf(gitRoot);
@@ -62,6 +111,40 @@ export async function shellHandler(args: string[]): Promise<void> {
         validation.message || `Worktree '${worktreeName}' not found`,
         exitCodes.generalError,
       );
+    }
+
+    if (tmuxDirection) {
+      output.log(
+        `Opening worktree '${worktreeName}' in tmux ${
+          tmuxDirection === "new" ? "window" : "pane"
+        }...`,
+      );
+
+      const shell = process.env.SHELL || "/bin/sh";
+
+      const tmuxResult = await executeTmuxCommand({
+        direction: tmuxDirection,
+        command: shell,
+        cwd: validation.path,
+        env: {
+          PHANTOM: "1",
+          PHANTOM_NAME: worktreeName,
+          PHANTOM_PATH:
+            validation.path || getWorktreePath(gitRoot, worktreeName),
+        },
+        windowName: tmuxDirection === "new" ? worktreeName : undefined,
+      });
+
+      if (isErr(tmuxResult)) {
+        output.error(tmuxResult.error.message);
+        const exitCode =
+          "exitCode" in tmuxResult.error
+            ? (tmuxResult.error.exitCode ?? exitCodes.generalError)
+            : exitCodes.generalError;
+        exitWithError("", exitCode);
+      }
+
+      exitWithSuccess();
     }
 
     output.log(`Entering worktree '${worktreeName}' at ${validation.path}`);

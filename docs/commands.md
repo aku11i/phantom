@@ -170,6 +170,9 @@ phantom shell <name> [options]
 
 **Options:**
 - `--fzf` - Select worktree with fzf and open shell
+- `--tmux`, `-t` - Open shell in new tmux window
+- `--tmux-vertical`, `--tmux-v` - Open shell in vertical split pane
+- `--tmux-horizontal`, `--tmux-h` - Open shell in horizontal split pane
 
 **Environment Variables:**
 When in a phantom shell, these environment variables are set:
@@ -184,7 +187,20 @@ phantom shell feature-auth
 
 # Interactive selection
 phantom shell --fzf
+
+# Open in new tmux window
+phantom shell feature-auth --tmux
+
+# Open in vertical split pane
+phantom shell feature-auth --tmux-v
+
+# Open in horizontal split pane
+phantom shell feature-auth --tmux-h
 ```
+
+**Notes:**
+- tmux options require being inside a tmux session
+- Cannot use `--fzf` with tmux options
 
 ### exec
 
