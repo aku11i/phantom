@@ -1,234 +1,17 @@
 # Phantom Integrations
 
-Phantom integrates seamlessly with popular development tools to enhance your workflow.
+Phantom provides seamless integration with popular development tools to enhance your workflow.
 
 ## Table of Contents
 
-- [🪟 tmux Integration](#-tmux-integration)
-  - [Features](#features)
-  - [Commands](#commands)
-  - [Usage Examples](#usage-examples)
-  - [Advanced tmux Workflow](#advanced-tmux-workflow)
-  - [Power User Tips](#power-user-tips)
-  - [Environment Variables](#environment-variables)
-- [🔍 fzf Integration](#-fzf-integration)
-  - [Features](#features-1)
-  - [Commands Supporting fzf](#commands-supporting-fzf)
-  - [Usage Examples](#usage-examples-1)
-  - [Creating Powerful Aliases](#creating-powerful-aliases)
-  - [Advanced Scripting with fzf](#advanced-scripting-with-fzf)
-  - [Integration with Other Tools](#integration-with-other-tools)
-- [🎮 Shell Completion](#-shell-completion)
-  - [Installation](#installation)
-  - [Features](#features-2)
-  - [Examples](#examples)
-  - [Tips](#tips)
-- [💻 Editor Integration](#-editor-integration)
-  - [VS Code](#vs-code)
-  - [Cursor](#cursor)
-  - [Neovim](#neovim)
-  - [IntelliJ IDEA](#intellij-idea)
-- [🔧 Git Integration](#-git-integration)
-  - [Pre-commit Hooks](#pre-commit-hooks)
-  - [Git Aliases](#git-aliases)
-- [🚀 CI/CD Integration](#-cicd-integration)
-  - [GitHub Actions](#github-actions)
-  - [Scripts](#scripts)
-- [🐳 Docker Integration](#-docker-integration)
-  - [Docker Compose](#docker-compose)
-  - [Development Containers](#development-containers)
+- [Shell Completion](#shell-completion)
+- [tmux Integration](#tmux-integration)
+- [Editor Integration](#editor-integration)
+- [fzf Integration](#fzf-integration)
 
-## 🪟 tmux Integration
+## Shell Completion
 
-Phantom has built-in tmux support for the ultimate terminal-based workflow.
-
-### Features
-
-- Create worktrees directly in new tmux windows or panes
-- Automatic environment variable setup (`PHANTOM_NAME`, `PHANTOM_PATH`)
-- Seamless context switching with tmux keybindings
-- Perfect for managing multiple features in parallel
-
-### Commands
-
-```bash
-# Create a worktree and open in a new tmux window
-phantom create feature-x --tmux
-phantom create feature-x -t  # shorthand
-
-# Create and split current pane vertically
-phantom create feature-y --tmux-vertical
-phantom create feature-y --tmux-v  # shorthand
-
-# Create and split current pane horizontally
-phantom create feature-z --tmux-horizontal
-phantom create feature-z --tmux-h  # shorthand
-```
-
-### Usage Examples
-
-```bash
-# Perfect for parallel feature development
-phantom create feature-auth --tmux
-phantom create feature-api --tmux
-phantom create feature-ui --tmux
-
-# Each feature now has its own tmux window
-# Switch between them with: Ctrl-b [window-number]
-```
-
-### Advanced tmux Workflow
-
-```bash
-# Create a tmux session for your project
-tmux new-session -s myproject
-
-# Create worktrees in split panes
-phantom create feature --tmux-h
-phantom create bugfix --tmux-v
-
-# Now you have three panes:
-# - Original (main branch)
-# - Feature worktree (horizontal split)
-# - Bugfix worktree (vertical split)
-```
-
-### Power User Tips
-
-```bash
-# Create worktree and immediately run your dev server
-phantom create feature --tmux --exec "npm run dev"
-
-# Create multiple related worktrees quickly
-for feat in auth api ui; do
-  phantom create feature-$feat --tmux
-done
-
-# Use with tmux send-keys for automation
-phantom create feature --tmux
-tmux send-keys -t feature "npm install && npm run dev" Enter
-```
-
-### Environment Variables
-
-When using tmux integration, these variables are automatically set:
-- `PHANTOM=1` - Indicates you're in a Phantom worktree
-- `PHANTOM_NAME=<worktree-name>` - The worktree name
-- `PHANTOM_PATH=<worktree-path>` - Absolute path to the worktree
-
-## 🔍 fzf Integration
-
-Use fzf's fuzzy finding power to quickly navigate between worktrees.
-
-### Features
-
-- Interactive worktree selection with fuzzy search
-- Shows worktree names with their branch names
-- Dirty status indicators for modified worktrees
-- Works seamlessly with multiple commands
-
-### Commands Supporting fzf
-
-```bash
-# Interactively select and open a worktree
-phantom shell --fzf
-
-# Select a worktree and get its path
-phantom where --fzf
-
-# Delete a worktree with interactive selection
-phantom delete --fzf
-phantom delete --fzf --force  # Force delete with uncommitted changes
-
-# List worktrees and select one (outputs name)
-phantom list --fzf
-```
-
-### Usage Examples
-
-```bash
-# Quick switching between worktrees
-phantom shell --fzf
-
-# Open selected worktree in your editor
-code $(phantom where --fzf)
-cursor $(phantom where --fzf)
-vim $(phantom where --fzf)
-
-# Change directory to selected worktree
-cd $(phantom where --fzf)
-
-# Run commands in selected worktree
-phantom exec $(phantom list --fzf) npm test
-```
-
-### Creating Powerful Aliases
-
-Add these to your shell configuration:
-
-```bash
-# Quick switch to worktree shell
-alias pw='phantom shell --fzf'
-
-# Quick edit in VS Code
-alias pe='code $(phantom where --fzf)'
-
-# Quick cd to worktree
-alias pcd='cd $(phantom where --fzf)'
-
-# Quick delete with confirmation
-alias pd='phantom delete --fzf'
-```
-
-### Advanced Scripting with fzf
-
-```bash
-# Function to select and run any command
-phantom_run() {
-  local worktree=$(phantom list --fzf)
-  if [ -n "$worktree" ]; then
-    phantom exec "$worktree" "$@"
-  fi
-}
-
-# Usage: phantom_run npm test
-# Usage: phantom_run git status
-
-# Interactive worktree operations menu
-phantom_menu() {
-  local worktree=$(phantom list --fzf)
-  [ -z "$worktree" ] && return
-  
-  local action=$(echo -e "shell\nexec\ndelete\nwhere" | fzf --prompt="Action: ")
-  case $action in
-    shell) phantom shell "$worktree" ;;
-    exec) read -p "Command: " cmd && phantom exec "$worktree" $cmd ;;
-    delete) phantom delete "$worktree" ;;
-    where) phantom where "$worktree" ;;
-  esac
-}
-```
-
-### Integration with Other Tools
-
-```bash
-# Use with tmux for powerful workflows
-phantom create feature --exec "tmux new-window 'phantom shell --fzf'"
-
-# Combine with git for branch operations
-git checkout $(phantom list --fzf)
-
-# Use in scripts for automation
-#!/bin/bash
-for worktree in $(phantom list --names); do
-  echo "Building $worktree..."
-  phantom exec "$worktree" npm run build
-done
-```
-
-## 🎮 Shell Completion
-
-Phantom supports shell completion for Fish and Zsh, making it even faster to work with worktrees.
+Phantom supports full shell completion for Fish and Zsh, making it faster to work with commands and worktree names.
 
 ### Installation
 
@@ -243,178 +26,241 @@ phantom completion fish > ~/.config/fish/completions/phantom.fish
 ```bash
 # Add to your .zshrc
 eval "$(phantom completion zsh)"
-
-# Or save to a file in your fpath
-phantom completion zsh > ~/.zsh/completions/_phantom
 ```
 
 ### Features
 
-Once enabled, you'll get:
-- Command name completion (`phantom <TAB>`)
-- Worktree name completion (`phantom shell <TAB>`)
-- Option completion with descriptions (`phantom create --<TAB>`)
-- Dynamic worktree listing that updates in real-time
+With shell completion enabled, you get:
+
+- **Command completion**: Type `phantom <TAB>` to see all available commands
+- **Worktree name completion**: Type `phantom shell <TAB>` to see all worktree names
+- **Option completion**: Type `phantom create --<TAB>` to see all available options with descriptions
+- **Dynamic updates**: Worktree completions update in real-time as you create/delete them
 
 ### Examples
 
 ```bash
 # Complete command names
 phantom <TAB>
-# Shows: create, attach, list, shell, exec, delete, where, version, completion
+# Shows: create, delete, list, shell, exec, where, attach, version, completion
 
-# Complete worktree names
+# Complete worktree names for any command
 phantom shell <TAB>
-# Shows: feature-auth, feature-ui, bugfix-123, etc.
+# Shows: feature-awesome, bugfix-login, hotfix-critical
 
 # Complete options with descriptions
 phantom create --<TAB>
-# Shows:
-# --shell            Open shell after creation
-# --exec             Execute command after creation  
-# --tmux             Open in new tmux window
-# --tmux-vertical    Split tmux pane vertically
-# --copy-file        Copy files after creation
-# ... and more
+# Shows: --shell, --exec, --tmux, --tmux-vertical, --tmux-horizontal, etc.
 ```
 
-### Tips
+## tmux Integration
 
-- Completion works with all commands that accept worktree names
-- Option descriptions help you discover new features
-- Worktree completion shows only valid worktrees for the command
+When creating worktrees, you can use tmux to open them in new windows or panes. This allows you to manage multiple work environments simultaneously.
 
-## 💻 Editor Integration
+### Basic Usage
+
+```bash
+# Open worktree in new tmux window
+phantom create feature-x --tmux
+
+# Open with vertical split (side by side)
+phantom create feature-y --tmux-vertical
+
+# Open with horizontal split (top and bottom)
+phantom create feature-z --tmux-horizontal
+```
+
+### Real-World Example
+
+Imagine you're working on a feature when a critical bug report comes in:
+
+```bash
+# You're in your main window working on a feature
+# Critical bug reported - create a hotfix in a new tmux window
+phantom create hotfix-critical --tmux
+
+# Now you have two tmux windows:
+# Window 0: Your original feature work
+# Window 1: The hotfix worktree
+
+# Switch between windows with Ctrl-b 0, Ctrl-b 1, etc.
+# Or use Ctrl-b w to see a list of windows
+```
+
+### Advanced Workflow
+
+Create multiple related features with their own tmux panes:
+
+```bash
+# Start with your main branch
+# Create frontend changes in vertical split
+phantom create feature-frontend --tmux-vertical
+
+# Create backend changes in horizontal split
+phantom create feature-backend --tmux-horizontal
+
+# Result: 3 panes visible simultaneously
+# - Original pane (main branch)
+# - Right pane (frontend worktree)
+# - Bottom pane (backend worktree)
+```
+
+### Combining with --exec
+
+Launch worktrees with development servers running:
+
+```bash
+# Create worktree and start dev server in new window
+phantom create feature --tmux --exec "npm run dev"
+
+# Create and run tests in split pane
+phantom create bugfix --tmux-v --exec "npm test --watch"
+```
+
+## Editor Integration
+
+Phantom works seamlessly with popular editors. You can specify an editor to open when creating worktrees.
 
 ### VS Code
 
 ```bash
-# Create and open immediately
+# Create worktree and open in VS Code
 phantom create feature --exec "code ."
 
-# Attach and open
-phantom attach existing-branch --exec "code ."
-
 # Open existing worktree
-code $(phantom where feature)
+phantom exec feature code .
 
-# With fzf
-code $(phantom where --fzf)
+# Get worktree path and open
+code $(phantom where feature)
 ```
 
 ### Cursor
 
 ```bash
-# Create and open
+# Create worktree and open in Cursor
 phantom create feature --exec "cursor ."
 
-# Open with fzf selection
-cursor $(phantom where --fzf)
+# Open existing worktree
+phantom exec feature cursor .
+
+# Get worktree path and open
+cursor $(phantom where feature)
 ```
 
-### Neovim
+### Other Editors
+
+The same pattern works with any editor:
 
 ```bash
-# Create and open
+# Neovim
 phantom create feature --exec "nvim ."
 
-# Open in tmux split
-phantom create feature --tmux-v --exec "nvim ."
-```
-
-### IntelliJ IDEA
-
-```bash
-# Create and open
+# IntelliJ IDEA
 phantom create feature --exec "idea ."
 
-# Open existing
-idea $(phantom where feature)
+# Sublime Text
+phantom create feature --exec "subl ."
 ```
 
-## 🔧 Git Integration
+### Workflow Example
 
-### Pre-commit Hooks
-
-Phantom respects your repository's git hooks:
+A typical development workflow combining editor and tmux:
 
 ```bash
-# If you have pre-commit hooks, they'll run in each worktree
-phantom exec feature git commit -m "feat: new feature"
+# Create feature worktree in new tmux window and open in VS Code
+phantom create feature-awesome --tmux --exec "code ."
+
+# The tmux window opens with your shell in the worktree
+# VS Code launches with the worktree as the project root
+# You can use the terminal in tmux while coding in VS Code
 ```
 
-### Git Aliases
+## fzf Integration
 
-Add these to your `.gitconfig`:
+Interactive search with fzf allows quick worktree selection for any phantom command.
 
-```ini
-[alias]
-    pw = !phantom where
-    ps = !phantom shell
-    pl = !phantom list
-```
+### Basic Usage
 
-## 🚀 CI/CD Integration
-
-### GitHub Actions
-
-```yaml
-name: Test All Worktrees
-on: [push]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Phantom
-        run: npm install -g @aku11i/phantom
-      
-      - name: Test all worktrees
-        run: |
-          for worktree in $(phantom list --names); do
-            echo "Testing $worktree"
-            phantom exec $worktree npm test
-          done
-```
-
-### Scripts
+Add the `--fzf` flag to interactively select worktrees:
 
 ```bash
-#!/bin/bash
-# test-all-worktrees.sh
+# Select worktree to open shell
+phantom shell --fzf
 
-set -e
+# Select worktree to delete
+phantom delete --fzf
 
-for worktree in $(phantom list --names); do
-  echo "=== Testing $worktree ==="
-  phantom exec "$worktree" npm test
-  phantom exec "$worktree" npm run lint
-done
+# Get path of selected worktree
+phantom where --fzf
 ```
 
-## 🐳 Docker Integration
+### Interactive Workflow
 
-### Docker Compose
+The fzf integration shows all your worktrees with fuzzy search:
 
 ```bash
-# Run docker commands in specific worktrees
-phantom exec feature docker-compose up -d
-phantom exec feature docker-compose logs -f
+phantom shell --fzf
 
-# Different compose files per worktree
-phantom create feature --copy-file docker-compose.override.yml
+# Shows interactive list:
+# > feature-awesome
+#   bugfix-login
+#   hotfix-critical
+#   experiment-new-api
+
+# Type "fix" to filter:
+# > bugfix-login
+#   hotfix-critical
+
+# Press Enter to open shell in selected worktree
 ```
 
-### Development Containers
+### Powerful Combinations
+
+Combine fzf with other tools for efficient workflows:
 
 ```bash
-# Open worktree in devcontainer
-phantom create feature --exec "code . --open-devcontainer"
+# Open selected worktree in editor
+code $(phantom where --fzf)
+
+# Change to worktree directory
+cd $(phantom where --fzf)
+
+# Run command in selected worktree
+phantom exec $(phantom list --fzf) npm test
+
+# Delete worktree with confirmation
+phantom delete --fzf --force
 ```
 
-## Related Documentation
+### Shell Aliases
 
-- [Getting Started](./getting-started.md) - Get started with Phantom in minutes
-- [Commands Reference](./commands.md) - Complete list of all Phantom commands
-- [Configuration](./configuration.md) - Learn how to configure Phantom for your workflow
+Add these to your shell configuration for quick access:
+
+```bash
+# Quick shell access
+alias ps='phantom shell --fzf'
+
+# Quick editor access
+alias pe='code $(phantom where --fzf)'
+
+# Quick directory change
+alias pcd='cd $(phantom where --fzf)'
+```
+
+## Combining Features
+
+The real power comes from combining these integrations:
+
+```bash
+# Create worktree in tmux with editor, using fzf to select base branch
+phantom attach $(git branch -r | fzf) --tmux --exec "code ."
+
+# Use completion to explore options
+phantom create feature --<TAB>
+# See all available options, choose --tmux-vertical
+
+# Full power combo: tmux + editor + completion
+phantom create awesome-feature --tmux-v --exec "cursor ." --copy-file .env
+```
+
+These integrations are designed to work together, creating a seamless development experience that adapts to your workflow.
