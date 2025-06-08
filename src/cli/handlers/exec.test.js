@@ -87,22 +87,6 @@ mock.module("../errors.ts", {
 const { execHandler } = await import("./exec.ts");
 
 describe("execHandler", () => {
-  it("should error when --fzf and tmux options are used together", async () => {
-    exitMock.mock.resetCalls();
-    consoleErrorMock.mock.resetCalls();
-
-    await rejects(
-      async () => await execHandler(["--fzf", "--tmux", "npm", "test"]),
-      /Exit with code 3: Cannot use --fzf with tmux options/,
-    );
-
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot use --fzf with tmux options",
-    );
-    strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
-  });
 
   it("should error when tmux option used outside tmux", async () => {
     exitMock.mock.resetCalls();
@@ -273,7 +257,7 @@ describe("execHandler", () => {
     );
   });
 
-  it("should execute command with --fzf and tmux", async () => {
+  it("should execute command with --fzf and tmux options combined", async () => {
     exitMock.mock.resetCalls();
     consoleLogMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();

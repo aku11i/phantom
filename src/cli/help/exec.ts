@@ -51,6 +51,10 @@ export const execHelp: CommandHelp = {
       description: "Run tests in vertical split pane",
       command: "phantom exec --tmux-v feature-auth npm test",
     },
+    {
+      description: "Interactive selection with tmux",
+      command: "phantom exec --fzf --tmux npm run dev",
+    },
   ],
   notes: [
     "The command is executed with the worktree directory as the working directory",
@@ -58,6 +62,5 @@ export const execHelp: CommandHelp = {
     "The exit code of the executed command is preserved",
     "With --fzf, select the worktree interactively before executing the command",
     "Tmux options require being inside a tmux session",
-    "Cannot use --fzf with tmux options",
   ],
 };

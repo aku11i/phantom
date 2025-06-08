@@ -43,6 +43,10 @@ export const shellHelp: CommandHelp = {
       description: "Open a shell in a vertical tmux pane",
       command: "phantom shell feature-auth --tmux-v",
     },
+    {
+      description: "Interactive selection with tmux",
+      command: "phantom shell --fzf --tmux",
+    },
   ],
   notes: [
     "Uses your default shell from the SHELL environment variable",
@@ -50,6 +54,5 @@ export const shellHelp: CommandHelp = {
     "Type 'exit' to return to your original directory",
     "With --fzf, you can interactively select the worktree to enter",
     "Tmux options require being inside a tmux session",
-    "Cannot use --fzf with tmux options",
   ],
 };

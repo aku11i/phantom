@@ -58,12 +58,6 @@ export async function execHandler(args: string[]): Promise<void> {
     tmuxDirection = "horizontal";
   }
 
-  if (useFzf && tmuxOption) {
-    exitWithError(
-      "Cannot use --fzf with tmux options",
-      exitCodes.validationError,
-    );
-  }
 
   let commandArgs: string[];
 

@@ -72,12 +72,6 @@ export async function shellHandler(args: string[]): Promise<void> {
     );
   }
 
-  if (useFzf && tmuxOption) {
-    exitWithError(
-      "Cannot use --fzf with tmux options",
-      exitCodes.validationError,
-    );
-  }
 
   let worktreeName: string;
 

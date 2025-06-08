@@ -267,22 +267,6 @@ describe("shellHandler", () => {
     );
   });
 
-  it("should error when --fzf and tmux options are used together", async () => {
-    exitMock.mock.resetCalls();
-    consoleErrorMock.mock.resetCalls();
-
-    await rejects(
-      async () => await shellHandler(["--fzf", "--tmux"]),
-      /Exit with code 3: Cannot use --fzf with tmux options/,
-    );
-
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot use --fzf with tmux options",
-    );
-    strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
-  });
 
   it("should error when tmux option used outside tmux", async () => {
     exitMock.mock.resetCalls();
@@ -431,6 +415,50 @@ describe("shellHandler", () => {
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],
       "tmux command failed",
+    );
+  });
+
+  it("should open shell with --fzf and tmux options combined", async () => {
+    exitMock.mock.resetCalls();
+    consoleLogMock.mock.resetCalls();
+    getGitRootMock.mock.resetCalls();
+    selectWorktreeWithFzfMock.mock.resetCalls();
+    validateWorktreeExistsMock.mock.resetCalls();
+    isInsideTmuxMock.mock.resetCalls();
+    executeTmuxCommandMock.mock.resetCalls();
+    exitWithSuccessMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => "/repo");
+    isInsideTmuxMock.mock.mockImplementation(() => true);
+    selectWorktreeWithFzfMock.mock.mockImplementation(() =>
+      ok({
+        name: "selected-feature",
+        path: "/repo/.git/phantom/worktrees/selected-feature",
+        branch: "selected-feature",
+        isCurrentWorktree: false,
+        isDirty: false,
+      }),
+    );
+    validateWorktreeExistsMock.mock.mockImplementation(() => ({
+      exists: true,
+      path: "/repo/.git/phantom/worktrees/selected-feature",
+    }));
+    executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
+
+    await rejects(
+      async () => await shellHandler(["--fzf", "--tmux"]),
+      /Exit with code 0: success/,
+    );
+
+    strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
+    strictEqual(executeTmuxCommandMock.mock.calls.length, 1);
+    const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
+    strictEqual(tmuxCall.direction, "new");
+    strictEqual(tmuxCall.cwd, "/repo/.git/phantom/worktrees/selected-feature");
+    strictEqual(tmuxCall.windowName, "selected-feature");
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Opening worktree 'selected-feature' in tmux window...",
     );
   });
 });

@@ -196,11 +196,13 @@ phantom shell feature-auth --tmux-v
 
 # Open in horizontal split pane
 phantom shell feature-auth --tmux-h
+
+# Interactive selection with tmux
+phantom shell --fzf --tmux
 ```
 
 **Notes:**
 - tmux options require being inside a tmux session
-- Cannot use `--fzf` with tmux options
 
 ### exec
 
@@ -241,11 +243,13 @@ phantom exec --tmux-v feature-auth npm test
 
 # Execute in horizontal split pane
 phantom exec --tmux-h feature-auth npm run watch
+
+# Interactive selection with tmux
+phantom exec --fzf --tmux npm run dev
 ```
 
 **Notes:**
 - tmux options require being inside a tmux session
-- Cannot use `--fzf` with tmux options
 
 ## Other Commands
 
