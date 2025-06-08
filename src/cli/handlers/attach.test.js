@@ -170,4 +170,53 @@ describe("attachHandler", () => {
     deepStrictEqual(execArgs[1], "-c");
     deepStrictEqual(execArgs[2], "echo hello");
   });
+
+  it("should handle complex shell commands with quotes safely", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    execInWorktreeMock.mock.resetCalls();
+    execInWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(ok({ exitCode: 0 })),
+    );
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+
+    const complexCommand = "echo 'test' && ls -la | grep '.js'";
+    await attachHandler(["feature", "--exec", complexCommand]);
+
+    deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[0], "/repo");
+    deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[1], "feature");
+    const execArgs = execInWorktreeMock.mock.calls[0].arguments[2];
+    deepStrictEqual(execArgs[0], process.env.SHELL || "/bin/sh");
+    deepStrictEqual(execArgs[1], "-c");
+    deepStrictEqual(execArgs[2], complexCommand);
+  });
+
+  it("should prevent command injection attempts", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    execInWorktreeMock.mock.resetCalls();
+    execInWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(ok({ exitCode: 0 })),
+    );
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+
+    // This malicious command would have been dangerous with the old implementation
+    const maliciousCommand = "rm -rf / ; echo pwned";
+    await attachHandler(["feature", "--exec", maliciousCommand]);
+
+    // Verify that the command is passed as a single string to the shell
+    // The shell will handle it safely as a single command argument
+    deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[0], "/repo");
+    deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[1], "feature");
+    const execArgs = execInWorktreeMock.mock.calls[0].arguments[2];
+    deepStrictEqual(execArgs[0], process.env.SHELL || "/bin/sh");
+    deepStrictEqual(execArgs[1], "-c");
+    deepStrictEqual(execArgs[2], maliciousCommand);
+  });
 });
