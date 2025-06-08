@@ -2,6 +2,42 @@
 
 Phantom integrates seamlessly with popular development tools to enhance your workflow.
 
+## Table of Contents
+
+- [🪟 tmux Integration](#-tmux-integration)
+  - [Features](#features)
+  - [Commands](#commands)
+  - [Usage Examples](#usage-examples)
+  - [Advanced tmux Workflow](#advanced-tmux-workflow)
+  - [Power User Tips](#power-user-tips)
+  - [Environment Variables](#environment-variables)
+- [🔍 fzf Integration](#-fzf-integration)
+  - [Features](#features-1)
+  - [Commands Supporting fzf](#commands-supporting-fzf)
+  - [Usage Examples](#usage-examples-1)
+  - [Creating Powerful Aliases](#creating-powerful-aliases)
+  - [Advanced Scripting with fzf](#advanced-scripting-with-fzf)
+  - [Integration with Other Tools](#integration-with-other-tools)
+- [🎮 Shell Completion](#-shell-completion)
+  - [Installation](#installation)
+  - [Features](#features-2)
+  - [Examples](#examples)
+  - [Tips](#tips)
+- [💻 Editor Integration](#-editor-integration)
+  - [VS Code](#vs-code)
+  - [Cursor](#cursor)
+  - [Neovim](#neovim)
+  - [IntelliJ IDEA](#intellij-idea)
+- [🔧 Git Integration](#-git-integration)
+  - [Pre-commit Hooks](#pre-commit-hooks)
+  - [Git Aliases](#git-aliases)
+- [🚀 CI/CD Integration](#-cicd-integration)
+  - [GitHub Actions](#github-actions)
+  - [Scripts](#scripts)
+- [🐳 Docker Integration](#-docker-integration)
+  - [Docker Compose](#docker-compose)
+  - [Development Containers](#development-containers)
+
 ## 🪟 tmux Integration
 
 Phantom has built-in tmux support for the ultimate terminal-based workflow.
@@ -376,3 +412,9 @@ phantom create feature --copy-file docker-compose.override.yml
 # Open worktree in devcontainer
 phantom create feature --exec "code . --open-devcontainer"
 ```
+
+## Related Documentation
+
+- [Getting Started](./getting-started.md) - Get started with Phantom in minutes
+- [Commands Reference](./commands.md) - Complete list of all Phantom commands
+- [Configuration](./configuration.md) - Learn how to configure Phantom for your workflow

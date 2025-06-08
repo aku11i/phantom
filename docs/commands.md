@@ -249,3 +249,9 @@ Phantom uses the following exit codes:
 - `3` - Git operation failed
 - `4` - Worktree operation failed
 - `127` - Command not found
+
+## Related Documentation
+
+- [Getting Started](./getting-started.md) - Get started with Phantom quickly
+- [Configuration](./configuration.md) - Configure Phantom for your workflow
+- [Integrations](./integrations.md) - Integrate Phantom with other tools

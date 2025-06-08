@@ -9,7 +9,7 @@
 [![Node.js Version](https://img.shields.io/node/v/@aku11i/phantom.svg)](https://nodejs.org)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aku11i/phantom)
 
-[日本語](./README.ja.md) • [Quick Guide](./docs/quick-guide.md) • [Commands](./docs/commands.md) • [Configuration](./docs/configuration.md) • [Integrations](./docs/integrations.md)
+[日本語](./README.ja.md) • [Getting Started](./docs/getting-started.md) • [Commands](./docs/commands.md) • [Configuration](./docs/configuration.md) • [Integrations](./docs/integrations.md)
 
 </div>
 
@@ -77,7 +77,7 @@ phantom shell feature-awesome  # Back to feature development
 
 ## 📚 Documentation
 
-- **[Quick Guide](./docs/quick-guide.md)** - Common workflows and tips
+- **[Getting Started](./docs/getting-started.md)** - Common workflows and tips
 - **[Commands Reference](./docs/commands.md)** - All commands and options
 - **[Configuration](./docs/configuration.md)** - Set up automatic file copying and post-create commands
 - **[Integrations](./docs/integrations.md)** - tmux, fzf, editors, and more
@@ -101,31 +101,13 @@ Perfect for:
 - Running different versions of your app in parallel
 - Keeping a clean `main` worktree while developing in others
 
-## 🛠️ Development
-
-```bash
-# Clone and setup
-git clone https://github.com/aku11i/phantom.git
-cd phantom
-pnpm install
-
-# Run tests
-pnpm test
-
-# Type checking
-pnpm typecheck
-
-# Run all checks before committing
-pnpm ready
-```
-
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
-- Follow the existing code style
-- Add tests for new features
-- Run `pnpm ready` before submitting PRs
-- Keep documentation up to date
+Contributions are welcome! See our [Contributing Guide](./contributing/CONTRIBUTING.md) for:
+- Development setup
+- Code style guidelines  
+- Testing requirements
+- Pull request process
 
 ## 📄 License
 

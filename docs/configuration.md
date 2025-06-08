@@ -1,5 +1,19 @@
 # Phantom Configuration
 
+## Table of Contents
+
+- [Configuration File](#configuration-file)
+- [Configuration Options](#configuration-options)
+  - [postCreate.copyFiles](#postcreatecopyfiles)
+  - [postCreate.commands](#postcreatecommands)
+- [Complete Example](#complete-example)
+- [Command Line Override](#command-line-override)
+- [Best Practices](#best-practices)
+- [Troubleshooting](#troubleshooting)
+  - [Commands Failing](#commands-failing)
+  - [Files Not Copying](#files-not-copying)
+- [Related Documentation](#related-documentation)
+
 Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied and commands to be executed when creating new worktrees.
 
 ## Configuration File
@@ -171,3 +185,9 @@ If files aren't being copied:
    ```bash
    phantom create test --copy-file ".env"
    ```
+
+## Related Documentation
+
+- [Getting Started](getting-started.md) - Quick guide to get up and running with Phantom
+- [Commands Reference](commands.md) - Detailed documentation of all Phantom commands
+- [Integrations](integrations.md) - Integration guides for tmux, fzf, and shell completion
