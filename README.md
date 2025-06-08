@@ -20,7 +20,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 ### Key Features
 
 - 🚀 **One command to create worktree + branch** - No more manual path management
-- 🔄 **Instant context switching** - Jump between features without losing state
+- 🔄 **True multitasking** - Create separate working directories per branch and run multiple tasks simultaneously
 - 🪟 **Built-in tmux integration** - Split panes and windows automatically
 - 🔍 **Interactive selection with fzf** - Find and switch worktrees instantly
 - 🎮 **Shell completion** - Full autocomplete support for Fish and Zsh
