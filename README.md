@@ -19,13 +19,44 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 
 ### Key Features
 
-- 🚀 **One command to create worktree + branch** - No more manual path management
+- 🚀 **Simple worktree management** - Create and manage Git worktrees with intuitive commands
 - 🔄 **True multitasking** - Create separate working directories per branch and run multiple tasks simultaneously
 - 🎯 **Execute commands from anywhere** - Run commands in any worktree with `phantom exec <worktree> <command>`
 - 🪟 **Built-in tmux integration** - Open worktrees in new panes or windows
 - 🔍 **Interactive selection with fzf** - Use built-in fzf option for worktree selection
 - 🎮 **Shell completion** - Full autocomplete support for Fish and Zsh
 - ⚡ **Zero dependencies** - Fast and lightweight
+
+## 🤔 Why Phantom?
+
+Git worktrees are powerful but require manual management of paths and branches. Also, navigating between multiple worktrees is cumbersome. Phantom eliminates these problems:
+
+```bash
+# Without Phantom
+git worktree add -b feature-awesome ../project-feature-awesome origin/main
+cd ../project-feature-awesome
+
+# With Phantom
+phantom create feature-awesome --shell
+```
+
+### How Phantom Works
+
+When you run `phantom create feature-awesome`, a new Git worktree named `feature-awesome` is created in `.git/phantom/worktrees/`.
+All worktrees created with phantom are centrally managed in this location.
+
+```
+your-project/    # Git repository
+├── .git/
+│   └── phantom/
+│       └── worktrees/        # Phantom-managed directory
+│           ├── feature-awesome/  # branch name = worktree name
+│           ├── bugfix-login/     # another worktree
+│           └── hotfix-critical/  # yet another worktree
+└── ...
+```
+
+This convention means you never need to remember worktree paths - just use the branch name for easy worktree operations.
 
 ## 🚀 Quick Start
 
@@ -46,17 +77,35 @@ npm install -g @aku11i/phantom
 
 ### Basic Usage
 
+#### Create a new worktree
+
 ```bash
-# Create a new feature branch in its own worktree
 phantom create feature-awesome
 
-# Start a new shell in the worktree
+phantom list
+```
+
+#### Start a new shell in the worktree
+
+```bash
 phantom shell feature-awesome
 
-# Run commands in any worktree from anywhere
-phantom exec feature-awesome npm test
+# Start development work
 
-# Clean up when done
+# Exit the shell when done
+exit
+```
+
+#### Run commands in any worktree
+
+```bash
+phantom exec feature-awesome {command to run}
+# Example: phantom exec feature-awesome npm run build
+```
+
+#### Clean up when done
+
+```bash
 phantom delete feature-awesome
 ```
 
@@ -68,43 +117,6 @@ phantom delete feature-awesome
 - **[Configuration](./docs/configuration.md)** - Set up automatic file copying and post-create commands
 - **[Integrations](./docs/integrations.md)** - tmux, fzf, editors, and more
 
-## 🤔 Why Phantom?
-
-Git worktrees are powerful but require manual management of paths and branches. Phantom eliminates this friction:
-
-```bash
-# Without Phantom
-git worktree add -b feature-awesome ../project-feature-awesome origin/main
-cd ../project-feature-awesome
-
-# With Phantom
-phantom create feature-awesome --shell
-```
-
-### How Phantom Works
-
-When you run `phantom create feature-awesome`:
-1. A directory is automatically created at `.git/phantom/feature-awesome/`
-2. A worktree with the same name as the branch is created in this location
-3. All worktrees are centrally managed under `.git/phantom/`
-
-```
-your-project/
-├── .git/
-│   └── phantom/              # Phantom-managed directory
-│       ├── feature-awesome/  # branch name = worktree name
-│       ├── bugfix-login/     # another worktree
-│       └── hotfix-critical/  # yet another worktree
-└── ...                       # main worktree (usually main branch)
-```
-
-This convention means you never need to remember worktree paths - just use the branch name with `phantom shell` or `phantom exec` for instant access.
-
-Perfect for:
-- Working on multiple features simultaneously
-- Quick PR reviews without disrupting your work
-- Running different versions of your app in parallel
-- Keeping a clean `main` worktree while developing in others
 
 ## 🤝 Contributing
 
