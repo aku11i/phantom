@@ -9,7 +9,7 @@
 [![Node.js Version](https://img.shields.io/node/v/@aku11i/phantom.svg)](https://nodejs.org)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aku11i/phantom)
 
-[English](./README.md) • [はじめに](./docs/getting-started.md) • [コマンド](./docs/commands.md) • [設定](./docs/configuration.md) • [統合](./docs/integrations.md)
+[English](./README.md) • [インストール](#-インストール) • [なぜPhantom？](#-なぜphantom) • [基本的な使い方](#-基本的な使い方) • [ドキュメント](#-ドキュメント)
 
 </div>
 

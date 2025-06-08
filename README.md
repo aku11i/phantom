@@ -9,7 +9,7 @@
 [![Node.js Version](https://img.shields.io/node/v/@aku11i/phantom.svg)](https://nodejs.org)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/aku11i/phantom)
 
-[日本語](./README.ja.md) • [Getting Started](./docs/getting-started.md) • [Commands](./docs/commands.md) • [Configuration](./docs/configuration.md) • [Integrations](./docs/integrations.md)
+[日本語](./README.ja.md) • [Installation](#-installation) • [Why Phantom?](#-why-phantom) • [Basic Usage](#-basic-usage) • [Documentation](#-documentation)
 
 </div>
 
