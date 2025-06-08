@@ -2,7 +2,6 @@ import { executeGitCommandInDirectory } from "../git/executor.ts";
 import { listWorktrees as gitListWorktrees } from "../git/libs/list-worktrees.ts";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
 import { type Result, ok } from "../types/result.ts";
-import { decodeWorktreeName } from "./validate.ts";
 
 export interface WorktreeInfo {
   name: string;
@@ -82,8 +81,7 @@ export async function listWorktrees(
 
     const worktrees = await Promise.all(
       phantomWorktrees.map(async (gitWorktree) => {
-        const encodedName = gitWorktree.path.substring(phantomDir.length + 1);
-        const name = decodeWorktreeName(encodedName);
+        const name = gitWorktree.path.substring(phantomDir.length + 1);
         const isClean = await getWorktreeStatus(gitWorktree.path);
 
         return {
