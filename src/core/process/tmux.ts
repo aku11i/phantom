@@ -9,6 +9,7 @@ export interface TmuxOptions {
   command: string;
   cwd?: string;
   env?: Record<string, string>;
+  windowName?: string;
 }
 
 export type TmuxSuccess = SpawnSuccess;
@@ -20,13 +21,16 @@ export async function isInsideTmux(): Promise<boolean> {
 export async function executeTmuxCommand(
   options: TmuxOptions,
 ): Promise<Result<TmuxSuccess, ProcessError>> {
-  const { direction, command, cwd, env } = options;
+  const { direction, command, cwd, env, windowName } = options;
 
   const tmuxArgs: string[] = [];
 
   switch (direction) {
     case "new":
       tmuxArgs.push("new-window");
+      if (windowName) {
+        tmuxArgs.push("-n", windowName);
+      }
       break;
     case "vertical":
       tmuxArgs.push("split-window", "-v");

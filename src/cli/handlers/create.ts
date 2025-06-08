@@ -244,6 +244,7 @@ export async function createHandler(args: string[]): Promise<void> {
           PHANTOM_NAME: worktreeName,
           PHANTOM_PATH: result.value.path,
         },
+        windowName: tmuxDirection === "new" ? worktreeName : undefined,
       });
 
       if (isErr(tmuxResult)) {

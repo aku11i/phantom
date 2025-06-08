@@ -277,6 +277,7 @@ describe("createHandler", () => {
     const tmuxArgs = executeTmuxCommandMock.mock.calls[0].arguments[0];
     strictEqual(tmuxArgs.direction, "new");
     strictEqual(tmuxArgs.cwd, "/test/repo/.git/phantom/worktrees/feature");
+    strictEqual(tmuxArgs.windowName, "feature");
 
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
@@ -321,6 +322,7 @@ describe("createHandler", () => {
     const tmuxArgs = executeTmuxCommandMock.mock.calls[0].arguments[0];
     strictEqual(tmuxArgs.direction, "vertical");
     strictEqual(tmuxArgs.cwd, "/test/repo/.git/phantom/worktrees/feature");
+    strictEqual(tmuxArgs.windowName, undefined);
 
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
