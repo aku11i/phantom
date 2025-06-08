@@ -179,11 +179,3 @@ MIT License - [LICENSE](LICENSE)を参照
 ## 🙏 謝辞
 
 👻 [@aku11i](https://github.com/aku11i)と[Claude](https://claude.ai)によって作られました
-
----
-
-<div align="center">
-<a href="https://github.com/aku11i/phantom/issues">バグ報告</a> • 
-<a href="https://github.com/aku11i/phantom/issues">機能リクエスト</a> •
-<a href="https://github.com/aku11i/phantom/discussions">ディスカッション</a>
-</div>

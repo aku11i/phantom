@@ -179,11 +179,3 @@ MIT License - see [LICENSE](LICENSE)
 ## 🙏 Acknowledgments
 
 Built with 👻 by [@aku11i](https://github.com/aku11i) and [Claude](https://claude.ai)
-
----
-
-<div align="center">
-<a href="https://github.com/aku11i/phantom/issues">Report Bug</a> • 
-<a href="https://github.com/aku11i/phantom/issues">Request Feature</a> •
-<a href="https://github.com/aku11i/phantom/discussions">Discussions</a>
-</div>
