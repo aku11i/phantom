@@ -2,7 +2,7 @@ import type { CommandHelp } from "../help.ts";
 
 export const deleteHelp: CommandHelp = {
   name: "delete",
-  description: "Delete a Git worktree (phantom)",
+  description: "Delete a Git worktree",
   usage: "phantom delete <name> [options]",
   options: [
     {

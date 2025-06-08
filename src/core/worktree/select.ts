@@ -34,7 +34,7 @@ export async function selectWorktreeWithFzf(
 
   const fzfResult = await selectWithFzf(list, {
     prompt: "Select worktree> ",
-    header: "Git Worktrees (Phantoms)",
+    header: "Git Worktrees",
   });
 
   if (isErr(fzfResult)) {

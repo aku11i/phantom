@@ -26,7 +26,7 @@ npm install -g @aku11i/phantom
 
 ### What is a Phantom?
 
-A "phantom" is a Git worktree managed by Phantom. When you create a phantom, it creates a new working directory at `.git/phantom/worktrees/<branch-name>` where you can work independently from your main workspace.
+Phantom is a tool that manages Git worktrees. When you create a worktree with Phantom, it creates a new working directory at `.git/phantom/worktrees/<branch-name>` where you can work independently from your main workspace.
 
 ### Why Use Phantom?
 
@@ -47,15 +47,15 @@ Benefits:
 - **Centralized management** - All worktrees in one predictable location
 - **Simple commands** - Intuitive interface for complex Git operations
 
-## 👻 Your First Phantom
+## 👻 Your First Worktree
 
-Let's create your first phantom:
+Let's create your first worktree:
 
 ```bash
 # Create a new feature branch in its own workspace
 phantom create my-first-feature
 
-# Enter the phantom's workspace
+# Enter the worktree's workspace
 phantom shell my-first-feature
 
 # You're now in a separate workspace!
@@ -67,29 +67,29 @@ exit
 
 ## 🎯 Essential Commands
 
-These five commands will cover 90% of your phantom usage:
+These five commands will cover 90% of your Phantom usage:
 
-### 1. Create a Phantom
+### 1. Create a Worktree
 ```bash
 phantom create feature-name
 ```
 
-### 2. Enter a Phantom
+### 2. Enter a Worktree
 ```bash
 phantom shell feature-name
 ```
 
-### 3. List Your Phantoms
+### 3. List Your Worktrees
 ```bash
 phantom list
 ```
 
-### 4. Run Commands in a Phantom
+### 4. Run Commands in a Worktree
 ```bash
 phantom exec feature-name npm test
 ```
 
-### 5. Delete a Phantom
+### 5. Delete a Worktree
 ```bash
 phantom delete feature-name
 ```
@@ -121,7 +121,7 @@ phantom shell feature-a
 A critical bug needs fixing while you're in the middle of feature development:
 
 ```bash
-# Create a hotfix phantom
+# Create a hotfix worktree
 phantom create hotfix-critical --shell
 
 # You're now in the hotfix workspace
@@ -135,7 +135,7 @@ phantom shell my-feature
 ### Reviewing a Pull Request
 
 ```bash
-# Create phantom from a remote branch
+# Create worktree from a remote branch
 phantom attach origin/pr-branch --shell
 
 # Review code, run tests

@@ -2,7 +2,7 @@ import type { CommandHelp } from "../help.ts";
 
 export const createHelp: CommandHelp = {
   name: "create",
-  description: "Create a new Git worktree (phantom)",
+  description: "Create a new Git worktree",
   usage: "phantom create <name> [options]",
   options: [
     {

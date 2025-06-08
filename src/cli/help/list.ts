@@ -2,7 +2,7 @@ import type { CommandHelp } from "../help.ts";
 
 export const listHelp: CommandHelp = {
   name: "list",
-  description: "List all Git worktrees (phantoms)",
+  description: "List all Git worktrees",
   usage: "phantom list [options]",
   options: [
     {
@@ -13,7 +13,7 @@ export const listHelp: CommandHelp = {
     {
       name: "--names",
       type: "boolean",
-      description: "Output only phantom names (for scripts and completion)",
+      description: "Output only worktree names (for scripts and completion)",
     },
   ],
   examples: [
