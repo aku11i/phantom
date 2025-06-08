@@ -43,14 +43,6 @@ brew install aku11i/tap/phantom
 npm install -g @aku11i/phantom
 ```
 
-**Optional tools for enhanced experience:**
-```bash
-# Interactive worktree selection
-brew install fzf
-
-# Terminal multiplexing features  
-brew install tmux
-```
 
 ### Basic Usage
 
