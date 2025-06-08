@@ -40,7 +40,7 @@ describe("paths", () => {
       const result = getWorktreePath(gitRoot, name);
       strictEqual(
         result,
-        "/test/repo/.git/phantom/worktrees/feature/branch-123",
+        "/test/repo/.git/phantom/worktrees/feature__branch-123",
       );
     });
 

@@ -66,13 +66,25 @@ export function validateWorktreeName(name: string): Result<void, Error> {
     return err(new Error("Phantom name cannot be empty"));
   }
 
-  if (name.includes("/")) {
-    return err(new Error("Phantom name cannot contain slashes"));
-  }
-
   if (name.startsWith(".")) {
     return err(new Error("Phantom name cannot start with a dot"));
   }
 
+  if (name.startsWith("/") || name.endsWith("/")) {
+    return err(new Error("Phantom name cannot start or end with a slash"));
+  }
+
+  if (name.includes("//")) {
+    return err(new Error("Phantom name cannot contain consecutive slashes"));
+  }
+
   return ok(undefined);
+}
+
+export function encodeWorktreeName(name: string): string {
+  return name.replace(/\//g, "__");
+}
+
+export function decodeWorktreeName(encodedName: string): string {
+  return encodedName.replace(/__/g, "/");
 }
