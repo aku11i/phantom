@@ -24,6 +24,9 @@ Phantom is a CLI tool that dramatically simplifies Git worktree management. It's
 - 🤖 **AI-Friendly** - Perfect for running multiple AI coding agents in parallel
 - 🎯 **Branch-Worktree Sync** - Automatically creates matching branches for each worktree
 - 🐚 **Interactive Shell** - SSH-like experience for worktree navigation
+- 🪟 **tmux Integration** - Create worktrees directly in new tmux windows or panes
+- 🔍 **fzf Integration** - Fuzzy find and select worktrees interactively
+- 🎮 **Shell Completion** - Full autocomplete support for Fish and Zsh
 - ⚡ **Zero Configuration** - Works out of the box with sensible defaults
 - 📦 **Zero Dependencies** - Lightweight and fast with no external dependencies
 
@@ -70,6 +73,10 @@ phantom exec feature-awesome npm test
 # List all your worktrees
 phantom list
 
+# Interactive worktree selection with fzf
+phantom shell --fzf    # Select and open shell
+phantom delete --fzf   # Select and delete
+
 # Clean up when done
 phantom delete feature-awesome
 ```
@@ -95,7 +102,36 @@ pnpm build
 npm link
 ```
 
+### Optional Dependencies
+
+For the best experience, install these optional tools:
+
+```bash
+# For interactive worktree selection
+brew install fzf
+
+# For terminal multiplexing features
+brew install tmux
+```
+
 ## 📖 Documentation
+
+### 🎮 Shell Completion Setup
+
+Phantom supports shell completion for Fish and Zsh, making it even faster to work with worktrees:
+
+```bash
+# For Fish shell
+phantom completion fish > ~/.config/fish/completions/phantom.fish
+
+# For Zsh (add to .zshrc)
+eval "$(phantom completion zsh)"
+```
+
+Once enabled, you'll get:
+- Command name completion (`phantom <TAB>`)
+- Worktree name completion (`phantom shell <TAB>`)
+- Option completion with descriptions (`phantom create --<TAB>`)
 
 ### Commands Overview
 
@@ -122,15 +158,20 @@ phantom attach <branch-name> --exec <command>  # Attach and execute command
 
 # List all worktrees with their current status
 phantom list
+phantom list --fzf  # Interactive selection with fzf (outputs selected name)
+phantom list --names  # Machine-readable output (for scripting)
 
 # Get the absolute path to a worktree
 phantom where <name>
+phantom where --fzf  # Select worktree with fzf and get its path
 
 # Delete a worktree and its branch
 phantom delete <name>
 phantom delete <name> --force  # Force delete with uncommitted changes
 phantom delete --current        # Delete the current worktree (when inside one)
 phantom delete --current --force # Force delete current worktree
+phantom delete --fzf            # Select worktree to delete with fzf
+phantom delete --fzf --force    # Force delete selected worktree
 ```
 
 #### Working with Worktrees
@@ -146,6 +187,7 @@ phantom exec feature-auth git status
 
 # Open an interactive shell session in a worktree
 phantom shell <name>
+phantom shell --fzf  # Select worktree with fzf and open shell
 ```
 
 ### Environment Variables
@@ -160,21 +202,66 @@ When opening an interactive shell with `phantom shell`, these environment variab
 
 Phantom is more than just a worktree wrapper - it's a productivity multiplier. Here are some real-world examples:
 
-### tmux Integration
+### 🪟 tmux Integration
 
-Combine tmux with Phantom for an incredibly efficient workflow:
+Phantom has built-in tmux support for the ultimate terminal-based workflow:
 
 ```bash
-# Open a new tmux window and create a worktree in one command
-tmux new-window 'phantom create --shell new-feature'
+# Create a worktree and open in a new tmux window
+phantom create feature-x --tmux
+
+# Create and split current pane vertically
+phantom create feature-y --tmux-vertical
+phantom create feature-y --tmux-v  # shorthand
+
+# Create and split current pane horizontally
+phantom create feature-z --tmux-horizontal
+phantom create feature-z --tmux-h  # shorthand
 ```
 
-This single line:
-1. Creates a new Git worktree for `new-feature` ✨
-2. Opens a new tmux window 🪟
-3. Starts an interactive shell in the new worktree 🚀
+Perfect for managing multiple features in parallel:
+- Each feature gets its own tmux window/pane
+- Automatic environment variable setup (`PHANTOM_NAME`, `PHANTOM_PATH`)
+- Seamless context switching with tmux keybindings
 
-When developing multiple features in parallel, you can manage each feature in its own tmux window.
+### 🔍 fzf Integration
+
+Use fzf's fuzzy finding power to quickly navigate between worktrees:
+
+```bash
+# Interactively select and open a worktree
+phantom shell --fzf
+
+# Select a worktree and get its path
+cd $(phantom where --fzf)
+
+# Delete a worktree with interactive selection
+phantom delete --fzf
+
+# Combine with other tools
+code $(phantom where --fzf)  # Open selected worktree in VS Code
+```
+
+The fzf interface shows:
+- Worktree names with their branch names
+- Dirty status indicators
+- Fuzzy search across all worktrees
+
+### Advanced Workflows
+
+```bash
+# Quick switching script using fzf
+alias pw='phantom shell --fzf'
+
+# Create worktree and immediately open in your editor
+phantom create feature --exec "code ." --tmux-v
+
+# List worktrees for scripting
+for worktree in $(phantom list --names); do
+  echo "Running tests in $worktree"
+  phantom exec $worktree npm test
+done
+```
 
 ### VS Code Integration
 
