@@ -207,8 +207,14 @@ phantom shell feature-auth --tmux-h
 Execute any command in a worktree's context.
 
 ```bash
-phantom exec <name> <command> [args...]
+phantom exec [options] <name> <command> [args...]
 ```
+
+**Options:**
+- `--fzf` - Select worktree with fzf and execute command
+- `--tmux`, `-t` - Execute command in new tmux window
+- `--tmux-vertical`, `--tmux-v` - Execute command in vertical split pane
+- `--tmux-horizontal`, `--tmux-h` - Execute command in horizontal split pane
 
 **Examples:**
 ```bash
@@ -223,7 +229,23 @@ phantom exec feature-auth git status
 
 # Run complex commands
 phantom exec feature-auth bash -c "npm install && npm test"
+
+# Interactive selection
+phantom exec --fzf npm run dev
+
+# Execute in new tmux window
+phantom exec --tmux feature-auth npm run dev
+
+# Execute in vertical split pane
+phantom exec --tmux-v feature-auth npm test
+
+# Execute in horizontal split pane
+phantom exec --tmux-h feature-auth npm run watch
 ```
+
+**Notes:**
+- tmux options require being inside a tmux session
+- Cannot use `--fzf` with tmux options
 
 ## Other Commands
 
