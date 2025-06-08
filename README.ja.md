@@ -27,6 +27,20 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 - 🎮 **シェル補完** - FishとZshの完全な自動補完サポート
 - ⚡ **ゼロ依存** - 高速で軽量
 
+## 🚀 インストール
+
+### Homebrewを使用（推奨）
+
+```bash
+brew install aku11i/tap/phantom
+```
+
+### npmを使用
+
+```bash
+npm install -g @aku11i/phantom
+```
+
 ## 🤔 なぜPhantom？
 
 Git worktreeは強力ですが、パスとブランチの手動管理が必要です。また、複数のワークツリーを移動するのも大変です。Phantomはこの問題を解消します：
@@ -108,26 +122,9 @@ phantom shell --fzf
 phantom delete --fzf
 ```
 
-## 🚀 クイックスタート
+## 🔍 基本的な使い方
 
-### インストール
-
-#### Homebrewを使用（推奨）
-
-```bash
-brew install aku11i/tap/phantom
-```
-
-#### npmを使用
-
-```bash
-npm install -g @aku11i/phantom
-```
-
-
-### 基本的な使い方
-
-#### 新しいワークツリーの作成
+### 新しいワークツリーの作成
 
 ```bash
 phantom create feature-awesome
@@ -135,7 +132,7 @@ phantom create feature-awesome
 phantom list
 ```
 
-#### worktreeで新しいシェルを起動
+### worktreeで新しいシェルを起動
 
 ```bash
 phantom shell feature-awesome
@@ -146,14 +143,14 @@ phantom shell feature-awesome
 exit
 ```
 
-#### 任意のworktreeでコマンドを実行
+### 任意のworktreeでコマンドを実行
 
 ```bash
 phantom exec feature-awesome {実行したいコマンド}
 # 例: phantom exec feature-awesome npm run build
 ```
 
-#### 完了したらクリーンアップ
+### 完了したらクリーンアップ
 
 ```bash
 phantom delete feature-awesome

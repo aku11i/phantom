@@ -27,6 +27,20 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🎮 **Shell completion** - Full autocomplete support for Fish and Zsh
 - ⚡ **Zero dependencies** - Fast and lightweight
 
+## 🚀 Installation
+
+### Using Homebrew (recommended)
+
+```bash
+brew install aku11i/tap/phantom
+```
+
+### Using npm
+
+```bash
+npm install -g @aku11i/phantom
+```
+
 ## 🤔 Why Phantom?
 
 Git worktrees are powerful but require manual management of paths and branches. Also, navigating between multiple worktrees is cumbersome. Phantom eliminates these problems:
@@ -108,26 +122,9 @@ phantom shell --fzf
 phantom delete --fzf
 ```
 
-## 🚀 Quick Start
+## 🔍 Basic Usage
 
-### Installation
-
-#### Using Homebrew (recommended)
-
-```bash
-brew install aku11i/tap/phantom
-```
-
-#### Using npm
-
-```bash
-npm install -g @aku11i/phantom
-```
-
-
-### Basic Usage
-
-#### Create a new worktree
+### Create a new worktree
 
 ```bash
 phantom create feature-awesome
@@ -135,7 +132,7 @@ phantom create feature-awesome
 phantom list
 ```
 
-#### Start a new shell in the worktree
+### Start a new shell in the worktree
 
 ```bash
 phantom shell feature-awesome
@@ -146,14 +143,14 @@ phantom shell feature-awesome
 exit
 ```
 
-#### Run commands in any worktree
+### Run commands in any worktree
 
 ```bash
 phantom exec feature-awesome {command to run}
 # Example: phantom exec feature-awesome npm run build
 ```
 
-#### Clean up when done
+### Clean up when done
 
 ```bash
 phantom delete feature-awesome
