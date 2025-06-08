@@ -126,10 +126,9 @@ describe("shellHandler", () => {
     shellInWorktreeMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     shellInWorktreeMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
     exitMock.mock.mockImplementation((code) => {
       throw new Error(`Process exit with code ${code}`);
@@ -175,10 +174,9 @@ describe("shellHandler", () => {
         isDirty: false,
       }),
     );
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature-fzf",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature-fzf" }),
+    );
     shellInWorktreeMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
     exitMock.mock.mockImplementation((code) => {
       throw new Error(`Process exit with code ${code}`);
@@ -250,10 +248,9 @@ describe("shellHandler", () => {
     validateWorktreeExistsMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: false,
-      message: "Worktree 'nonexistent' not found",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      err(new WorktreeNotFoundError("nonexistent")),
+    );
 
     await rejects(
       async () => await shellHandler(["nonexistent"]),
@@ -317,10 +314,9 @@ describe("shellHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
@@ -353,10 +349,9 @@ describe("shellHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
@@ -384,10 +379,9 @@ describe("shellHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
@@ -414,10 +408,9 @@ describe("shellHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() =>
       err(new Error("tmux command failed")),
     );

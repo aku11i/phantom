@@ -112,11 +112,8 @@ export async function execHandler(args: string[]): Promise<void> {
 
     // Validate worktree exists
     const validation = await validateWorktreeExists(gitRoot, worktreeName);
-    if (!validation.exists) {
-      exitWithError(
-        validation.message || `Worktree '${worktreeName}' not found`,
-        exitCodes.generalError,
-      );
+    if (isErr(validation)) {
+      exitWithError(validation.error.message, exitCodes.generalError);
     }
 
     if (tmuxDirection) {
@@ -132,8 +129,8 @@ export async function execHandler(args: string[]): Promise<void> {
         direction: tmuxDirection,
         command,
         args,
-        cwd: validation.path!,
-        env: getPhantomEnv(worktreeName, validation.path!),
+        cwd: validation.value.path,
+        env: getPhantomEnv(worktreeName, validation.value.path),
         windowName: tmuxDirection === "new" ? worktreeName : undefined,
       });
 

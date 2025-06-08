@@ -2,7 +2,10 @@ import fs from "node:fs/promises";
 import { addWorktree } from "../git/libs/add-worktree.ts";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
 import { type Result, err, isErr, isOk, ok } from "../types/result.ts";
-import { GitOperationError, WorktreeAlreadyExistsError } from "./errors.ts";
+import {
+  GitOperationError,
+  type WorktreeAlreadyExistsError,
+} from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";
 import {
   validateWorktreeDoesNotExist,
@@ -47,8 +50,8 @@ export async function createWorktree(
   }
 
   const validation = await validateWorktreeDoesNotExist(gitRoot, name);
-  if (validation.exists) {
-    return err(new WorktreeAlreadyExistsError(name));
+  if (isErr(validation)) {
+    return err(validation.error);
   }
 
   try {

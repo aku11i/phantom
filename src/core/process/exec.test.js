@@ -1,6 +1,6 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
-import { isErr, isOk } from "../types/result.ts";
+import { err, isErr, isOk, ok } from "../types/result.ts";
 import { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { ProcessExecutionError } from "./errors.ts";
 
@@ -26,16 +26,12 @@ describe("execInWorktree", () => {
     validateMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/my-feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/my-feature" }),
+      ),
     );
     spawnMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        value: { exitCode: 0 },
-      }),
+      Promise.resolve(ok({ exitCode: 0 })),
     );
 
     const result = await execInWorktree("/test/repo", "my-feature", [
@@ -62,10 +58,7 @@ describe("execInWorktree", () => {
     validateMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: false,
-        message: "Worktree 'non-existent' not found",
-      }),
+      Promise.resolve(err(new WorktreeNotFoundError("non-existent"))),
     );
 
     const result = await execInWorktree("/test/repo", "non-existent", [
@@ -86,16 +79,12 @@ describe("execInWorktree", () => {
     validateMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
     spawnMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        value: { exitCode: 0 },
-      }),
+      Promise.resolve(ok({ exitCode: 0 })),
     );
 
     await execInWorktree("/test/repo", "feature", ["ls"]);
@@ -114,16 +103,14 @@ describe("execInWorktree", () => {
     validateMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
 
-    validateMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/test/repo/.git/phantom/worktrees/feature",
-    }));
+    validateMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
+    );
 
     spawnMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        value: { exitCode: 0 },
-      }),
+      Promise.resolve(ok({ exitCode: 0 })),
     );
 
     await execInWorktree("/test/repo", "feature", ["echo", "test"], {
@@ -144,16 +131,12 @@ describe("execInWorktree", () => {
     validateMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
     spawnMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        ok: false,
-        error: new ProcessExecutionError("false", 1),
-      }),
+      Promise.resolve(err(new ProcessExecutionError("false", 1))),
     );
 
     const result = await execInWorktree("/test/repo", "feature", ["false"]);

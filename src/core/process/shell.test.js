@@ -1,6 +1,6 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
-import { isErr, isOk } from "../types/result.ts";
+import { err, isErr, isOk, ok } from "../types/result.ts";
 import { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { ProcessSpawnError } from "./errors.ts";
 
@@ -34,16 +34,12 @@ describe("shellInWorktree", () => {
     resetMocks();
     process.env.SHELL = "/bin/bash";
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/my-feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/my-feature" }),
+      ),
     );
     spawnMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        value: { exitCode: 0 },
-      }),
+      Promise.resolve(ok({ exitCode: 0 })),
     );
 
     const result = await shellInWorktree("/test/repo", "my-feature");
@@ -80,16 +76,12 @@ describe("shellInWorktree", () => {
     resetMocks();
     Reflect.deleteProperty(process.env, "SHELL");
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
     spawnMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        value: { exitCode: 0 },
-      }),
+      Promise.resolve(ok({ exitCode: 0 })),
     );
 
     await shellInWorktree("/test/repo", "feature");
@@ -107,10 +99,7 @@ describe("shellInWorktree", () => {
   it("should return error when worktree does not exist", async () => {
     resetMocks();
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: false,
-        message: "Worktree 'non-existent' not found",
-      }),
+      Promise.resolve(err(new WorktreeNotFoundError("non-existent"))),
     );
 
     const result = await shellInWorktree("/test/repo", "non-existent");
@@ -127,16 +116,12 @@ describe("shellInWorktree", () => {
   it("should pass through spawn process errors", async () => {
     resetMocks();
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
     spawnMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        ok: false,
-        error: new ProcessSpawnError("/bin/sh", "Shell not found"),
-      }),
+      Promise.resolve(err(new ProcessSpawnError("/bin/sh", "Shell not found"))),
     );
 
     const result = await shellInWorktree("/test/repo", "feature");

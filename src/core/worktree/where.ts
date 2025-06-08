@@ -1,5 +1,5 @@
-import { type Result, err, ok } from "../types/result.ts";
-import { WorktreeNotFoundError } from "./errors.ts";
+import { type Result, err, isErr, ok } from "../types/result.ts";
+import type { WorktreeNotFoundError } from "./errors.ts";
 import { validateWorktreeExists } from "./validate.ts";
 
 export interface WhereWorktreeSuccess {
@@ -12,11 +12,11 @@ export async function whereWorktree(
 ): Promise<Result<WhereWorktreeSuccess, WorktreeNotFoundError>> {
   const validation = await validateWorktreeExists(gitRoot, name);
 
-  if (!validation.exists) {
-    return err(new WorktreeNotFoundError(name));
+  if (isErr(validation)) {
+    return err(validation.error);
   }
 
   return ok({
-    path: validation.path as string,
+    path: validation.value.path,
   });
 }

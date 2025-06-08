@@ -69,7 +69,9 @@ describe("createWorktree", () => {
     mkdirMock.mock.mockImplementation(() => Promise.resolve());
     validateWorktreeNameMock.mock.mockImplementation(() => ok(undefined));
     validateWorktreeDoesNotExistMock.mock.mockImplementation(() =>
-      Promise.resolve({ exists: false }),
+      Promise.resolve(
+        ok({ path: getWorktreePathMock("/test/repo", "feature-branch") }),
+      ),
     );
     addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
     const result = await createWorktree("/test/repo", "feature-branch");
@@ -103,7 +105,9 @@ describe("createWorktree", () => {
     mkdirMock.mock.mockImplementation(() => Promise.resolve());
     validateWorktreeNameMock.mock.mockImplementation(() => ok(undefined));
     validateWorktreeDoesNotExistMock.mock.mockImplementation(() =>
-      Promise.resolve({ exists: false }),
+      Promise.resolve(
+        ok({ path: getWorktreePathMock("/test/repo", "feature-branch") }),
+      ),
     );
     addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
     await createWorktree("/test/repo", "new-feature");
@@ -120,10 +124,7 @@ describe("createWorktree", () => {
     accessMock.mock.mockImplementation(() => Promise.resolve());
     validateWorktreeNameMock.mock.mockImplementation(() => ok(undefined));
     validateWorktreeDoesNotExistMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        message: "Worktree 'existing' already exists",
-      }),
+      Promise.resolve(err(new WorktreeAlreadyExistsError("existing"))),
     );
     const result = await createWorktree("/test/repo", "existing");
 
@@ -139,7 +140,9 @@ describe("createWorktree", () => {
     accessMock.mock.mockImplementation(() => Promise.resolve());
     validateWorktreeNameMock.mock.mockImplementation(() => ok(undefined));
     validateWorktreeDoesNotExistMock.mock.mockImplementation(() =>
-      Promise.resolve({ exists: false }),
+      Promise.resolve(
+        ok({ path: getWorktreePathMock("/test/repo", "feature-branch") }),
+      ),
     );
     addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
     await createWorktree("/test/repo", "feature", {
@@ -157,7 +160,9 @@ describe("createWorktree", () => {
     accessMock.mock.mockImplementation(() => Promise.resolve());
     validateWorktreeNameMock.mock.mockImplementation(() => ok(undefined));
     validateWorktreeDoesNotExistMock.mock.mockImplementation(() =>
-      Promise.resolve({ exists: false }),
+      Promise.resolve(
+        ok({ path: getWorktreePathMock("/test/repo", "feature-branch") }),
+      ),
     );
     addWorktreeMock.mock.mockImplementation(() =>
       Promise.reject(new Error("fatal: branch already exists")),

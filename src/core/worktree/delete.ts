@@ -2,11 +2,11 @@ import {
   executeGitCommand,
   executeGitCommandInDirectory,
 } from "../git/executor.ts";
-import { type Result, err, isOk, ok } from "../types/result.ts";
+import { type Result, err, isErr, isOk, ok } from "../types/result.ts";
 import {
   GitOperationError,
   WorktreeError,
-  WorktreeNotFoundError,
+  type WorktreeNotFoundError,
 } from "./errors.ts";
 import { validateWorktreeExists } from "./validate.ts";
 
@@ -95,11 +95,11 @@ export async function deleteWorktree(
   const { force = false } = options;
 
   const validation = await validateWorktreeExists(gitRoot, name);
-  if (!validation.exists) {
-    return err(new WorktreeNotFoundError(name));
+  if (isErr(validation)) {
+    return err(validation.error);
   }
 
-  const worktreePath = validation.path as string;
+  const worktreePath = validation.value.path;
 
   const status = await getWorktreeStatus(worktreePath);
 

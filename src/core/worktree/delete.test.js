@@ -26,6 +26,7 @@ mock.module("../git/executor.ts", {
 
 const { deleteWorktree, getWorktreeStatus, removeWorktree, deleteBranch } =
   await import("./delete.ts");
+const { ok, err } = await import("../types/result.ts");
 
 describe("deleteWorktree", () => {
   const resetMocks = () => {
@@ -37,10 +38,9 @@ describe("deleteWorktree", () => {
   it("should delete worktree and report when branch deletion fails", async () => {
     resetMocks();
     validateWorktreeExistsMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
 
     executeGitCommandMock.mock.mockImplementation((command) => {
@@ -72,10 +72,9 @@ describe("deleteWorktree", () => {
   it("should delete a worktree successfully when no uncommitted changes", async () => {
     resetMocks();
     validateWorktreeExistsMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
 
     executeGitCommandMock.mock.mockImplementation((command) => {
@@ -129,10 +128,7 @@ describe("deleteWorktree", () => {
   it("should fail when worktree does not exist", async () => {
     resetMocks();
     validateWorktreeExistsMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: false,
-        message: "Worktree 'nonexistent' does not exist",
-      }),
+      Promise.resolve(err(new WorktreeNotFoundError("nonexistent"))),
     );
 
     const result = await deleteWorktree("/test/repo", "nonexistent");
@@ -147,10 +143,9 @@ describe("deleteWorktree", () => {
   it("should fail when uncommitted changes exist without force", async () => {
     resetMocks();
     validateWorktreeExistsMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
 
     executeGitCommandInDirectoryMock.mock.mockImplementation(() =>
@@ -175,10 +170,9 @@ describe("deleteWorktree", () => {
   it("should delete worktree with uncommitted changes when force is true", async () => {
     resetMocks();
     validateWorktreeExistsMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
     );
 
     executeGitCommandMock.mock.mockImplementation((command) => {

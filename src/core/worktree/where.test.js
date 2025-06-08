@@ -11,14 +11,14 @@ mock.module("./validate.ts", {
 
 const { whereWorktree } = await import("./where.ts");
 const { WorktreeNotFoundError } = await import("./errors.ts");
+const { ok, err } = await import("../types/result.ts");
 
 describe("whereWorktree", () => {
   it("should return path when worktree exists", async () => {
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: true,
-        path: "/test/repo/.git/phantom/worktrees/my-feature",
-      }),
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/my-feature" }),
+      ),
     );
 
     const result = await whereWorktree("/test/repo", "my-feature");
@@ -41,10 +41,7 @@ describe("whereWorktree", () => {
 
   it("should return error when worktree does not exist", async () => {
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: false,
-        message: "Worktree 'non-existent' not found",
-      }),
+      Promise.resolve(err(new WorktreeNotFoundError("non-existent"))),
     );
 
     const result = await whereWorktree("/test/repo", "non-existent");
@@ -60,9 +57,7 @@ describe("whereWorktree", () => {
 
   it("should provide default message when validation message is missing", async () => {
     validateMock.mock.mockImplementation(() =>
-      Promise.resolve({
-        exists: false,
-      }),
+      Promise.resolve(err(new WorktreeNotFoundError("missing"))),
     );
 
     const result = await whereWorktree("/test/repo", "missing");

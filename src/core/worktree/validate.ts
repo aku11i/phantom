@@ -1,50 +1,41 @@
 import fs from "node:fs/promises";
 import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
 import { type Result, err, ok } from "../types/result.ts";
+import { WorktreeAlreadyExistsError, WorktreeNotFoundError } from "./errors.ts";
 
-export interface ValidationResult {
-  exists: boolean;
-  path?: string;
-  message?: string;
+export interface WorktreeExistsSuccess {
+  path: string;
+}
+
+export interface WorktreeDoesNotExistSuccess {
+  path: string;
 }
 
 export async function validateWorktreeExists(
   gitRoot: string,
   name: string,
-): Promise<ValidationResult> {
+): Promise<Result<WorktreeExistsSuccess, WorktreeNotFoundError>> {
   const worktreePath = getWorktreePath(gitRoot, name);
 
   try {
     await fs.access(worktreePath);
-    return {
-      exists: true,
-      path: worktreePath,
-    };
+    return ok({ path: worktreePath });
   } catch {
-    return {
-      exists: false,
-      message: `Worktree '${name}' does not exist`,
-    };
+    return err(new WorktreeNotFoundError(name));
   }
 }
 
 export async function validateWorktreeDoesNotExist(
   gitRoot: string,
   name: string,
-): Promise<ValidationResult> {
+): Promise<Result<WorktreeDoesNotExistSuccess, WorktreeAlreadyExistsError>> {
   const worktreePath = getWorktreePath(gitRoot, name);
 
   try {
     await fs.access(worktreePath);
-    return {
-      exists: true,
-      message: `Worktree '${name}' already exists`,
-    };
+    return err(new WorktreeAlreadyExistsError(name));
   } catch {
-    return {
-      exists: false,
-      path: worktreePath,
-    };
+    return ok({ path: worktreePath });
   }
 }
 

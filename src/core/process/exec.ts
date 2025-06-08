@@ -1,6 +1,6 @@
 import type { StdioOptions } from "node:child_process";
-import { type Result, err } from "../types/result.ts";
-import { WorktreeNotFoundError } from "../worktree/errors.ts";
+import { type Result, err, isErr } from "../types/result.ts";
+import type { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { validateWorktreeExists } from "../worktree/validate.ts";
 import type { ProcessError } from "./errors.ts";
 import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
@@ -20,11 +20,11 @@ export async function execInWorktree(
   Result<ExecInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
 > {
   const validation = await validateWorktreeExists(gitRoot, worktreeName);
-  if (!validation.exists) {
-    return err(new WorktreeNotFoundError(worktreeName));
+  if (isErr(validation)) {
+    return err(validation.error);
   }
 
-  const worktreePath = validation.path as string;
+  const worktreePath = validation.value.path;
   const [cmd, ...args] = command;
 
   const stdio: StdioOptions = options.interactive

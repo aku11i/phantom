@@ -137,10 +137,9 @@ describe("execHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
@@ -176,10 +175,9 @@ describe("execHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
@@ -212,10 +210,9 @@ describe("execHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
@@ -253,10 +250,9 @@ describe("execHandler", () => {
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     isInsideTmuxMock.mock.mockImplementation(() => true);
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() =>
       err(new Error("tmux command failed")),
     );
@@ -291,10 +287,9 @@ describe("execHandler", () => {
         path: "/repo/.git/phantom/worktrees/selected-feature",
       }),
     );
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/selected-feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/selected-feature" }),
+    );
     executeTmuxCommandMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
@@ -319,10 +314,9 @@ describe("execHandler", () => {
     validateWorktreeExistsMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
-    validateWorktreeExistsMock.mock.mockImplementation(() => ({
-      exists: true,
-      path: "/repo/.git/phantom/worktrees/feature",
-    }));
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+    );
     execInWorktreeMock.mock.mockImplementation(() => ok({ exitCode: 0 }));
 
     await rejects(
