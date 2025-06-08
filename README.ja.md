@@ -81,6 +81,15 @@ cd ../project-feature-auth
 phantom create feature-auth --shell
 ```
 
+### Phantomの仕組み
+
+`phantom create feature-auth`を実行すると：
+1. `.git/phantom/feature-auth/`ディレクトリが自動作成されます
+2. ブランチ名と同じ名前のworktreeがこの場所に作成されます
+3. すべてのworktreeが`.git/phantom/`配下で一元管理されます
+
+この規約により、worktreeの場所を覚える必要がなくなり、`phantom shell`や`phantom exec`でブランチ名だけで簡単にアクセスできます。
+
 以下に最適：
 - 複数の機能を同時に作業
 - 作業を中断せずにPRレビュー

@@ -81,6 +81,15 @@ cd ../project-feature-auth
 phantom create feature-auth --shell
 ```
 
+### How Phantom Works
+
+When you run `phantom create feature-auth`:
+1. A directory is automatically created at `.git/phantom/feature-auth/`
+2. A worktree with the same name as the branch is created in this location
+3. All worktrees are centrally managed under `.git/phantom/`
+
+This convention means you never need to remember worktree paths - just use the branch name with `phantom shell` or `phantom exec` for instant access.
+
 Perfect for:
 - Working on multiple features simultaneously
 - Quick PR reviews without disrupting your work
