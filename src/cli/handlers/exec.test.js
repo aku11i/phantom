@@ -152,7 +152,9 @@ describe("execHandler", () => {
     strictEqual(executeTmuxCommandMock.mock.calls.length, 1);
     const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
     strictEqual(tmuxCall.direction, "new");
-    strictEqual(tmuxCall.command, "npm test");
+    strictEqual(tmuxCall.command, "npm");
+    strictEqual(tmuxCall.args.length, 1);
+    strictEqual(tmuxCall.args[0], "test");
     strictEqual(tmuxCall.cwd, "/repo/.git/phantom/worktrees/feature");
     strictEqual(tmuxCall.windowName, "feature");
     strictEqual(tmuxCall.env.PHANTOM, "1");
@@ -188,7 +190,10 @@ describe("execHandler", () => {
 
     const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
     strictEqual(tmuxCall.direction, "vertical");
-    strictEqual(tmuxCall.command, "npm run dev");
+    strictEqual(tmuxCall.command, "npm");
+    strictEqual(tmuxCall.args.length, 2);
+    strictEqual(tmuxCall.args[0], "run");
+    strictEqual(tmuxCall.args[1], "dev");
     strictEqual(tmuxCall.windowName, undefined);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
@@ -227,7 +232,10 @@ describe("execHandler", () => {
 
     const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
     strictEqual(tmuxCall.direction, "horizontal");
-    strictEqual(tmuxCall.command, "npm run watch");
+    strictEqual(tmuxCall.command, "npm");
+    strictEqual(tmuxCall.args.length, 2);
+    strictEqual(tmuxCall.args[0], "run");
+    strictEqual(tmuxCall.args[1], "watch");
     strictEqual(tmuxCall.windowName, undefined);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
@@ -297,7 +305,9 @@ describe("execHandler", () => {
     strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
     strictEqual(executeTmuxCommandMock.mock.calls.length, 1);
     const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
-    strictEqual(tmuxCall.command, "npm test");
+    strictEqual(tmuxCall.command, "npm");
+    strictEqual(tmuxCall.args.length, 1);
+    strictEqual(tmuxCall.args[0], "test");
     strictEqual(tmuxCall.cwd, "/repo/.git/phantom/worktrees/selected-feature");
   });
 

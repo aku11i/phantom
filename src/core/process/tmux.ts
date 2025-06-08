@@ -7,6 +7,7 @@ export type TmuxSplitDirection = "new" | "vertical" | "horizontal";
 export interface TmuxOptions {
   direction: TmuxSplitDirection;
   command: string;
+  args?: string[];
   cwd?: string;
   env?: Record<string, string>;
   windowName?: string;
@@ -21,7 +22,7 @@ export async function isInsideTmux(): Promise<boolean> {
 export async function executeTmuxCommand(
   options: TmuxOptions,
 ): Promise<Result<TmuxSuccess, ProcessError>> {
-  const { direction, command, cwd, env, windowName } = options;
+  const { direction, command, args, cwd, env, windowName } = options;
 
   const tmuxArgs: string[] = [];
 
@@ -51,7 +52,25 @@ export async function executeTmuxCommand(
     }
   }
 
-  tmuxArgs.push(command);
+  // Build the command to execute
+  if (args && args.length > 0) {
+    // When we have args, we need to properly escape and format the command
+    // tmux expects the command as a single string, so we need to join them
+    // but we'll use proper shell escaping
+    const escapedArgs = args.map((arg) => {
+      // Escape single quotes in the argument
+      const escaped = arg.replace(/'/g, "'\"'\"'");
+      // Wrap in single quotes if it contains special characters
+      if (/[\s"'`$\\!*?#~&|;<>(){}[\]]/.test(arg)) {
+        return `'${escaped}'`;
+      }
+      return arg;
+    });
+    tmuxArgs.push(`${command} ${escapedArgs.join(" ")}`);
+  } else {
+    // For backward compatibility, when no args are provided
+    tmuxArgs.push(command);
+  }
 
   const result = await spawnProcess({
     command: "tmux",

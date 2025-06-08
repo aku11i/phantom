@@ -126,11 +126,12 @@ export async function execHandler(args: string[]): Promise<void> {
         }...`,
       );
 
-      const command = commandArgs.join(" ");
+      const [command, ...args] = commandArgs;
 
       const tmuxResult = await executeTmuxCommand({
         direction: tmuxDirection,
         command,
+        args,
         cwd: validation.path,
         env: {
           PHANTOM: "1",
