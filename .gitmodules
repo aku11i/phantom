@@ -1,3 +1,3 @@
-[submodule "wiki"]
-	path = wiki
+[submodule "contributing/wiki"]
+	path = contributing/wiki
 	url = https://github.com/aku11i/phantom.wiki.git
