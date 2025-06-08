@@ -50,9 +50,6 @@ phantom shell feature-awesome
 # Run commands in any worktree from anywhere
 phantom exec feature-awesome npm test
 
-# See all your worktrees
-phantom list
-
 # Clean up when done
 phantom delete feature-awesome
 ```
