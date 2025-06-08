@@ -16,9 +16,7 @@ Thank you for your interest in contributing to Phantom! This guide will help you
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
-- Git
-- Basic understanding of Git worktrees
+- Node.js 22+ and pnpm 10+
 
 ### Getting Started
 
@@ -28,11 +26,8 @@ git clone https://github.com/aku11i/phantom.git
 cd phantom
 pnpm install
 
-# Build the project
-pnpm build
-
-# Link for local testing
-pnpm link --global
+# run phantom in development mode
+pnpm phantom
 ```
 
 ### Development Workflow
@@ -46,6 +41,8 @@ pnpm typecheck
 
 # Linting
 pnpm lint
+# or
+pnpm fix
 
 # Run all checks before committing
 pnpm ready
@@ -81,11 +78,8 @@ pnpm ready
 # Run all tests
 pnpm test
 
-# Run tests in watch mode
-pnpm test:watch
-
 # Run specific test file
-pnpm test src/core/worktree/create.test.js
+pnpm test:file src/core/worktree/create.test.js
 ```
 
 ### Writing Tests
@@ -116,17 +110,7 @@ This command runs:
 - Never commit secrets or keys to the repository
 - Be careful with user input validation
 
-## 🚀 Pull Request Process
-
-1. **Fork and Clone** the repository
-2. **Create a branch** for your feature/fix: `git checkout -b feature/amazing-feature`
-3. **Make your changes** following the guidelines above
-4. **Test thoroughly** and run `pnpm ready`
-5. **Update documentation** if needed
-6. **Commit** with clear, descriptive messages
-7. **Push** to your fork and open a Pull Request
-
-### PR Requirements
+## 🚀 Pull Request Requirements
 
 - Clear description of changes
 - Tests for new functionality
@@ -139,15 +123,8 @@ This command runs:
 When contributing documentation:
 
 - Keep language clear and concise
-- Include examples where helpful
 - Update the table of contents if adding sections
 - Check for broken links
-
-## 📖 Additional Resources
-
-- [Architecture Overview](./architecture.md) - Understanding Phantom's design
-- [Development Guide](./development.md) - Detailed development information
-- [Wiki Manual](./wiki-manual.md) - Guide for creating GitHub Wiki documentation
 
 ## 🙏 Thank You!
 
@@ -156,6 +133,3 @@ Your contributions make Phantom better for everyone. If you have questions, feel
 - Start a discussion for general questions
 - Ask in pull request comments
 
----
-
-Built with 👻 by the Phantom community

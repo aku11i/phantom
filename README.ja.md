@@ -166,7 +166,7 @@ phantom delete feature-awesome
 
 ## 🤝 コントリビュート
 
-コントリビュートは歓迎します！[コントリビューションガイド](./contributing/CONTRIBUTING.md)をご覧ください：
+コントリビュートは歓迎します！[コントリビューションガイド](./CONTRIBUTING.md)をご覧ください：
 - 開発環境のセットアップ
 - コードスタイルガイドライン
 - テスト要件

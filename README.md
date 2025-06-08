@@ -166,7 +166,7 @@ phantom delete feature-awesome
 
 ## 🤝 Contributing
 
-Contributions are welcome! See our [Contributing Guide](./contributing/CONTRIBUTING.md) for:
+Contributions are welcome! See our [Contributing Guide](./CONTRIBUTING.md) for:
 - Development setup
 - Code style guidelines  
 - Testing requirements
