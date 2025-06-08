@@ -15,7 +15,7 @@
 
 ## ✨ What is Phantom?
 
-Phantom maximizes your productivity with Git worktrees by eliminating friction in parallel development workflows. It's the perfect companion for AI-powered coding assistants, enabling seamless context switching between multiple tasks without losing state. Whether you're juggling feature development, reviewing PRs, or fixing urgent bugs, Phantom keeps each task isolated and instantly accessible.
+Phantom is a powerful CLI tool that dramatically boosts your development productivity by making Git worktrees simple and intuitive. Run multiple tasks in isolated environments simultaneously and achieve true multitask development. Built for the next generation of parallel development workflows, including AI-powered coding with multiple agents.
 
 ### Key Features
 
