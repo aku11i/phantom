@@ -60,17 +60,6 @@ phantom exec feature-awesome npm test
 phantom delete feature-awesome
 ```
 
-### 実世界の例
-
-```bash
-# 機能開発中に重大なバグレポートが届いた場合
-phantom create hotfix-critical --shell  # worktreeを作成してシェルに入る
-# バグを修正、コミット、プッシュ、PRを作成
-
-# 機能開発に戻る - 完全に元の状態から
-exit  # hotfixシェルを終了
-phantom shell feature-awesome  # 機能開発に戻る
-```
 
 ## 📚 ドキュメント
 

@@ -60,17 +60,6 @@ phantom exec feature-awesome npm test
 phantom delete feature-awesome
 ```
 
-### Real-World Example
-
-```bash
-# You're working on a feature when a critical bug report comes in
-phantom create hotfix-critical --shell  # Creates worktree and enters shell
-# Fix the bug, commit, push, create PR
-
-# Return to your feature - exactly where you left off
-exit  # Exit hotfix shell
-phantom shell feature-awesome  # Back to feature development
-```
 
 ## 📚 Documentation
 
