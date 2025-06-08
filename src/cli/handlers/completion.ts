@@ -141,20 +141,20 @@ _phantom() {
                     if [[ \${line[1]} == "where" || \${line[1]} == "shell" ]]; then
                         _arguments \\
                             '--fzf[Use fzf for interactive selection]' \\
-                            '1:worktree:($worktrees)'
+                            '1:worktree:(\${(q)worktrees[@]})'
                     elif [[ \${line[1]} == "delete" ]]; then
                         _arguments \\
                             '--force[Force deletion even if worktree has uncommitted changes (-f)]' \\
                             '--current[Delete the current worktree]' \\
                             '--fzf[Use fzf for interactive selection]' \\
-                            '1:worktree:($worktrees)'
+                            '1:worktree:(\${(q)worktrees[@]})'
                     fi
                     ;;
                 exec)
                     local worktrees
                     worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
                     _arguments \\
-                        '1:worktree:($worktrees)' \\
+                        '1:worktree:(\${(q)worktrees[@]})' \\
                         '*:command:_command_names'
                     ;;
                 completion)
