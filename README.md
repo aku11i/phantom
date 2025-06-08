@@ -23,7 +23,7 @@ Phantom makes working with Git worktrees as simple as `phantom create feature`. 
 - 🔄 **Instant context switching** - Jump between features without losing state
 - 🪟 **Built-in tmux integration** - Split panes and windows automatically
 - 🔍 **Interactive selection with fzf** - Find and switch worktrees instantly
-- 🎮 **Shell completion** - Tab complete everything
+- 🎮 **Shell completion** - Full autocomplete support for Fish and Zsh
 - ⚡ **Zero dependencies** - Fast and lightweight
 
 ## 🚀 Quick Start
@@ -36,6 +36,15 @@ brew install aku11i/tap/phantom
 
 # Using npm
 npm install -g @aku11i/phantom
+```
+
+**Optional tools for enhanced experience:**
+```bash
+# Interactive worktree selection
+brew install fzf
+
+# Terminal multiplexing features  
+brew install tmux
 ```
 
 ### Basic Usage

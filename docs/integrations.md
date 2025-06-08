@@ -9,8 +9,9 @@ Phantom has built-in tmux support for the ultimate terminal-based workflow.
 ### Features
 
 - Create worktrees directly in new tmux windows or panes
-- Automatic environment variable setup
+- Automatic environment variable setup (`PHANTOM_NAME`, `PHANTOM_PATH`)
 - Seamless context switching with tmux keybindings
+- Perfect for managing multiple features in parallel
 
 ### Commands
 
@@ -31,7 +32,7 @@ phantom create feature-z --tmux-h  # shorthand
 ### Usage Examples
 
 ```bash
-# Perfect for feature development workflow
+# Perfect for parallel feature development
 phantom create feature-auth --tmux
 phantom create feature-api --tmux
 phantom create feature-ui --tmux
@@ -56,12 +57,28 @@ phantom create bugfix --tmux-v
 # - Bugfix worktree (vertical split)
 ```
 
+### Power User Tips
+
+```bash
+# Create worktree and immediately run your dev server
+phantom create feature --tmux --exec "npm run dev"
+
+# Create multiple related worktrees quickly
+for feat in auth api ui; do
+  phantom create feature-$feat --tmux
+done
+
+# Use with tmux send-keys for automation
+phantom create feature --tmux
+tmux send-keys -t feature "npm install && npm run dev" Enter
+```
+
 ### Environment Variables
 
 When using tmux integration, these variables are automatically set:
-- `PHANTOM=1`
-- `PHANTOM_NAME=<worktree-name>`
-- `PHANTOM_PATH=<worktree-path>`
+- `PHANTOM=1` - Indicates you're in a Phantom worktree
+- `PHANTOM_NAME=<worktree-name>` - The worktree name
+- `PHANTOM_PATH=<worktree-path>` - Absolute path to the worktree
 
 ## 🔍 fzf Integration
 
@@ -69,10 +86,10 @@ Use fzf's fuzzy finding power to quickly navigate between worktrees.
 
 ### Features
 
-- Interactive worktree selection
-- Shows branch names and dirty status
-- Fuzzy search across all worktrees
-- Works with multiple commands
+- Interactive worktree selection with fuzzy search
+- Shows worktree names with their branch names
+- Dirty status indicators for modified worktrees
+- Works seamlessly with multiple commands
 
 ### Commands Supporting fzf
 
@@ -85,6 +102,7 @@ phantom where --fzf
 
 # Delete a worktree with interactive selection
 phantom delete --fzf
+phantom delete --fzf --force  # Force delete with uncommitted changes
 
 # List worktrees and select one (outputs name)
 phantom list --fzf
@@ -99,48 +117,82 @@ phantom shell --fzf
 # Open selected worktree in your editor
 code $(phantom where --fzf)
 cursor $(phantom where --fzf)
+vim $(phantom where --fzf)
 
 # Change directory to selected worktree
 cd $(phantom where --fzf)
 
-# Delete a worktree interactively
-phantom delete --fzf
+# Run commands in selected worktree
+phantom exec $(phantom list --fzf) npm test
 ```
 
-### Creating Aliases
+### Creating Powerful Aliases
 
 Add these to your shell configuration:
 
 ```bash
-# Quick switch
+# Quick switch to worktree shell
 alias pw='phantom shell --fzf'
 
-# Quick edit
+# Quick edit in VS Code
 alias pe='code $(phantom where --fzf)'
 
-# Quick cd
+# Quick cd to worktree
 alias pcd='cd $(phantom where --fzf)'
+
+# Quick delete with confirmation
+alias pd='phantom delete --fzf'
 ```
 
-### Scripting with fzf
+### Advanced Scripting with fzf
 
 ```bash
-# Select a worktree and run tests
-WORKTREE=$(phantom list --fzf)
-if [ -n "$WORKTREE" ]; then
-  phantom exec "$WORKTREE" npm test
-fi
-
-# Interactive worktree operations
-select_and_build() {
+# Function to select and run any command
+phantom_run() {
   local worktree=$(phantom list --fzf)
-  [ -n "$worktree" ] && phantom exec "$worktree" npm run build
+  if [ -n "$worktree" ]; then
+    phantom exec "$worktree" "$@"
+  fi
 }
+
+# Usage: phantom_run npm test
+# Usage: phantom_run git status
+
+# Interactive worktree operations menu
+phantom_menu() {
+  local worktree=$(phantom list --fzf)
+  [ -z "$worktree" ] && return
+  
+  local action=$(echo -e "shell\nexec\ndelete\nwhere" | fzf --prompt="Action: ")
+  case $action in
+    shell) phantom shell "$worktree" ;;
+    exec) read -p "Command: " cmd && phantom exec "$worktree" $cmd ;;
+    delete) phantom delete "$worktree" ;;
+    where) phantom where "$worktree" ;;
+  esac
+}
+```
+
+### Integration with Other Tools
+
+```bash
+# Use with tmux for powerful workflows
+phantom create feature --exec "tmux new-window 'phantom shell --fzf'"
+
+# Combine with git for branch operations
+git checkout $(phantom list --fzf)
+
+# Use in scripts for automation
+#!/bin/bash
+for worktree in $(phantom list --names); do
+  echo "Building $worktree..."
+  phantom exec "$worktree" npm run build
+done
 ```
 
 ## 🎮 Shell Completion
 
-Phantom supports shell completion for Fish and Zsh.
+Phantom supports shell completion for Fish and Zsh, making it even faster to work with worktrees.
 
 ### Installation
 
@@ -162,10 +214,11 @@ phantom completion zsh > ~/.zsh/completions/_phantom
 
 ### Features
 
-- Command name completion
-- Worktree name completion for relevant commands
-- Option completion with descriptions
-- Dynamic worktree listing
+Once enabled, you'll get:
+- Command name completion (`phantom <TAB>`)
+- Worktree name completion (`phantom shell <TAB>`)
+- Option completion with descriptions (`phantom create --<TAB>`)
+- Dynamic worktree listing that updates in real-time
 
 ### Examples
 
@@ -178,10 +231,22 @@ phantom <TAB>
 phantom shell <TAB>
 # Shows: feature-auth, feature-ui, bugfix-123, etc.
 
-# Complete options
+# Complete options with descriptions
 phantom create --<TAB>
-# Shows: --shell, --exec, --tmux, --tmux-vertical, --copy-file, etc.
+# Shows:
+# --shell            Open shell after creation
+# --exec             Execute command after creation  
+# --tmux             Open in new tmux window
+# --tmux-vertical    Split tmux pane vertically
+# --copy-file        Copy files after creation
+# ... and more
 ```
+
+### Tips
+
+- Completion works with all commands that accept worktree names
+- Option descriptions help you discover new features
+- Worktree completion shows only valid worktrees for the command
 
 ## 💻 Editor Integration
 

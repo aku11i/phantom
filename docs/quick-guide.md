@@ -94,6 +94,72 @@ done
 wait
 ```
 
+## Advanced Workflows
+
+### Quick Switching with fzf
+
+```bash
+# Set up a switching alias
+alias pw='phantom shell --fzf'
+
+# Create worktree and immediately open in your editor
+phantom create feature --exec "code ." --tmux-v
+
+# Quick directory change to any worktree
+cd $(phantom where --fzf)
+
+# Open any worktree in your editor
+code $(phantom where --fzf)
+```
+
+### Automated Testing Across Worktrees
+
+```bash
+# List worktrees for scripting
+for worktree in $(phantom list --names); do
+  echo "Running tests in $worktree"
+  phantom exec $worktree npm test
+done
+
+# Interactive test runner
+test_worktree() {
+  local worktree=$(phantom list --fzf)
+  [ -n "$worktree" ] && phantom exec "$worktree" npm test
+}
+```
+
+### Combined tmux + fzf Workflow
+
+```bash
+# Create a function for quick feature switching
+phantom_switch() {
+  local worktree=$(phantom list --fzf)
+  if [ -n "$worktree" ]; then
+    tmux new-window -n "$worktree" "phantom shell $worktree"
+  fi
+}
+
+# Create multiple features and organize in tmux
+for feat in auth api ui; do
+  phantom create feature-$feat --tmux
+done
+```
+
+### Git Integration Workflows
+
+```bash
+# Quick branch checkout using phantom
+checkout_phantom() {
+  local worktree=$(phantom list --fzf)
+  [ -n "$worktree" ] && git checkout "$worktree"
+}
+
+# Compare branches across worktrees
+phantom exec feature-a git log --oneline -10 > feature-a.log
+phantom exec feature-b git log --oneline -10 > feature-b.log
+diff feature-a.log feature-b.log
+```
+
 ## Project Setup
 
 If your project needs special setup for new worktrees, create `phantom.config.json`:
