@@ -1,6 +1,5 @@
 import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
-import { getWorktreePath } from "../../core/paths.ts";
 import { getPhantomEnv } from "../../core/process/env.ts";
 import { shellInWorktree as shellInWorktreeCore } from "../../core/process/shell.ts";
 import { executeTmuxCommand, isInsideTmux } from "../../core/process/tmux.ts";
@@ -126,11 +125,8 @@ export async function shellHandler(args: string[]): Promise<void> {
       const tmuxResult = await executeTmuxCommand({
         direction: tmuxDirection,
         command: shell,
-        cwd: validation.path,
-        env: getPhantomEnv(
-          worktreeName,
-          validation.path || getWorktreePath(gitRoot, worktreeName),
-        ),
+        cwd: validation.path!,
+        env: getPhantomEnv(worktreeName, validation.path!),
         windowName: tmuxDirection === "new" ? worktreeName : undefined,
       });
 

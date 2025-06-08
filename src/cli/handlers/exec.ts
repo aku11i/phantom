@@ -1,6 +1,5 @@
 import { parseArgs } from "node:util";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
-import { getWorktreePath } from "../../core/paths.ts";
 import { getPhantomEnv } from "../../core/process/env.ts";
 import { execInWorktree as execInWorktreeCore } from "../../core/process/exec.ts";
 import { executeTmuxCommand, isInsideTmux } from "../../core/process/tmux.ts";
@@ -133,11 +132,8 @@ export async function execHandler(args: string[]): Promise<void> {
         direction: tmuxDirection,
         command,
         args,
-        cwd: validation.path,
-        env: getPhantomEnv(
-          worktreeName,
-          validation.path || getWorktreePath(gitRoot, worktreeName),
-        ),
+        cwd: validation.path!,
+        env: getPhantomEnv(worktreeName, validation.path!),
         windowName: tmuxDirection === "new" ? worktreeName : undefined,
       });
 
