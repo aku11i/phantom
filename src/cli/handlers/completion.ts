@@ -5,7 +5,7 @@ const FISH_COMPLETION_SCRIPT = `# Fish completion for phantom
 # Place this in ~/.config/fish/completions/phantom.fish
 
 function __phantom_list_worktrees
-    NODE_NO_WARNINGS=1 phantom list --names 2>/dev/null
+    phantom list --names 2>/dev/null
 end
 
 function __phantom_using_command
