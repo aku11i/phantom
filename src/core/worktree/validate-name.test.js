@@ -19,65 +19,76 @@ describe("validateWorktreeName", () => {
     deepStrictEqual(result.error?.message, "Phantom name cannot be empty");
   });
 
-  it("should reject name starting with dot", () => {
-    const result = validateWorktreeName(".hidden");
+  it("should reject names with invalid characters", () => {
+    const invalidNames = [
+      "feature@branch",
+      "feature#123",
+      "feature branch",
+      "feature!test",
+      "feature~test",
+      "feature$test",
+      "feature%test",
+      "feature^test",
+      "feature&test",
+      "feature*test",
+      "feature(test)",
+      "feature[test]",
+      "feature{test}",
+      "feature|test",
+      "feature\\test",
+      "feature:test",
+      "feature;test",
+      "feature'test",
+      'feature"test',
+      "feature<test>",
+      "feature?test",
+    ];
+
+    for (const name of invalidNames) {
+      const result = validateWorktreeName(name);
+      deepStrictEqual(result.ok, false, `Should reject "${name}"`);
+      deepStrictEqual(
+        result.error?.message,
+        "Phantom name can only contain letters, numbers, hyphens, underscores, dots, and slashes",
+        `Should have correct error message for "${name}"`,
+      );
+    }
+  });
+
+  it("should reject consecutive dots", () => {
+    const result = validateWorktreeName("feature..branch");
     deepStrictEqual(result.ok, false);
     deepStrictEqual(
       result.error?.message,
-      "Phantom name cannot start with a dot",
+      "Phantom name cannot contain consecutive dots",
     );
   });
 
-  it("should reject name starting with slash", () => {
-    const result = validateWorktreeName("/feature/branch");
-    deepStrictEqual(result.ok, false);
-    deepStrictEqual(
-      result.error?.message,
-      "Phantom name cannot start or end with a slash",
-    );
-  });
-
-  it("should reject name ending with slash", () => {
-    const result = validateWorktreeName("feature/branch/");
-    deepStrictEqual(result.ok, false);
-    deepStrictEqual(
-      result.error?.message,
-      "Phantom name cannot start or end with a slash",
-    );
-  });
-
-  it("should reject consecutive slashes", () => {
-    const result = validateWorktreeName("feature//branch");
-    deepStrictEqual(result.ok, false);
-    deepStrictEqual(
-      result.error?.message,
-      "Phantom name cannot contain consecutive slashes",
-    );
-  });
-
-  it("should accept valid names without slashes", () => {
-    const result = validateWorktreeName("my-feature");
-    deepStrictEqual(result.ok, true);
-  });
-
-  it("should accept names with single slashes", () => {
-    const result = validateWorktreeName("feature/user-authentication");
-    deepStrictEqual(result.ok, true);
-  });
-
-  it("should accept names with multiple slashes", () => {
-    const result = validateWorktreeName("feature/auth/login-page");
-    deepStrictEqual(result.ok, true);
-  });
-
-  it("should accept common branch naming patterns", () => {
+  it("should accept valid names", () => {
     const validNames = [
+      "my-feature",
+      "feature_123",
+      "FEATURE-456",
+      "feature.v2",
       "feature/user-authentication",
       "bugfix/header-layout",
       "release/v2.0.0",
       "hotfix/critical-bug",
       "chore/update-dependencies",
       "docs/readme-update",
+      "feature/auth/login-page",
+      "123-feature",
+      "a",
+      "A",
+      "0",
+      "_underscore",
+      "-hyphen",
+      ".hidden",
+      "/slash/start",
+      "slash/end/",
+      "multiple//slashes",
+      "dots.in.name",
+      "mix-of_all.allowed/chars123",
     ];
 
     for (const name of validNames) {

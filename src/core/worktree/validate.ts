@@ -66,16 +66,18 @@ export function validateWorktreeName(name: string): Result<void, Error> {
     return err(new Error("Phantom name cannot be empty"));
   }
 
-  if (name.startsWith(".")) {
-    return err(new Error("Phantom name cannot start with a dot"));
+  // Only allow alphanumeric, hyphen, underscore, dot, and slash
+  const validNamePattern = /^[a-zA-Z0-9\-_.\/]+$/;
+  if (!validNamePattern.test(name)) {
+    return err(
+      new Error(
+        "Phantom name can only contain letters, numbers, hyphens, underscores, dots, and slashes",
+      ),
+    );
   }
 
-  if (name.startsWith("/") || name.endsWith("/")) {
-    return err(new Error("Phantom name cannot start or end with a slash"));
-  }
-
-  if (name.includes("//")) {
-    return err(new Error("Phantom name cannot contain consecutive slashes"));
+  if (name.includes("..")) {
+    return err(new Error("Phantom name cannot contain consecutive dots"));
   }
 
   return ok(undefined);
