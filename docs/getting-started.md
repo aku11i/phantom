@@ -21,22 +21,33 @@ brew install aku11i/tap/phantom
 # Using npm
 npm install -g @aku11i/phantom
 
-# Optional: Install for better experience
-brew install fzf tmux
+# Optional tools for better experience: fzf and tmux
 ```
 
 ## 💡 Basic Concepts
 
 ### What is a Phantom?
 
-A "phantom" is Phantom's friendly name for a Git worktree. Think of it as a lightweight copy of your repository where you can work on a different branch without affecting your main workspace.
+A "phantom" is a Git worktree managed by Phantom. When you create a phantom, it creates a new working directory at `.git/phantom/worktrees/<branch-name>` where you can work independently from your main workspace.
 
 ### Why Use Phantom?
 
-- **Work on multiple features** without stashing or committing WIP
-- **Review PRs** without disrupting your current work
-- **Test different versions** of your code simultaneously
-- **Keep a clean main branch** while developing features
+Git worktrees are powerful but require manual management of paths and branches. Phantom eliminates these problems:
+
+```bash
+# Without Phantom
+git worktree add -b feature-awesome ../project-feature-awesome origin/main
+cd ../project-feature-awesome
+
+# With Phantom
+phantom create feature-awesome --shell
+```
+
+Benefits:
+- **True multitasking** - Work on multiple features in parallel without context switching
+- **Clean workspace** - No need to stash or commit WIP when switching tasks
+- **Centralized management** - All worktrees in one predictable location
+- **Simple commands** - Intuitive interface for complex Git operations
 
 ## 👻 Your First Phantom
 
