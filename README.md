@@ -35,7 +35,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 brew install aku11i/tap/phantom
 ```
 
-### Using npm
+#### Using npm
 
 ```bash
 npm install -g @aku11i/phantom

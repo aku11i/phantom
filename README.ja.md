@@ -35,7 +35,7 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 brew install aku11i/tap/phantom
 ```
 
-### npmを使用
+#### npmを使用
 
 ```bash
 npm install -g @aku11i/phantom
