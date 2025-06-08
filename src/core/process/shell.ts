@@ -1,6 +1,7 @@
 import { type Result, err } from "../types/result.ts";
 import { WorktreeNotFoundError } from "../worktree/errors.ts";
 import { validateWorktreeExists } from "../worktree/validate.ts";
+import { getPhantomEnv } from "./env.ts";
 import type { ProcessError } from "./errors.ts";
 import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
 
@@ -27,9 +28,7 @@ export async function shellInWorktree(
       cwd: worktreePath,
       env: {
         ...process.env,
-        PHANTOM: "1",
-        PHANTOM_NAME: worktreeName,
-        PHANTOM_PATH: worktreePath,
+        ...getPhantomEnv(worktreeName, worktreePath),
       },
     },
   });

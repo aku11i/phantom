@@ -6,6 +6,7 @@ import {
 } from "../../core/config/loader.ts";
 import { ConfigValidationError } from "../../core/config/validate.ts";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
+import { getPhantomEnv } from "../../core/process/env.ts";
 import { execInWorktree } from "../../core/process/exec.ts";
 import { shellInWorktree } from "../../core/process/shell.ts";
 import { executeTmuxCommand, isInsideTmux } from "../../core/process/tmux.ts";
@@ -239,11 +240,7 @@ export async function createHandler(args: string[]): Promise<void> {
         direction: tmuxDirection,
         command: shell,
         cwd: result.value.path,
-        env: {
-          PHANTOM: "1",
-          PHANTOM_NAME: worktreeName,
-          PHANTOM_PATH: result.value.path,
-        },
+        env: getPhantomEnv(worktreeName, result.value.path),
         windowName: tmuxDirection === "new" ? worktreeName : undefined,
       });
 
