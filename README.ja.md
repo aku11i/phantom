@@ -15,7 +15,7 @@
 
 ## ✨ Phantomとは？
 
-Phantomは、Git worktreeをシンプルかつパワフルに操り、開発生産性を飛躍的に向上させるCLIツールです。複数のタスクを独立した作業環境で同時進行し、真のマルチタスク開発を実現します。AIエージェントを用いた並行開発に対応した次世代の並行開発ツールです。
+PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産性を飛躍的に向上させるCLIツールです。複数のタスクを独立した作業環境で同時進行し、真のマルチタスク開発を実現します。AIエージェントを用いた並行開発に対応した次世代の並行開発ツールです。
 
 ### 主な機能
 
@@ -57,6 +57,56 @@ your-project/    # Gitリポジトリ
 ```
 
 このルールにより、worktreeの場所を覚える必要がなくなり、ブランチ名だけで簡単にワークツリーの操作ができます。
+
+### ✈️ 快適な開発体験を実現する機能
+
+Phantomはコマンドラインツールとしての完璧な機能を備えています。開発者はまるでファーストクラスに乗っているような信頼と安心を感じます。
+
+#### シェル補完
+
+Phantomはfishとzshの完全なシェル補完をサポートしています。タブキーでコマンドやworktree名を補完できます。
+
+#### tmux統合
+
+ワークツリーを作成する際にtmuxを使用して新しいウィンドウやペインで開くことができます。これにより、複数の作業環境を同時に管理できます。
+
+```bash
+# 新しいウィンドウでworktreeを開く
+phantom create feature-x --tmux
+# ペインを分割して開く
+phantom create feature-y --tmux-vertical
+phantom create feature-z --tmux-horizontal
+
+# 結果: 3つのworktreeが同時に表示され、それぞれで独立した作業が可能
+```
+
+#### エディタ統合
+
+PhantomはVS CodeやCursorなどのエディタでも快適に使用できます。エディタを指定してワークツリーを開くことができます。
+
+```bash
+# VS Codeで開く
+phantom create feature --exec "code ."
+
+# または既存のworktreeを開く
+phantom exec feature code .
+
+# Cursorで開く
+phantom create feature --exec "cursor ."
+phantom exec feature cursor .
+```
+
+#### fzf統合
+
+fzfを使用したインタラクティブな検索で素早くworktreeを選択できます。
+
+```bash
+# fzfでworktreeを選択してシェルを開く
+phantom shell --fzf
+
+# fzfでworktreeを選択して削除
+phantom delete --fzf
+```
 
 ## 🚀 クイックスタート
 

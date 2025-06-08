@@ -58,6 +58,56 @@ your-project/    # Git repository
 
 This convention means you never need to remember worktree paths - just use the branch name for easy worktree operations.
 
+### ✈️ Features for a Comfortable Development Experience
+
+Phantom provides perfect functionality as a command-line tool. Developers feel the trust and comfort of flying first class.
+
+#### Shell Completion
+
+Phantom supports full shell completion for fish and zsh. Use tab key to complete commands and worktree names.
+
+#### tmux Integration
+
+When creating worktrees, you can use tmux to open them in new windows or panes. This allows you to manage multiple work environments simultaneously.
+
+```bash
+# Open worktree in new window
+phantom create feature-x --tmux
+# Open with split panes
+phantom create feature-y --tmux-vertical
+phantom create feature-z --tmux-horizontal
+
+# Result: 3 worktrees displayed simultaneously, each allowing independent work
+```
+
+#### Editor Integration
+
+Phantom works seamlessly with editors like VS Code and Cursor. You can specify an editor to open worktrees.
+
+```bash
+# Open with VS Code
+phantom create feature --exec "code ."
+
+# Or open existing worktree
+phantom exec feature code .
+
+# Open with Cursor
+phantom create feature --exec "cursor ."
+phantom exec feature cursor .
+```
+
+#### fzf Integration
+
+Interactive search with fzf allows quick worktree selection.
+
+```bash
+# Open shell with fzf selection
+phantom shell --fzf
+
+# Delete with fzf selection
+phantom delete --fzf
+```
+
 ## 🚀 Quick Start
 
 ### Installation
