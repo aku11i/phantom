@@ -88,6 +88,18 @@ When you run `phantom create feature-awesome`:
 2. A worktree with the same name as the branch is created in this location
 3. All worktrees are centrally managed under `.git/phantom/`
 
+```
+your-project/
+├── .git/
+│   └── phantom/              # Phantom-managed directory
+│       ├── feature-awesome/  # branch name = worktree name
+│       ├── bugfix-login/     # another worktree
+│       └── hotfix-critical/  # yet another worktree
+├── src/                      # main worktree (usually main branch)
+├── package.json
+└── ...
+```
+
 This convention means you never need to remember worktree paths - just use the branch name with `phantom shell` or `phantom exec` for instant access.
 
 Perfect for:

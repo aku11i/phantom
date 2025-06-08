@@ -88,6 +88,18 @@ phantom create feature-awesome --shell
 2. ブランチ名と同じ名前のworktreeがこの場所に作成されます
 3. すべてのworktreeが`.git/phantom/`配下で一元管理されます
 
+```
+your-project/
+├── .git/
+│   └── phantom/              # Phantomが管理するディレクトリ
+│       ├── feature-awesome/  # ブランチ名 = worktree名
+│       ├── bugfix-login/     # 別のworktree
+│       └── hotfix-critical/  # さらに別のworktree
+├── src/                      # メインのworktree（通常はmainブランチ）
+├── package.json
+└── ...
+```
+
 この規約により、worktreeの場所を覚える必要がなくなり、`phantom shell`や`phantom exec`でブランチ名だけで簡単にアクセスできます。
 
 以下に最適：
