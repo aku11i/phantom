@@ -58,7 +58,6 @@ export async function execHandler(args: string[]): Promise<void> {
     tmuxDirection = "horizontal";
   }
 
-
   let commandArgs: string[];
 
   if (useFzf) {

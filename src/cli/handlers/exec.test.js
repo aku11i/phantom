@@ -87,7 +87,6 @@ mock.module("../errors.ts", {
 const { execHandler } = await import("./exec.ts");
 
 describe("execHandler", () => {
-
   it("should error when tmux option used outside tmux", async () => {
     exitMock.mock.resetCalls();
     consoleErrorMock.mock.resetCalls();

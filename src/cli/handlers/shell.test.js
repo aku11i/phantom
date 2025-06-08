@@ -267,7 +267,6 @@ describe("shellHandler", () => {
     );
   });
 
-
   it("should error when tmux option used outside tmux", async () => {
     exitMock.mock.resetCalls();
     consoleErrorMock.mock.resetCalls();

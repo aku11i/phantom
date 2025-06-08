@@ -72,7 +72,6 @@ export async function shellHandler(args: string[]): Promise<void> {
     );
   }
 
-
   let worktreeName: string;
 
   try {
