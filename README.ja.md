@@ -11,9 +11,9 @@
 
 [English](./README.md) • [インストール](#-インストール) • [なぜPhantom？](#-なぜphantom) • [基本的な使い方](#-基本的な使い方) • [ドキュメント](#-ドキュメント)
 
-</div>
-
 ![Phantom demo](./docs/assets/phantom.gif)
+
+</div>
 
 ## ✨ Phantomとは？
 

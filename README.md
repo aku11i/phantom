@@ -11,9 +11,9 @@
 
 [日本語](./README.ja.md) • [Installation](#-installation) • [Why Phantom?](#-why-phantom) • [Basic Usage](#-basic-usage) • [Documentation](#-documentation)
 
-</div>
-
 ![Phantom demo](./docs/assets/phantom.gif)
+
+</div>
 
 ## ✨ What is Phantom?
 
