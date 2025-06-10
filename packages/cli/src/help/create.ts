@@ -46,6 +46,13 @@ export const createHelp: CommandHelp = {
         "Copy specified files from the current worktree to the new one. Can be used multiple times",
       example: "--copy-file .env --copy-file config.local.json",
     },
+    {
+      name: "base",
+      type: "string",
+      description:
+        "Branch or commit to create the new worktree from (defaults to HEAD)",
+      example: "--base main, --base origin/feature, --base abc123",
+    },
   ],
   examples: [
     {
@@ -68,6 +75,14 @@ export const createHelp: CommandHelp = {
       description: "Create a worktree and copy environment files",
       command:
         "phantom create staging --copy-file .env --copy-file database.yml",
+    },
+    {
+      description: "Create a worktree from main branch",
+      command: "phantom create feature-new --base main",
+    },
+    {
+      description: "Create a worktree from remote branch",
+      command: "phantom create hotfix --base origin/production",
     },
   ],
   notes: [

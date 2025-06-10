@@ -34,6 +34,7 @@ phantom create <name> [options]
 - `--tmux-vertical` / `--tmux-v` - Create and split tmux pane vertically
 - `--tmux-horizontal` / `--tmux-h` - Create and split tmux pane horizontally
 - `--copy-file <file>` - Copy specific files from current worktree (can be used multiple times)
+- `--base <branch/commit>` - Branch or commit to create the new worktree from (defaults to HEAD)
 
 **Examples:**
 ```bash
@@ -48,6 +49,12 @@ phantom create feature-auth --tmux
 
 # Create and copy environment files
 phantom create feature-auth --copy-file .env --copy-file .env.local
+
+# Create from main branch
+phantom create feature-auth --base main
+
+# Create from remote branch
+phantom create hotfix --base origin/production
 ```
 
 ### attach

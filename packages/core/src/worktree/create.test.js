@@ -94,7 +94,7 @@ describe("createWorktree", () => {
       "/test/repo/.git/phantom/worktrees/feature-branch",
     );
     strictEqual(worktreeOptions.branch, "feature-branch");
-    strictEqual(worktreeOptions.commitish, "HEAD");
+    strictEqual(worktreeOptions.base, "HEAD");
   });
 
   it("should create worktrees directory if it doesn't exist", async () => {
@@ -147,12 +147,12 @@ describe("createWorktree", () => {
     addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
     await createWorktree("/test/repo", "feature", {
       branch: "custom-branch",
-      commitish: "main",
+      base: "main",
     });
 
     const worktreeOptions2 = addWorktreeMock.mock.calls[0].arguments[0];
     strictEqual(worktreeOptions2.branch, "custom-branch");
-    strictEqual(worktreeOptions2.commitish, "main");
+    strictEqual(worktreeOptions2.base, "main");
   });
 
   it("should return error when git worktree add fails", async () => {

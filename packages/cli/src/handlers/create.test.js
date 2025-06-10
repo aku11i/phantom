@@ -382,4 +382,98 @@ describe("createHandler", () => {
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 2);
   });
+
+  it("should create worktree from specified base branch", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    createWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          message:
+            "Created worktree 'feature' at /test/repo/.git/phantom/worktrees/feature",
+          path: "/test/repo/.git/phantom/worktrees/feature",
+        }),
+      ),
+    );
+
+    await rejects(
+      async () => await createHandler(["feature", "--base", "main"]),
+      /Exit with code 0/,
+    );
+
+    strictEqual(createWorktreeMock.mock.calls.length, 1);
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[1], "feature");
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2].base, "main");
+
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Created worktree 'feature' at /test/repo/.git/phantom/worktrees/feature",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("should create worktree from remote branch", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    createWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          message:
+            "Created worktree 'hotfix' at /test/repo/.git/phantom/worktrees/hotfix",
+          path: "/test/repo/.git/phantom/worktrees/hotfix",
+        }),
+      ),
+    );
+
+    await rejects(
+      async () =>
+        await createHandler(["hotfix", "--base", "origin/production"]),
+      /Exit with code 0/,
+    );
+
+    strictEqual(createWorktreeMock.mock.calls.length, 1);
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[1], "hotfix");
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[2].base,
+      "origin/production",
+    );
+
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Created worktree 'hotfix' at /test/repo/.git/phantom/worktrees/hotfix",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("should create worktree from commit hash", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    createWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          message:
+            "Created worktree 'experiment' at /test/repo/.git/phantom/worktrees/experiment",
+          path: "/test/repo/.git/phantom/worktrees/experiment",
+        }),
+      ),
+    );
+
+    await rejects(
+      async () => await createHandler(["experiment", "--base", "abc123"]),
+      /Exit with code 0/,
+    );
+
+    strictEqual(createWorktreeMock.mock.calls.length, 1);
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[1], "experiment");
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2].base, "abc123");
+
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Created worktree 'experiment' at /test/repo/.git/phantom/worktrees/experiment",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
 });
