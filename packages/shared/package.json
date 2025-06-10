@@ -6,6 +6,7 @@
   "types": "./src/index.ts",
   "files": ["src"],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\""
   }
 }
