@@ -1,15 +1,10 @@
-import {
-  BaseError,
-  type Result,
-  err,
-  isObject,
-  ok,
-} from "@aku11i/phantom-shared";
+import { type Result, err, isObject, ok } from "@aku11i/phantom-shared";
 import type { PhantomConfig } from "./loader.ts";
 
-export class ConfigValidationError extends BaseError {
+export class ConfigValidationError extends Error {
   constructor(message: string) {
     super(`Invalid phantom.config.json: ${message}`);
+    this.name = this.constructor.name;
   }
 }
 

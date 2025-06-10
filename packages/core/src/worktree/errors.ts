@@ -1,6 +1,9 @@
-import { BaseError } from "@aku11i/phantom-shared";
-
-export class WorktreeError extends BaseError {}
+export class WorktreeError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
 
 export class WorktreeNotFoundError extends WorktreeError {
   constructor(name: string) {

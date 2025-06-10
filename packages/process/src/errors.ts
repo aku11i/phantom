@@ -1,10 +1,9 @@
-import { BaseError } from "@aku11i/phantom-shared";
-
-export class ProcessError extends BaseError {
+export class ProcessError extends Error {
   public readonly exitCode?: number;
 
   constructor(message: string, exitCode?: number) {
     super(message);
+    this.name = this.constructor.name;
     this.exitCode = exitCode;
   }
 }

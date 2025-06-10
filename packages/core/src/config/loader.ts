@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { BaseError, type Result, err, ok } from "@aku11i/phantom-shared";
+import { type Result, err, ok } from "@aku11i/phantom-shared";
 import { type ConfigValidationError, validateConfig } from "./validate.ts";
 
 export interface PhantomConfig {
@@ -10,15 +10,17 @@ export interface PhantomConfig {
   };
 }
 
-export class ConfigNotFoundError extends BaseError {
+export class ConfigNotFoundError extends Error {
   constructor() {
     super("phantom.config.json not found");
+    this.name = this.constructor.name;
   }
 }
 
-export class ConfigParseError extends BaseError {
+export class ConfigParseError extends Error {
   constructor(message: string) {
     super(`Failed to parse phantom.config.json: ${message}`);
+    this.name = this.constructor.name;
   }
 }
 
