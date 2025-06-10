@@ -1,0 +1,43 @@
+{
+  "name": "@aku11i/phantom-cli",
+  "version": "1.0.0",
+  "description": "A powerful CLI tool for managing Git worktrees for parallel development",
+  "keywords": [
+    "git",
+    "worktree",
+    "cli",
+    "phantom",
+    "workspace",
+    "development",
+    "parallel"
+  ],
+  "homepage": "https://github.com/aku11i/phantom#readme",
+  "bugs": {
+    "url": "https://github.com/aku11i/phantom/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aku11i/phantom.git"
+  },
+  "license": "MIT",
+  "author": "aku11i",
+  "type": "module",
+  "bin": {
+    "phantom": "./dist/phantom.js"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "node build.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@aku11i/phantom-core": "workspace:*",
+    "@aku11i/phantom-git": "workspace:*",
+    "@aku11i/phantom-process": "workspace:*",
+    "@aku11i/phantom-shared": "workspace:*"
+  }
+}

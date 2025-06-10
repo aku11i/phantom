@@ -1,53 +1,20 @@
 {
-  "name": "@aku11i/phantom",
+  "name": "@aku11i/phantom-monorepo",
   "packageManager": "pnpm@10.8.1",
-  "version": "1.0.0",
-  "description": "A powerful CLI tool for managing Git worktrees for parallel development",
-  "keywords": [
-    "git",
-    "worktree",
-    "cli",
-    "phantom",
-    "workspace",
-    "development",
-    "parallel"
-  ],
-  "homepage": "https://github.com/aku11i/phantom#readme",
-  "bugs": {
-    "url": "https://github.com/aku11i/phantom/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aku11i/phantom.git"
-  },
-  "license": "MIT",
-  "author": "aku11i",
+  "private": true,
   "type": "module",
-  "bin": {
-    "phantom": "./dist/phantom.js"
-  },
   "scripts": {
-    "start": "node ./src/bin/phantom.ts",
-    "phantom": "node ./src/bin/phantom.ts",
-    "build": "node build.ts",
-    "typecheck": "tsgo --noEmit",
-    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
-    "test:coverage": "node --experimental-test-coverage --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
-    "test:file": "node --test --experimental-strip-types --experimental-test-module-mocks",
+    "build": "pnpm --filter @aku11i/phantom-cli build",
+    "test": "pnpm -r test",
     "lint": "biome check .",
     "fix": "biome check --write .",
+    "typecheck": "pnpm -r typecheck",
     "ready": "pnpm fix && pnpm typecheck && pnpm test",
-    "ready:check": "pnpm lint && pnpm typecheck && pnpm test",
-    "prepublishOnly": "pnpm ready:check && pnpm build"
+    "ready:check": "pnpm lint && pnpm typecheck && pnpm test"
   },
   "engines": {
     "node": ">=22.0.0"
   },
-  "files": [
-    "dist/",
-    "README.md",
-    "LICENSE"
-  ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.15.29",
