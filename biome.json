@@ -19,8 +19,7 @@
       ".git/**/*",
       "**/dist/**/*",
       "package.json",
-      ".claude/**/*",
-      "src.old/**/*"
+      ".claude/**/*"
     ]
   }
 }
