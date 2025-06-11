@@ -116,21 +116,9 @@ export async function createHandler(args: string[]): Promise<void> {
     } else {
       // Display warning for validation and parse errors
       if (configResult.error instanceof ConfigValidationError) {
-        output.warn(
-          `Configuration warning: ${
-            configResult.error instanceof Error
-              ? configResult.error.message
-              : String(configResult.error)
-          }`,
-        );
+        output.warn(`Configuration warning: ${configResult.error.message}`);
       } else if (configResult.error instanceof ConfigParseError) {
-        output.warn(
-          `Configuration warning: ${
-            configResult.error instanceof Error
-              ? configResult.error.message
-              : String(configResult.error)
-          }`,
-        );
+        output.warn(`Configuration warning: ${configResult.error.message}`);
       }
       // ConfigNotFoundError remains silent as the config file is optional
     }
@@ -153,12 +141,7 @@ export async function createHandler(args: string[]): Promise<void> {
         result.error instanceof WorktreeAlreadyExistsError
           ? exitCodes.validationError
           : exitCodes.generalError;
-      exitWithError(
-        result.error instanceof Error
-          ? result.error.message
-          : String(result.error),
-        exitCode,
-      );
+      exitWithError(result.error.message, exitCode);
     }
 
     output.log(result.value.message);
@@ -184,13 +167,7 @@ export async function createHandler(args: string[]): Promise<void> {
         ]);
 
         if (isErr(cmdResult)) {
-          output.error(
-            `Failed to execute command: ${
-              cmdResult.error instanceof Error
-                ? cmdResult.error.message
-                : String(cmdResult.error)
-            }`,
-          );
+          output.error(`Failed to execute command: ${cmdResult.error.message}`);
           const exitCode =
             "exitCode" in cmdResult.error
               ? (cmdResult.error.exitCode ?? exitCodes.generalError)
@@ -222,11 +199,7 @@ export async function createHandler(args: string[]): Promise<void> {
       );
 
       if (isErr(execResult)) {
-        output.error(
-          execResult.error instanceof Error
-            ? execResult.error.message
-            : String(execResult.error),
-        );
+        output.error(execResult.error.message);
         const exitCode =
           "exitCode" in execResult.error
             ? (execResult.error.exitCode ?? exitCodes.generalError)
@@ -246,11 +219,7 @@ export async function createHandler(args: string[]): Promise<void> {
       const shellResult = await shellInWorktree(gitRoot, worktreeName);
 
       if (isErr(shellResult)) {
-        output.error(
-          shellResult.error instanceof Error
-            ? shellResult.error.message
-            : String(shellResult.error),
-        );
+        output.error(shellResult.error.message);
         const exitCode =
           "exitCode" in shellResult.error
             ? (shellResult.error.exitCode ?? exitCodes.generalError)
@@ -279,11 +248,7 @@ export async function createHandler(args: string[]): Promise<void> {
       });
 
       if (isErr(tmuxResult)) {
-        output.error(
-          tmuxResult.error instanceof Error
-            ? tmuxResult.error.message
-            : String(tmuxResult.error),
-        );
+        output.error(tmuxResult.error.message);
         const exitCode =
           "exitCode" in tmuxResult.error
             ? (tmuxResult.error.exitCode ?? exitCodes.generalError)

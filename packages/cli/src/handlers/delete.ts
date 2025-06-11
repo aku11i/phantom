@@ -72,12 +72,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
     } else if (useFzf) {
       const selectResult = await selectWorktreeWithFzf(gitRoot);
       if (isErr(selectResult)) {
-        exitWithError(
-          selectResult.error instanceof Error
-            ? selectResult.error.message
-            : String(selectResult.error),
-          exitCodes.generalError,
-        );
+        exitWithError(selectResult.error.message, exitCodes.generalError);
       }
       if (!selectResult.value) {
         exitWithSuccess();
@@ -99,12 +94,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
               result.error.message.includes("uncommitted changes")
             ? exitCodes.validationError
             : exitCodes.generalError;
-      exitWithError(
-        result.error instanceof Error
-          ? result.error.message
-          : String(result.error),
-        exitCode,
-      );
+      exitWithError(result.error.message, exitCode);
     }
 
     output.log(result.value.message);

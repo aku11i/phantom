@@ -31,12 +31,7 @@ export async function listHandler(args: string[] = []): Promise<void> {
       const selectResult = await selectWorktreeWithFzf(gitRoot);
 
       if (isErr(selectResult)) {
-        exitWithError(
-          selectResult.error instanceof Error
-            ? selectResult.error.message
-            : String(selectResult.error),
-          exitCodes.generalError,
-        );
+        exitWithError(selectResult.error.message, exitCodes.generalError);
       }
 
       if (selectResult.value) {

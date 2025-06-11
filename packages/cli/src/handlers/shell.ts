@@ -92,12 +92,7 @@ export async function shellHandler(args: string[]): Promise<void> {
     if (useFzf) {
       const selectResult = await selectWorktreeWithFzf(gitRoot);
       if (isErr(selectResult)) {
-        exitWithError(
-          selectResult.error instanceof Error
-            ? selectResult.error.message
-            : String(selectResult.error),
-          exitCodes.generalError,
-        );
+        exitWithError(selectResult.error.message, exitCodes.generalError);
       }
       if (!selectResult.value) {
         exitWithSuccess();
@@ -110,12 +105,7 @@ export async function shellHandler(args: string[]): Promise<void> {
     // Get worktree path for display
     const validation = await validateWorktreeExists(gitRoot, worktreeName);
     if (isErr(validation)) {
-      exitWithError(
-        validation.error instanceof Error
-          ? validation.error.message
-          : String(validation.error),
-        exitCodes.generalError,
-      );
+      exitWithError(validation.error.message, exitCodes.generalError);
     }
 
     if (tmuxDirection) {
@@ -136,11 +126,7 @@ export async function shellHandler(args: string[]): Promise<void> {
       });
 
       if (isErr(tmuxResult)) {
-        output.error(
-          tmuxResult.error instanceof Error
-            ? tmuxResult.error.message
-            : String(tmuxResult.error),
-        );
+        output.error(tmuxResult.error.message);
         const exitCode =
           "exitCode" in tmuxResult.error
             ? (tmuxResult.error.exitCode ?? exitCodes.generalError)
@@ -163,12 +149,7 @@ export async function shellHandler(args: string[]): Promise<void> {
         result.error instanceof WorktreeNotFoundError
           ? exitCodes.notFound
           : result.error.exitCode || exitCodes.generalError;
-      exitWithError(
-        result.error instanceof Error
-          ? result.error.message
-          : String(result.error),
-        exitCode,
-      );
+      exitWithError(result.error.message, exitCode);
     }
 
     process.exit(result.value.exitCode);

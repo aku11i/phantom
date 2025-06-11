@@ -55,10 +55,7 @@ export async function attachHandler(args: string[]): Promise<void> {
     if (error instanceof BranchNotFoundError) {
       exitWithError(error.message, exitCodes.notFound);
     }
-    exitWithError(
-      error instanceof Error ? error.message : String(error),
-      exitCodes.generalError,
-    );
+    exitWithError(error.message, exitCodes.generalError);
   }
 
   const worktreePath = result.value;
@@ -67,12 +64,7 @@ export async function attachHandler(args: string[]): Promise<void> {
   if (values.shell) {
     const shellResult = await shellInWorktree(gitRoot, branchName);
     if (isErr(shellResult)) {
-      exitWithError(
-        shellResult.error instanceof Error
-          ? shellResult.error.message
-          : String(shellResult.error),
-        exitCodes.generalError,
-      );
+      exitWithError(shellResult.error.message, exitCodes.generalError);
     }
   } else if (values.exec) {
     const shell = process.env.SHELL || "/bin/sh";
@@ -83,12 +75,7 @@ export async function attachHandler(args: string[]): Promise<void> {
       { interactive: true },
     );
     if (isErr(execResult)) {
-      exitWithError(
-        execResult.error instanceof Error
-          ? execResult.error.message
-          : String(execResult.error),
-        exitCodes.generalError,
-      );
+      exitWithError(execResult.error.message, exitCodes.generalError);
     }
   }
 }
