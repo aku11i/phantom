@@ -1,7 +1,7 @@
 # Claude Context for phantom
 
 ## Project Overview
-Phantom is a CLI tool for managing Git worktrees (called "phantoms") with enhanced functionality. For detailed project information, features, and usage, see [](./README.md).
+Phantom is a CLI tool for managing Git worktrees (called "phantoms") with enhanced functionality. For detailed project information, features, and usage, see [README.md](./README.md).
 
 ## Development Guidelines
 - All files, issues, and pull requests in this repository must be written in English
