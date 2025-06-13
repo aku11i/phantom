@@ -1,7 +1,14 @@
 import { parseArgs } from "node:util";
+import {
+  ConfigNotFoundError,
+  ConfigParseError,
+  loadConfig,
+} from "../../core/config/loader.ts";
+import { ConfigValidationError } from "../../core/config/validate.ts";
 import { getCurrentWorktree } from "../../core/git/libs/get-current-worktree.ts";
 import { getGitRoot } from "../../core/git/libs/get-git-root.ts";
-import { isErr } from "../../core/types/result.ts";
+import { execInWorktree } from "../../core/process/exec.ts";
+import { isErr, isOk } from "../../core/types/result.ts";
 import { deleteWorktree as deleteWorktreeCore } from "../../core/worktree/delete.ts";
 import {
   WorktreeError,
@@ -60,6 +67,18 @@ export async function deleteHandler(args: string[]): Promise<void> {
   try {
     const gitRoot = await getGitRoot();
 
+    // Load config to check for post-delete commands
+    const configResult = await loadConfig(gitRoot);
+    if (isErr(configResult)) {
+      // Display warning for validation and parse errors
+      if (configResult.error instanceof ConfigValidationError) {
+        output.warn(`Configuration warning: ${configResult.error.message}`);
+      } else if (configResult.error instanceof ConfigParseError) {
+        output.warn(`Configuration warning: ${configResult.error.message}`);
+      }
+      // ConfigNotFoundError remains silent as the config file is optional
+    }
+
     let worktreeName: string;
     if (deleteCurrent) {
       const currentWorktree = await getCurrentWorktree(gitRoot);
@@ -99,6 +118,40 @@ export async function deleteHandler(args: string[]): Promise<void> {
     }
 
     output.log(result.value.message);
+
+    // Execute post-delete commands from config
+    if (isOk(configResult) && configResult.value.postDelete?.commands) {
+      const commands = configResult.value.postDelete.commands;
+      output.log("\nRunning post-delete commands...");
+
+      for (const command of commands) {
+        output.log(`Executing: ${command}`);
+        const shell = process.env.SHELL || "/bin/sh";
+        const cmdResult = await execInWorktree(gitRoot, ".", [
+          shell,
+          "-c",
+          command,
+        ]);
+
+        if (isErr(cmdResult)) {
+          output.error(`Failed to execute command: ${cmdResult.error.message}`);
+          const exitCode =
+            "exitCode" in cmdResult.error
+              ? (cmdResult.error.exitCode ?? exitCodes.generalError)
+              : exitCodes.generalError;
+          exitWithError(`Post-delete command failed: ${command}`, exitCode);
+        }
+
+        // Check exit code
+        if (cmdResult.value.exitCode !== 0) {
+          exitWithError(
+            `Post-delete command failed: ${command}`,
+            cmdResult.value.exitCode,
+          );
+        }
+      }
+    }
+
     exitWithSuccess();
   } catch (error) {
     exitWithError(

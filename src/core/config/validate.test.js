@@ -89,6 +89,53 @@ describe("validateConfig", () => {
     }
   });
 
+  test("should accept valid config with postDelete commands", () => {
+    const config = {
+      postDelete: {
+        commands: ["pnpm cleanup", "rm -rf temp"],
+      },
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  test("should accept config with empty postDelete", () => {
+    const config = {
+      postDelete: {},
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
+  test("should accept config with both postCreate and postDelete", () => {
+    const config = {
+      postCreate: {
+        copyFiles: [".env"],
+        commands: ["pnpm install"],
+      },
+      postDelete: {
+        commands: ["pnpm cleanup"],
+      },
+    };
+
+    const result = validateConfig(config);
+
+    assert.strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      assert.deepStrictEqual(result.value, config);
+    }
+  });
+
   test("should accept config with empty commands array", () => {
     const config = {
       postCreate: {
@@ -429,6 +476,73 @@ describe("validateConfig", () => {
         assert.strictEqual(
           result.error.message,
           "Invalid phantom.config.json: postCreate.commands must contain only strings",
+        );
+      }
+    });
+
+    test("should reject when postDelete is string", () => {
+      const result = validateConfig({ postDelete: "invalid" });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postDelete must be an object",
+        );
+      }
+    });
+
+    test("should reject when postDelete is number", () => {
+      const result = validateConfig({ postDelete: 123 });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postDelete must be an object",
+        );
+      }
+    });
+
+    test("should reject when postDelete is array", () => {
+      const result = validateConfig({ postDelete: [] });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postDelete must be an object",
+        );
+      }
+    });
+
+    test("should reject when postDelete commands is string", () => {
+      const result = validateConfig({ postDelete: { commands: "invalid" } });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postDelete.commands must be an array",
+        );
+      }
+    });
+
+    test("should reject when postDelete commands contains non-string values", () => {
+      const result = validateConfig({
+        postDelete: { commands: ["pnpm cleanup", 123] },
+      });
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postDelete.commands must contain only strings",
         );
       }
     });

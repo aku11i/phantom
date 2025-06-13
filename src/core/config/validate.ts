@@ -57,5 +57,28 @@ export function validateConfig(
     }
   }
 
+  if (cfg.postDelete !== undefined) {
+    if (!isObject(cfg.postDelete)) {
+      return err(new ConfigValidationError("postDelete must be an object"));
+    }
+
+    const postDelete = cfg.postDelete;
+    if (postDelete.commands !== undefined) {
+      if (!Array.isArray(postDelete.commands)) {
+        return err(
+          new ConfigValidationError("postDelete.commands must be an array"),
+        );
+      }
+
+      if (!postDelete.commands.every((c: unknown) => typeof c === "string")) {
+        return err(
+          new ConfigValidationError(
+            "postDelete.commands must contain only strings",
+          ),
+        );
+      }
+    }
+  }
+
   return ok(config as PhantomConfig);
 }

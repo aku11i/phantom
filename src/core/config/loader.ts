@@ -8,6 +8,9 @@ export interface PhantomConfig {
     copyFiles?: string[];
     commands?: string[];
   };
+  postDelete?: {
+    commands?: string[];
+  };
 }
 
 export class ConfigNotFoundError extends Error {
