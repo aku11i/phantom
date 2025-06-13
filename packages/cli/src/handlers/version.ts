@@ -10,7 +10,6 @@ export function versionHandler(args: string[] = []): void {
     strict: true,
     allowPositionals: false,
   });
-  // TODO: Use getCliVersion when available
   const version = getVersion();
   output.log(`Phantom v${version}`);
   exitWithSuccess();
