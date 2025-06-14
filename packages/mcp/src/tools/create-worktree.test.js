@@ -75,7 +75,7 @@ describe("createWorktreeTool", () => {
       "feature-1",
       {
         branch: "feature-1",
-        commitish: undefined,
+        base: undefined,
       },
     ]);
 
@@ -112,7 +112,7 @@ describe("createWorktreeTool", () => {
       "feature-2",
       {
         branch: "feature-2",
-        commitish: "develop",
+        base: "develop",
       },
     ]);
 
