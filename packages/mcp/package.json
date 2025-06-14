@@ -7,7 +7,8 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\""
+    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
+    "inspect": "npx @modelcontextprotocol/inspector node --no-warnings --experimental-strip-types src/dev.ts"
   },
   "dependencies": {
     "@aku11i/phantom-core": "workspace:*",
@@ -16,5 +17,8 @@
     "@aku11i/phantom-shared": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.12.3",
     "zod": "^3.25.64"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.14.1"
   }
 }
