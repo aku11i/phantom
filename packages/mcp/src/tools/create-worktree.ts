@@ -30,12 +30,23 @@ export const createWorktreeTool: Tool<typeof schema> = {
     }
 
     return {
-      success: true,
-      message: result.value.message,
-      path: result.value.path,
-      copiedFiles: result.value.copiedFiles,
-      skippedFiles: result.value.skippedFiles,
-      copyError: result.value.copyError,
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              success: true,
+              message: result.value.message,
+              path: result.value.path,
+              copiedFiles: result.value.copiedFiles,
+              skippedFiles: result.value.skippedFiles,
+              copyError: result.value.copyError,
+            },
+            null,
+            2,
+          ),
+        },
+      ],
     };
   },
 };

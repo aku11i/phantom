@@ -18,102 +18,42 @@ server.tool(
   createWorktreeTool.name,
   createWorktreeTool.description,
   createWorktreeTool.inputSchema.shape,
-  async (args) => {
-    const result = await createWorktreeTool.handler(args);
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-    };
-  },
+  createWorktreeTool.handler,
 );
 
 server.tool(
   listWorktreesTool.name,
   listWorktreesTool.description,
   listWorktreesTool.inputSchema.shape,
-  async (args) => {
-    const result = await listWorktreesTool.handler(args);
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-    };
-  },
+  listWorktreesTool.handler,
 );
 
 server.tool(
   deleteWorktreeTool.name,
   deleteWorktreeTool.description,
   deleteWorktreeTool.inputSchema.shape,
-  async (args) => {
-    const result = await deleteWorktreeTool.handler(args);
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-    };
-  },
+  deleteWorktreeTool.handler,
 );
 
 server.tool(
   execCommandTool.name,
   execCommandTool.description,
   execCommandTool.inputSchema.shape,
-  async (args) => {
-    const result = await execCommandTool.handler(args);
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-    };
-  },
+  execCommandTool.handler,
 );
 
 server.tool(
   readFileTool.name,
   readFileTool.description,
   readFileTool.inputSchema.shape,
-  async (args) => {
-    const result = await readFileTool.handler(args);
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-    };
-  },
+  readFileTool.handler,
 );
 
 server.tool(
   writeFileTool.name,
   writeFileTool.description,
   writeFileTool.inputSchema.shape,
-  async (args) => {
-    const result = await writeFileTool.handler(args);
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-    };
-  },
+  writeFileTool.handler,
 );
 
 export async function serve() {

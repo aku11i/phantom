@@ -1,8 +1,9 @@
+import type { ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { z } from "zod";
 
-export interface Tool<TSchema extends z.ZodType = z.ZodType> {
+export interface Tool<TSchema extends z.AnyZodObject> {
   name: string;
   description: string;
   inputSchema: TSchema;
-  handler: (args: z.infer<TSchema>) => Promise<unknown>;
+  handler: ToolCallback<TSchema["shape"]>;
 }

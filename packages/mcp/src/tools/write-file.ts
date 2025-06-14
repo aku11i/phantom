@@ -24,8 +24,19 @@ export const writeFileTool: Tool<typeof schema> = {
       await mkdir(dirname(filePath), { recursive: true });
       await writeFile(filePath, content, "utf-8");
       return {
-        success: true,
-        message: `File written successfully to ${path}`,
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                success: true,
+                message: `File written successfully to ${path}`,
+              },
+              null,
+              2,
+            ),
+          },
+        ],
       };
     } catch (error) {
       throw new Error(

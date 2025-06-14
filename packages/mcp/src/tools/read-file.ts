@@ -20,10 +20,14 @@ export const readFileTool: Tool<typeof schema> = {
     const filePath = join(worktreePath, path);
 
     try {
-      const content = await readFile(filePath, "utf-8");
+      const fileContent = await readFile(filePath, "utf-8");
       return {
-        success: true,
-        content,
+        content: [
+          {
+            type: "text",
+            text: fileContent,
+          },
+        ],
       };
     } catch (error) {
       throw new Error(

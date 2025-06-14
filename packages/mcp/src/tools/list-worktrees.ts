@@ -19,12 +19,23 @@ export const listWorktreesTool: Tool<typeof schema> = {
     }
 
     return {
-      worktrees: result.value.worktrees.map((wt) => ({
-        name: wt.name,
-        path: wt.path,
-        branch: wt.branch,
-        isClean: wt.isClean,
-      })),
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              worktrees: result.value.worktrees.map((wt) => ({
+                name: wt.name,
+                path: wt.path,
+                branch: wt.branch,
+                isClean: wt.isClean,
+              })),
+            },
+            null,
+            2,
+          ),
+        },
+      ],
     };
   },
 };

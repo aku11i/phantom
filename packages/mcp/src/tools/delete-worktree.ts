@@ -25,8 +25,19 @@ export const deleteWorktreeTool: Tool<typeof schema> = {
     }
 
     return {
-      success: true,
-      message: `Worktree '${name}' deleted successfully`,
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              success: true,
+              message: `Worktree '${name}' deleted successfully`,
+            },
+            null,
+            2,
+          ),
+        },
+      ],
     };
   },
 };

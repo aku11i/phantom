@@ -28,8 +28,19 @@ export const execCommandTool: Tool<typeof schema> = {
     }
 
     return {
-      success: true,
-      exitCode: result.value.exitCode,
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              success: true,
+              exitCode: result.value.exitCode,
+            },
+            null,
+            2,
+          ),
+        },
+      ],
     };
   },
 };
