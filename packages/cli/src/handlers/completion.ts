@@ -227,8 +227,12 @@ _phantom_completion() {
                     _filedir
                     return 0
                     ;;
+                --base)
+                    # Don't complete anything specific for base (branch/commit)
+                    return 0
+                    ;;
                 *)
-                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file"
+                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file --base"
                     COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                     return 0
                     ;;
