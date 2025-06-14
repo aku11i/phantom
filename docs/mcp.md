@@ -15,45 +15,53 @@ Model Context Protocol (MCP) is a standard protocol that allows AI assistants to
 
 ## Installation and Setup
 
-### For Claude Desktop
+> [!IMPORTANT]  
+> To use Phantom's MCP server, you need to have Phantom installed.
 
-1. Install Phantom if you haven't already:
-   ```bash
-   brew install aku11i/tap/phantom
-   # or
-   npm install -g @aku11i/phantom
-   ```
+```bash
+brew install aku11i/tap/phantom
+```
 
-2. Add Phantom to your Claude Desktop configuration:
-   
-   Open your Claude Desktop configuration file:
-   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-   - Linux: `~/.config/Claude/claude_desktop_config.json`
+### For Claude Code
 
-3. Add the Phantom MCP server configuration:
-   ```json
-   {
-     "mcpServers": {
-       "phantom": {
-         "command": "npx",
-         "args": ["-y", "@aku11i/phantom", "mcp"]
-       }
-     }
-   }
-   ```
+```sh
+claude mcp add --scope user Phantom phantom mcp serve
+```
 
-4. Restart Claude Desktop for the changes to take effect.
+### For Visual Studio Code
+
+```sh
+code --add-mcp '{
+  "name": "Phantom",
+  "command": "phantom",
+  "args": ["mcp", "serve"],
+  "transport": "stdio"
+}'
+```
+
+### For Cursor
+
+Add this configuration to `~/.cursor/mcp.json`.
+
+```json
+{
+  "mcpServers": {
+    "Phantom": {
+      "command": "phantom",
+      "args": ["mcp", "serve"],
+      "transport": "stdio"
+    }
+  }
+}
+```
 
 ### For Other AI Assistants
 
-If your AI assistant supports MCP, you can start the Phantom MCP server with:
+You can start the Phantom MCP server with stdio transport by running:
 
 ```bash
-phantom mcp
+phantom mcp serve
 ```
-
-The server will communicate via stdin/stdout using the MCP protocol.
 
 ## Available MCP Commands
 
