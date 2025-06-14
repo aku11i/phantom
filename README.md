@@ -27,6 +27,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🪟 **Built-in tmux integration** - Open worktrees in new panes or windows
 - 🔍 **Interactive selection with fzf** - Use built-in fzf option for worktree selection
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
+- 🤖 **MCP Integration** - AI autonomously manages worktrees for parallel development
 - ⚡ **Zero dependencies** - Fast and lightweight
 
 ## 🚀 Installation
@@ -143,6 +144,17 @@ phantom shell --fzf
 phantom delete --fzf
 ```
 
+### MCP Integration
+
+Phantom provides a Model Context Protocol (MCP) server. AI coding assistants can autonomously create and manage worktrees to develop multiple features in parallel.
+
+After completing the MCP server setup, try giving your AI agent a prompt like this.
+The AI agent will create two worktrees and implement Express and Hono apps in each.
+
+> Create 2 variations of a simple hello world app using Express and Hono, each in their own worktree. Make sure each can be started with npm start and served on a different URL.
+
+See [MCP Integration Guide](./docs/mcp.md) for detailed setup and usage.
+
 ## 🔍 Basic Usage
 
 ### Create a new worktree
@@ -183,6 +195,7 @@ phantom delete feature-awesome
 - **[Getting Started](./docs/getting-started.md)** - Common workflows and tips
 - **[Commands Reference](./docs/commands.md)** - All commands and options
 - **[Configuration](./docs/configuration.md)** - Set up automatic file copying and post-create commands
+- **[MCP Integration](./docs/mcp.md)** - AI-powered parallel development with Model Context Protocol
 
 
 ## 🤝 Contributing
