@@ -23,7 +23,7 @@ export async function attachHandler(args: string[]): Promise<void> {
       },
       exec: {
         type: "string",
-        short: "e",
+        short: "x",
       },
     },
   });

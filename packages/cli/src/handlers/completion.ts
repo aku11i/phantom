@@ -50,7 +50,9 @@ complete -c phantom -n "__phantom_using_command create" -l shell -d "Open an int
 complete -c phantom -n "__phantom_using_command create" -l exec -d "Execute a command in the new worktree after creation (-x)" -x
 complete -c phantom -n "__phantom_using_command create" -l tmux -d "Open the worktree in a new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command create" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
+complete -c phantom -n "__phantom_using_command create" -l tmux-v -d "Open the worktree in a vertical tmux pane"
 complete -c phantom -n "__phantom_using_command create" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
+complete -c phantom -n "__phantom_using_command create" -l tmux-h -d "Open the worktree in a horizontal tmux pane"
 complete -c phantom -n "__phantom_using_command create" -l copy-file -d "Copy specified files from the current worktree" -r
 
 # attach command options
@@ -130,7 +132,9 @@ _phantom() {
                         '--exec[Execute a command in the new worktree after creation (-x)]:command:' \\
                         '--tmux[Open the worktree in a new tmux window (-t)]' \\
                         '--tmux-vertical[Open the worktree in a vertical tmux pane]' \\
+                        '--tmux-v[Open the worktree in a vertical tmux pane]' \\
                         '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \\
+                        '--tmux-h[Open the worktree in a horizontal tmux pane]' \\
                         '*--copy-file[Copy specified files from the current worktree]:file:_files' \\
                         '1:name:'
                     ;;
@@ -234,7 +238,7 @@ _phantom_completion() {
                     return 0
                     ;;
                 *)
-                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file"
+                    local opts="--shell --exec --tmux --tmux-vertical --tmux-v --tmux-horizontal --tmux-h --copy-file"
                     COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                     return 0
                     ;;
@@ -296,7 +300,7 @@ _phantom_completion() {
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
+                        local opts="--fzf --tmux --tmux-vertical --tmux-v --tmux-horizontal --tmux-h"
                         COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                     elif [[ \${cword} -eq 2 ]] || [[ " \${words[@]} " =~ " --fzf " && \${cword} -eq 3 ]]; then
                         # First non-option argument should be worktree name
@@ -321,7 +325,7 @@ _phantom_completion() {
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
+                        local opts="--fzf --tmux --tmux-vertical --tmux-v --tmux-horizontal --tmux-h"
                         COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                     else
                         local worktrees=\$(_phantom_list_worktrees)
