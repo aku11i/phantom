@@ -22,6 +22,12 @@ npm install -g @aku11i/phantom
 # Optional tools for better experience: fzf and tmux
 ```
 
+> **Note:** When installed via Homebrew, shell completions for Fish and Zsh are set up automatically. For Bash users, you need bash-completion v2 installed first, then add this to your `.bashrc` or `.bash_profile`:
+> ```bash
+> # Prerequisites: bash-completion v2 must be installed
+> eval "$(phantom completion bash)"
+> ```
+
 ## 💡 Basic Concepts
 
 ### What is a Phantom?

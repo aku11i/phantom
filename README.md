@@ -37,6 +37,8 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 brew install aku11i/tap/phantom
 ```
 
+> **Note:** Shell completions for Fish and Zsh are installed automatically with Homebrew. For Bash completion, see the [Shell Completion](#shell-completion) section below.
+
 #### Using npm
 
 ```bash
@@ -81,6 +83,15 @@ Phantom provides perfect functionality as a command-line tool. Developers feel t
 #### Shell Completion
 
 Phantom supports full shell completion for Fish, Zsh, and Bash. Use tab key to complete commands and worktree names.
+
+When installed via Homebrew, completions for Fish and Zsh are installed automatically. For Bash, you need to manually set up the completion:
+
+```bash
+# Prerequisites: bash-completion v2 must be installed
+
+# For Bash (add to your .bashrc or .bash_profile)
+eval "$(phantom completion bash)"
+```
 
 #### tmux Integration
 
