@@ -14,7 +14,7 @@ import { writeFileTool } from "./tools/write-file.js";
 
 const server = new Server(
   {
-    name: "phantom-mcp",
+    name: "Phantom MCP Server",
     version: packageJson.version,
   },
   {
