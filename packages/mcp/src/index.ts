@@ -4,6 +4,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import packageJson from "../package.json" with { type: "json" };
 import { createWorktreeTool } from "./tools/create-worktree.js";
 import { deleteWorktreeTool } from "./tools/delete-worktree.js";
 import { execCommandTool } from "./tools/exec-command.js";
@@ -14,7 +15,7 @@ import { writeFileTool } from "./tools/write-file.js";
 const server = new Server(
   {
     name: "phantom-mcp",
-    version: "0.1.0",
+    version: packageJson.version,
   },
   {
     capabilities: {
