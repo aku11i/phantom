@@ -68,7 +68,7 @@ phantom mcp serve
 The Phantom MCP server exposes three main tools:
 
 ### 1. `phantom_create_worktree`
-Creates a new Git worktree (phantom).
+Creates a new Git worktree.
 
 **Parameters:**
 - `name` (required): Name for the worktree (also used as the branch name)
@@ -152,114 +152,20 @@ AI Agent:
 
 ### 3. Incremental Feature Development
 
-Build features step by step in isolation:
+Build features step by step based on user instructions:
 
 ```
-User: "Implement a blog system with separate worktrees for:
-       1. Basic CRUD operations
-       2. Add authentication
-       3. Add commenting system"
+User: "Implement a basic blog system with CRUD operations"
 
 AI Agent:
-1. phantom_create_worktree("blog-basic")
-2. Implements basic CRUD in blog-basic
-3. phantom_create_worktree("blog-auth", baseBranch: "blog-basic")
-4. Adds authentication on top of basic CRUD
-5. phantom_create_worktree("blog-comments", baseBranch: "blog-auth")
-6. Adds commenting system on top of authenticated blog
-```
+1. Implements basic blog CRUD functionality in main branch
+2. Tests and confirms basic features work
 
-### 4. Framework Migration
-
-Migrate codebases between frameworks safely:
-
-```
-User: "Migrate our Express API to Fastify, keeping both versions available"
+User: "Now add a commenting system in a new worktree"
 
 AI Agent:
-1. phantom_create_worktree("fastify-migration")
-2. Copies Express routes and converts to Fastify syntax
-3. Updates middleware to Fastify plugins
-4. Maintains both versions for comparison and testing
+1. phantom_create_worktree("blog-comments", baseBranch: "main")
+2. Switches to blog-comments worktree
+3. Implements commenting system on top of basic blog
+4. Tests commenting features independently
 ```
-
-## Best Practices
-
-### For AI Assistants
-
-1. **Always create descriptive worktree names** that reflect the feature or experiment
-2. **Use base branches wisely** to build features incrementally
-3. **Clean up worktrees** after experiments are complete or merged
-4. **List worktrees frequently** to keep track of parallel work
-5. **Avoid force deletion** unless explicitly requested by the user
-
-### For Developers
-
-1. **Communicate intent clearly** - Tell the AI what you want to achieve
-2. **Request cleanup** - Ask the AI to remove worktrees after experiments
-3. **Review AI changes** - Each worktree is a separate branch, review before merging
-4. **Use descriptive prompts** - Help the AI choose meaningful worktree names
-
-## Limitations
-
-- MCP integration requires the AI assistant to support the Model Context Protocol
-- Worktrees are created in the current Git repository only
-- File system operations beyond worktree management need to be done through other tools
-- Network operations (like git push) are not included in the MCP interface
-
-## Troubleshooting
-
-### MCP Server Not Found
-
-If Claude Desktop can't find the Phantom MCP server:
-
-1. Verify Phantom is installed: `phantom --version`
-2. Check the configuration file path is correct
-3. Ensure the configuration JSON is valid
-4. Restart Claude Desktop
-
-### Worktree Creation Fails
-
-Common issues:
-- Branch name already exists
-- Uncommitted changes in the current worktree
-- Invalid characters in worktree name
-- Insufficient disk space
-
-### Performance Issues
-
-For large repositories:
-- Initial worktree creation may take time
-- Consider using shallow clones for experiments
-- Clean up unused worktrees regularly
-
-## Security Considerations
-
-The Phantom MCP server:
-- Only operates within the current Git repository
-- Cannot execute arbitrary commands
-- Respects Git's security model and permissions
-- Does not expose sensitive information
-
-## Future Enhancements
-
-Planned MCP features:
-- Worktree status information
-- Branch switching within worktrees
-- Stash management
-- Cherry-pick operations between worktrees
-
-## Contributing
-
-To contribute to Phantom's MCP integration:
-
-1. Check out the MCP server code in `src/mcp/`
-2. Follow the contribution guidelines in CONTRIBUTING.md
-3. Test with Claude Desktop or other MCP-compatible clients
-4. Submit pull requests with clear descriptions
-
-## Resources
-
-- [Phantom GitHub Repository](https://github.com/aku11i/phantom)
-- [Model Context Protocol Specification](https://modelcontextprotocol.io)
-- [Claude Desktop MCP Guide](https://modelcontextprotocol.io/docs/tools/claude-desktop)
