@@ -50,9 +50,7 @@ complete -c phantom -n "__phantom_using_command create" -l shell -d "Open an int
 complete -c phantom -n "__phantom_using_command create" -l exec -d "Execute a command in the new worktree after creation (-x)" -x
 complete -c phantom -n "__phantom_using_command create" -l tmux -d "Open the worktree in a new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command create" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
-complete -c phantom -n "__phantom_using_command create" -l tmux-v -d "Open the worktree in a vertical tmux pane"
 complete -c phantom -n "__phantom_using_command create" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
-complete -c phantom -n "__phantom_using_command create" -l tmux-h -d "Open the worktree in a horizontal tmux pane"
 complete -c phantom -n "__phantom_using_command create" -l copy-file -d "Copy specified files from the current worktree" -r
 
 # attach command options
@@ -77,18 +75,14 @@ complete -c phantom -n "__phantom_using_command delete" -a "(__phantom_list_work
 complete -c phantom -n "__phantom_using_command exec" -l fzf -d "Use fzf for interactive selection"
 complete -c phantom -n "__phantom_using_command exec" -l tmux -d "Execute command in new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command exec" -l tmux-vertical -d "Execute command in vertical split pane"
-complete -c phantom -n "__phantom_using_command exec" -l tmux-v -d "Execute command in vertical split pane"
 complete -c phantom -n "__phantom_using_command exec" -l tmux-horizontal -d "Execute command in horizontal split pane"
-complete -c phantom -n "__phantom_using_command exec" -l tmux-h -d "Execute command in horizontal split pane"
 complete -c phantom -n "__phantom_using_command exec" -a "(__phantom_list_worktrees)"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"
 complete -c phantom -n "__phantom_using_command shell" -l tmux -d "Open shell in new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command shell" -l tmux-vertical -d "Open shell in vertical split pane"
-complete -c phantom -n "__phantom_using_command shell" -l tmux-v -d "Open shell in vertical split pane"
 complete -c phantom -n "__phantom_using_command shell" -l tmux-horizontal -d "Open shell in horizontal split pane"
-complete -c phantom -n "__phantom_using_command shell" -l tmux-h -d "Open shell in horizontal split pane"
 complete -c phantom -n "__phantom_using_command shell" -a "(__phantom_list_worktrees)"
 
 # completion command - shell names
@@ -132,9 +126,7 @@ _phantom() {
                         '--exec[Execute a command in the new worktree after creation (-x)]:command:' \\
                         '--tmux[Open the worktree in a new tmux window (-t)]' \\
                         '--tmux-vertical[Open the worktree in a vertical tmux pane]' \\
-                        '--tmux-v[Open the worktree in a vertical tmux pane]' \\
                         '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \\
-                        '--tmux-h[Open the worktree in a horizontal tmux pane]' \\
                         '*--copy-file[Copy specified files from the current worktree]:file:_files' \\
                         '1:name:'
                     ;;
@@ -162,9 +154,7 @@ _phantom() {
                             '--fzf[Use fzf for interactive selection]' \\
                             '--tmux[Open shell in new tmux window (-t)]' \\
                             '--tmux-vertical[Open shell in vertical split pane]' \\
-                            '--tmux-v[Open shell in vertical split pane]' \\
                             '--tmux-horizontal[Open shell in horizontal split pane]' \\
-                            '--tmux-h[Open shell in horizontal split pane]' \\
                             '1:worktree:(\${(q)worktrees[@]})'
                     elif [[ \${line[1]} == "delete" ]]; then
                         _arguments \\
@@ -181,9 +171,7 @@ _phantom() {
                         '--fzf[Use fzf for interactive selection]' \\
                         '--tmux[Execute command in new tmux window (-t)]' \\
                         '--tmux-vertical[Execute command in vertical split pane]' \\
-                        '--tmux-v[Execute command in vertical split pane]' \\
                         '--tmux-horizontal[Execute command in horizontal split pane]' \\
-                        '--tmux-h[Execute command in horizontal split pane]' \\
                         '1:worktree:(\${(q)worktrees[@]})' \\
                         '*:command:_command_names'
                     ;;
@@ -238,7 +226,7 @@ _phantom_completion() {
                     return 0
                     ;;
                 *)
-                    local opts="--shell --exec --tmux --tmux-vertical --tmux-v --tmux-horizontal --tmux-h --copy-file"
+                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file"
                     COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                     return 0
                     ;;
@@ -292,7 +280,7 @@ _phantom_completion() {
             ;;
         exec)
             case "\${prev}" in
-                --tmux|-t|--tmux-vertical|--tmux-v|--tmux-horizontal|--tmux-h)
+                --tmux|-t|--tmux-vertical|--tmux-horizontal)
                     # After tmux options, expect worktree name
                     local worktrees=\$(_phantom_list_worktrees)
                     COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
@@ -300,7 +288,7 @@ _phantom_completion() {
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --tmux --tmux-vertical --tmux-v --tmux-horizontal --tmux-h"
+                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
                         COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                     elif [[ \${cword} -eq 2 ]] || [[ " \${words[@]} " =~ " --fzf " && \${cword} -eq 3 ]]; then
                         # First non-option argument should be worktree name
@@ -317,7 +305,7 @@ _phantom_completion() {
             ;;
         shell)
             case "\${prev}" in
-                --tmux|-t|--tmux-vertical|--tmux-v|--tmux-horizontal|--tmux-h)
+                --tmux|-t|--tmux-vertical|--tmux-horizontal)
                     # After tmux options, expect worktree name
                     local worktrees=\$(_phantom_list_worktrees)
                     COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
@@ -325,7 +313,7 @@ _phantom_completion() {
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --tmux --tmux-vertical --tmux-v --tmux-horizontal --tmux-h"
+                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
                         COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                     else
                         local worktrees=\$(_phantom_list_worktrees)
