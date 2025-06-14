@@ -1,18 +1,18 @@
 {
-  "name": "@aku11i/phantom-cli",
+  "name": "@aku11i/phantom-mcp",
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
-    "prebuild": "git clean -fdx dist",
-    "build": "node build.ts",
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\""
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.6",
     "@aku11i/phantom-core": "workspace:*",
     "@aku11i/phantom-git": "workspace:*",
-    "@aku11i/phantom-mcp": "workspace:*",
     "@aku11i/phantom-process": "workspace:*",
     "@aku11i/phantom-shared": "workspace:*"
   }

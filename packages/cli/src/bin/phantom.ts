@@ -7,6 +7,7 @@ import { createHandler } from "../handlers/create.ts";
 import { deleteHandler } from "../handlers/delete.ts";
 import { execHandler } from "../handlers/exec.ts";
 import { listHandler } from "../handlers/list.ts";
+import { mcpHandler } from "../handlers/mcp.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
 import { whereHandler } from "../handlers/where.ts";
@@ -17,6 +18,7 @@ import { createHelp } from "../help/create.ts";
 import { deleteHelp } from "../help/delete.ts";
 import { execHelp } from "../help/exec.ts";
 import { listHelp } from "../help/list.ts";
+import { helpForMcp as mcpHelp } from "../help/mcp.ts";
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
@@ -83,6 +85,30 @@ const commands: Command[] = [
     description: "Generate shell completion scripts",
     handler: completionHandler,
     help: completionHelp,
+  },
+  {
+    name: "mcp",
+    description: "Manage MCP server for AI assistants",
+    handler: mcpHandler,
+    help: {
+      name: "mcp",
+      usage: "phantom mcp <subcommand> [options]",
+      description: "Manage MCP (Model Context Protocol) server for Phantom",
+      options: [
+        {
+          name: "help",
+          short: "h",
+          type: "boolean",
+          description: "Show help message",
+        },
+      ],
+      notes: [
+        "Subcommands:",
+        "  serve    Start the MCP server with stdio transport",
+        "",
+        "The MCP server allows AI assistants to manage Git worktrees through the Model Context Protocol.",
+      ],
+    },
   },
 ];
 
