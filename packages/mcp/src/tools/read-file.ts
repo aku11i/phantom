@@ -5,7 +5,7 @@ import { getGitRoot } from "@aku11i/phantom-git";
 import type { Tool } from "./types.js";
 
 export const readFileTool: Tool = {
-  name: "phantom_read_file",
+  name: "phantom_read_file_from_worktree",
   description: "Read a file from a specific worktree",
   inputSchema: {
     type: "object",

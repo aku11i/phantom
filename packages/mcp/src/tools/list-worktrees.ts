@@ -4,7 +4,7 @@ import { isOk } from "@aku11i/phantom-shared";
 import type { Tool } from "./types.js";
 
 export const listWorktreesTool: Tool = {
-  name: "phantom_list",
+  name: "phantom_list_worktrees",
   description: "List all Git worktrees (phantoms)",
   inputSchema: {
     type: "object",

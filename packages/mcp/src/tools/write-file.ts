@@ -5,7 +5,7 @@ import { getGitRoot } from "@aku11i/phantom-git";
 import type { Tool } from "./types.js";
 
 export const writeFileTool: Tool = {
-  name: "phantom_write_file",
+  name: "phantom_write_file_to_worktree",
   description: "Write a file to a specific worktree",
   inputSchema: {
     type: "object",

@@ -4,7 +4,7 @@ import { isOk } from "@aku11i/phantom-shared";
 import type { Tool } from "./types.js";
 
 export const execCommandTool: Tool = {
-  name: "phantom_exec",
+  name: "phantom_exec_in_worktree",
   description: "Execute a command in a specific worktree",
   inputSchema: {
     type: "object",

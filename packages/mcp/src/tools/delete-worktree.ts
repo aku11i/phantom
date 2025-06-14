@@ -4,7 +4,7 @@ import { isOk } from "@aku11i/phantom-shared";
 import type { Tool } from "./types.js";
 
 export const deleteWorktreeTool: Tool = {
-  name: "phantom_delete",
+  name: "phantom_delete_worktree",
   description: "Delete a Git worktree (phantom)",
   inputSchema: {
     type: "object",
