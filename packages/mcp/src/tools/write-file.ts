@@ -2,34 +2,20 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { getWorktreePath } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
+import { z } from "zod";
 import type { Tool } from "./types.js";
 
-export const writeFileTool: Tool = {
+const schema = z.object({
+  name: z.string().describe("Name of the worktree"),
+  path: z.string().describe("Relative path to the file within the worktree"),
+  content: z.string().describe("Content to write to the file"),
+});
+
+export const writeFileTool: Tool<typeof schema> = {
   name: "phantom_write_file_to_worktree",
   description: "Write a file to a specific worktree",
-  inputSchema: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        description: "Name of the worktree",
-      },
-      path: {
-        type: "string",
-        description: "Relative path to the file within the worktree",
-      },
-      content: {
-        type: "string",
-        description: "Content to write to the file",
-      },
-    },
-    required: ["name", "path", "content"],
-  },
-  handler: async (args) => {
-    const name = args.name as string;
-    const path = args.path as string;
-    const content = args.content as string;
-
+  inputSchema: schema,
+  handler: async ({ name, path, content }) => {
     const gitRoot = await getGitRoot();
     const worktreePath = getWorktreePath(gitRoot, name);
     const filePath = join(worktreePath, path);

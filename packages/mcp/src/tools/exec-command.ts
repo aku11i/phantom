@@ -1,42 +1,25 @@
 import { execInWorktree } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
+import { z } from "zod";
 import type { Tool } from "./types.js";
 
-export const execCommandTool: Tool = {
+const schema = z.object({
+  name: z.string().describe("Name of the worktree to execute command in"),
+  command: z.string().describe("Command to execute"),
+  args: z.array(z.string()).optional().describe("Command arguments"),
+});
+
+export const execCommandTool: Tool<typeof schema> = {
   name: "phantom_exec_in_worktree",
   description: "Execute a command in a specific worktree",
-  inputSchema: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        description: "Name of the worktree to execute command in",
-      },
-      command: {
-        type: "string",
-        description: "Command to execute",
-      },
-      args: {
-        type: "array",
-        items: {
-          type: "string",
-        },
-        description: "Command arguments",
-      },
-    },
-    required: ["name", "command"],
-  },
-  handler: async (args) => {
-    const name = args.name as string;
-    const command = args.command as string;
-    const commandArgs = (args.args as string[]) || [];
-
+  inputSchema: schema,
+  handler: async ({ name, command, args }) => {
     const gitRoot = await getGitRoot();
     const result = await execInWorktree(
       gitRoot,
       name,
-      [command, ...commandArgs],
+      [command, ...(args || [])],
       { interactive: false },
     );
 

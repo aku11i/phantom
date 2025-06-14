@@ -2,29 +2,19 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getWorktreePath } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
+import { z } from "zod";
 import type { Tool } from "./types.js";
 
-export const readFileTool: Tool = {
+const schema = z.object({
+  name: z.string().describe("Name of the worktree"),
+  path: z.string().describe("Relative path to the file within the worktree"),
+});
+
+export const readFileTool: Tool<typeof schema> = {
   name: "phantom_read_file_from_worktree",
   description: "Read a file from a specific worktree",
-  inputSchema: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        description: "Name of the worktree",
-      },
-      path: {
-        type: "string",
-        description: "Relative path to the file within the worktree",
-      },
-    },
-    required: ["name", "path"],
-  },
-  handler: async (args) => {
-    const name = args.name as string;
-    const path = args.path as string;
-
+  inputSchema: schema,
+  handler: async ({ name, path }) => {
     const gitRoot = await getGitRoot();
     const worktreePath = getWorktreePath(gitRoot, name);
     const filePath = join(worktreePath, path);

@@ -1,15 +1,15 @@
 import { listWorktrees } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
+import { z } from "zod";
 import type { Tool } from "./types.js";
 
-export const listWorktreesTool: Tool = {
+const schema = z.object({});
+
+export const listWorktreesTool: Tool<typeof schema> = {
   name: "phantom_list_worktrees",
   description: "List all Git worktrees (phantoms)",
-  inputSchema: {
-    type: "object",
-    properties: {},
-  },
+  inputSchema: schema,
   handler: async () => {
     const gitRoot = await getGitRoot();
     const result = await listWorktrees(gitRoot);

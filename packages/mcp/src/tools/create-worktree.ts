@@ -1,29 +1,24 @@
 import { createWorktree } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
+import { z } from "zod";
 import type { Tool } from "./types.js";
 
-export const createWorktreeTool: Tool = {
+const schema = z.object({
+  name: z
+    .string()
+    .describe("Name for the worktree (also used as the branch name)"),
+  baseBranch: z
+    .string()
+    .optional()
+    .describe("Base branch to create from (optional)"),
+});
+
+export const createWorktreeTool: Tool<typeof schema> = {
   name: "phantom_create_worktree",
   description: "Create a new Git worktree (phantom)",
-  inputSchema: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        description: "Name for the worktree (also used as the branch name)",
-      },
-      baseBranch: {
-        type: "string",
-        description: "Base branch to create from (optional)",
-      },
-    },
-    required: ["name"],
-  },
-  handler: async (args) => {
-    const name = args.name as string;
-    const baseBranch = args.baseBranch as string | undefined;
-
+  inputSchema: schema,
+  handler: async ({ name, baseBranch }) => {
     const gitRoot = await getGitRoot();
     const result = await createWorktree(gitRoot, name, {
       branch: name,

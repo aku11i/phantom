@@ -82,6 +82,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.6
         version: 1.12.3
+      zod:
+        specifier: ^3.25.64
+        version: 3.25.64
 
   packages/process:
     dependencies:

@@ -1,10 +1,8 @@
-export interface Tool {
+import type { z } from "zod";
+
+export interface Tool<TSchema extends z.ZodType = z.ZodType> {
   name: string;
   description: string;
-  inputSchema: {
-    type: "object";
-    properties: Record<string, unknown>;
-    required?: string[];
-  };
-  handler: (args: Record<string, unknown>) => Promise<unknown>;
+  inputSchema: TSchema;
+  handler: (args: z.infer<TSchema>) => Promise<unknown>;
 }

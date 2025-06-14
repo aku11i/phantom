@@ -1,29 +1,22 @@
 import { deleteWorktree } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
+import { z } from "zod";
 import type { Tool } from "./types.js";
 
-export const deleteWorktreeTool: Tool = {
+const schema = z.object({
+  name: z.string().describe("Name of the worktree to delete"),
+  force: z
+    .boolean()
+    .optional()
+    .describe("Force deletion even if there are uncommitted changes"),
+});
+
+export const deleteWorktreeTool: Tool<typeof schema> = {
   name: "phantom_delete_worktree",
   description: "Delete a Git worktree (phantom)",
-  inputSchema: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        description: "Name of the worktree to delete",
-      },
-      force: {
-        type: "boolean",
-        description: "Force deletion even if there are uncommitted changes",
-      },
-    },
-    required: ["name"],
-  },
-  handler: async (args) => {
-    const name = args.name as string;
-    const force = args.force as boolean | undefined;
-
+  inputSchema: schema,
+  handler: async ({ name, force }) => {
     const gitRoot = await getGitRoot();
     const result = await deleteWorktree(gitRoot, name, { force });
 
