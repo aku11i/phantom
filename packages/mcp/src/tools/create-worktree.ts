@@ -11,12 +11,7 @@ export const createWorktreeTool: Tool = {
     properties: {
       name: {
         type: "string",
-        description: "Name for the new worktree",
-      },
-      branch: {
-        type: "string",
-        description:
-          "Branch name for the worktree (optional, defaults to name)",
+        description: "Name for the worktree (also used as the branch name)",
       },
       baseBranch: {
         type: "string",
@@ -27,12 +22,11 @@ export const createWorktreeTool: Tool = {
   },
   handler: async (args) => {
     const name = args.name as string;
-    const branch = args.branch as string | undefined;
     const baseBranch = args.baseBranch as string | undefined;
 
     const gitRoot = await getGitRoot();
     const result = await createWorktree(gitRoot, name, {
-      branch,
+      branch: name,
       commitish: baseBranch,
     });
 
