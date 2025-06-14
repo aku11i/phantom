@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "prebuild": "git clean -fdx dist",
     "build": "node build.ts",
