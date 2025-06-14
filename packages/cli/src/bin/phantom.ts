@@ -18,7 +18,7 @@ import { createHelp } from "../help/create.ts";
 import { deleteHelp } from "../help/delete.ts";
 import { execHelp } from "../help/exec.ts";
 import { listHelp } from "../help/list.ts";
-import { helpForMcp as mcpHelp } from "../help/mcp.ts";
+import { mcpHelp } from "../help/mcp.ts";
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";

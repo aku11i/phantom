@@ -1,7 +1,7 @@
 import { exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
-export function helpForMcp(): void {
+export function mcpHelp(): void {
   output.log(`Usage: phantom mcp <subcommand> [options]
 
 Manage MCP (Model Context Protocol) server for Phantom

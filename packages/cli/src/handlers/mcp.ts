@@ -1,7 +1,7 @@
 import { parseArgs } from "node:util";
 import { serve } from "@aku11i/phantom-mcp";
 import { exitWithError } from "../errors.ts";
-import { helpForMcp } from "../help/mcp.ts";
+import { mcpHelp } from "../help/mcp.ts";
 
 export async function mcpHandler(args: string[] = []): Promise<void> {
   const { values, positionals } = parseArgs({
@@ -17,7 +17,7 @@ export async function mcpHandler(args: string[] = []): Promise<void> {
   });
 
   if (values.help) {
-    helpForMcp();
+    mcpHelp();
     return;
   }
 
