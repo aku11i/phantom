@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "phantom": "node --no-warnings --experimental-strip-types src/bin/phantom.ts",
     "prebuild": "git clean -fdx dist",
     "build": "node build.ts",
     "typecheck": "tsc --noEmit",

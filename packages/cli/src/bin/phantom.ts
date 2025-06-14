@@ -90,25 +90,7 @@ const commands: Command[] = [
     name: "mcp",
     description: "Manage MCP server for AI assistants",
     handler: mcpHandler,
-    help: {
-      name: "mcp",
-      usage: "phantom mcp <subcommand> [options]",
-      description: "Manage MCP (Model Context Protocol) server for Phantom",
-      options: [
-        {
-          name: "help",
-          short: "h",
-          type: "boolean",
-          description: "Show help message",
-        },
-      ],
-      notes: [
-        "Subcommands:",
-        "  serve    Start the MCP server with stdio transport",
-        "",
-        "The MCP server allows AI assistants to manage Git worktrees through the Model Context Protocol.",
-      ],
-    },
+    help: mcpHelp,
   },
 ];
 

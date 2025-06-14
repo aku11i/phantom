@@ -2,7 +2,7 @@ import { listWorktrees } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
-import type { Tool } from "./types.js";
+import type { Tool } from "./types.ts";
 
 const schema = z.object({});
 

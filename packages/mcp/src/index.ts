@@ -1,9 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import packageJson from "../package.json" with { type: "json" };
-import { createWorktreeTool } from "./tools/create-worktree.js";
-import { deleteWorktreeTool } from "./tools/delete-worktree.js";
-import { listWorktreesTool } from "./tools/list-worktrees.js";
+import { createWorktreeTool } from "./tools/create-worktree.ts";
+import { deleteWorktreeTool } from "./tools/delete-worktree.ts";
+import { listWorktreesTool } from "./tools/list-worktrees.ts";
 
 const server = new McpServer({
   name: "Phantom MCP Server",

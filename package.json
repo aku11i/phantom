@@ -10,7 +10,8 @@
     "fix": "biome check --write .",
     "typecheck": "pnpm -r typecheck",
     "ready": "pnpm fix && pnpm typecheck && pnpm test",
-    "ready:check": "pnpm lint && pnpm typecheck && pnpm test"
+    "ready:check": "pnpm lint && pnpm typecheck && pnpm test",
+    "phantom": "pnpm --filter @aku11i/phantom-cli run phantom"
   },
   "engines": {
     "node": ">=22.0.0"

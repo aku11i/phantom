@@ -1,6 +1,7 @@
 import { parseArgs } from "node:util";
 import { serve } from "@aku11i/phantom-mcp";
 import { exitWithError } from "../errors.ts";
+import { helpFormatter } from "../help.ts";
 import { mcpHelp } from "../help/mcp.ts";
 
 export async function mcpHandler(args: string[] = []): Promise<void> {
@@ -17,14 +18,19 @@ export async function mcpHandler(args: string[] = []): Promise<void> {
   });
 
   if (values.help) {
-    mcpHelp();
+    console.log(helpFormatter.formatCommandHelp(mcpHelp));
+    return;
+  }
+
+  if (positionals.length === 0) {
+    console.log(helpFormatter.formatCommandHelp(mcpHelp));
     return;
   }
 
   const [subcommand] = positionals;
 
   if (subcommand !== "serve") {
-    exitWithError(`Unknown subcommand: ${subcommand || "(none)"}`);
+    exitWithError(`Unknown subcommand: ${subcommand}`);
   }
 
   try {
