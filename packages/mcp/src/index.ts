@@ -13,48 +13,25 @@ const server = new McpServer({
   version: packageJson.version,
 });
 
+// Define all tools
+const tools = [
+  createWorktreeTool,
+  listWorktreesTool,
+  deleteWorktreeTool,
+  execCommandTool,
+  readFileTool,
+  writeFileTool,
+];
+
 // Register tools
-server.tool(
-  createWorktreeTool.name,
-  createWorktreeTool.description,
-  createWorktreeTool.inputSchema.shape,
-  createWorktreeTool.handler,
-);
-
-server.tool(
-  listWorktreesTool.name,
-  listWorktreesTool.description,
-  listWorktreesTool.inputSchema.shape,
-  listWorktreesTool.handler,
-);
-
-server.tool(
-  deleteWorktreeTool.name,
-  deleteWorktreeTool.description,
-  deleteWorktreeTool.inputSchema.shape,
-  deleteWorktreeTool.handler,
-);
-
-server.tool(
-  execCommandTool.name,
-  execCommandTool.description,
-  execCommandTool.inputSchema.shape,
-  execCommandTool.handler,
-);
-
-server.tool(
-  readFileTool.name,
-  readFileTool.description,
-  readFileTool.inputSchema.shape,
-  readFileTool.handler,
-);
-
-server.tool(
-  writeFileTool.name,
-  writeFileTool.description,
-  writeFileTool.inputSchema.shape,
-  writeFileTool.handler,
-);
+for (const tool of tools) {
+  server.tool(
+    tool.name,
+    tool.description,
+    tool.inputSchema.shape,
+    tool.handler,
+  );
+}
 
 export async function serve() {
   const transport = new StdioServerTransport();
