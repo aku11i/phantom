@@ -80,7 +80,7 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@modelcontextprotocol/sdk':
-        specifier: ^1.0.6
+        specifier: ^1.12.3
         version: 1.12.3
       zod:
         specifier: ^3.25.64
