@@ -30,6 +30,7 @@ export const listWorktreesTool: Tool<typeof schema> = {
                 branch: wt.branch,
                 isClean: wt.isClean,
               })),
+              note: `You can switch to a worktree using 'cd <path>'`,
             },
             null,
             2,

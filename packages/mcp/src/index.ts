@@ -3,10 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import packageJson from "../package.json" with { type: "json" };
 import { createWorktreeTool } from "./tools/create-worktree.js";
 import { deleteWorktreeTool } from "./tools/delete-worktree.js";
-import { execCommandTool } from "./tools/exec-command.js";
 import { listWorktreesTool } from "./tools/list-worktrees.js";
-import { readFileTool } from "./tools/read-file.js";
-import { writeFileTool } from "./tools/write-file.js";
 
 const server = new McpServer({
   name: "Phantom MCP Server",
@@ -14,14 +11,7 @@ const server = new McpServer({
 });
 
 // Define all tools
-const tools = [
-  createWorktreeTool,
-  listWorktreesTool,
-  deleteWorktreeTool,
-  execCommandTool,
-  readFileTool,
-  writeFileTool,
-];
+const tools = [createWorktreeTool, listWorktreesTool, deleteWorktreeTool];
 
 // Register tools
 for (const tool of tools) {

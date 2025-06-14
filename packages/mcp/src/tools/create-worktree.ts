@@ -36,11 +36,9 @@ export const createWorktreeTool: Tool<typeof schema> = {
           text: JSON.stringify(
             {
               success: true,
-              message: result.value.message,
+              message: `Worktree '${name}' created successfully.`,
               path: result.value.path,
-              copiedFiles: result.value.copiedFiles,
-              skippedFiles: result.value.skippedFiles,
-              copyError: result.value.copyError,
+              note: `You can now switch to the worktree using 'cd ${result.value.path}'`,
             },
             null,
             2,
