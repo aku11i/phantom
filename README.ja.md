@@ -37,6 +37,8 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 brew install aku11i/tap/phantom
 ```
 
+> **注意:** Homebrewでインストールした場合、FishとZshのシェル補完は自動的にインストールされます。Bashの補完については、下記の[シェル補完](#シェル補完)セクションを参照してください。
+
 #### npmを使用
 
 ```bash
@@ -81,6 +83,15 @@ Phantomはコマンドラインツールとしての完璧な機能を備えて�
 #### シェル補完
 
 Phantomはfish,zsh,bashの完全なシェル補完をサポートしています。タブキーでコマンドやworktree名を補完できます。
+
+Homebrewでインストールした場合、FishとZshの補完は自動的にインストールされます。Bashの場合は手動でセットアップする必要があります：
+
+```bash
+# 前提条件: bash-completion v2がインストールされている必要があります
+
+# Bash用（.bashrcまたは.bash_profileに追加）
+eval "$(phantom completion bash)"
+```
 
 #### tmux統合
 

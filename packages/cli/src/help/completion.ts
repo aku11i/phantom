@@ -7,7 +7,8 @@ export const completionHelp: CommandHelp = {
   examples: [
     {
       command: "phantom completion fish | source",
-      description: "Load Fish completion in current session",
+      description:
+        "Load Fish completion (add to ~/.config/fish/config.fish for persistence)",
     },
     {
       command: 'eval "$(phantom completion zsh)"',
@@ -20,7 +21,7 @@ export const completionHelp: CommandHelp = {
   ],
   notes: [
     "Supported shells: fish, zsh, bash",
-    "For Fish: use 'source' to load in current session",
+    "For Fish: add the source command to ~/.config/fish/config.fish for persistence",
     "For Zsh: add the eval command to your .zshrc for persistence",
     "For Bash: requires bash-completion v2, add the eval command to your .bashrc for persistence",
   ],
