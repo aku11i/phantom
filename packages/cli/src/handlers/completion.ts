@@ -2,7 +2,7 @@ import { exit } from "node:process";
 import { output } from "../output.ts";
 
 const FISH_COMPLETION_SCRIPT = `# Fish completion for phantom
-# Place this in ~/.config/fish/completions/phantom.fish
+# Load with: phantom completion fish | source
 
 function __phantom_list_worktrees
     phantom list --names 2>/dev/null
@@ -91,8 +91,7 @@ complete -c phantom -n "__phantom_using_command completion" -a "fish zsh bash" -
 
 const ZSH_COMPLETION_SCRIPT = `#compdef phantom
 # Zsh completion for phantom
-# Place this in a directory in your $fpath (e.g., ~/.zsh/completions/)
-# Or load dynamically with: eval "$(phantom completion zsh)"
+# Load with: eval "$(phantom completion zsh)"
 
 # Only define the function, don't execute it
 _phantom() {
@@ -193,8 +192,7 @@ if [[ -n \${ZSH_VERSION} ]]; then
 fi`;
 
 const BASH_COMPLETION_SCRIPT = `# Bash completion for phantom
-# Place this in /etc/bash_completion.d/phantom or ~/.bash_completion
-# Or load dynamically with: eval "$(phantom completion bash)"
+# Load with: eval "$(phantom completion bash)"
 
 _phantom_list_worktrees() {
     phantom list --names 2>/dev/null || true
