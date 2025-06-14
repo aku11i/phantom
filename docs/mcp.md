@@ -158,13 +158,14 @@ Build features step by step based on user instructions:
 User: "Implement a basic blog system with CRUD operations"
 
 AI Agent:
-1. Implements basic blog CRUD functionality in main branch
-2. Tests and confirms basic features work
+1. phantom_create_worktree("blog-basic")
+2. Implements basic blog CRUD functionality
+3. Tests and confirms basic features work
 
 User: "Now add a commenting system in a new worktree"
 
 AI Agent:
-1. phantom_create_worktree("blog-comments", baseBranch: "main")
+1. phantom_create_worktree("blog-comments", baseBranch: "blog-basic")
 2. Switches to blog-comments worktree
 3. Implements commenting system on top of basic blog
 4. Tests commenting features independently
