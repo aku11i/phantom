@@ -1,6 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
 import packageJson from "../package.json" with { type: "json" };
 import { createWorktreeTool } from "./tools/create-worktree.js";
 import { deleteWorktreeTool } from "./tools/delete-worktree.js";
@@ -16,16 +15,9 @@ const server = new McpServer({
 
 // Register tools
 server.tool(
-  "phantom_create_worktree",
-  {
-    name: z
-      .string()
-      .describe("Name for the worktree (also used as the branch name)"),
-    baseBranch: z
-      .string()
-      .optional()
-      .describe("Base branch to create from (optional)"),
-  },
+  createWorktreeTool.name,
+  createWorktreeTool.description,
+  createWorktreeTool.inputSchema.shape,
   async (args) => {
     const result = await createWorktreeTool.handler(args);
     return {
@@ -39,27 +31,27 @@ server.tool(
   },
 );
 
-server.tool("phantom_list_worktrees", {}, async (args) => {
-  const result = await listWorktreesTool.handler(args);
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify(result, null, 2),
-      },
-    ],
-  };
-});
+server.tool(
+  listWorktreesTool.name,
+  listWorktreesTool.description,
+  listWorktreesTool.inputSchema.shape,
+  async (args) => {
+    const result = await listWorktreesTool.handler(args);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(result, null, 2),
+        },
+      ],
+    };
+  },
+);
 
 server.tool(
-  "phantom_delete_worktree",
-  {
-    name: z.string().describe("Name of the worktree to delete"),
-    force: z
-      .boolean()
-      .optional()
-      .describe("Force deletion even if there are uncommitted changes"),
-  },
+  deleteWorktreeTool.name,
+  deleteWorktreeTool.description,
+  deleteWorktreeTool.inputSchema.shape,
   async (args) => {
     const result = await deleteWorktreeTool.handler(args);
     return {
@@ -74,12 +66,9 @@ server.tool(
 );
 
 server.tool(
-  "phantom_exec_in_worktree",
-  {
-    name: z.string().describe("Name of the worktree to execute command in"),
-    command: z.string().describe("Command to execute"),
-    args: z.array(z.string()).optional().describe("Command arguments"),
-  },
+  execCommandTool.name,
+  execCommandTool.description,
+  execCommandTool.inputSchema.shape,
   async (args) => {
     const result = await execCommandTool.handler(args);
     return {
@@ -94,11 +83,9 @@ server.tool(
 );
 
 server.tool(
-  "phantom_read_file_from_worktree",
-  {
-    name: z.string().describe("Name of the worktree"),
-    path: z.string().describe("Relative path to the file within the worktree"),
-  },
+  readFileTool.name,
+  readFileTool.description,
+  readFileTool.inputSchema.shape,
   async (args) => {
     const result = await readFileTool.handler(args);
     return {
@@ -113,12 +100,9 @@ server.tool(
 );
 
 server.tool(
-  "phantom_write_file_to_worktree",
-  {
-    name: z.string().describe("Name of the worktree"),
-    path: z.string().describe("Relative path to the file within the worktree"),
-    content: z.string().describe("Content to write to the file"),
-  },
+  writeFileTool.name,
+  writeFileTool.description,
+  writeFileTool.inputSchema.shape,
   async (args) => {
     const result = await writeFileTool.handler(args);
     return {
