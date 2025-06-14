@@ -39,6 +39,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
 
+  packages/cli/dist: {}
+
   packages/core:
     dependencies:
       '@aku11i/phantom-git':

@@ -1,0 +1,30 @@
+{
+  "name": "@aku11i/phantom",
+  "version": "1.0.0",
+  "description": "A powerful CLI tool for managing Git worktrees for parallel development",
+  "keywords": [
+    "git",
+    "worktree",
+    "cli",
+    "phantom",
+    "workspace",
+    "development",
+    "parallel"
+  ],
+  "homepage": "https://github.com/aku11i/phantom#readme",
+  "bugs": {
+    "url": "https://github.com/aku11i/phantom/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aku11i/phantom.git"
+  },
+  "license": "MIT",
+  "author": "aku11i",
+  "type": "module",
+  "bin": {
+    "phantom": "./phantom.js"
+  },
+  "files": ["phantom.js", "README.md", "README.ja.md", "LICENSE"],
+  "dependencies": {}
+}

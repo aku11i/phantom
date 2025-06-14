@@ -4,6 +4,3 @@ Thumbs.db
 
 # Dependencies
 node_modules
-
-# Build output
-dist
