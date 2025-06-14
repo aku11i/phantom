@@ -51,7 +51,7 @@ export const createHelp: CommandHelp = {
       type: "string",
       description:
         "Branch or commit to create the new worktree from (defaults to HEAD)",
-      example: "--base main, --base origin/feature, --base abc123",
+      example: "--base main, --base origin/release, --base feature",
     },
   ],
   examples: [
