@@ -28,7 +28,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🔍 **Interactive selection with fzf** - Use built-in fzf option for worktree selection
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
 - 🤖 **MCP Integration** - AI autonomously manages worktrees for parallel development
-- ⚡ **Zero dependencies** - Fast and lightweight
+- ⚡ **Fast and lightweight** - Minimal external dependencies
 
 ## 🚀 Installation
 
