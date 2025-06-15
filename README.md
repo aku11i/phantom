@@ -27,6 +27,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🪟 **Built-in tmux integration** - Open worktrees in new panes or windows
 - 🔍 **Interactive selection with fzf** - Use built-in fzf option for worktree selection
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
+- 🐙 **GitHub Integration** - Create worktrees directly from GitHub PRs and issues
 - 🤖 **MCP Integration** - AI autonomously manages worktrees for parallel development
 - ⚡ **Fast and lightweight** - Minimal external dependencies
 
