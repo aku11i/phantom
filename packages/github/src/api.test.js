@@ -67,7 +67,7 @@ describe("api", () => {
           head: { ref: "feature" },
         },
       };
-      
+
       if (isPullRequest(issue)) {
         // TypeScript should know pullRequest is defined here
         equal(issue.pullRequest.number, 125);

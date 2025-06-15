@@ -87,10 +87,7 @@ export async function fetchIssue(
 
     let pullRequest: GitHubPullRequest | undefined;
     if (data.pull_request) {
-      const prNumber = data.pull_request.url
-        ? String(numberSchema.parse(data.pull_request.url.split("/").pop()))
-        : "0";
-      const pr = await fetchPullRequest(owner, repo, prNumber);
+      const pr = await fetchPullRequest(owner, repo, number);
       if (pr) {
         pullRequest = pr;
       }
