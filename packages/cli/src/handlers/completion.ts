@@ -91,7 +91,7 @@ complete -c phantom -n "__phantom_using_command shell" -a "(__phantom_list_workt
 complete -c phantom -n "__phantom_using_command completion" -a "fish zsh bash" -d "Shell type"
 
 # mcp command options
-complete -c phantom -n "__phantom_using_command mcp" -a "start stop" -d "MCP server action"`;
+complete -c phantom -n "__phantom_using_command mcp" -a "serve" -d "Start MCP server"`;
 
 const ZSH_COMPLETION_SCRIPT = `#compdef phantom
 # Zsh completion for phantom
@@ -187,7 +187,7 @@ _phantom() {
                     ;;
                 mcp)
                     _arguments \\
-                        '1:action:(start stop)'
+                        '1:action:(serve)'
                     ;;
             esac
             ;;
