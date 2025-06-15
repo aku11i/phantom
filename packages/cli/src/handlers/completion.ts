@@ -346,7 +346,7 @@ _phantom_completion() {
             return 0
             ;;
         mcp)
-            local actions="start stop"
+            local actions="serve"
             COMPREPLY=( \$(compgen -W "\${actions}" -- "\${cur}") )
             return 0
             ;;
