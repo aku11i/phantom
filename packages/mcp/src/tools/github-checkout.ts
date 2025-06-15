@@ -1,5 +1,3 @@
-import { join } from "node:path";
-import { getGitRoot } from "@aku11i/phantom-git";
 import { githubCheckout } from "@aku11i/phantom-github";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
@@ -25,16 +23,6 @@ export const githubCheckoutTool: Tool<typeof schema> = {
       throw new Error(result.error.message);
     }
 
-    const gitRoot = await getGitRoot();
-    const worktreeName = number.startsWith("pr-") ? number : `issue-${number}`;
-    const worktrePath = join(
-      gitRoot,
-      ".git",
-      "phantom",
-      "worktrees",
-      worktreeName,
-    );
-
     return {
       content: [
         {
@@ -43,11 +31,11 @@ export const githubCheckoutTool: Tool<typeof schema> = {
             {
               success: true,
               message: result.value.message,
-              worktree: worktreeName,
-              path: worktrePath,
+              worktree: result.value.worktree,
+              path: result.value.path,
               note: result.value.alreadyExists
                 ? "Worktree already exists"
-                : `You can now switch to the worktree using 'cd ${worktrePath}'`,
+                : `You can now switch to the worktree using 'cd ${result.value.path}'`,
             },
             null,
             2,
