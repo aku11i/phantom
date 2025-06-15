@@ -23,6 +23,11 @@ export function isPullRequest(
   return issue.pullRequest !== undefined;
 }
 
+const repoInfoSchema = z.object({
+  owner: z.string(),
+  repo: z.string(),
+});
+
 export async function getGitHubRepoInfo(): Promise<{
   owner: string;
   repo: string;
@@ -35,7 +40,10 @@ export async function getGitHubRepoInfo(): Promise<{
       "owner,name",
     ]);
     const data = JSON.parse(stdout);
-    return { owner: data.owner.login, repo: data.name };
+    return repoInfoSchema.parse({
+      owner: data.owner.login,
+      repo: data.name,
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to get repository info: ${errorMessage}`);
