@@ -104,6 +104,9 @@ importers:
       '@aku11i/phantom-git':
         specifier: workspace:*
         version: link:../git
+      '@aku11i/phantom-github':
+        specifier: workspace:*
+        version: link:../github
       '@aku11i/phantom-process':
         specifier: workspace:*
         version: link:../process
