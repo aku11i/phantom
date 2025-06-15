@@ -6,7 +6,7 @@ test("githubCheckoutTool has correct metadata", () => {
   equal(githubCheckoutTool.name, "phantom_github_checkout");
   equal(
     githubCheckoutTool.description,
-    "Checkout a GitHub issue or pull request by number",
+    "Checkout a GitHub issue or pull request by number into a new worktree",
   );
 });
 
