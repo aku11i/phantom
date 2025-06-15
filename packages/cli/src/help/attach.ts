@@ -3,7 +3,7 @@ import type { CommandHelp } from "../help.ts";
 export const attachHelp: CommandHelp = {
   name: "attach",
   description: "Attach to an existing branch by creating a new worktree",
-  usage: "phantom attach <worktree-name> <branch-name> [options]",
+  usage: "phantom attach <branch-name> [options]",
   options: [
     {
       name: "shell",
@@ -22,20 +22,20 @@ export const attachHelp: CommandHelp = {
   examples: [
     {
       description: "Attach to an existing branch",
-      command: "phantom attach review-pr main",
+      command: "phantom attach main",
     },
     {
-      description: "Attach to a remote branch and open a shell",
-      command: "phantom attach hotfix origin/hotfix-v1.2 --shell",
+      description: "Attach to a branch and open a shell",
+      command: "phantom attach feature-branch --shell",
     },
     {
       description: "Attach to a branch and pull latest changes",
-      command: "phantom attach staging origin/staging --exec 'git pull'",
+      command: "phantom attach develop --exec 'git pull'",
     },
   ],
   notes: [
-    "The branch must already exist (locally or remotely)",
-    "If attaching to a remote branch, it will be checked out locally",
+    "The branch must already exist locally",
+    "To work with remote branches, first checkout the branch with git",
     "Only one of --shell or --exec options can be used at a time",
   ],
 };

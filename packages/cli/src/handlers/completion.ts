@@ -140,8 +140,7 @@ _phantom() {
                     _arguments \\
                         '--shell[Open an interactive shell in the worktree after attaching (-s)]' \\
                         '--exec[Execute a command in the worktree after attaching (-x)]:command:' \\
-                        '1:worktree-name:' \\
-                        '2:branch-name:'
+                        '1:branch-name:'
                     ;;
                 list)
                     _arguments \\
@@ -253,10 +252,7 @@ _phantom_completion() {
                     ;;
                 *)
                     if [[ \${cword} -eq 2 ]]; then
-                        # First argument: worktree name (not completing existing ones)
-                        return 0
-                    elif [[ \${cword} -eq 3 ]]; then
-                        # Second argument: branch name (not completing - user needs to provide)
+                        # First argument: branch name (not completing - user needs to provide)
                         return 0
                     else
                         local opts="--shell --exec"
