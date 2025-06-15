@@ -6,6 +6,7 @@ import { completionHandler } from "../handlers/completion.ts";
 import { createHandler } from "../handlers/create.ts";
 import { deleteHandler } from "../handlers/delete.ts";
 import { execHandler } from "../handlers/exec.ts";
+import { fzfHandler } from "../handlers/fzf.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
 import { shellHandler } from "../handlers/shell.ts";
@@ -17,6 +18,7 @@ import { completionHelp } from "../help/completion.ts";
 import { createHelp } from "../help/create.ts";
 import { deleteHelp } from "../help/delete.ts";
 import { execHelp } from "../help/exec.ts";
+import { fzfHelp } from "../help/fzf.ts";
 import { listHelp } from "../help/list.ts";
 import { mcpHelp } from "../help/mcp.ts";
 import { shellHelp } from "../help/shell.ts";
@@ -73,6 +75,12 @@ const commands: Command[] = [
     description: "Open an interactive shell in a worktree directory",
     handler: shellHandler,
     help: shellHelp,
+  },
+  {
+    name: "fzf",
+    description: "Interactive interface for managing worktrees",
+    handler: fzfHandler,
+    help: fzfHelp,
   },
   {
     name: "version",
