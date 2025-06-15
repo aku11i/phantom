@@ -6,6 +6,8 @@ import { completionHandler } from "../handlers/completion.ts";
 import { createHandler } from "../handlers/create.ts";
 import { deleteHandler } from "../handlers/delete.ts";
 import { execHandler } from "../handlers/exec.ts";
+import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
+import { githubHandler } from "../handlers/github.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
 import { shellHandler } from "../handlers/shell.ts";
@@ -17,6 +19,7 @@ import { completionHelp } from "../help/completion.ts";
 import { createHelp } from "../help/create.ts";
 import { deleteHelp } from "../help/delete.ts";
 import { execHelp } from "../help/exec.ts";
+import { githubCheckoutHelp, githubHelp } from "../help/github.ts";
 import { listHelp } from "../help/list.ts";
 import { mcpHelp } from "../help/mcp.ts";
 import { shellHelp } from "../help/shell.ts";
@@ -91,6 +94,34 @@ const commands: Command[] = [
     description: "Manage MCP server for AI assistants",
     handler: mcpHandler,
     help: mcpHelp,
+  },
+  {
+    name: "github",
+    description: "GitHub-specific commands for phantom",
+    handler: githubHandler,
+    help: githubHelp,
+    subcommands: [
+      {
+        name: "checkout",
+        description: "Create a worktree for a GitHub PR or issue",
+        handler: githubCheckoutHandler,
+        help: githubCheckoutHelp,
+      },
+    ],
+  },
+  {
+    name: "gh",
+    description: "GitHub-specific commands for phantom (alias)",
+    handler: githubHandler,
+    help: githubHelp,
+    subcommands: [
+      {
+        name: "checkout",
+        description: "Create a worktree for a GitHub PR or issue",
+        handler: githubCheckoutHandler,
+        help: githubCheckoutHelp,
+      },
+    ],
   },
 ];
 

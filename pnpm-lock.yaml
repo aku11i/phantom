@@ -36,6 +36,9 @@ importers:
       '@aku11i/phantom-git':
         specifier: workspace:*
         version: link:../git
+      '@aku11i/phantom-github':
+        specifier: workspace:*
+        version: link:../github
       '@aku11i/phantom-mcp':
         specifier: workspace:*
         version: link:../mcp
@@ -65,6 +68,21 @@ importers:
 
   packages/git:
     dependencies:
+      '@aku11i/phantom-process':
+        specifier: workspace:*
+        version: link:../process
+      '@aku11i/phantom-shared':
+        specifier: workspace:*
+        version: link:../shared
+
+  packages/github:
+    dependencies:
+      '@aku11i/phantom-core':
+        specifier: workspace:*
+        version: link:../core
+      '@aku11i/phantom-git':
+        specifier: workspace:*
+        version: link:../git
       '@aku11i/phantom-process':
         specifier: workspace:*
         version: link:../process
