@@ -19,6 +19,7 @@ export async function fetchPullRequest(
     });
     return {
       number: data.number,
+      isFromFork: data.head.repo.full_name !== data.base.repo.full_name,
       head: {
         ref: data.head.ref,
         repo: {

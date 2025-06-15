@@ -12,7 +12,18 @@ describe("isPullRequest", () => {
       number: 123,
       pullRequest: {
         number: 123,
-        head: { ref: "feature-branch" },
+        isFromFork: false,
+        head: {
+          ref: "feature-branch",
+          repo: {
+            full_name: "owner/repo",
+          },
+        },
+        base: {
+          repo: {
+            full_name: "owner/repo",
+          },
+        },
       },
     };
     equal(isPullRequest(issueWithPR), true);
@@ -30,7 +41,18 @@ describe("isPullRequest", () => {
       number: 125,
       pullRequest: {
         number: 125,
-        head: { ref: "feature" },
+        isFromFork: false,
+        head: {
+          ref: "feature",
+          repo: {
+            full_name: "owner/repo",
+          },
+        },
+        base: {
+          repo: {
+            full_name: "owner/repo",
+          },
+        },
       },
     };
 

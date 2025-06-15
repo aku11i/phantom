@@ -80,6 +80,7 @@ describe("fetchIssue", () => {
     createGitHubClientMock.mock.mockImplementation(async () => mockOctokit);
     fetchPullRequestMock.mock.mockImplementation(async () => ({
       number: 123,
+      isFromFork: false,
       head: {
         ref: "feature-branch",
         repo: {
@@ -98,6 +99,7 @@ describe("fetchIssue", () => {
       number: 123,
       pullRequest: {
         number: 123,
+        isFromFork: false,
         head: {
           ref: "feature-branch",
           repo: {

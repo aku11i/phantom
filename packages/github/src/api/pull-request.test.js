@@ -54,6 +54,7 @@ describe("fetchPullRequest", () => {
     const result = await fetchPullRequest("owner", "repo", "123");
     deepEqual(result, {
       number: 123,
+      isFromFork: false,
       head: {
         ref: "feature-branch",
         repo: {
@@ -141,6 +142,48 @@ describe("fetchPullRequest", () => {
       owner: "owner",
       repo: "repo",
       pull_number: 123, // Should be parsed to integer
+    });
+  });
+
+  it("should detect forked pull requests", async () => {
+    resetMocks();
+    mockOctokit = {
+      pulls: {
+        get: mock.fn(async () => ({
+          data: {
+            number: 456,
+            head: {
+              ref: "feature-branch",
+              repo: {
+                full_name: "contributor/fork-repo",
+              },
+            },
+            base: {
+              repo: {
+                full_name: "owner/original-repo",
+              },
+            },
+          },
+        })),
+      },
+    };
+    createGitHubClientMock.mock.mockImplementation(async () => mockOctokit);
+
+    const result = await fetchPullRequest("owner", "original-repo", "456");
+    deepEqual(result, {
+      number: 456,
+      isFromFork: true,
+      head: {
+        ref: "feature-branch",
+        repo: {
+          full_name: "contributor/fork-repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/original-repo",
+        },
+      },
     });
   });
 });

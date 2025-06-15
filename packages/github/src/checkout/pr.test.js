@@ -50,6 +50,7 @@ describe("checkoutPullRequest", () => {
     const mockGitRoot = "/path/to/repo";
     const mockPullRequest = {
       number: 123,
+      isFromFork: false,
       head: {
         ref: "feature-branch",
         repo: {
@@ -103,6 +104,7 @@ describe("checkoutPullRequest", () => {
     const mockGitRoot = "/path/to/repo";
     const mockPullRequest = {
       number: 456,
+      isFromFork: false,
       head: {
         ref: "existing-branch",
         repo: {
@@ -138,6 +140,7 @@ describe("checkoutPullRequest", () => {
     const mockGitRoot = "/path/to/repo";
     const mockPullRequest = {
       number: 789,
+      isFromFork: false,
       head: {
         ref: "error-branch",
         repo: {
@@ -173,6 +176,7 @@ describe("checkoutPullRequest", () => {
     const mockGitRoot = "/path/to/repo";
     const mockPullRequest = {
       number: 999,
+      isFromFork: false,
       head: {
         ref: "test-branch",
         repo: {
@@ -207,6 +211,7 @@ describe("checkoutPullRequest", () => {
     const mockGitRoot = "/path/to/repo";
     const mockPullRequest = {
       number: 1234,
+      isFromFork: true,
       head: {
         ref: "fork-feature",
         repo: {
@@ -251,6 +256,7 @@ describe("checkoutPullRequest", () => {
     const mockGitRoot = "/path/to/repo";
     const mockPullRequest = {
       number: 555,
+      isFromFork: false,
       head: {
         ref: "missing-branch",
         repo: {

@@ -140,7 +140,6 @@ describe("createGitHubClient", () => {
     equal(execFileAsyncMock.mock.calls.length, 1);
   });
 
-
   it("should propagate errors from getGitHubToken", async () => {
     resetMocks();
     const errorMessage = "Authentication failed";

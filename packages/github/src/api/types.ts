@@ -1,5 +1,6 @@
 export interface GitHubPullRequest {
   number: number;
+  isFromFork: boolean;
   head: {
     ref: string;
     repo: {

@@ -55,6 +55,8 @@ describe("checkoutIssue", () => {
     const mockIssue = {
       number: 123,
       pullRequest: {
+        number: 123,
+        isFromFork: false,
         head: {
           ref: "pr-branch",
           repo: {

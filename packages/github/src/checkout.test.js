@@ -76,6 +76,7 @@ describe("githubCheckout", () => {
     resetMocks();
     const mockPR = {
       number: 123,
+      isFromFork: false,
       head: {
         ref: "feature-branch",
         repo: {
@@ -119,6 +120,7 @@ describe("githubCheckout", () => {
     resetMocks();
     const mockPR = {
       number: 456,
+      isFromFork: false,
       head: {
         ref: "pr-branch",
         repo: {
@@ -221,6 +223,7 @@ describe("githubCheckout", () => {
     resetMocks();
     const mockPR = {
       number: 111,
+      isFromFork: false,
       head: {
         ref: "error-branch",
         repo: {
