@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { createGitHubClient } from "./client.ts";
 
 const execFileAsync = promisify(execFile);
 
@@ -13,7 +14,7 @@ export interface GitHubPullRequest {
 export interface GitHubIssue {
   number: number;
   pull_request?: {
-    url: string;
+    url: string | null;
   };
 }
 
@@ -42,13 +43,23 @@ export async function fetchPullRequest(
   number: string,
 ): Promise<GitHubPullRequest | null> {
   try {
-    const { stdout } = await execFileAsync("gh", [
-      "api",
-      `repos/${owner}/${repo}/pulls/${number}`,
-    ]);
-    return JSON.parse(stdout);
-  } catch {
-    return null;
+    const octokit = await createGitHubClient();
+    const { data } = await octokit.pulls.get({
+      owner,
+      repo,
+      pull_number: Number.parseInt(number, 10),
+    });
+    return {
+      number: data.number,
+      head: {
+        ref: data.head.ref,
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error && "status" in error && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
 }
 
@@ -58,12 +69,24 @@ export async function fetchIssue(
   number: string,
 ): Promise<GitHubIssue | null> {
   try {
-    const { stdout } = await execFileAsync("gh", [
-      "api",
-      `repos/${owner}/${repo}/issues/${number}`,
-    ]);
-    return JSON.parse(stdout);
-  } catch {
-    return null;
+    const octokit = await createGitHubClient();
+    const { data } = await octokit.issues.get({
+      owner,
+      repo,
+      issue_number: Number.parseInt(number, 10),
+    });
+    return {
+      number: data.number,
+      pull_request: data.pull_request
+        ? {
+            url: data.pull_request.url,
+          }
+        : undefined,
+    };
+  } catch (error) {
+    if (error instanceof Error && "status" in error && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
 }

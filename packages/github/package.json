@@ -13,6 +13,7 @@
     "@aku11i/phantom-core": "workspace:*",
     "@aku11i/phantom-git": "workspace:*",
     "@aku11i/phantom-process": "workspace:*",
-    "@aku11i/phantom-shared": "workspace:*"
+    "@aku11i/phantom-shared": "workspace:*",
+    "@octokit/rest": "^22.0.0"
   }
 }
