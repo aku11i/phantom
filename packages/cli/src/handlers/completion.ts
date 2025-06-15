@@ -40,6 +40,7 @@ complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command
 complete -c phantom -n "__phantom_using_command" -a "shell" -d "Open an interactive shell in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "version" -d "Display phantom version information"
 complete -c phantom -n "__phantom_using_command" -a "completion" -d "Generate shell completion scripts"
+complete -c phantom -n "__phantom_using_command" -a "mcp" -d "Start or stop Model Context Protocol (MCP) server"
 
 # Global options
 complete -c phantom -l help -d "Show help (-h)"
@@ -87,7 +88,10 @@ complete -c phantom -n "__phantom_using_command shell" -l tmux-horizontal -d "Op
 complete -c phantom -n "__phantom_using_command shell" -a "(__phantom_list_worktrees)"
 
 # completion command - shell names
-complete -c phantom -n "__phantom_using_command completion" -a "fish zsh bash" -d "Shell type"`;
+complete -c phantom -n "__phantom_using_command completion" -a "fish zsh bash" -d "Shell type"
+
+# mcp command options
+complete -c phantom -n "__phantom_using_command mcp" -a "start stop" -d "MCP server action"`;
 
 const ZSH_COMPLETION_SCRIPT = `#compdef phantom
 # Zsh completion for phantom
@@ -106,6 +110,7 @@ _phantom() {
         'shell:Open an interactive shell in a worktree directory'
         'version:Display phantom version information'
         'completion:Generate shell completion scripts'
+        'mcp:Start or stop Model Context Protocol (MCP) server'
     )
 
     _arguments -C \\
@@ -180,6 +185,10 @@ _phantom() {
                     _arguments \\
                         '1:shell:(fish zsh bash)'
                     ;;
+                mcp)
+                    _arguments \\
+                        '1:action:(start stop)'
+                    ;;
             esac
             ;;
     esac
@@ -202,7 +211,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec shell version completion"
+    local commands="create attach list where delete exec shell version completion mcp"
     local global_opts="--help --version"
 
     if [[ \${cword} -eq 1 ]]; then
@@ -334,6 +343,11 @@ _phantom_completion() {
             ;;
         version)
             # No completion for version command
+            return 0
+            ;;
+        mcp)
+            local actions="start stop"
+            COMPREPLY=( \$(compgen -W "\${actions}" -- "\${cur}") )
             return 0
             ;;
         *)
