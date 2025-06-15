@@ -18,5 +18,5 @@ export async function githubCheckoutHandler(args: string[]): Promise<void> {
     throw new Error("Please specify a PR or issue number");
   }
 
-  await githubCheckout({ number, base: values.base as string | undefined });
+  await githubCheckout({ number, base: values.base });
 }
