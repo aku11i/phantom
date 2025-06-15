@@ -30,12 +30,12 @@ export const githubCheckoutTool: Tool<typeof schema> = {
           text: JSON.stringify(
             {
               success: true,
-              message: result.value.message,
+              message: result.value.alreadyExists
+                ? `Worktree '${result.value.worktree}' already exists.`
+                : `Successfully checked out #${number} to worktree '${result.value.worktree}'.`,
               worktree: result.value.worktree,
               path: result.value.path,
-              note: result.value.alreadyExists
-                ? "Worktree already exists"
-                : `You can now switch to the worktree using 'cd ${result.value.path}'`,
+              note: `You can now switch to the worktree using 'cd ${result.value.path}'`,
             },
             null,
             2,
