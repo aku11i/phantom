@@ -1,12 +1,8 @@
 import { equal } from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  fetchIssue,
-  fetchPullRequest,
-  getGitHubRepoInfo,
-} from "./github-api.ts";
+import { fetchIssue, fetchPullRequest, getGitHubRepoInfo } from "./api.ts";
 
-describe("github-api", () => {
+describe("api", () => {
   describe("getGitHubRepoInfo", () => {
     it("should export getGitHubRepoInfo function", () => {
       equal(typeof getGitHubRepoInfo, "function");

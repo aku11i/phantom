@@ -1,6 +1,6 @@
 import { equal, ok } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { githubCheckout } from "./github-checkout.ts";
+import { githubCheckout } from "./checkout.ts";
 
 describe("githubCheckout", () => {
   it("should export githubCheckout function", () => {

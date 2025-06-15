@@ -1,10 +1,6 @@
-import { checkoutIssue } from "./checkout/issue-checkout.ts";
-import { checkoutPullRequest } from "./checkout/pr-checkout.ts";
-import {
-  fetchIssue,
-  fetchPullRequest,
-  getGitHubRepoInfo,
-} from "./github-api.ts";
+import { fetchIssue, fetchPullRequest, getGitHubRepoInfo } from "./api.ts";
+import { checkoutIssue } from "./checkout/issue.ts";
+import { checkoutPullRequest } from "./checkout/pr.ts";
 
 export interface GitHubCheckoutOptions {
   number: string;

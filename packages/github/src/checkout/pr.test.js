@@ -1,6 +1,6 @@
 import { equal } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { checkoutPullRequest } from "./pr-checkout.ts";
+import { checkoutPullRequest } from "./pr.ts";
 
 describe("checkoutPullRequest", () => {
   it("should export checkoutPullRequest function", () => {
