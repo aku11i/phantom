@@ -152,8 +152,9 @@ describe("checkoutPullRequest", () => {
     equal(result.value.message, "Worktree for PR #456 is already checked out");
     equal(result.value.alreadyExists, true);
 
-    // Verify upstream function was not called when worktree already exists
-    equal(setUpstreamBranchMock.mock.calls.length, 0);
+    // Verify upstream function was called even when worktree already exists
+    // (since fetch succeeded and upstream is set before attach)
+    equal(setUpstreamBranchMock.mock.calls.length, 1);
   });
 
   it("should pass through other errors", async () => {
@@ -195,8 +196,9 @@ describe("checkoutPullRequest", () => {
     ok(result.error);
     equal(result.error, expectedError);
 
-    // Verify upstream function was not called when attach fails
-    equal(setUpstreamBranchMock.mock.calls.length, 0);
+    // Verify upstream function was called even when attach fails
+    // (since fetch succeeded and upstream is set before attach)
+    equal(setUpstreamBranchMock.mock.calls.length, 1);
   });
 
   it("should use correct worktree naming", async () => {

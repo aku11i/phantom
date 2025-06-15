@@ -32,20 +32,7 @@ export async function checkoutPullRequest(
     );
   }
 
-  // Attach the worktree to the fetched branch
-  const attachResult = await attachWorktreeCore(gitRoot, worktreeName);
-
-  if (isErr(attachResult)) {
-    if (attachResult.error instanceof WorktreeAlreadyExistsError) {
-      return ok({
-        message: `Worktree for PR #${pullRequest.number} is already checked out`,
-        alreadyExists: true,
-      });
-    }
-    return err(attachResult.error);
-  }
-
-  // Set upstream tracking branch
+  // Set upstream tracking branch immediately after successful fetch
   // Since fetch was successful, we know the remote ref exists
   const upstream = pullRequest.isFromFork
     ? `origin/pull/${pullRequest.number}/head`
@@ -61,6 +48,19 @@ export async function checkoutPullRequest(
     console.warn(
       `Warning: Could not set upstream branch: ${upstreamResult.error.message}`,
     );
+  }
+
+  // Attach the worktree to the fetched branch
+  const attachResult = await attachWorktreeCore(gitRoot, worktreeName);
+
+  if (isErr(attachResult)) {
+    if (attachResult.error instanceof WorktreeAlreadyExistsError) {
+      return ok({
+        message: `Worktree for PR #${pullRequest.number} is already checked out`,
+        alreadyExists: true,
+      });
+    }
+    return err(attachResult.error);
   }
 
   const message = pullRequest.isFromFork
