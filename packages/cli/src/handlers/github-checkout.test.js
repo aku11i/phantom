@@ -1,5 +1,6 @@
-import { equal, rejects } from "node:assert/strict";
-import { describe, it } from "node:test";
+import { equal } from "node:assert/strict";
+import { describe, it, mock } from "node:test";
+import { exitCodes } from "../errors.ts";
 import { githubCheckoutHandler } from "./github-checkout.ts";
 
 describe("githubCheckoutHandler", () => {
@@ -12,17 +13,35 @@ describe("githubCheckoutHandler", () => {
     equal(githubCheckoutHandler.length, 1);
   });
 
-  it("should throw error when number is not provided", async () => {
-    await rejects(
-      githubCheckoutHandler([]),
-      /Please specify a PR or issue number/,
-    );
+  it("should exit with error when number is not provided", async () => {
+    const mockExit = mock.method(process, "exit", () => {
+      throw new Error("Process exited");
+    });
+
+    try {
+      await githubCheckoutHandler([]);
+    } catch (error) {
+      // Expected to throw due to mocked process.exit
+    }
+
+    equal(mockExit.mock.calls.length, 1);
+    equal(mockExit.mock.calls[0].arguments[0], exitCodes.validationError);
+    mockExit.mock.restore();
   });
 
-  it("should throw error when only base option is provided", async () => {
-    await rejects(
-      githubCheckoutHandler(["--base", "develop"]),
-      /Please specify a PR or issue number/,
-    );
+  it("should exit with error when only base option is provided", async () => {
+    const mockExit = mock.method(process, "exit", () => {
+      throw new Error("Process exited");
+    });
+
+    try {
+      await githubCheckoutHandler(["--base", "develop"]);
+    } catch (error) {
+      // Expected to throw due to mocked process.exit
+    }
+
+    equal(mockExit.mock.calls.length, 1);
+    equal(mockExit.mock.calls[0].arguments[0], exitCodes.validationError);
+    mockExit.mock.restore();
   });
 });

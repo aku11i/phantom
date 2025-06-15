@@ -4,7 +4,7 @@ import {
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isErr } from "@aku11i/phantom-shared";
-import type { GitHubPullRequest } from "../api.ts";
+import type { GitHubPullRequest } from "../api/index.ts";
 
 export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,

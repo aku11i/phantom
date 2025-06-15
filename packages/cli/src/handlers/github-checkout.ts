@@ -1,5 +1,7 @@
 import { parseArgs } from "node:util";
 import { githubCheckout } from "@aku11i/phantom-github";
+import { isErr } from "@aku11i/phantom-shared";
+import { exitCodes, exitWithError } from "../errors.ts";
 
 export async function githubCheckoutHandler(args: string[]): Promise<void> {
   const { positionals, values } = parseArgs({
@@ -15,8 +17,15 @@ export async function githubCheckoutHandler(args: string[]): Promise<void> {
   const [number] = positionals;
 
   if (!number) {
-    throw new Error("Please specify a PR or issue number");
+    exitWithError(
+      "Please specify a PR or issue number",
+      exitCodes.validationError,
+    );
   }
 
-  await githubCheckout({ number, base: values.base });
+  const result = await githubCheckout({ number, base: values.base });
+
+  if (isErr(result)) {
+    exitWithError(result.error.message, exitCodes.generalError);
+  }
 }

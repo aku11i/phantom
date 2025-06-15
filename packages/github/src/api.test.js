@@ -5,7 +5,7 @@ import {
   fetchPullRequest,
   getGitHubRepoInfo,
   isPullRequest,
-} from "./api.ts";
+} from "./api/index.ts";
 
 describe("api", () => {
   describe("getGitHubRepoInfo", () => {

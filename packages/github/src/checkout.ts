@@ -1,4 +1,5 @@
-import { fetchIssue, getGitHubRepoInfo, isPullRequest } from "./api.ts";
+import { type Result, err, ok } from "@aku11i/phantom-shared";
+import { fetchIssue, getGitHubRepoInfo, isPullRequest } from "./api/index.ts";
 import { checkoutIssue } from "./checkout/issue.ts";
 import { checkoutPullRequest } from "./checkout/pr.ts";
 
@@ -9,7 +10,7 @@ export interface GitHubCheckoutOptions {
 
 export async function githubCheckout(
   options: GitHubCheckoutOptions,
-): Promise<void> {
+): Promise<Result<void>> {
   const { number, base } = options;
   const { owner, repo } = await getGitHubRepoInfo();
 
@@ -17,15 +18,26 @@ export async function githubCheckout(
   const issue = await fetchIssue(owner, repo, number);
 
   if (!issue) {
-    throw new Error(
-      `GitHub issue or pull request #${number} not found or you don't have permission to access it.`,
+    return err(
+      new Error(
+        `GitHub issue or pull request #${number} not found or you don't have permission to access it.`,
+      ),
     );
   }
 
   // Check if it's a pull request
   if (isPullRequest(issue)) {
+    if (base) {
+      return err(
+        new Error(
+          `The --base option cannot be used with pull requests. Pull request #${number} already has a branch '${issue.pullRequest.head.ref}'.`,
+        ),
+      );
+    }
     await checkoutPullRequest(issue.pullRequest);
   } else {
     await checkoutIssue(issue, base);
   }
+
+  return ok(undefined);
 }

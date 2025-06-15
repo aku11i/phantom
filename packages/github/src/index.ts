@@ -3,4 +3,4 @@ export {
   isPullRequest,
   type GitHubPullRequest,
   type GitHubIssue,
-} from "./api.ts";
+} from "./api/index.ts";
