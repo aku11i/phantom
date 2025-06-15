@@ -141,11 +141,7 @@ phantom shell my-feature
 ### Reviewing a Pull Request
 
 ```bash
-# First checkout the remote branch locally
-git fetch origin pr-branch
-git checkout -b pr-branch origin/pr-branch
-
-# Then attach to it with phantom
+# Create worktree from a remote branch
 phantom attach pr-branch --shell
 
 # Review code, run tests
