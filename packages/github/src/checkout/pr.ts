@@ -25,11 +25,15 @@ export async function checkoutPullRequest(
   // For both fork and same-repo PRs, we fetch the PR ref to a local branch
   // This provides a consistent approach and ensures we always have the latest PR state
   const refspec = `pull/${pullRequest.number}/head:${localBranch}`;
-  
+
   // Fetch the PR to a local branch
   const fetchResult = await fetch({ refspec });
   if (isErr(fetchResult)) {
-    return err(new Error(`Failed to fetch PR #${pullRequest.number}: ${fetchResult.error.message}`));
+    return err(
+      new Error(
+        `Failed to fetch PR #${pullRequest.number}: ${fetchResult.error.message}`,
+      ),
+    );
   }
 
   // Attach the worktree to the fetched branch

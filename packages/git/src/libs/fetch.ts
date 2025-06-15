@@ -15,10 +15,11 @@ export async function fetch(options: FetchOptions = {}): Promise<Result<void>> {
     args.push(refspec);
   }
 
-  const result = await executeGitCommand(args, { cwd });
-  if (result.error) {
-    return err(new Error(`git fetch failed: ${result.stderr || result.error.message}`));
+  try {
+    await executeGitCommand(args, { cwd });
+    return ok(undefined);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return err(new Error(`git fetch failed: ${errorMessage}`));
   }
-
-  return ok(undefined);
 }

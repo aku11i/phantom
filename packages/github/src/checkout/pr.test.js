@@ -233,12 +233,15 @@ describe("checkoutPullRequest", () => {
     const result = await checkoutPullRequest(mockPullRequest);
 
     ok(result.value);
-    equal(result.value.message, "Checked out PR #1234 from fork contributor/fork-repo");
+    equal(
+      result.value.message,
+      "Checked out PR #1234 from fork contributor/fork-repo",
+    );
 
     // Verify it uses the same refspec for forked PRs
     const fetchOptions = fetchMock.mock.calls[0].arguments[0];
     equal(fetchOptions.refspec, "pull/1234/head:pr-1234");
-    
+
     const [, worktreeName] = attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeName, "pr-1234");
   });
