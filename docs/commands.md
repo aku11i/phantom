@@ -265,7 +265,7 @@ phantom gh checkout <number> [options]  # alias
 ```
 
 **Options:**
-- `--base <branch>` - Base branch for new issue branches (default: repository default branch)
+- `--base <branch>` - Base branch for new issue branches (issues only, default: repository default branch)
 
 **Examples:**
 ```bash

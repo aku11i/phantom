@@ -38,6 +38,8 @@ complete -c phantom -n "__phantom_using_command" -a "where" -d "Output the files
 complete -c phantom -n "__phantom_using_command" -a "delete" -d "Delete a Git worktree (phantom)"
 complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "shell" -d "Open an interactive shell in a worktree directory"
+complete -c phantom -n "__phantom_using_command" -a "github" -d "GitHub integration commands"
+complete -c phantom -n "__phantom_using_command" -a "gh" -d "GitHub integration commands (alias)"
 complete -c phantom -n "__phantom_using_command" -a "version" -d "Display phantom version information"
 complete -c phantom -n "__phantom_using_command" -a "completion" -d "Generate shell completion scripts"
 complete -c phantom -n "__phantom_using_command" -a "mcp" -d "Manage Model Context Protocol (MCP) server"
@@ -90,6 +92,14 @@ complete -c phantom -n "__phantom_using_command shell" -a "(__phantom_list_workt
 # completion command - shell names
 complete -c phantom -n "__phantom_using_command completion" -a "fish zsh bash" -d "Shell type"
 
+# github command options
+complete -c phantom -n "__phantom_using_command github" -a "checkout" -d "Create a worktree for a GitHub PR or issue"
+complete -c phantom -n "__phantom_using_command gh" -a "checkout" -d "Create a worktree for a GitHub PR or issue"
+
+# github checkout command options
+complete -c phantom -n "__phantom_using_command github checkout" -l base -d "Base branch for new issue branches (issues only)" -x
+complete -c phantom -n "__phantom_using_command gh checkout" -l base -d "Base branch for new issue branches (issues only)" -x
+
 # mcp command options
 complete -c phantom -n "__phantom_using_command mcp" -a "serve" -d "Start MCP server"`;
 
@@ -108,6 +118,8 @@ _phantom() {
         'delete:Delete a Git worktree (phantom)'
         'exec:Execute a command in a worktree directory'
         'shell:Open an interactive shell in a worktree directory'
+        'github:GitHub integration commands'
+        'gh:GitHub integration commands (alias)'
         'version:Display phantom version information'
         'completion:Generate shell completion scripts'
         'mcp:Manage Model Context Protocol (MCP) server'
@@ -184,6 +196,16 @@ _phantom() {
                     _arguments \\
                         '1:shell:(fish zsh bash)'
                     ;;
+                github|gh)
+                    if [[ \${#line} -eq 1 ]]; then
+                        _arguments \\
+                            '1:subcommand:(checkout)'
+                    elif [[ \${line[2]} == "checkout" ]]; then
+                        _arguments \\
+                            '--base[Base branch for new issue branches (issues only)]:branch:' \\
+                            '1:number:'
+                    fi
+                    ;;
                 mcp)
                     _arguments \\
                         '1:action:(serve)'
@@ -210,7 +232,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec shell version completion mcp"
+    local commands="create attach list where delete exec shell github gh version completion mcp"
     local global_opts="--help --version"
 
     if [[ \${cword} -eq 1 ]]; then
@@ -335,6 +357,32 @@ _phantom_completion() {
         completion)
             local shells="fish zsh bash"
             COMPREPLY=( \$(compgen -W "\${shells}" -- "\${cur}") )
+            return 0
+            ;;
+        github|gh)
+            if [[ \${cword} -eq 2 ]]; then
+                # First argument after github/gh should be subcommand
+                local subcommands="checkout"
+                COMPREPLY=( \$(compgen -W "\${subcommands}" -- "\${cur}") )
+                return 0
+            elif [[ \${words[2]} == "checkout" ]]; then
+                case "\${prev}" in
+                    --base)
+                        # Don't complete anything specific for base (branch name)
+                        return 0
+                        ;;
+                    *)
+                        if [[ \${cword} -eq 3 ]]; then
+                            # First argument after checkout should be number
+                            return 0
+                        else
+                            local opts="--base"
+                            COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                            return 0
+                        fi
+                        ;;
+                esac
+            fi
             return 0
             ;;
         version)

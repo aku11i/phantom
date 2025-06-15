@@ -29,7 +29,7 @@ phantom gh checkout <number> [options]
 ```
 
 **Options:**
-- `--base <branch>`: Base branch for new issue branches (default: repository default branch)
+- `--base <branch>`: Base branch for new issue branches (issues only, default: repository default branch)
 
 ## Use Cases
 
@@ -41,8 +41,8 @@ When you need to review and test a pull request locally:
 # Create a worktree for PR #123
 phantom github checkout 123
 
-# The worktree is created as 'pr-123' with the PR's branch
-cd .git/phantom/worktrees/pr-123
+# Open shell in the PR worktree
+phantom shell pr-123
 
 # Review, test, and make changes
 npm test
@@ -61,8 +61,8 @@ When you want to implement a fix for an issue:
 # Create a worktree for issue #456
 phantom github checkout 456
 
-# The worktree is created as 'issue-456' with a new branch
-cd .git/phantom/worktrees/issue-456
+# Open shell in the issue worktree
+phantom shell issue-456
 
 # Implement your fix
 ```
@@ -80,7 +80,8 @@ When working on an issue that needs to be based on a specific branch:
 # Create a worktree for issue #789 based on 'develop' branch
 phantom github checkout 789 --base develop
 
-cd .git/phantom/worktrees/issue-789
+# Open shell in the issue worktree
+phantom shell issue-789
 # Your worktree is now based on the 'develop' branch
 ```
 
@@ -92,8 +93,8 @@ cd .git/phantom/worktrees/issue-789
 # 1. Create worktree for the PR
 phantom gh checkout 234
 
-# 2. Navigate to the worktree
-cd .git/phantom/worktrees/pr-234
+# 2. Open shell in the worktree
+phantom shell pr-234
 
 # 3. Install dependencies and run tests
 npm install
@@ -102,8 +103,8 @@ npm test
 # 4. Make any necessary changes
 code .
 
-# 5. When done, return to main directory and delete worktree
-cd -
+# 5. When done, exit shell and delete worktree
+exit
 phantom delete pr-234
 ```
 
@@ -113,8 +114,8 @@ phantom delete pr-234
 # 1. Create worktree for the issue
 phantom gh checkout 567 --base main
 
-# 2. Navigate to the worktree
-cd .git/phantom/worktrees/issue-567
+# 2. Open shell in the worktree
+phantom shell issue-567
 
 # 3. Implement the fix
 # ... make your changes ...
@@ -126,58 +127,11 @@ git push -u origin issue-567
 
 # 5. Create PR using GitHub CLI
 gh pr create --title "Fix: Issue #567" --body "Closes #567"
+
+# 6. Exit shell when done
+exit
 ```
 
-## Best Practices
-
-1. **Clean up after review**: Delete worktrees after reviewing PRs to keep your workspace organized
-   ```bash
-   phantom delete pr-123
-   ```
-
-2. **Use descriptive branch names**: The automatic naming (`pr-{number}` or `issue-{number}`) helps identify the purpose
-
-3. **Keep worktrees focused**: Each worktree should address a single PR or issue
-
-4. **Leverage GitHub CLI**: Use `gh` commands within worktrees for GitHub operations
-   ```bash
-   gh pr comment 123 --body "LGTM!"
-   gh pr merge 123
-   ```
-
-## Troubleshooting
-
-### Authentication Issues
-
-If you encounter authentication errors:
-
-```bash
-# Check authentication status
-gh auth status
-
-# Re-authenticate if needed
-gh auth login
-```
-
-### Repository Access
-
-Ensure you're in a Git repository with GitHub remote:
-
-```bash
-# Check remote configuration
-git remote -v
-
-# The repository should have a GitHub remote URL
-```
-
-### Network Issues
-
-If GitHub API is unreachable:
-
-```bash
-# Test GitHub CLI connectivity
-gh api user
-```
 
 ## Integration with Other Phantom Features
 

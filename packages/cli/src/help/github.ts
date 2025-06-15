@@ -35,7 +35,7 @@ export const githubCheckoutHelp: CommandHelp = {
       name: "--base",
       type: "string",
       description:
-        "Base branch for new issue branches (default: repository HEAD)",
+        "Base branch for new issue branches (issues only, default: repository HEAD)",
     },
   ],
   examples: [
