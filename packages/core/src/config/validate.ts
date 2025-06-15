@@ -27,44 +27,15 @@ export function validateConfig(
   const result = phantomConfigSchema.safeParse(config);
 
   if (!result.success) {
-    const errors = result.error.errors;
-    const firstError = errors[0];
-    let message: string;
+    const error = result.error;
+    const formattedError = error.format();
 
-    if (firstError.path.length === 0) {
-      message = "Configuration must be an object";
-    } else if (
-      firstError.path[0] === "postCreate" &&
-      firstError.path.length === 1
-    ) {
-      message = "postCreate must be an object";
-    } else if (
-      firstError.path[0] === "postCreate" &&
-      firstError.path[1] === "copyFiles"
-    ) {
-      if (
-        firstError.code === "invalid_type" &&
-        firstError.expected === "array"
-      ) {
-        message = "postCreate.copyFiles must be an array";
-      } else {
-        message = "postCreate.copyFiles must contain only strings";
-      }
-    } else if (
-      firstError.path[0] === "postCreate" &&
-      firstError.path[1] === "commands"
-    ) {
-      if (
-        firstError.code === "invalid_type" &&
-        firstError.expected === "array"
-      ) {
-        message = "postCreate.commands must be an array";
-      } else {
-        message = "postCreate.commands must contain only strings";
-      }
-    } else {
-      message = firstError.message;
-    }
+    // Get the first error message from Zod's formatted output
+    const firstError = error.errors[0];
+    const path = firstError.path.join(".");
+    const message = path
+      ? `${path}: ${firstError.message}`
+      : firstError.message;
 
     return err(new ConfigValidationError(message));
   }

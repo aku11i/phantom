@@ -113,7 +113,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Configuration must be an object",
+          "Invalid phantom.config.json: Expected object, received string",
         );
       }
     });
@@ -126,7 +126,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Configuration must be an object",
+          "Invalid phantom.config.json: Expected object, received number",
         );
       }
     });
@@ -139,7 +139,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Configuration must be an object",
+          "Invalid phantom.config.json: Expected object, received boolean",
         );
       }
     });
@@ -152,7 +152,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Configuration must be an object",
+          "Invalid phantom.config.json: Expected object, received null",
         );
       }
     });
@@ -165,7 +165,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Configuration must be an object",
+          "Invalid phantom.config.json: Required",
         );
       }
     });
@@ -178,7 +178,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Configuration must be an object",
+          "Invalid phantom.config.json: Expected object, received array",
         );
       }
     });
@@ -191,7 +191,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate must be an object",
+          "Invalid phantom.config.json: postCreate: Expected object, received string",
         );
       }
     });
@@ -204,7 +204,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate must be an object",
+          "Invalid phantom.config.json: postCreate: Expected object, received number",
         );
       }
     });
@@ -217,7 +217,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate must be an object",
+          "Invalid phantom.config.json: postCreate: Expected object, received array",
         );
       }
     });
@@ -230,7 +230,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate must be an object",
+          "Invalid phantom.config.json: postCreate: Expected object, received null",
         );
       }
     });
@@ -243,7 +243,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must be an array",
+          "Invalid phantom.config.json: postCreate.copyFiles: Expected array, received string",
         );
       }
     });
@@ -256,7 +256,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must be an array",
+          "Invalid phantom.config.json: postCreate.copyFiles: Expected array, received number",
         );
       }
     });
@@ -269,7 +269,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must be an array",
+          "Invalid phantom.config.json: postCreate.copyFiles: Expected array, received object",
         );
       }
     });
@@ -284,7 +284,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Expected string, received number",
         );
       }
     });
@@ -299,7 +299,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Expected string, received null",
         );
       }
     });
@@ -314,7 +314,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Required",
         );
       }
     });
@@ -329,7 +329,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Expected string, received object",
         );
       }
     });
@@ -344,7 +344,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles must contain only strings",
+          "Invalid phantom.config.json: postCreate.copyFiles.0: Expected string, received array",
         );
       }
     });
@@ -357,7 +357,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands must be an array",
+          "Invalid phantom.config.json: postCreate.commands: Expected array, received string",
         );
       }
     });
@@ -370,7 +370,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands must be an array",
+          "Invalid phantom.config.json: postCreate.commands: Expected array, received number",
         );
       }
     });
@@ -383,7 +383,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands must be an array",
+          "Invalid phantom.config.json: postCreate.commands: Expected array, received object",
         );
       }
     });
@@ -398,7 +398,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands must contain only strings",
+          "Invalid phantom.config.json: postCreate.commands.1: Expected string, received number",
         );
       }
     });
@@ -413,7 +413,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands must contain only strings",
+          "Invalid phantom.config.json: postCreate.commands.1: Expected string, received null",
         );
       }
     });
@@ -428,7 +428,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands must contain only strings",
+          "Invalid phantom.config.json: postCreate.commands.1: Expected string, received object",
         );
       }
     });
