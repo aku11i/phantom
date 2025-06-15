@@ -23,7 +23,7 @@ export async function githubCheckout(
   }
 
   // Check if it's a pull request
-  if (isPullRequest(issue) && issue.pullRequest) {
+  if (isPullRequest(issue)) {
     await checkoutPullRequest(issue.pullRequest);
   } else {
     await checkoutIssue(issue, base);

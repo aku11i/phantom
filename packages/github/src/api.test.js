@@ -58,5 +58,20 @@ describe("api", () => {
       };
       equal(isPullRequest(pureIssue), false);
     });
+
+    it("should work as type guard", () => {
+      const issue = {
+        number: 125,
+        pullRequest: {
+          number: 125,
+          head: { ref: "feature" },
+        },
+      };
+      
+      if (isPullRequest(issue)) {
+        // TypeScript should know pullRequest is defined here
+        equal(issue.pullRequest.number, 125);
+      }
+    });
   });
 });

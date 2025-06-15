@@ -17,7 +17,9 @@ export interface GitHubIssue {
   pullRequest?: GitHubPullRequest;
 }
 
-export function isPullRequest(issue: GitHubIssue): boolean {
+export function isPullRequest(
+  issue: GitHubIssue,
+): issue is GitHubIssue & { pullRequest: GitHubPullRequest } {
   return issue.pullRequest !== undefined;
 }
 
