@@ -12,8 +12,8 @@ export async function fetchIssue(
 ): Promise<GitHubIssue | null> {
   try {
     const issueNumber = numberSchema.parse(number);
-    const octokit = await createGitHubClient();
-    const { data } = await octokit.issues.get({
+    const github = await createGitHubClient();
+    const { data } = await github.issues.get({
       owner,
       repo,
       issue_number: issueNumber,

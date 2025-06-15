@@ -11,8 +11,8 @@ export async function fetchPullRequest(
 ): Promise<GitHubPullRequest | null> {
   try {
     const pullNumber = numberSchema.parse(number);
-    const octokit = await createGitHubClient();
-    const { data } = await octokit.pulls.get({
+    const github = await createGitHubClient();
+    const { data } = await github.pulls.get({
       owner,
       repo,
       pull_number: pullNumber,

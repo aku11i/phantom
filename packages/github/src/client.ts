@@ -4,9 +4,7 @@ import { Octokit } from "@octokit/rest";
 
 const execFileAsync = promisify(execFile);
 
-let octokitInstance: Octokit | null = null;
-
-async function getGitHubToken(): Promise<string> {
+export async function getGitHubToken(): Promise<string> {
   try {
     const { stdout } = await execFileAsync("gh", ["auth", "token"]);
     return stdout.trim();
@@ -19,9 +17,6 @@ async function getGitHubToken(): Promise<string> {
 }
 
 export async function createGitHubClient(): Promise<Octokit> {
-  if (!octokitInstance) {
-    const token = await getGitHubToken();
-    octokitInstance = new Octokit({ auth: token });
-  }
-  return octokitInstance;
+  const token = await getGitHubToken();
+  return new Octokit({ auth: token });
 }
