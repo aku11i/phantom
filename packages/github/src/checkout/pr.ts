@@ -2,7 +2,12 @@ import {
   WorktreeAlreadyExistsError,
   attachWorktreeCore,
 } from "@aku11i/phantom-core";
-import { fetch, getGitRoot } from "@aku11i/phantom-git";
+import {
+  fetch,
+  getGitRoot,
+  remoteBranchExists,
+  setUpstreamBranch,
+} from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
 import type { GitHubPullRequest } from "../api/index.ts";
 
@@ -43,6 +48,46 @@ export async function checkoutPullRequest(
       });
     }
     return err(attachResult.error);
+  }
+
+  // Set upstream tracking branch
+  let upstream: string;
+  if (pullRequest.isFromFork) {
+    // For forked PRs, track the PR ref directly
+    upstream = `origin/pull/${pullRequest.number}/head`;
+  } else {
+    // For same-repo PRs, track the remote branch
+    upstream = `origin/${pullRequest.head.ref}`;
+  }
+
+  // Check if the remote branch exists before setting upstream
+  const remoteBranchName = pullRequest.isFromFork
+    ? `pull/${pullRequest.number}/head`
+    : pullRequest.head.ref;
+  const remoteExists = await remoteBranchExists(
+    gitRoot,
+    "origin",
+    remoteBranchName,
+  );
+
+  if (isErr(remoteExists)) {
+    // Log the error but don't fail the checkout
+    console.warn(
+      `Warning: Could not check remote branch existence: ${remoteExists.error.message}`,
+    );
+  } else if (remoteExists.value) {
+    // Set upstream only if the remote branch exists
+    const upstreamResult = await setUpstreamBranch(
+      gitRoot,
+      localBranch,
+      upstream,
+    );
+    if (isErr(upstreamResult)) {
+      // Log the error but don't fail the checkout
+      console.warn(
+        `Warning: Could not set upstream branch: ${upstreamResult.error.message}`,
+      );
+    }
   }
 
   const message = pullRequest.isFromFork
