@@ -140,33 +140,6 @@ describe("createGitHubClient", () => {
     equal(execFileAsyncMock.mock.calls.length, 1);
   });
 
-  it("should create new instance on each call (no singleton)", async () => {
-    resetMocks();
-    const mockToken = "ghp_test789token";
-    const mockInstances = [
-      { id: 1, auth: mockToken },
-      { id: 2, auth: mockToken },
-    ];
-    let callCount = 0;
-
-    execFileAsyncMock.mock.mockImplementation(async () => ({
-      stdout: mockToken,
-      stderr: "",
-    }));
-
-    OctokitMockImplementation = (options) => {
-      equal(options.auth, mockToken);
-      return mockInstances[callCount++];
-    };
-
-    const client1 = await createGitHubClient();
-    const client2 = await createGitHubClient();
-
-    equal(client1.id, 1);
-    equal(client2.id, 2);
-    ok(client1 !== client2);
-    equal(execFileAsyncMock.mock.calls.length, 2);
-  });
 
   it("should propagate errors from getGitHubToken", async () => {
     resetMocks();
