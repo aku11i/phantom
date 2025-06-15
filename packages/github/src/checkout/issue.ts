@@ -14,7 +14,7 @@ export async function checkoutIssue(
   if (isPullRequest(issue)) {
     return err(
       new Error(
-        `#${issue.number} is already linked to a pull request. Use the PR number instead.`,
+        `#${issue.number} is a pull request, not an issue. Cannot checkout as an issue.`,
       ),
     );
   }
