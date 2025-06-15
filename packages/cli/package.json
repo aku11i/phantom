@@ -8,7 +8,8 @@
     "prebuild": "git clean -fdx dist",
     "build": "node build.ts",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\""
+    "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@aku11i/phantom-core": "workspace:*",
