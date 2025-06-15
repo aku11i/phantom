@@ -10,6 +10,7 @@ const consoleErrorMock = mock.fn();
 const listWorktreesMock = mock.fn();
 const getGitRootMock = mock.fn();
 const spawnMock = mock.fn();
+const spawnFzfMock = mock.fn();
 const platformMock = mock.fn();
 
 // Mock modules
@@ -34,6 +35,12 @@ mock.module("node:os", {
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     listWorktrees: listWorktreesMock,
+  },
+});
+
+mock.module("@aku11i/phantom-process", {
+  namedExports: {
+    spawnFzf: spawnFzfMock,
   },
 });
 
@@ -84,6 +91,7 @@ const resetMocks = () => {
   listWorktreesMock.mock.resetCalls();
   getGitRootMock.mock.resetCalls();
   spawnMock.mock.resetCalls();
+  spawnFzfMock.mock.resetCalls();
   platformMock.mock.resetCalls();
   exitWithErrorMock.mock.resetCalls();
   exitMock.mock.mockImplementation(mockExit);
@@ -157,10 +165,9 @@ describe("fzfHandler", () => {
 
       // Create a mock fzf process
       const fzfProcess = new EventEmitter();
-      fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
       fzfProcess.stdout = new EventEmitter();
 
-      spawnMock.mock.mockImplementation(() => fzfProcess);
+      spawnFzfMock.mock.mockImplementation(() => fzfProcess);
 
       // Start the handler
       const handlerPromise = fzfHandler([]);
@@ -172,26 +179,23 @@ describe("fzfHandler", () => {
 
       await handlerPromise;
 
-      // Verify fzf was spawned with correct arguments
-      strictEqual(spawnMock.mock.calls.length, 1);
-      strictEqual(spawnMock.mock.calls[0].arguments[0], "fzf");
-
-      const fzfArgs = spawnMock.mock.calls[0].arguments[1];
-      strictEqual(fzfArgs.includes("--ansi"), true);
-      strictEqual(fzfArgs.includes("--layout=reverse"), true);
-      strictEqual(fzfArgs.includes("--border=rounded"), true);
-
+      // Verify spawnFzf was called with correct arguments
+      strictEqual(spawnFzfMock.mock.calls.length, 1);
+      
+      const [items, options] = spawnFzfMock.mock.calls[0].arguments;
+      deepStrictEqual(items, ["main (main)", "feature (feature) [dirty]"]);
+      
+      strictEqual(options.ansi, true);
+      strictEqual(options.layout, "reverse");
+      strictEqual(options.border, "rounded");
+      strictEqual(options.borderLabel, " Phantom Worktrees ");
+      
       // Verify keybindings include correct commands for macOS
-      const ctrlYBinding = fzfArgs.find((arg) => arg.includes("ctrl-y"));
-      strictEqual(ctrlYBinding.includes("pbcopy"), true);
+      const ctrlYBinding = options.bindings.find((b) => b.key === "ctrl-y");
+      strictEqual(ctrlYBinding.action.includes("pbcopy"), true);
 
-      const ctrlOBinding = fzfArgs.find((arg) => arg.includes("ctrl-o"));
-      strictEqual(ctrlOBinding.includes("open"), true);
-
-      // Verify worktree list was sent to fzf
-      strictEqual(fzfProcess.stdin.write.mock.calls.length, 1);
-      const worktreeList = fzfProcess.stdin.write.mock.calls[0].arguments[0];
-      strictEqual(worktreeList, "main (main)\nfeature (feature) [dirty]");
+      const ctrlOBinding = options.bindings.find((b) => b.key === "ctrl-o");
+      strictEqual(ctrlOBinding.action.includes("open"), true);
     });
 
     it("should use correct clipboard and file manager commands on Linux", async () => {
@@ -216,10 +220,9 @@ describe("fzfHandler", () => {
       );
 
       const fzfProcess = new EventEmitter();
-      fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
       fzfProcess.stdout = new EventEmitter();
 
-      spawnMock.mock.mockImplementation(() => fzfProcess);
+      spawnFzfMock.mock.mockImplementation(() => fzfProcess);
 
       const handlerPromise = fzfHandler([]);
 
@@ -229,14 +232,14 @@ describe("fzfHandler", () => {
 
       await handlerPromise;
 
-      const fzfArgs = spawnMock.mock.calls[0].arguments[1];
+      const options = spawnFzfMock.mock.calls[0].arguments[1];
 
       // Verify Linux-specific commands
-      const ctrlYBinding = fzfArgs.find((arg) => arg.includes("ctrl-y"));
-      strictEqual(ctrlYBinding.includes("xclip -selection clipboard"), true);
+      const ctrlYBinding = options.bindings.find((b) => b.key === "ctrl-y");
+      strictEqual(ctrlYBinding.action.includes("xclip -selection clipboard"), true);
 
-      const ctrlOBinding = fzfArgs.find((arg) => arg.includes("ctrl-o"));
-      strictEqual(ctrlOBinding.includes("xdg-open"), true);
+      const ctrlOBinding = options.bindings.find((b) => b.key === "ctrl-o");
+      strictEqual(ctrlOBinding.action.includes("xdg-open"), true);
     });
 
     it("should open shell when user selects a worktree", async () => {
@@ -266,12 +269,8 @@ describe("fzfHandler", () => {
 
       const phantomShellProcess = new EventEmitter();
 
-      let spawnCallCount = 0;
+      spawnFzfMock.mock.mockImplementation(() => fzfProcess);
       spawnMock.mock.mockImplementation((cmd) => {
-        spawnCallCount++;
-        if (cmd === "fzf") {
-          return fzfProcess;
-        }
         if (cmd === "phantom") {
           return phantomShellProcess;
         }
@@ -291,13 +290,13 @@ describe("fzfHandler", () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Verify phantom shell was spawned
-      strictEqual(spawnMock.mock.calls.length, 2);
-      strictEqual(spawnMock.mock.calls[1].arguments[0], "phantom");
-      deepStrictEqual(spawnMock.mock.calls[1].arguments[1], [
+      strictEqual(spawnMock.mock.calls.length, 1);
+      strictEqual(spawnMock.mock.calls[0].arguments[0], "phantom");
+      deepStrictEqual(spawnMock.mock.calls[0].arguments[1], [
         "shell",
         "feature",
       ]);
-      deepStrictEqual(spawnMock.mock.calls[1].arguments[2], {
+      deepStrictEqual(spawnMock.mock.calls[0].arguments[2], {
         stdio: "inherit",
       });
     });
@@ -326,10 +325,9 @@ describe("fzfHandler", () => {
       );
 
       const fzfProcess = new EventEmitter();
-      fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
       fzfProcess.stdout = new EventEmitter();
 
-      spawnMock.mock.mockImplementation(() => fzfProcess);
+      spawnFzfMock.mock.mockImplementation(() => fzfProcess);
 
       // Start the handler - it will throw due to exitWithError
       await rejects(async () => {
