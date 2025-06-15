@@ -1,4 +1,4 @@
-import { deepStrictEqual, strictEqual, rejects } from "node:assert";
+import { deepStrictEqual, rejects, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 
 const execFileMock = mock.fn();
@@ -56,17 +56,12 @@ describe("getGitHubRepoInfo", () => {
     strictEqual(execFileMock.mock.calls.length, 1);
     const [cmd, args] = execFileMock.mock.calls[0].arguments;
     strictEqual(cmd, "gh");
-    deepStrictEqual(args, [
-      "repo",
-      "view",
-      "--json",
-      "owner,name",
-    ]);
+    deepStrictEqual(args, ["repo", "view", "--json", "owner,name"]);
   });
 
   it("should throw error when gh command fails", async () => {
     resetMocks();
-    execFileMock.mock.mockImplementation(() => 
+    execFileMock.mock.mockImplementation(() =>
       Promise.reject(new Error("Command failed")),
     );
 

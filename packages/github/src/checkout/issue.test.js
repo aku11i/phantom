@@ -54,8 +54,8 @@ describe("checkoutIssue", () => {
     resetMocks();
     const mockIssue = {
       number: 123,
-      pullRequest: { 
-        head: { 
+      pullRequest: {
+        head: {
           ref: "pr-branch",
           repo: {
             full_name: "owner/repo",
@@ -74,8 +74,11 @@ describe("checkoutIssue", () => {
     const result = await checkoutIssue(mockIssue);
 
     ok(result.error);
-    equal(result.error.message, "#123 is a pull request, not an issue. Cannot checkout as an issue.");
-    
+    equal(
+      result.error.message,
+      "#123 is a pull request, not an issue. Cannot checkout as an issue.",
+    );
+
     // Should not call other functions
     equal(getGitRootMock.mock.calls.length, 0);
     equal(createWorktreeCoreMock.mock.calls.length, 0);
@@ -100,17 +103,21 @@ describe("checkoutIssue", () => {
     const result = await checkoutIssue(mockIssue);
 
     ok(result.value);
-    equal(result.value.message, "Created worktree issue-456 and checked out branch issue-456");
+    equal(
+      result.value.message,
+      "Created worktree issue-456 and checked out branch issue-456",
+    );
     equal(result.value.alreadyExists, undefined);
 
     // Verify mocks were called correctly
     equal(isPullRequestMock.mock.calls.length, 1);
     equal(isPullRequestMock.mock.calls[0].arguments[0], mockIssue);
-    
+
     equal(getGitRootMock.mock.calls.length, 1);
     equal(createWorktreeCoreMock.mock.calls.length, 1);
-    
-    const [gitRoot, worktreeName, options] = createWorktreeCoreMock.mock.calls[0].arguments;
+
+    const [gitRoot, worktreeName, options] =
+      createWorktreeCoreMock.mock.calls[0].arguments;
     equal(gitRoot, mockGitRoot);
     equal(worktreeName, "issue-456");
     deepEqual(options, {
@@ -165,7 +172,10 @@ describe("checkoutIssue", () => {
     const result = await checkoutIssue(mockIssue);
 
     ok(result.value);
-    equal(result.value.message, "Worktree for issue #111 is already checked out");
+    equal(
+      result.value.message,
+      "Worktree for issue #111 is already checked out",
+    );
     equal(result.value.alreadyExists, true);
   });
 
@@ -208,7 +218,8 @@ describe("checkoutIssue", () => {
 
     await checkoutIssue(mockIssue);
 
-    const [, worktreeName, options] = createWorktreeCoreMock.mock.calls[0].arguments;
+    const [, worktreeName, options] =
+      createWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeName, "issue-333");
     equal(options.branch, "issue-333");
   });

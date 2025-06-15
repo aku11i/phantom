@@ -136,7 +136,7 @@ describe("fetchPullRequest", () => {
     createGitHubClientMock.mock.mockImplementation(async () => mockOctokit);
 
     await fetchPullRequest("owner", "repo", "123");
-    
+
     deepEqual(mockOctokit.pulls.get.mock.calls[0].arguments[0], {
       owner: "owner",
       repo: "repo",

@@ -65,14 +65,18 @@ describe("githubCheckout", () => {
 
     // Verify API calls
     equal(fetchIssueMock.mock.calls.length, 1);
-    deepEqual(fetchIssueMock.mock.calls[0].arguments, ["test-owner", "test-repo", "123"]);
+    deepEqual(fetchIssueMock.mock.calls[0].arguments, [
+      "test-owner",
+      "test-repo",
+      "123",
+    ]);
   });
 
   it("should checkout pull request successfully", async () => {
     resetMocks();
     const mockPR = {
       number: 123,
-      head: { 
+      head: {
         ref: "feature-branch",
         repo: {
           full_name: "owner/repo",
@@ -115,7 +119,7 @@ describe("githubCheckout", () => {
     resetMocks();
     const mockPR = {
       number: 456,
-      head: { 
+      head: {
         ref: "pr-branch",
         repo: {
           full_name: "owner/repo",
@@ -176,7 +180,10 @@ describe("githubCheckout", () => {
 
     // Verify calls
     equal(checkoutIssueMock.mock.calls.length, 1);
-    deepEqual(checkoutIssueMock.mock.calls[0].arguments, [mockIssue, undefined]);
+    deepEqual(checkoutIssueMock.mock.calls[0].arguments, [
+      mockIssue,
+      undefined,
+    ]);
     equal(checkoutPullRequestMock.mock.calls.length, 0);
   });
 
@@ -204,14 +211,17 @@ describe("githubCheckout", () => {
 
     // Verify calls
     equal(checkoutIssueMock.mock.calls.length, 1);
-    deepEqual(checkoutIssueMock.mock.calls[0].arguments, [mockIssue, "develop"]);
+    deepEqual(checkoutIssueMock.mock.calls[0].arguments, [
+      mockIssue,
+      "develop",
+    ]);
   });
 
   it("should pass through errors from checkoutPullRequest", async () => {
     resetMocks();
     const mockPR = {
       number: 111,
-      head: { 
+      head: {
         ref: "error-branch",
         repo: {
           full_name: "owner/repo",

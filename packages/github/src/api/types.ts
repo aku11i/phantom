@@ -4,7 +4,7 @@ export interface GitHubPullRequest {
     ref: string;
     repo: {
       full_name: string;
-    } | null;
+    };
   };
   base: {
     repo: {
