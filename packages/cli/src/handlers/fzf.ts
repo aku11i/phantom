@@ -3,6 +3,7 @@ import { platform } from "node:os";
 import { parseArgs } from "node:util";
 import { type WorktreeInfo, listWorktrees } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
+import { spawnFzf } from "@aku11i/phantom-process";
 import { isOk } from "@aku11i/phantom-shared";
 import { exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
@@ -95,31 +96,32 @@ export async function fzfHandler(args: string[]): Promise<void> {
   const clipboardCmd = getClipboardCommand();
   const fileManagerCmd = getFileManagerCommand();
 
-  const fzfArgs = [
-    "--ansi",
-    "--layout=reverse",
-    "--border=rounded",
-    "--border-label= Phantom Worktrees ",
-    "--header=enter:shell  ^d:delete  ^w:where  ^o:open  ^y:copy  alt-?:help",
-    "--bind=enter:accept",
-    "--bind=ctrl-d:execute(phantom delete {1} < /dev/tty)+abort",
-    "--bind=ctrl-w:execute-silent(phantom where {1})+abort",
-    `--bind=ctrl-o:execute-silent(${fileManagerCmd} $(phantom where {1}))+abort`,
-    `--bind=ctrl-y:execute-silent(phantom where {1} | ${clipboardCmd})+abort`,
-    "--bind=alt-?:toggle-preview",
-    "--preview-window=hidden",
-    `--preview=echo '${HELP_TEXT.trim()}'`,
-  ];
-
-  const fzf = spawn("fzf", fzfArgs, {
-    stdio: ["pipe", "pipe", "inherit"],
+  const fzf = spawnFzf(formattedWorktrees, {
+    ansi: true,
+    layout: "reverse",
+    border: "rounded",
+    borderLabel: " Phantom Worktrees ",
+    header: "enter:shell  ^d:delete  ^w:where  ^o:open  ^y:copy  alt-?:help",
+    bindings: [
+      { key: "enter", action: "accept" },
+      { key: "ctrl-d", action: "execute(phantom delete {1} < /dev/tty)+abort" },
+      { key: "ctrl-w", action: "execute-silent(phantom where {1})+abort" },
+      { key: "ctrl-o", action: `execute-silent(${fileManagerCmd} $(phantom where {1}))+abort` },
+      { key: "ctrl-y", action: `execute-silent(phantom where {1} | ${clipboardCmd})+abort` },
+      { key: "alt-?", action: "toggle-preview" },
+    ],
+    previewWindow: "hidden",
+    previewCommand: `echo '${HELP_TEXT.trim()}'`,
+    stdio: "inherit",
   });
 
   let result = "";
 
-  fzf.stdout.on("data", (data) => {
-    result += data.toString();
-  });
+  if (fzf.stdout) {
+    fzf.stdout.on("data", (data) => {
+      result += data.toString();
+    });
+  }
 
   fzf.on("error", (error) => {
     if (error.message.includes("ENOENT")) {
@@ -140,8 +142,4 @@ export async function fzfHandler(args: string[]): Promise<void> {
     }
     // Exit silently if user cancels (code 1 or 130)
   });
-
-  // Send worktree list to fzf
-  fzf.stdin.write(formattedWorktrees.join("\n"));
-  fzf.stdin.end();
 }
