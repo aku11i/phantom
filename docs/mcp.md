@@ -65,7 +65,7 @@ phantom mcp serve
 
 ## Available MCP Commands
 
-The Phantom MCP server exposes three main tools:
+The Phantom MCP server exposes four main tools:
 
 ### 1. `phantom_create_worktree`
 Creates a new Git worktree.
@@ -112,6 +112,24 @@ Deletes a Git worktree (phantom).
   "arguments": {
     "name": "feature-awesome",
     "force": false
+  }
+}
+```
+
+### 4. `phantom_github_checkout`
+Checkout a GitHub issue or pull request by number into a new worktree.
+
+**Parameters:**
+- `number` (required): Issue or pull request number to checkout
+- `base` (optional): Base branch for issues (not applicable for pull requests)
+
+**Example:**
+```typescript
+{
+  "tool": "phantom_github_checkout",
+  "arguments": {
+    "number": "123",
+    "base": "main"  // optional, only for issues
   }
 }
 ```
@@ -169,4 +187,28 @@ AI Agent:
 2. Switches to blog-comments worktree
 3. Implements commenting system on top of basic blog
 4. Tests commenting features independently
+```
+
+### 4. GitHub Issue/PR Development
+
+Work directly on GitHub issues or pull requests:
+
+```
+User: "Check out PR #175 and add more comprehensive tests"
+
+AI Agent:
+1. phantom_github_checkout("175")
+2. Switches to the PR's worktree automatically
+3. Reviews existing code changes
+4. Adds comprehensive test coverage
+5. Commits and pushes the improvements
+
+User: "Create a worktree for issue #180 to implement the requested feature"
+
+AI Agent:
+1. phantom_github_checkout("180", base: "main")
+2. Creates worktree with a branch for issue #180
+3. Implements the feature requested in the issue
+4. Tests the implementation
+5. Ready to create a pull request
 ```
