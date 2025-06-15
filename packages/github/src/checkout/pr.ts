@@ -18,10 +18,6 @@ export async function checkoutPullRequest(
   const worktreeName = `pr-${pullRequest.number}`;
   const localBranch = `pr-${pullRequest.number}`;
 
-  // Check if PR is from a fork
-  const isFromFork =
-    pullRequest.head.repo.full_name !== pullRequest.base.repo.full_name;
-
   // For both fork and same-repo PRs, we fetch the PR ref to a local branch
   // This provides a consistent approach and ensures we always have the latest PR state
   const refspec = `pull/${pullRequest.number}/head:${localBranch}`;
@@ -49,7 +45,7 @@ export async function checkoutPullRequest(
     return err(attachResult.error);
   }
 
-  const message = isFromFork
+  const message = pullRequest.isFromFork
     ? `Checked out PR #${pullRequest.number} from fork ${pullRequest.head.repo.full_name}`
     : `Checked out PR #${pullRequest.number} from branch ${pullRequest.head.ref}`;
 
