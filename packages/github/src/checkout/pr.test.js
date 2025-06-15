@@ -2,7 +2,8 @@ import { deepEqual, equal, ok } from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 
 const getGitRootMock = mock.fn();
-const createWorktreeCoreMock = mock.fn();
+const fetchMock = mock.fn();
+const attachWorktreeCoreMock = mock.fn();
 
 // Mock the WorktreeAlreadyExistsError class
 class MockWorktreeAlreadyExistsError extends Error {
@@ -15,12 +16,13 @@ class MockWorktreeAlreadyExistsError extends Error {
 mock.module("@aku11i/phantom-git", {
   namedExports: {
     getGitRoot: getGitRootMock,
+    fetch: fetchMock,
   },
 });
 
 mock.module("@aku11i/phantom-core", {
   namedExports: {
-    createWorktree: createWorktreeCoreMock,
+    attachWorktreeCore: attachWorktreeCoreMock,
     WorktreeAlreadyExistsError: MockWorktreeAlreadyExistsError,
   },
 });
@@ -30,7 +32,8 @@ const { checkoutPullRequest } = await import("./pr.ts");
 describe("checkoutPullRequest", () => {
   const resetMocks = () => {
     getGitRootMock.mock.resetCalls();
-    createWorktreeCoreMock.mock.resetCalls();
+    fetchMock.mock.resetCalls();
+    attachWorktreeCoreMock.mock.resetCalls();
   };
 
   it("should export checkoutPullRequest function", () => {
@@ -61,12 +64,13 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    createWorktreeCoreMock.mock.mockImplementation(async () => ({
+    fetchMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: {
-        message:
-          "Created worktree pr-123 and checked out branch feature-branch",
-      },
+      value: undefined,
+    }));
+    attachWorktreeCoreMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: "/path/to/repo/.git/phantom/worktrees/pr-123",
     }));
 
     const result = await checkoutPullRequest(mockPullRequest);
@@ -74,22 +78,24 @@ describe("checkoutPullRequest", () => {
     ok(result.value);
     equal(
       result.value.message,
-      "Created worktree pr-123 and checked out branch feature-branch",
+      "Checked out PR #123 from branch feature-branch",
     );
     equal(result.value.alreadyExists, undefined);
 
     // Verify mocks were called correctly
     equal(getGitRootMock.mock.calls.length, 1);
-    equal(createWorktreeCoreMock.mock.calls.length, 1);
+    equal(fetchMock.mock.calls.length, 1);
+    equal(attachWorktreeCoreMock.mock.calls.length, 1);
 
-    const [gitRoot, worktreeName, options] =
-      createWorktreeCoreMock.mock.calls[0].arguments;
+    // Verify fetch was called with correct refspec
+    const fetchOptions = fetchMock.mock.calls[0].arguments[0];
+    equal(fetchOptions.refspec, "pull/123/head:pr-123");
+
+    // Verify attach was called with correct parameters
+    const [gitRoot, worktreeName] =
+      attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(gitRoot, mockGitRoot);
     equal(worktreeName, "pr-123");
-    deepEqual(options, {
-      branch: "feature-branch",
-      base: "origin/feature-branch",
-    });
   });
 
   it("should handle when worktree already exists", async () => {
@@ -111,7 +117,11 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    createWorktreeCoreMock.mock.mockImplementation(async () => ({
+    fetchMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: undefined,
+    }));
+    attachWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: false,
       error: new MockWorktreeAlreadyExistsError("Worktree already exists"),
     }));
@@ -142,8 +152,12 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    fetchMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: undefined,
+    }));
     const expectedError = new Error("Some git error");
-    createWorktreeCoreMock.mock.mockImplementation(async () => ({
+    attachWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: false,
       error: expectedError,
     }));
@@ -173,16 +187,18 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    createWorktreeCoreMock.mock.mockImplementation(async () => ({
+    fetchMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: {
-        message: "Success",
-      },
+      value: undefined,
+    }));
+    attachWorktreeCoreMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: "/path/to/repo/.git/phantom/worktrees/pr-999",
     }));
 
     await checkoutPullRequest(mockPullRequest);
 
-    const [, worktreeName] = createWorktreeCoreMock.mock.calls[0].arguments;
+    const [, worktreeName] = attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeName, "pr-999");
   });
 
@@ -205,25 +221,56 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    createWorktreeCoreMock.mock.mockImplementation(async () => ({
+    fetchMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: {
-        message: "Created worktree pr-1234 for forked PR",
-      },
+      value: undefined,
+    }));
+    attachWorktreeCoreMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: "/path/to/repo/.git/phantom/worktrees/pr-1234",
     }));
 
     const result = await checkoutPullRequest(mockPullRequest);
 
     ok(result.value);
-    equal(result.value.message, "Created worktree pr-1234 for forked PR");
+    equal(result.value.message, "Checked out PR #1234 from fork contributor/fork-repo");
 
-    // Verify it uses the special GitHub ref for forked PRs
-    const [, worktreeName, options] =
-      createWorktreeCoreMock.mock.calls[0].arguments;
+    // Verify it uses the same refspec for forked PRs
+    const fetchOptions = fetchMock.mock.calls[0].arguments[0];
+    equal(fetchOptions.refspec, "pull/1234/head:pr-1234");
+    
+    const [, worktreeName] = attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeName, "pr-1234");
-    deepEqual(options, {
-      branch: "pr-1234",
-      base: "origin/pull/1234/head",
-    });
+  });
+
+  it("should handle fetch errors", async () => {
+    resetMocks();
+    const mockGitRoot = "/path/to/repo";
+    const mockPullRequest = {
+      number: 555,
+      head: {
+        ref: "missing-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+    };
+
+    getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    fetchMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: new Error("Could not find remote ref"),
+    }));
+
+    const result = await checkoutPullRequest(mockPullRequest);
+
+    ok(result.error);
+    ok(result.error.message.includes("Failed to fetch PR #555"));
+    ok(result.error.message.includes("Could not find remote ref"));
   });
 });

@@ -3,6 +3,7 @@ export * from "./errors.ts";
 export * from "./libs/add-worktree.ts";
 export * from "./libs/attach-worktree.ts";
 export * from "./libs/branch-exists.ts";
+export * from "./libs/fetch.ts";
 export * from "./libs/get-current-branch.ts";
 export * from "./libs/get-current-worktree.ts";
 export * from "./libs/get-git-root.ts";
