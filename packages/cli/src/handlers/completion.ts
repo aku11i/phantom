@@ -110,7 +110,7 @@ _phantom() {
         'shell:Open an interactive shell in a worktree directory'
         'version:Display phantom version information'
         'completion:Generate shell completion scripts'
-        'mcp:Start or stop Model Context Protocol (MCP) server'
+        'mcp:Manage Model Context Protocol (MCP) server'
     )
 
     _arguments -C \\
