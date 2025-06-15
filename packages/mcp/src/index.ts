@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import packageJson from "../package.json" with { type: "json" };
 import { createWorktreeTool } from "./tools/create-worktree.ts";
 import { deleteWorktreeTool } from "./tools/delete-worktree.ts";
+import { githubCheckoutTool } from "./tools/github-checkout.ts";
 import { listWorktreesTool } from "./tools/list-worktrees.ts";
 
 const server = new McpServer({
@@ -11,7 +12,12 @@ const server = new McpServer({
 });
 
 // Define all tools
-const tools = [createWorktreeTool, listWorktreesTool, deleteWorktreeTool];
+const tools = [
+  createWorktreeTool,
+  listWorktreesTool,
+  deleteWorktreeTool,
+  githubCheckoutTool,
+];
 
 // Register tools
 for (const tool of tools) {
