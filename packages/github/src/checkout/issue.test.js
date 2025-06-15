@@ -8,7 +8,7 @@ describe("checkoutIssue", () => {
   });
 
   it("should have correct function signature", () => {
-    // Takes 3 parameters: issue, number, base (optional)
-    equal(checkoutIssue.length, 3);
+    // Takes 2 parameters: issue, base (optional)
+    equal(checkoutIssue.length, 2);
   });
 });

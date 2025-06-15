@@ -8,7 +8,7 @@ describe("checkoutPullRequest", () => {
   });
 
   it("should have correct function signature", () => {
-    // Takes 2 parameters: pullRequest, number
-    equal(checkoutPullRequest.length, 2);
+    // Takes 1 parameter: pullRequest
+    equal(checkoutPullRequest.length, 1);
   });
 });

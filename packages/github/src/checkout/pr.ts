@@ -8,10 +8,9 @@ import type { GitHubPullRequest } from "../api.ts";
 
 export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,
-  number: string,
 ): Promise<void> {
   const gitRoot = await getGitRoot();
-  const worktreeName = `pr-${number}`;
+  const worktreeName = `pr-${pullRequest.number}`;
 
   const result = await createWorktreeCore(gitRoot, worktreeName, {
     branch: pullRequest.head.ref,
@@ -20,7 +19,9 @@ export async function checkoutPullRequest(
 
   if (isErr(result)) {
     if (result.error instanceof WorktreeAlreadyExistsError) {
-      console.log(`Worktree for PR #${number} is already checked out`);
+      console.log(
+        `Worktree for PR #${pullRequest.number} is already checked out`,
+      );
       return;
     }
     throw result.error;

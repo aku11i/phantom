@@ -1,4 +1,4 @@
-import { fetchIssue, fetchPullRequest, getGitHubRepoInfo } from "./api.ts";
+import { fetchIssue, getGitHubRepoInfo, isPullRequest } from "./api.ts";
 import { checkoutIssue } from "./checkout/issue.ts";
 import { checkoutPullRequest } from "./checkout/pr.ts";
 
@@ -13,19 +13,19 @@ export async function githubCheckout(
   const { number, base } = options;
   const { owner, repo } = await getGitHubRepoInfo();
 
-  const pullRequest = await fetchPullRequest(owner, repo, number);
-  if (pullRequest) {
-    await checkoutPullRequest(pullRequest, number);
-    return;
-  }
-
+  // Always fetch from /issues/:number endpoint first
   const issue = await fetchIssue(owner, repo, number);
-  if (issue) {
-    await checkoutIssue(issue, number, base);
-    return;
+
+  if (!issue) {
+    throw new Error(
+      `GitHub issue or pull request #${number} not found or you don't have permission to access it.`,
+    );
   }
 
-  throw new Error(
-    `GitHub issue or pull request #${number} not found or you don't have permission to access it.`,
-  );
+  // Check if it's a pull request
+  if (isPullRequest(issue) && issue.pullRequest) {
+    await checkoutPullRequest(issue.pullRequest);
+  } else {
+    await checkoutIssue(issue, base);
+  }
 }

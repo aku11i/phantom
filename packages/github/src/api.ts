@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { z } from "zod";
 import { createGitHubClient } from "./client.ts";
 
 const execFileAsync = promisify(execFile);
@@ -13,9 +14,11 @@ export interface GitHubPullRequest {
 
 export interface GitHubIssue {
   number: number;
-  pull_request?: {
-    url: string | null;
-  };
+  pullRequest?: GitHubPullRequest;
+}
+
+export function isPullRequest(issue: GitHubIssue): boolean {
+  return issue.pullRequest !== undefined;
 }
 
 export async function getGitHubRepoInfo(): Promise<{
@@ -37,17 +40,20 @@ export async function getGitHubRepoInfo(): Promise<{
   }
 }
 
+const numberSchema = z.coerce.number().int().positive();
+
 export async function fetchPullRequest(
   owner: string,
   repo: string,
   number: string,
 ): Promise<GitHubPullRequest | null> {
   try {
+    const pullNumber = numberSchema.parse(number);
     const octokit = await createGitHubClient();
     const { data } = await octokit.pulls.get({
       owner,
       repo,
-      pull_number: Number.parseInt(number, 10),
+      pull_number: pullNumber,
     });
     return {
       number: data.number,
@@ -69,19 +75,28 @@ export async function fetchIssue(
   number: string,
 ): Promise<GitHubIssue | null> {
   try {
+    const issueNumber = numberSchema.parse(number);
     const octokit = await createGitHubClient();
     const { data } = await octokit.issues.get({
       owner,
       repo,
-      issue_number: Number.parseInt(number, 10),
+      issue_number: issueNumber,
     });
+
+    let pullRequest: GitHubPullRequest | undefined;
+    if (data.pull_request) {
+      const prNumber = data.pull_request.url
+        ? String(numberSchema.parse(data.pull_request.url.split("/").pop()))
+        : "0";
+      const pr = await fetchPullRequest(owner, repo, prNumber);
+      if (pr) {
+        pullRequest = pr;
+      }
+    }
+
     return {
       number: data.number,
-      pull_request: data.pull_request
-        ? {
-            url: data.pull_request.url,
-          }
-        : undefined,
+      pullRequest,
     };
   } catch (error) {
     if (error instanceof Error && "status" in error && error.status === 404) {

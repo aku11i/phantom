@@ -1,6 +1,11 @@
 import { equal } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { fetchIssue, fetchPullRequest, getGitHubRepoInfo } from "./api.ts";
+import {
+  fetchIssue,
+  fetchPullRequest,
+  getGitHubRepoInfo,
+  isPullRequest,
+} from "./api.ts";
 
 describe("api", () => {
   describe("getGitHubRepoInfo", () => {
@@ -28,6 +33,30 @@ describe("api", () => {
     it("should have correct function signature", () => {
       // Takes 3 parameters: owner, repo, number
       equal(fetchIssue.length, 3);
+    });
+  });
+
+  describe("isPullRequest", () => {
+    it("should export isPullRequest function", () => {
+      equal(typeof isPullRequest, "function");
+    });
+
+    it("should return true for issues with pullRequest", () => {
+      const issueWithPR = {
+        number: 123,
+        pullRequest: {
+          number: 123,
+          head: { ref: "feature-branch" },
+        },
+      };
+      equal(isPullRequest(issueWithPR), true);
+    });
+
+    it("should return false for issues without pullRequest", () => {
+      const pureIssue = {
+        number: 124,
+      };
+      equal(isPullRequest(pureIssue), false);
     });
   });
 });
