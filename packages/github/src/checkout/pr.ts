@@ -25,7 +25,7 @@ export async function checkoutPullRequest(
 
   // For both fork and same-repo PRs, we fetch the PR ref to a local branch
   // This provides a consistent approach and ensures we always have the latest PR state
-  const refspec = `${upstream.replace('origin/', '')}:${localBranch}`;
+  const refspec = `${upstream.replace("origin/", "")}:${localBranch}`;
 
   // Fetch the PR to a local branch
   const fetchResult = await fetch({ refspec });
