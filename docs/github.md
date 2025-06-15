@@ -8,36 +8,9 @@ Phantom provides seamless integration with GitHub, allowing you to quickly creat
 
 > [!IMPORTANT]  
 > To use Phantom's GitHub integration, you need:
-> - GitHub CLI (gh) installed
-> - Authentication via `gh auth login`
-
-### Installing GitHub CLI
-
-**macOS:**
-```bash
-brew install gh
-```
-
-**Ubuntu/Debian:**
-```bash
-curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-sudo apt update
-sudo apt install gh
-```
-
-**Other platforms:**
-Visit [GitHub CLI installation guide](https://github.com/cli/cli#installation)
-
-### Authentication
-
-After installing GitHub CLI, authenticate with your GitHub account:
-
-```bash
-gh auth login
-```
-
-Follow the interactive prompts to complete authentication.
+> - GitHub CLI (gh) installed and authenticated
+> 
+> For installation and authentication instructions, visit the [GitHub CLI documentation](https://cli.github.com/manual/)
 
 ## Commands
 
