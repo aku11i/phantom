@@ -196,6 +196,7 @@ phantom delete feature-awesome
 - **[はじめに](./docs/getting-started.md)** - 一般的なワークフローとヒント
 - **[コマンドリファレンス](./docs/commands.md)** - すべてのコマンドとオプション
 - **[設定](./docs/configuration.md)** - 自動ファイルコピーと作成後コマンドの設定
+- **[GitHub統合](./docs/github.md)** - GitHubプルリクエストとイシューの操作
 - **[MCP統合](./docs/mcp.md)** - Model Context ProtocolによるAIを活用した並行開発
 
 
