@@ -36,6 +36,14 @@ describe("fetchPullRequest", () => {
             number: 123,
             head: {
               ref: "feature-branch",
+              repo: {
+                full_name: "owner/repo",
+              },
+            },
+            base: {
+              repo: {
+                full_name: "owner/repo",
+              },
             },
           },
         })),
@@ -48,6 +56,14 @@ describe("fetchPullRequest", () => {
       number: 123,
       head: {
         ref: "feature-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
       },
     });
 
@@ -104,6 +120,14 @@ describe("fetchPullRequest", () => {
             number: 123,
             head: {
               ref: "feature-branch",
+              repo: {
+                full_name: "owner/repo",
+              },
+            },
+            base: {
+              repo: {
+                full_name: "owner/repo",
+              },
             },
           },
         })),

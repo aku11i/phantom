@@ -49,6 +49,14 @@ describe("checkoutPullRequest", () => {
       number: 123,
       head: {
         ref: "feature-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
       },
     };
 
@@ -86,6 +94,14 @@ describe("checkoutPullRequest", () => {
       number: 456,
       head: {
         ref: "existing-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
       },
     };
 
@@ -109,6 +125,14 @@ describe("checkoutPullRequest", () => {
       number: 789,
       head: {
         ref: "error-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
       },
     };
 
@@ -132,6 +156,14 @@ describe("checkoutPullRequest", () => {
       number: 999,
       head: {
         ref: "test-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
       },
     };
 
@@ -147,5 +179,81 @@ describe("checkoutPullRequest", () => {
 
     const [, worktreeName] = createWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeName, "pr-999");
+  });
+
+  it("should handle forked pull requests", async () => {
+    resetMocks();
+    const mockGitRoot = "/path/to/repo";
+    const mockPullRequest = {
+      number: 1234,
+      head: {
+        ref: "fork-feature",
+        repo: {
+          full_name: "contributor/fork-repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/original-repo",
+        },
+      },
+    };
+
+    getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    createWorktreeCoreMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        message: "Created worktree pr-1234 for forked PR",
+      },
+    }));
+
+    const result = await checkoutPullRequest(mockPullRequest);
+
+    ok(result.value);
+    equal(result.value.message, "Created worktree pr-1234 for forked PR");
+
+    // Verify it uses the special GitHub ref for forked PRs
+    const [, worktreeName, options] = createWorktreeCoreMock.mock.calls[0].arguments;
+    equal(worktreeName, "pr-1234");
+    deepEqual(options, {
+      branch: "pr-1234",
+      base: "origin/pull/1234/head",
+    });
+  });
+
+  it("should handle pull requests with null head repo", async () => {
+    resetMocks();
+    const mockGitRoot = "/path/to/repo";
+    const mockPullRequest = {
+      number: 5678,
+      head: {
+        ref: "deleted-fork-branch",
+        repo: null,
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+    };
+
+    getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    createWorktreeCoreMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        message: "Created worktree pr-5678 for PR from deleted fork",
+      },
+    }));
+
+    const result = await checkoutPullRequest(mockPullRequest);
+
+    ok(result.value);
+
+    // Should treat as forked PR when head repo is null
+    const [, , options] = createWorktreeCoreMock.mock.calls[0].arguments;
+    deepEqual(options, {
+      branch: "pr-5678",
+      base: "origin/pull/5678/head",
+    });
   });
 });

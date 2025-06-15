@@ -72,7 +72,17 @@ describe("githubCheckout", () => {
     resetMocks();
     const mockPR = {
       number: 123,
-      head: { ref: "feature-branch" },
+      head: { 
+        ref: "feature-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
     };
     const mockIssue = {
       number: 123,
@@ -105,7 +115,17 @@ describe("githubCheckout", () => {
     resetMocks();
     const mockPR = {
       number: 456,
-      head: { ref: "pr-branch" },
+      head: { 
+        ref: "pr-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
     };
     const mockIssue = {
       number: 456,
@@ -191,7 +211,17 @@ describe("githubCheckout", () => {
     resetMocks();
     const mockPR = {
       number: 111,
-      head: { ref: "error-branch" },
+      head: { 
+        ref: "error-branch",
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
+      base: {
+        repo: {
+          full_name: "owner/repo",
+        },
+      },
     };
     const mockIssue = {
       number: 111,

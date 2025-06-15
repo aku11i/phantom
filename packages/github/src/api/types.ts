@@ -2,6 +2,14 @@ export interface GitHubPullRequest {
   number: number;
   head: {
     ref: string;
+    repo: {
+      full_name: string;
+    } | null;
+  };
+  base: {
+    repo: {
+      full_name: string;
+    };
   };
 }
 

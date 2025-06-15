@@ -17,10 +17,27 @@ export async function checkoutPullRequest(
   const gitRoot = await getGitRoot();
   const worktreeName = `pr-${pullRequest.number}`;
 
-  const result = await createWorktreeCore(gitRoot, worktreeName, {
-    branch: pullRequest.head.ref,
-    base: `origin/${pullRequest.head.ref}`,
-  });
+  // Check if PR is from a fork
+  const isFromFork = !pullRequest.head.repo || 
+    pullRequest.head.repo.full_name !== pullRequest.base.repo.full_name;
+
+  let createOptions;
+  if (isFromFork) {
+    // For forked PRs, we need to fetch from the special GitHub ref
+    // and create a local branch
+    createOptions = {
+      branch: `pr-${pullRequest.number}`,
+      base: `origin/pull/${pullRequest.number}/head`,
+    };
+  } else {
+    // For same-repo PRs, we can directly use the head branch
+    createOptions = {
+      branch: pullRequest.head.ref,
+      base: `origin/${pullRequest.head.ref}`,
+    };
+  }
+
+  const result = await createWorktreeCore(gitRoot, worktreeName, createOptions);
 
   if (isErr(result)) {
     if (result.error instanceof WorktreeAlreadyExistsError) {

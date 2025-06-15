@@ -21,6 +21,14 @@ export async function fetchPullRequest(
       number: data.number,
       head: {
         ref: data.head.ref,
+        repo: data.head.repo ? {
+          full_name: data.head.repo.full_name,
+        } : null,
+      },
+      base: {
+        repo: {
+          full_name: data.base.repo.full_name,
+        },
       },
     };
   } catch (error) {

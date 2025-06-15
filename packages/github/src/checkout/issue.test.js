@@ -54,7 +54,19 @@ describe("checkoutIssue", () => {
     resetMocks();
     const mockIssue = {
       number: 123,
-      pullRequest: { head: { ref: "pr-branch" } },
+      pullRequest: { 
+        head: { 
+          ref: "pr-branch",
+          repo: {
+            full_name: "owner/repo",
+          },
+        },
+        base: {
+          repo: {
+            full_name: "owner/repo",
+          },
+        },
+      },
     };
 
     isPullRequestMock.mock.mockImplementation(() => true);
