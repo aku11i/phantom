@@ -96,9 +96,9 @@ describe("checkoutPullRequest", () => {
     equal(attachWorktreeCoreMock.mock.calls.length, 1);
     equal(setUpstreamBranchMock.mock.calls.length, 1);
 
-    // Verify fetch was called with correct refspec
+    // Verify fetch was called with correct refspec (same-repo PR)
     const fetchOptions = fetchMock.mock.calls[0].arguments[0];
-    equal(fetchOptions.refspec, "pull/123/head:pr-123");
+    equal(fetchOptions.refspec, "feature-branch:pr-123");
 
     // Verify upstream was set correctly for same-repo PR
     const upstreamArgs = setUpstreamBranchMock.mock.calls[0].arguments;

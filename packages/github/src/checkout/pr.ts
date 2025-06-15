@@ -18,9 +18,14 @@ export async function checkoutPullRequest(
   const worktreeName = `pr-${pullRequest.number}`;
   const localBranch = `pr-${pullRequest.number}`;
 
+  // Determine the upstream branch for tracking
+  const upstream = pullRequest.isFromFork
+    ? `origin/pull/${pullRequest.number}/head`
+    : `origin/${pullRequest.head.ref}`;
+
   // For both fork and same-repo PRs, we fetch the PR ref to a local branch
   // This provides a consistent approach and ensures we always have the latest PR state
-  const refspec = `pull/${pullRequest.number}/head:${localBranch}`;
+  const refspec = `${upstream.replace('origin/', '')}:${localBranch}`;
 
   // Fetch the PR to a local branch
   const fetchResult = await fetch({ refspec });
@@ -34,19 +39,16 @@ export async function checkoutPullRequest(
 
   // Set upstream tracking branch immediately after successful fetch
   // Since fetch was successful, we know the remote ref exists
-  const upstream = pullRequest.isFromFork
-    ? `origin/pull/${pullRequest.number}/head`
-    : `origin/${pullRequest.head.ref}`;
 
-  const upstreamResult = await setUpstreamBranch(
+  const setUpstreamResult = await setUpstreamBranch(
     gitRoot,
     localBranch,
     upstream,
   );
-  if (isErr(upstreamResult)) {
+  if (isErr(setUpstreamResult)) {
     // Log the error but don't fail the checkout
     console.warn(
-      `Warning: Could not set upstream branch: ${upstreamResult.error.message}`,
+      `Warning: Could not set upstream branch: ${setUpstreamResult.error.message}`,
     );
   }
 
