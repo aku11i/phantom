@@ -3,16 +3,19 @@ import {
   createWorktree as createWorktreeCore,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr } from "@aku11i/phantom-shared";
+import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
 import { type GitHubIssue, isPullRequest } from "../api/index.ts";
+import type { CheckoutResult } from "./pr.ts";
 
 export async function checkoutIssue(
   issue: GitHubIssue,
   base?: string,
-): Promise<void> {
+): Promise<Result<CheckoutResult>> {
   if (isPullRequest(issue)) {
-    throw new Error(
-      `#${issue.number} is already linked to a pull request. Use the PR number instead.`,
+    return err(
+      new Error(
+        `#${issue.number} is already linked to a pull request. Use the PR number instead.`,
+      ),
     );
   }
 
@@ -27,11 +30,15 @@ export async function checkoutIssue(
 
   if (isErr(result)) {
     if (result.error instanceof WorktreeAlreadyExistsError) {
-      console.log(`Worktree for issue #${issue.number} is already checked out`);
-      return;
+      return ok({
+        message: `Worktree for issue #${issue.number} is already checked out`,
+        alreadyExists: true,
+      });
     }
-    throw result.error;
+    return err(result.error);
   }
 
-  console.log(result.value.message);
+  return ok({
+    message: result.value.message,
+  });
 }

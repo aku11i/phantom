@@ -1,7 +1,7 @@
-import { type Result, err, ok } from "@aku11i/phantom-shared";
+import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
 import { fetchIssue, getGitHubRepoInfo, isPullRequest } from "./api/index.ts";
 import { checkoutIssue } from "./checkout/issue.ts";
-import { checkoutPullRequest } from "./checkout/pr.ts";
+import { type CheckoutResult, checkoutPullRequest } from "./checkout/pr.ts";
 
 export interface GitHubCheckoutOptions {
   number: string;
@@ -10,7 +10,7 @@ export interface GitHubCheckoutOptions {
 
 export async function githubCheckout(
   options: GitHubCheckoutOptions,
-): Promise<Result<void>> {
+): Promise<Result<CheckoutResult>> {
   const { number, base } = options;
   const { owner, repo } = await getGitHubRepoInfo();
 
@@ -34,10 +34,10 @@ export async function githubCheckout(
         ),
       );
     }
-    await checkoutPullRequest(issue.pullRequest);
-  } else {
-    await checkoutIssue(issue, base);
+    const result = await checkoutPullRequest(issue.pullRequest);
+    return result;
   }
 
-  return ok(undefined);
+  const result = await checkoutIssue(issue, base);
+  return result;
 }

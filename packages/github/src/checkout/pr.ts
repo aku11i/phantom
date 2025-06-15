@@ -3,12 +3,17 @@ import {
   createWorktree as createWorktreeCore,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr } from "@aku11i/phantom-shared";
+import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
 import type { GitHubPullRequest } from "../api/index.ts";
+
+export interface CheckoutResult {
+  message: string;
+  alreadyExists?: boolean;
+}
 
 export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,
-): Promise<void> {
+): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
   const worktreeName = `pr-${pullRequest.number}`;
 
@@ -19,13 +24,15 @@ export async function checkoutPullRequest(
 
   if (isErr(result)) {
     if (result.error instanceof WorktreeAlreadyExistsError) {
-      console.log(
-        `Worktree for PR #${pullRequest.number} is already checked out`,
-      );
-      return;
+      return ok({
+        message: `Worktree for PR #${pullRequest.number} is already checked out`,
+        alreadyExists: true,
+      });
     }
-    throw result.error;
+    return err(result.error);
   }
 
-  console.log(result.value.message);
+  return ok({
+    message: result.value.message,
+  });
 }
