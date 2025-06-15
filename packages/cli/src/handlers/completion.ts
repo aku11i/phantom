@@ -40,7 +40,7 @@ complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command
 complete -c phantom -n "__phantom_using_command" -a "shell" -d "Open an interactive shell in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "version" -d "Display phantom version information"
 complete -c phantom -n "__phantom_using_command" -a "completion" -d "Generate shell completion scripts"
-complete -c phantom -n "__phantom_using_command" -a "mcp" -d "Start or stop Model Context Protocol (MCP) server"
+complete -c phantom -n "__phantom_using_command" -a "mcp" -d "Manage Model Context Protocol (MCP) server"
 
 # Global options
 complete -c phantom -l help -d "Show help (-h)"
