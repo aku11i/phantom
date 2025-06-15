@@ -19,6 +19,10 @@ export const githubHelp: CommandHelp = {
     "  checkout    Create a worktree for a GitHub PR or issue",
     "",
     "Alias: 'gh' can be used instead of 'github'",
+    "",
+    "Requirements:",
+    "  - GitHub CLI (gh) must be installed",
+    "  - Must be authenticated with 'gh auth login'",
   ],
 };
 
@@ -51,6 +55,9 @@ export const githubCheckoutHelp: CommandHelp = {
   notes: [
     "For PRs: Creates worktree named 'pr-{number}' with the PR's branch",
     "For Issues: Creates worktree named 'issue-{number}' with a new branch",
-    "Uses GitHub CLI (gh) authentication",
+    "",
+    "Requirements:",
+    "  - GitHub CLI (gh) must be installed",
+    "  - Must be authenticated with 'gh auth login'",
   ],
 };

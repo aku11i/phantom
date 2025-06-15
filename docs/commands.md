@@ -13,6 +13,8 @@ This document provides a comprehensive reference for all Phantom commands and th
 - [Working with Worktrees](#working-with-worktrees)
   - [shell](#shell)
   - [exec](#exec)
+- [GitHub Integration](#github-integration)
+  - [github checkout](#github-checkout)
 - [Other Commands](#other-commands)
   - [version](#version)
   - [completion](#completion)
@@ -250,6 +252,45 @@ phantom exec --fzf --tmux npm run dev
 
 **Notes:**
 - tmux options require being inside a tmux session
+
+## GitHub Integration
+
+### github checkout
+
+Create a worktree for a GitHub pull request or issue.
+
+```bash
+phantom github checkout <number> [options]
+phantom gh checkout <number> [options]  # alias
+```
+
+**Options:**
+- `--base <branch>` - Base branch for new issue branches (default: repository default branch)
+
+**Examples:**
+```bash
+# Create worktree for PR #123
+phantom github checkout 123
+
+# Create worktree for issue #456
+phantom github checkout 456
+
+# Create worktree for issue #789 based on develop branch
+phantom github checkout 789 --base develop
+
+# Using the alias
+phantom gh checkout 123
+```
+
+**Requirements:**
+- GitHub CLI (gh) must be installed
+- Must be authenticated with `gh auth login`
+
+**Behavior:**
+- For PRs: Creates worktree named `pr-{number}` with the PR's branch
+- For Issues: Creates worktree named `issue-{number}` with a new branch
+
+For detailed information, see the [GitHub Integration Guide](./github.md).
 
 ## Other Commands
 

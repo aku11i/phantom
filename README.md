@@ -195,6 +195,7 @@ phantom delete feature-awesome
 - **[Getting Started](./docs/getting-started.md)** - Common workflows and tips
 - **[Commands Reference](./docs/commands.md)** - All commands and options
 - **[Configuration](./docs/configuration.md)** - Set up automatic file copying and post-create commands
+- **[GitHub Integration](./docs/github.md)** - Work with GitHub pull requests and issues
 - **[MCP Integration](./docs/mcp.md)** - AI-powered parallel development with Model Context Protocol
 
 
