@@ -5,7 +5,6 @@ import {
 import {
   fetch,
   getGitRoot,
-  remoteBranchExists,
   setUpstreamBranch,
 } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
@@ -51,43 +50,21 @@ export async function checkoutPullRequest(
   }
 
   // Set upstream tracking branch
-  let upstream: string;
-  if (pullRequest.isFromFork) {
-    // For forked PRs, track the PR ref directly
-    upstream = `origin/pull/${pullRequest.number}/head`;
-  } else {
-    // For same-repo PRs, track the remote branch
-    upstream = `origin/${pullRequest.head.ref}`;
-  }
+  // Since fetch was successful, we know the remote ref exists
+  const upstream = pullRequest.isFromFork
+    ? `origin/pull/${pullRequest.number}/head`
+    : `origin/${pullRequest.head.ref}`;
 
-  // Check if the remote branch exists before setting upstream
-  const remoteBranchName = pullRequest.isFromFork
-    ? `pull/${pullRequest.number}/head`
-    : pullRequest.head.ref;
-  const remoteExists = await remoteBranchExists(
+  const upstreamResult = await setUpstreamBranch(
     gitRoot,
-    "origin",
-    remoteBranchName,
+    localBranch,
+    upstream,
   );
-
-  if (isErr(remoteExists)) {
+  if (isErr(upstreamResult)) {
     // Log the error but don't fail the checkout
     console.warn(
-      `Warning: Could not check remote branch existence: ${remoteExists.error.message}`,
+      `Warning: Could not set upstream branch: ${upstreamResult.error.message}`,
     );
-  } else if (remoteExists.value) {
-    // Set upstream only if the remote branch exists
-    const upstreamResult = await setUpstreamBranch(
-      gitRoot,
-      localBranch,
-      upstream,
-    );
-    if (isErr(upstreamResult)) {
-      // Log the error but don't fail the checkout
-      console.warn(
-        `Warning: Could not set upstream branch: ${upstreamResult.error.message}`,
-      );
-    }
   }
 
   const message = pullRequest.isFromFork

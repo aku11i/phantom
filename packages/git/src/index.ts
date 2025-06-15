@@ -8,5 +8,4 @@ export * from "./libs/get-current-branch.ts";
 export * from "./libs/get-current-worktree.ts";
 export * from "./libs/get-git-root.ts";
 export * from "./libs/list-worktrees.ts";
-export * from "./libs/remote-branch-exists.ts";
 export * from "./libs/set-upstream-branch.ts";
