@@ -1,0 +1,357 @@
+import { deepStrictEqual, rejects, strictEqual } from "node:assert";
+import { EventEmitter } from "node:events";
+import { describe, it, mock } from "node:test";
+import { err, ok } from "@aku11i/phantom-shared";
+
+// Create mocks
+const exitMock = mock.fn();
+const consoleLogMock = mock.fn();
+const consoleErrorMock = mock.fn();
+const listWorktreesMock = mock.fn();
+const getGitRootMock = mock.fn();
+const spawnMock = mock.fn();
+const platformMock = mock.fn();
+
+// Mock modules
+mock.module("node:process", {
+  namedExports: {
+    exit: exitMock,
+  },
+});
+
+mock.module("node:child_process", {
+  namedExports: {
+    spawn: spawnMock,
+  },
+});
+
+mock.module("node:os", {
+  namedExports: {
+    platform: platformMock,
+  },
+});
+
+mock.module("@aku11i/phantom-core", {
+  namedExports: {
+    listWorktrees: listWorktreesMock,
+  },
+});
+
+mock.module("@aku11i/phantom-git", {
+  namedExports: {
+    getGitRoot: getGitRootMock,
+  },
+});
+
+mock.module("../output.ts", {
+  namedExports: {
+    output: {
+      log: consoleLogMock,
+      error: consoleErrorMock,
+    },
+  },
+});
+
+const exitWithErrorMock = mock.fn((message, code) => {
+  if (message) consoleErrorMock(`Error: ${message}`);
+  exitMock(code || 1);
+  throw new Error(`Exit with code ${code || 1}`);
+});
+
+mock.module("../errors.ts", {
+  namedExports: {
+    exitCodes: {
+      success: 0,
+      generalError: 1,
+      validationError: 2,
+    },
+    exitWithError: exitWithErrorMock,
+  },
+});
+
+// Mock exit implementations
+const mockExit = (code) => {
+  throw new Error(`Exit with code ${code}`);
+};
+
+// Import handler after mocks are set up
+const { fzfHandler } = await import("./fzf.ts");
+
+const resetMocks = () => {
+  exitMock.mock.resetCalls();
+  consoleLogMock.mock.resetCalls();
+  consoleErrorMock.mock.resetCalls();
+  listWorktreesMock.mock.resetCalls();
+  getGitRootMock.mock.resetCalls();
+  spawnMock.mock.resetCalls();
+  platformMock.mock.resetCalls();
+  exitWithErrorMock.mock.resetCalls();
+  exitMock.mock.mockImplementation(mockExit);
+};
+
+describe("fzfHandler", () => {
+  describe("when --help flag is provided", () => {
+    it("should display help text", async () => {
+      resetMocks();
+
+      await fzfHandler(["--help"]);
+
+      strictEqual(consoleLogMock.mock.calls.length, 1);
+      const helpText = consoleLogMock.mock.calls[0].arguments[0];
+      strictEqual(
+        helpText.includes("Phantom Worktrees - Interactive Interface"),
+        true,
+      );
+      strictEqual(helpText.includes("Keybindings:"), true);
+    });
+  });
+
+  describe("when no worktrees exist", () => {
+    it("should display 'No worktrees found' message", async () => {
+      resetMocks();
+      getGitRootMock.mock.mockImplementation(() =>
+        Promise.resolve("/test/repo"),
+      );
+      listWorktreesMock.mock.mockImplementation(() =>
+        Promise.resolve(ok({ worktrees: [] })),
+      );
+
+      await fzfHandler([]);
+
+      strictEqual(consoleLogMock.mock.calls.length, 1);
+      strictEqual(
+        consoleLogMock.mock.calls[0].arguments[0],
+        "No worktrees found.",
+      );
+    });
+  });
+
+
+  describe("when fzf is executed successfully", () => {
+    it("should spawn fzf with correct arguments on macOS", async () => {
+      resetMocks();
+      platformMock.mock.mockImplementation(() => "darwin");
+      getGitRootMock.mock.mockImplementation(() =>
+        Promise.resolve("/test/repo"),
+      );
+      listWorktreesMock.mock.mockImplementation(() =>
+        Promise.resolve(
+          ok({
+            worktrees: [
+              {
+                name: "main",
+                path: "/test/repo",
+                branch: "main",
+                isClean: true,
+              },
+              {
+                name: "feature",
+                path: "/test/repo/.git/phantom/worktrees/feature",
+                branch: "feature",
+                isClean: false,
+              },
+            ],
+          }),
+        ),
+      );
+
+      // Create a mock fzf process
+      const fzfProcess = new EventEmitter();
+      fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
+      fzfProcess.stdout = new EventEmitter();
+
+      spawnMock.mock.mockImplementation(() => fzfProcess);
+
+      // Start the handler
+      const handlerPromise = fzfHandler([]);
+
+      // Simulate fzf closing with code 1 (user canceled)
+      setImmediate(() => {
+        fzfProcess.emit("close", 1);
+      });
+
+      await handlerPromise;
+
+      // Verify fzf was spawned with correct arguments
+      strictEqual(spawnMock.mock.calls.length, 1);
+      strictEqual(spawnMock.mock.calls[0].arguments[0], "fzf");
+
+      const fzfArgs = spawnMock.mock.calls[0].arguments[1];
+      strictEqual(fzfArgs.includes("--ansi"), true);
+      strictEqual(fzfArgs.includes("--layout=reverse"), true);
+      strictEqual(fzfArgs.includes("--border=rounded"), true);
+
+      // Verify keybindings include correct commands for macOS
+      const ctrlYBinding = fzfArgs.find((arg) => arg.includes("ctrl-y"));
+      strictEqual(ctrlYBinding.includes("pbcopy"), true);
+
+      const ctrlOBinding = fzfArgs.find((arg) => arg.includes("ctrl-o"));
+      strictEqual(ctrlOBinding.includes("open"), true);
+
+      // Verify worktree list was sent to fzf
+      strictEqual(fzfProcess.stdin.write.mock.calls.length, 1);
+      const worktreeList = fzfProcess.stdin.write.mock.calls[0].arguments[0];
+      strictEqual(worktreeList, "main (main)\nfeature (feature) [dirty]");
+    });
+
+    it("should use correct clipboard and file manager commands on Linux", async () => {
+      resetMocks();
+      platformMock.mock.mockImplementation(() => "linux");
+      getGitRootMock.mock.mockImplementation(() =>
+        Promise.resolve("/test/repo"),
+      );
+      listWorktreesMock.mock.mockImplementation(() =>
+        Promise.resolve(
+          ok({
+            worktrees: [
+              {
+                name: "main",
+                path: "/test/repo",
+                branch: "main",
+                isClean: true,
+              },
+            ],
+          }),
+        ),
+      );
+
+      const fzfProcess = new EventEmitter();
+      fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
+      fzfProcess.stdout = new EventEmitter();
+
+      spawnMock.mock.mockImplementation(() => fzfProcess);
+
+      const handlerPromise = fzfHandler([]);
+
+      setImmediate(() => {
+        fzfProcess.emit("close", 130); // Ctrl+C
+      });
+
+      await handlerPromise;
+
+      const fzfArgs = spawnMock.mock.calls[0].arguments[1];
+
+      // Verify Linux-specific commands
+      const ctrlYBinding = fzfArgs.find((arg) => arg.includes("ctrl-y"));
+      strictEqual(ctrlYBinding.includes("xclip -selection clipboard"), true);
+
+      const ctrlOBinding = fzfArgs.find((arg) => arg.includes("ctrl-o"));
+      strictEqual(ctrlOBinding.includes("xdg-open"), true);
+    });
+
+    it("should open shell when user selects a worktree", async () => {
+      resetMocks();
+      platformMock.mock.mockImplementation(() => "darwin");
+      getGitRootMock.mock.mockImplementation(() =>
+        Promise.resolve("/test/repo"),
+      );
+      listWorktreesMock.mock.mockImplementation(() =>
+        Promise.resolve(
+          ok({
+            worktrees: [
+              {
+                name: "feature",
+                path: "/test/repo/.git/phantom/worktrees/feature",
+                branch: "feature",
+                isClean: true,
+              },
+            ],
+          }),
+        ),
+      );
+
+      const fzfProcess = new EventEmitter();
+      fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
+      fzfProcess.stdout = new EventEmitter();
+
+      const phantomShellProcess = new EventEmitter();
+
+      let spawnCallCount = 0;
+      spawnMock.mock.mockImplementation((cmd) => {
+        spawnCallCount++;
+        if (cmd === "fzf") {
+          return fzfProcess;
+        }
+        if (cmd === "phantom") {
+          return phantomShellProcess;
+        }
+      });
+
+      const handlerPromise = fzfHandler([]);
+
+      // Simulate user selecting "feature"
+      setImmediate(() => {
+        fzfProcess.stdout.emit("data", "feature (feature)\n");
+        fzfProcess.emit("close", 0);
+      });
+
+      await handlerPromise;
+
+      // Wait a bit for the shell spawn to happen
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      // Verify phantom shell was spawned
+      strictEqual(spawnMock.mock.calls.length, 2);
+      strictEqual(spawnMock.mock.calls[1].arguments[0], "phantom");
+      deepStrictEqual(spawnMock.mock.calls[1].arguments[1], [
+        "shell",
+        "feature",
+      ]);
+      deepStrictEqual(spawnMock.mock.calls[1].arguments[2], {
+        stdio: "inherit",
+      });
+    });
+  });
+
+  describe("when fzf is not installed", () => {
+    it("should exit with appropriate error message", async () => {
+      resetMocks();
+      platformMock.mock.mockImplementation(() => "darwin");
+      getGitRootMock.mock.mockImplementation(() =>
+        Promise.resolve("/test/repo"),
+      );
+      listWorktreesMock.mock.mockImplementation(() =>
+        Promise.resolve(
+          ok({
+            worktrees: [
+              {
+                name: "main",
+                path: "/test/repo",
+                branch: "main",
+                isClean: true,
+              },
+            ],
+          }),
+        ),
+      );
+
+      const fzfProcess = new EventEmitter();
+      fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
+      fzfProcess.stdout = new EventEmitter();
+
+      spawnMock.mock.mockImplementation(() => fzfProcess);
+
+      // Start the handler - it will throw due to exitWithError
+      await rejects(async () => {
+        const handlerPromise = fzfHandler([]);
+
+        // Need to give the handler time to set up before emitting error
+        await new Promise((resolve) => setImmediate(resolve));
+
+        // Simulate fzf not found error
+        const error = new Error("spawn fzf ENOENT");
+        error.message = "spawn fzf ENOENT";
+        fzfProcess.emit("error", error);
+
+        // Wait for the handler to process the error
+        await new Promise((resolve) => setImmediate(resolve));
+      }, /Exit with code 1/);
+
+      strictEqual(exitWithErrorMock.mock.calls.length, 1);
+      strictEqual(
+        exitWithErrorMock.mock.calls[0].arguments[0],
+        "fzf command not found. Please install fzf first.",
+      );
+    });
+  });
+});
