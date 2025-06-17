@@ -55,6 +55,9 @@ mock.module("@aku11i/phantom-core", {
     loadConfig: mock.fn(() =>
       Promise.resolve({ ok: false, error: new Error("Config not found") }),
     ),
+    getWorktreeDirectory: mock.fn((gitRoot, basePath) => {
+      return basePath || `${gitRoot}/.git/phantom/worktrees`;
+    }),
   },
 });
 
@@ -334,7 +337,8 @@ describe("execHandler", () => {
     strictEqual(execInWorktreeMock.mock.calls.length, 1);
     const execCall = execInWorktreeMock.mock.calls[0];
     strictEqual(execCall.arguments[0], "/repo");
-    strictEqual(execCall.arguments[1], "feature");
-    strictEqual(execCall.arguments[2].join(" "), "npm test");
+    strictEqual(execCall.arguments[1], "/repo/.git/phantom/worktrees");
+    strictEqual(execCall.arguments[2], "feature");
+    strictEqual(execCall.arguments[3].join(" "), "npm test");
   });
 });

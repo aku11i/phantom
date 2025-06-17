@@ -1,4 +1,4 @@
-import { deleteWorktree } from "@aku11i/phantom-core";
+import { deleteWorktree, getWorktreeDirectory } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
@@ -18,9 +18,9 @@ export const deleteWorktreeTool: Tool<typeof schema> = {
   inputSchema: schema,
   handler: async ({ name, force }) => {
     const gitRoot = await getGitRoot();
-    const result = await deleteWorktree(gitRoot, name, {
+    const worktreeDirectory = getWorktreeDirectory(gitRoot, undefined);
+    const result = await deleteWorktree(gitRoot, worktreeDirectory, name, {
       force,
-      basePath: undefined,
     });
 
     if (!isOk(result)) {

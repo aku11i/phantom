@@ -107,9 +107,10 @@ describe("checkoutPullRequest", () => {
     equal(upstreamArgs[2], "origin/feature-branch");
 
     // Verify attach was called with correct parameters
-    const [gitRoot, worktreeName] =
+    const [gitRoot, worktreeDirectory, worktreeName] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(gitRoot, mockGitRoot);
+    equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
     equal(worktreeName, "pr-123");
   });
 
@@ -236,7 +237,9 @@ describe("checkoutPullRequest", () => {
 
     await checkoutPullRequest(mockPullRequest);
 
-    const [, worktreeName] = attachWorktreeCoreMock.mock.calls[0].arguments;
+    const [, worktreeDirectory, worktreeName] =
+      attachWorktreeCoreMock.mock.calls[0].arguments;
+    equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
     equal(worktreeName, "pr-999");
   });
 
@@ -285,7 +288,9 @@ describe("checkoutPullRequest", () => {
     const fetchOptions = fetchMock.mock.calls[0].arguments[0];
     equal(fetchOptions.refspec, "pull/1234/head:pr-1234");
 
-    const [, worktreeName] = attachWorktreeCoreMock.mock.calls[0].arguments;
+    const [, worktreeDirectory, worktreeName] =
+      attachWorktreeCoreMock.mock.calls[0].arguments;
+    equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
     equal(worktreeName, "pr-1234");
 
     // Verify upstream was set correctly for forked PR

@@ -1,6 +1,6 @@
 import { isAbsolute, join } from "node:path";
 
-export function getPhantomDirectory(
+export function getWorktreeDirectory(
   gitRoot: string,
   basePath: string | undefined,
 ): string {
@@ -16,5 +16,13 @@ export function getWorktreePath(
   name: string,
   basePath: string | undefined,
 ): string {
-  return join(getPhantomDirectory(gitRoot, basePath), name);
+  return join(getWorktreeDirectory(gitRoot, basePath), name);
+}
+
+// New simplified version that takes worktreeDirectory directly
+export function getWorktreePathFromDirectory(
+  worktreeDirectory: string,
+  name: string,
+): string {
+  return join(worktreeDirectory, name);
 }

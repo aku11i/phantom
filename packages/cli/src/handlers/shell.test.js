@@ -55,6 +55,9 @@ mock.module("@aku11i/phantom-core", {
     loadConfig: mock.fn(() =>
       Promise.resolve({ ok: false, error: new Error("Config not found") }),
     ),
+    getWorktreeDirectory: mock.fn((gitRoot, basePath) => {
+      return basePath || `${gitRoot}/.git/phantom/worktrees`;
+    }),
   },
 });
 
@@ -147,7 +150,11 @@ describe("shellHandler", () => {
     );
     strictEqual(shellInWorktreeMock.mock.calls.length, 1);
     strictEqual(shellInWorktreeMock.mock.calls[0].arguments[0], "/repo");
-    strictEqual(shellInWorktreeMock.mock.calls[0].arguments[1], "feature");
+    strictEqual(
+      shellInWorktreeMock.mock.calls[0].arguments[1],
+      "/repo/.git/phantom/worktrees",
+    );
+    strictEqual(shellInWorktreeMock.mock.calls[0].arguments[2], "feature");
     strictEqual(consoleLogMock.mock.calls.length, 2);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
@@ -195,7 +202,12 @@ describe("shellHandler", () => {
       "feature-fzf",
     );
     strictEqual(shellInWorktreeMock.mock.calls.length, 1);
-    strictEqual(shellInWorktreeMock.mock.calls[0].arguments[1], "feature-fzf");
+    strictEqual(shellInWorktreeMock.mock.calls[0].arguments[0], "/repo");
+    strictEqual(
+      shellInWorktreeMock.mock.calls[0].arguments[1],
+      "/repo/.git/phantom/worktrees",
+    );
+    strictEqual(shellInWorktreeMock.mock.calls[0].arguments[2], "feature-fzf");
   });
 
   it("should exit gracefully when fzf selection is cancelled", async () => {

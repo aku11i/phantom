@@ -16,6 +16,7 @@ import {
   isInsideTmux,
 } from "@aku11i/phantom-process";
 import { isErr, isOk } from "@aku11i/phantom-shared";
+import { createContext } from "../context.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -108,9 +109,9 @@ export async function createHandler(args: string[]): Promise<void> {
 
   try {
     const gitRoot = await getGitRoot();
+    const context = await createContext(gitRoot);
 
     let filesToCopy: string[] = [];
-    let basePath: string | undefined;
 
     // Load files from config
     const configResult = await loadConfig(gitRoot);
@@ -118,7 +119,6 @@ export async function createHandler(args: string[]): Promise<void> {
       if (configResult.value.postCreate?.copyFiles) {
         filesToCopy = [...configResult.value.postCreate.copyFiles];
       }
-      basePath = configResult.value.basePath;
     } else {
       // Display warning for validation and parse errors
       if (configResult.error instanceof ConfigValidationError) {
@@ -138,11 +138,15 @@ export async function createHandler(args: string[]): Promise<void> {
       filesToCopy = [...new Set([...filesToCopy, ...cliFiles])];
     }
 
-    const result = await createWorktreeCore(gitRoot, worktreeName, {
-      copyFiles: filesToCopy.length > 0 ? filesToCopy : undefined,
-      base: baseOption,
-      basePath,
-    });
+    const result = await createWorktreeCore(
+      context.gitRoot,
+      context.worktreeDirectory,
+      worktreeName,
+      {
+        copyFiles: filesToCopy.length > 0 ? filesToCopy : undefined,
+        base: baseOption,
+      },
+    );
 
     if (isErr(result)) {
       const exitCode =
@@ -169,10 +173,10 @@ export async function createHandler(args: string[]): Promise<void> {
         output.log(`Executing: ${command}`);
         const shell = process.env.SHELL || "/bin/sh";
         const cmdResult = await execInWorktree(
-          gitRoot,
+          context.gitRoot,
+          context.worktreeDirectory,
           worktreeName,
           [shell, "-c", command],
-          { basePath },
         );
 
         if (isErr(cmdResult)) {
@@ -201,10 +205,11 @@ export async function createHandler(args: string[]): Promise<void> {
 
       const shell = process.env.SHELL || "/bin/sh";
       const execResult = await execInWorktree(
-        gitRoot,
+        context.gitRoot,
+        context.worktreeDirectory,
         worktreeName,
         [shell, "-c", execCommand],
-        { interactive: true, basePath },
+        { interactive: true },
       );
 
       if (isErr(execResult)) {
@@ -226,9 +231,9 @@ export async function createHandler(args: string[]): Promise<void> {
       output.log("Type 'exit' to return to your original directory\n");
 
       const shellResult = await shellInWorktree(
-        gitRoot,
+        context.gitRoot,
+        context.worktreeDirectory,
         worktreeName,
-        basePath,
       );
 
       if (isErr(shellResult)) {

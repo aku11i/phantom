@@ -1,21 +1,21 @@
 import { existsSync } from "node:fs";
 import { attachWorktree, branchExists } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
-import { getWorktreePath } from "../paths.ts";
+import { getWorktreePathFromDirectory } from "../paths.ts";
 import { BranchNotFoundError, WorktreeAlreadyExistsError } from "./errors.ts";
 import { validateWorktreeName } from "./validate.ts";
 
 export async function attachWorktreeCore(
   gitRoot: string,
+  worktreeDirectory: string,
   name: string,
-  basePath: string | undefined,
 ): Promise<Result<string, Error>> {
   const validation = validateWorktreeName(name);
   if (isErr(validation)) {
     return validation;
   }
 
-  const worktreePath = getWorktreePath(gitRoot, name, basePath);
+  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
   if (existsSync(worktreePath)) {
     return err(new WorktreeAlreadyExistsError(name));
   }

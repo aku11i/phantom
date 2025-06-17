@@ -1,24 +1,24 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { getPhantomDirectory, getWorktreePath } from "./paths.ts";
+import { getWorktreeDirectory, getWorktreePath } from "./paths.ts";
 
 describe("paths", () => {
-  describe("getPhantomDirectory", () => {
+  describe("getWorktreeDirectory", () => {
     it("should return correct phantom directory path", () => {
       const gitRoot = "/test/repo";
-      const result = getPhantomDirectory(gitRoot);
+      const result = getWorktreeDirectory(gitRoot);
       strictEqual(result, "/test/repo/.git/phantom/worktrees");
     });
 
     it("should handle git root with trailing slash", () => {
       const gitRoot = "/test/repo/";
-      const result = getPhantomDirectory(gitRoot);
+      const result = getWorktreeDirectory(gitRoot);
       strictEqual(result, "/test/repo/.git/phantom/worktrees");
     });
 
     it("should handle Windows-style paths", () => {
       const gitRoot = "C:\\test\\repo";
-      const result = getPhantomDirectory(gitRoot);
+      const result = getWorktreeDirectory(gitRoot);
       // path.join normalizes separators based on the platform
       strictEqual(result.includes(".git"), true);
       strictEqual(result.includes("phantom"), true);
@@ -28,37 +28,37 @@ describe("paths", () => {
     describe("with basePath", () => {
       it("should return default path when basePath is undefined", () => {
         const gitRoot = "/test/repo";
-        const result = getPhantomDirectory(gitRoot, undefined);
+        const result = getWorktreeDirectory(gitRoot, undefined);
         strictEqual(result, "/test/repo/.git/phantom/worktrees");
       });
 
       it("should handle relative basePath", () => {
         const gitRoot = "/test/repo";
-        const result = getPhantomDirectory(gitRoot, "../phantom-external");
+        const result = getWorktreeDirectory(gitRoot, "../phantom-external");
         strictEqual(result, "/test/phantom-external");
       });
 
       it("should handle absolute basePath", () => {
         const gitRoot = "/test/repo";
-        const result = getPhantomDirectory(gitRoot, "/tmp/phantom-worktrees");
+        const result = getWorktreeDirectory(gitRoot, "/tmp/phantom-worktrees");
         strictEqual(result, "/tmp/phantom-worktrees");
       });
 
       it("should handle nested relative basePath", () => {
         const gitRoot = "/test/repo";
-        const result = getPhantomDirectory(gitRoot, "custom/phantom");
+        const result = getWorktreeDirectory(gitRoot, "custom/phantom");
         strictEqual(result, "/test/repo/custom/phantom");
       });
 
       it("should handle complex relative basePath", () => {
         const gitRoot = "/test/repo";
-        const result = getPhantomDirectory(gitRoot, "../../shared/worktrees");
+        const result = getWorktreeDirectory(gitRoot, "../../shared/worktrees");
         strictEqual(result, "/shared/worktrees");
       });
 
       it("should handle basePath with trailing slash", () => {
         const gitRoot = "/test/repo";
-        const result = getPhantomDirectory(gitRoot, "../phantom-external/");
+        const result = getWorktreeDirectory(gitRoot, "../phantom-external/");
         // path.join normalizes paths and may add trailing slash
         strictEqual(result, "/test/phantom-external/");
       });

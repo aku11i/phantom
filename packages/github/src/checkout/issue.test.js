@@ -118,14 +118,14 @@ describe("checkoutIssue", () => {
     equal(getGitRootMock.mock.calls.length, 1);
     equal(createWorktreeCoreMock.mock.calls.length, 1);
 
-    const [gitRoot, worktreeName, options] =
+    const [gitRoot, worktreeDirectory, worktreeName, options] =
       createWorktreeCoreMock.mock.calls[0].arguments;
     equal(gitRoot, mockGitRoot);
+    equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
     equal(worktreeName, "issue-456");
     deepEqual(options, {
       branch: "issue-456",
       base: undefined,
-      basePath: undefined,
     });
   });
 
@@ -151,11 +151,10 @@ describe("checkoutIssue", () => {
     ok(result.value);
     equal(result.value.message, "Created worktree issue-789 from develop");
 
-    const [, , options] = createWorktreeCoreMock.mock.calls[0].arguments;
+    const [, , , options] = createWorktreeCoreMock.mock.calls[0].arguments;
     deepEqual(options, {
       branch: "issue-789",
       base: "develop",
-      basePath: undefined,
     });
   });
 
@@ -222,8 +221,9 @@ describe("checkoutIssue", () => {
 
     await checkoutIssue(mockIssue);
 
-    const [, worktreeName, options] =
+    const [, worktreeDirectory, worktreeName, options] =
       createWorktreeCoreMock.mock.calls[0].arguments;
+    equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
     equal(worktreeName, "issue-333");
     equal(options.branch, "issue-333");
   });

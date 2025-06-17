@@ -47,7 +47,11 @@ describe("shellInWorktree", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    const result = await shellInWorktree("/test/repo", "my-feature");
+    const result = await shellInWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "my-feature",
+    );
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {
@@ -89,7 +93,11 @@ describe("shellInWorktree", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    await shellInWorktree("/test/repo", "feature");
+    await shellInWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+    );
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0].command, "/bin/sh");
 
@@ -107,7 +115,11 @@ describe("shellInWorktree", () => {
       Promise.resolve(err(new WorktreeNotFoundError("non-existent"))),
     );
 
-    const result = await shellInWorktree("/test/repo", "non-existent");
+    const result = await shellInWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "non-existent",
+    );
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {
@@ -129,7 +141,11 @@ describe("shellInWorktree", () => {
       Promise.resolve(err(new ProcessSpawnError("/bin/sh", "Shell not found"))),
     );
 
-    const result = await shellInWorktree("/test/repo", "feature");
+    const result = await shellInWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+    );
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {

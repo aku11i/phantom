@@ -1,11 +1,11 @@
 import { parseArgs } from "node:util";
 import {
   listWorktrees as listWorktreesCore,
-  loadConfig,
   selectWorktreeWithFzf,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr, isOk } from "@aku11i/phantom-shared";
+import { isErr } from "@aku11i/phantom-shared";
+import { createContext } from "../context.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -27,16 +27,13 @@ export async function listHandler(args: string[] = []): Promise<void> {
   });
   try {
     const gitRoot = await getGitRoot();
-
-    // Load config to get basePath
-    let basePath: string | undefined;
-    const configResult = await loadConfig(gitRoot);
-    if (isOk(configResult)) {
-      basePath = configResult.value.basePath;
-    }
+    const context = await createContext(gitRoot);
 
     if (values.fzf) {
-      const selectResult = await selectWorktreeWithFzf(gitRoot, basePath);
+      const selectResult = await selectWorktreeWithFzf(
+        context.gitRoot,
+        context.worktreeDirectory,
+      );
 
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
@@ -46,7 +43,10 @@ export async function listHandler(args: string[] = []): Promise<void> {
         output.log(selectResult.value.name);
       }
     } else {
-      const result = await listWorktreesCore(gitRoot, basePath);
+      const result = await listWorktreesCore(
+        context.gitRoot,
+        context.worktreeDirectory,
+      );
 
       if (isErr(result)) {
         exitWithError("Failed to list worktrees", exitCodes.generalError);

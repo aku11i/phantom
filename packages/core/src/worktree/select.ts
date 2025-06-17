@@ -10,9 +10,9 @@ export interface SelectWorktreeResult {
 
 export async function selectWorktreeWithFzf(
   gitRoot: string,
-  basePath: string | undefined,
+  worktreeDirectory: string,
 ): Promise<Result<SelectWorktreeResult | null, Error>> {
-  const listResult = await listWorktrees(gitRoot, basePath);
+  const listResult = await listWorktrees(gitRoot, worktreeDirectory);
 
   if (isErr(listResult)) {
     return listResult;

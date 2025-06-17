@@ -1,11 +1,11 @@
 import { parseArgs } from "node:util";
 import {
-  loadConfig,
   selectWorktreeWithFzf,
   whereWorktree as whereWorktreeCore,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr, isOk } from "@aku11i/phantom-shared";
+import { isErr } from "@aku11i/phantom-shared";
+import { createContext } from "../context.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -50,15 +50,14 @@ export async function whereHandler(args: string[]): Promise<void> {
     );
   }
 
-  // Load config to get basePath
-  let basePath: string | undefined;
-  const configResult = await loadConfig(gitRoot);
-  if (isOk(configResult)) {
-    basePath = configResult.value.basePath;
-  }
+  // Load config
+  const context = await createContext(gitRoot);
 
   if (useFzf) {
-    const selectResult = await selectWorktreeWithFzf(gitRoot, basePath);
+    const selectResult = await selectWorktreeWithFzf(
+      context.gitRoot,
+      context.worktreeDirectory,
+    );
     if (isErr(selectResult)) {
       exitWithError(selectResult.error.message, exitCodes.generalError);
     }
@@ -70,7 +69,11 @@ export async function whereHandler(args: string[]): Promise<void> {
     worktreeName = positionals[0];
   }
 
-  const result = await whereWorktreeCore(gitRoot, worktreeName, basePath);
+  const result = await whereWorktreeCore(
+    context.gitRoot,
+    context.worktreeDirectory,
+    worktreeName,
+  );
 
   if (isErr(result)) {
     exitWithError(result.error.message, exitCodes.notFound);

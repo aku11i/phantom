@@ -2,7 +2,6 @@ import { parseArgs } from "node:util";
 import {
   WorktreeNotFoundError,
   execInWorktree as execInWorktreeCore,
-  loadConfig,
   selectWorktreeWithFzf,
   validateWorktreeExists,
 } from "@aku11i/phantom-core";
@@ -12,7 +11,8 @@ import {
   getPhantomEnv,
   isInsideTmux,
 } from "@aku11i/phantom-process";
-import { isErr, isOk } from "@aku11i/phantom-shared";
+import { isErr } from "@aku11i/phantom-shared";
+import { createContext } from "../context.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -86,13 +86,7 @@ export async function execHandler(args: string[]): Promise<void> {
 
   try {
     const gitRoot = await getGitRoot();
-
-    // Load config to get basePath
-    let basePath: string | undefined;
-    const configResult = await loadConfig(gitRoot);
-    if (isOk(configResult)) {
-      basePath = configResult.value.basePath;
-    }
+    const context = await createContext(gitRoot);
 
     if (tmuxOption && !(await isInsideTmux())) {
       exitWithError(
@@ -104,7 +98,10 @@ export async function execHandler(args: string[]): Promise<void> {
     let worktreeName: string;
 
     if (useFzf) {
-      const selectResult = await selectWorktreeWithFzf(gitRoot, basePath);
+      const selectResult = await selectWorktreeWithFzf(
+        context.gitRoot,
+        context.worktreeDirectory,
+      );
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
       }
@@ -118,9 +115,9 @@ export async function execHandler(args: string[]): Promise<void> {
 
     // Validate worktree exists
     const validation = await validateWorktreeExists(
-      gitRoot,
+      context.gitRoot,
+      context.worktreeDirectory,
       worktreeName,
-      basePath,
     );
     if (isErr(validation)) {
       exitWithError(validation.error.message, exitCodes.generalError);
@@ -157,10 +154,11 @@ export async function execHandler(args: string[]): Promise<void> {
     }
 
     const result = await execInWorktreeCore(
-      gitRoot,
+      context.gitRoot,
+      context.worktreeDirectory,
       worktreeName,
       commandArgs,
-      { interactive: true, basePath },
+      { interactive: true },
     );
 
     if (isErr(result)) {

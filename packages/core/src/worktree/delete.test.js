@@ -56,9 +56,12 @@ describe("deleteWorktree", () => {
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    const result = await deleteWorktree("/test/repo", "feature", {
-      basePath: undefined,
-    });
+    const result = await deleteWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      {},
+    );
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {
@@ -92,9 +95,12 @@ describe("deleteWorktree", () => {
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    const result = await deleteWorktree("/test/repo", "feature", {
-      basePath: undefined,
-    });
+    const result = await deleteWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      {},
+    );
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {
@@ -109,8 +115,8 @@ describe("deleteWorktree", () => {
     strictEqual(validateWorktreeExistsMock.mock.calls.length, 1);
     deepStrictEqual(validateWorktreeExistsMock.mock.calls[0].arguments, [
       "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
       "feature",
-      undefined,
     ]);
 
     strictEqual(executeGitCommandInDirectoryMock.mock.calls.length, 1);
@@ -136,9 +142,12 @@ describe("deleteWorktree", () => {
       Promise.resolve(err(new WorktreeNotFoundError("nonexistent"))),
     );
 
-    const result = await deleteWorktree("/test/repo", "nonexistent", {
-      basePath: undefined,
-    });
+    const result = await deleteWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "nonexistent",
+      {},
+    );
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {
@@ -162,9 +171,12 @@ describe("deleteWorktree", () => {
       }),
     );
 
-    const result = await deleteWorktree("/test/repo", "feature", {
-      basePath: undefined,
-    });
+    const result = await deleteWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      {},
+    );
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {
@@ -200,9 +212,14 @@ describe("deleteWorktree", () => {
       }),
     );
 
-    const result = await deleteWorktree("/test/repo", "feature", {
-      force: true,
-    });
+    const result = await deleteWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      {
+        force: true,
+      },
+    );
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {

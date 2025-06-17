@@ -3,7 +3,7 @@ import {
   listWorktrees as gitListWorktrees,
 } from "@aku11i/phantom-git";
 import { type Result, ok } from "@aku11i/phantom-shared";
-import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
+import { getWorktreePathFromDirectory } from "../paths.ts";
 
 export interface WorktreeInfo {
   name: string;
@@ -46,10 +46,10 @@ export async function getWorktreeStatus(
 
 export async function getWorktreeInfo(
   gitRoot: string,
+  worktreeDirectory: string,
   name: string,
-  basePath: string | undefined,
 ): Promise<WorktreeInfo> {
-  const worktreePath = getWorktreePath(gitRoot, name, basePath);
+  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
 
   const [branch, isClean] = await Promise.all([
     getWorktreeBranch(worktreePath),
@@ -66,14 +66,13 @@ export async function getWorktreeInfo(
 
 export async function listWorktrees(
   gitRoot: string,
-  basePath: string | undefined,
+  worktreeDirectory: string,
 ): Promise<Result<ListWorktreesSuccess, never>> {
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
-    const phantomDir = getPhantomDirectory(gitRoot, basePath);
 
     const phantomWorktrees = gitWorktrees.filter((worktree) =>
-      worktree.path.startsWith(phantomDir),
+      worktree.path.startsWith(worktreeDirectory),
     );
 
     if (phantomWorktrees.length === 0) {
@@ -85,7 +84,7 @@ export async function listWorktrees(
 
     const worktrees = await Promise.all(
       phantomWorktrees.map(async (gitWorktree) => {
-        const name = gitWorktree.path.substring(phantomDir.length + 1);
+        const name = gitWorktree.path.substring(worktreeDirectory.length + 1);
         const isClean = await getWorktreeStatus(gitWorktree.path);
 
         return {

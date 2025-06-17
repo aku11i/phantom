@@ -3,23 +3,8 @@ import { describe, it, mock } from "node:test";
 
 const execFileMock = mock.fn();
 
-const getPhantomDirectoryMock = mock.fn((gitRoot, basePath) => {
-  if (basePath) {
-    if (basePath.startsWith("/")) {
-      return basePath;
-    }
-    return `${gitRoot}/${basePath}`;
-  }
-  return `${gitRoot}/.git/phantom/worktrees`;
-});
-const getWorktreePathMock = mock.fn((gitRoot, name, basePath) => {
-  if (basePath) {
-    if (basePath.startsWith("/")) {
-      return `${basePath}/${name}`;
-    }
-    return `${gitRoot}/${basePath}/${name}`;
-  }
-  return `${gitRoot}/.git/phantom/worktrees/${name}`;
+const getWorktreePathFromDirectoryMock = mock.fn((worktreeDirectory, name) => {
+  return `${worktreeDirectory}/${name}`;
 });
 
 mock.module("node:child_process", {
@@ -45,8 +30,7 @@ mock.module("node:util", {
 
 mock.module("../paths.ts", {
   namedExports: {
-    getPhantomDirectory: getPhantomDirectoryMock,
-    getWorktreePath: getWorktreePathMock,
+    getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
   },
 });
 
@@ -65,7 +49,10 @@ describe("listWorktrees", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees("/test/repo");
+    const result = await listWorktrees(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+    );
 
     ok(result.ok);
     if (result.ok) {
@@ -101,7 +88,10 @@ branch refs/heads/feature-2
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees("/test/repo");
+    const result = await listWorktrees(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+    );
 
     ok(result.ok);
     if (result.ok) {
@@ -145,7 +135,10 @@ branch refs/heads/dirty-feature
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees("/test/repo");
+    const result = await listWorktrees(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+    );
 
     ok(result.ok);
     if (result.ok) {
@@ -183,7 +176,10 @@ detached
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees("/test/repo");
+    const result = await listWorktrees(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+    );
 
     ok(result.ok);
     if (result.ok) {
@@ -225,7 +221,10 @@ branch refs/heads/other-feature
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees("/test/repo");
+    const result = await listWorktrees(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+    );
 
     ok(result.ok);
     if (result.ok) {

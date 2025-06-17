@@ -39,6 +39,9 @@ mock.module("@aku11i/phantom-core", {
     loadConfig: mock.fn(() =>
       Promise.resolve({ ok: false, error: new Error("Config not found") }),
     ),
+    getWorktreeDirectory: mock.fn((gitRoot, basePath) => {
+      return basePath || `${gitRoot}/.git/phantom/worktrees`;
+    }),
   },
 });
 
@@ -123,7 +126,11 @@ describe("whereHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(whereWorktreeMock.mock.calls.length, 1);
     strictEqual(whereWorktreeMock.mock.calls[0].arguments[0], "/repo");
-    strictEqual(whereWorktreeMock.mock.calls[0].arguments[1], "feature");
+    strictEqual(
+      whereWorktreeMock.mock.calls[0].arguments[1],
+      "/repo/.git/phantom/worktrees",
+    );
+    strictEqual(whereWorktreeMock.mock.calls[0].arguments[2], "feature");
     strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
@@ -162,7 +169,12 @@ describe("whereHandler", () => {
     strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
     strictEqual(selectWorktreeWithFzfMock.mock.calls[0].arguments[0], "/repo");
     strictEqual(whereWorktreeMock.mock.calls.length, 1);
-    strictEqual(whereWorktreeMock.mock.calls[0].arguments[1], "feature-fzf");
+    strictEqual(whereWorktreeMock.mock.calls[0].arguments[0], "/repo");
+    strictEqual(
+      whereWorktreeMock.mock.calls[0].arguments[1],
+      "/repo/.git/phantom/worktrees",
+    );
+    strictEqual(whereWorktreeMock.mock.calls[0].arguments[2], "feature-fzf");
     strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],

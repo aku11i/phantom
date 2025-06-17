@@ -1,4 +1,4 @@
-import { listWorktrees } from "@aku11i/phantom-core";
+import { getWorktreeDirectory, listWorktrees } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
@@ -12,7 +12,8 @@ export const listWorktreesTool: Tool<typeof schema> = {
   inputSchema: schema,
   handler: async () => {
     const gitRoot = await getGitRoot();
-    const result = await listWorktrees(gitRoot, undefined);
+    const worktreeDirectory = getWorktreeDirectory(gitRoot, undefined);
+    const result = await listWorktrees(gitRoot, worktreeDirectory);
 
     if (!isOk(result)) {
       throw new Error("Failed to list worktrees");

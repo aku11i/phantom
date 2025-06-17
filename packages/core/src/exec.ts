@@ -12,21 +12,21 @@ export type ExecInWorktreeSuccess = SpawnSuccess;
 
 export interface ExecInWorktreeOptions {
   interactive?: boolean;
-  basePath: string | undefined;
 }
 
 export async function execInWorktree(
   gitRoot: string,
+  worktreeDirectory: string,
   worktreeName: string,
   command: string[],
-  options: ExecInWorktreeOptions,
+  options?: ExecInWorktreeOptions,
 ): Promise<
   Result<ExecInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
 > {
   const validation = await validateWorktreeExists(
     gitRoot,
+    worktreeDirectory,
     worktreeName,
-    options.basePath,
   );
   if (isErr(validation)) {
     return err(validation.error);
@@ -35,7 +35,7 @@ export async function execInWorktree(
   const worktreePath = validation.value.path;
   const [cmd, ...args] = command;
 
-  const stdio: StdioOptions = options.interactive
+  const stdio: StdioOptions = options?.interactive
     ? "inherit"
     : ["ignore", "inherit", "inherit"];
 

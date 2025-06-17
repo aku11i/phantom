@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "@aku11i/phantom-git";
 import { type Result, err, isErr, isOk, ok } from "@aku11i/phantom-shared";
-import { getPhantomDirectory, getWorktreePath } from "../paths.ts";
+import { getWorktreePathFromDirectory } from "../paths.ts";
 import { type WorktreeAlreadyExistsError, WorktreeError } from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";
 import {
@@ -13,7 +13,6 @@ export interface CreateWorktreeOptions {
   branch?: string;
   base?: string;
   copyFiles?: string[];
-  basePath: string | undefined;
 }
 
 export interface CreateWorktreeSuccess {
@@ -26,6 +25,7 @@ export interface CreateWorktreeSuccess {
 
 export async function createWorktree(
   gitRoot: string,
+  worktreeDirectory: string,
   name: string,
   options: CreateWorktreeOptions,
 ): Promise<
@@ -36,21 +36,20 @@ export async function createWorktree(
     return nameValidation;
   }
 
-  const { branch = name, base = "HEAD", basePath } = options;
+  const { branch = name, base = "HEAD" } = options;
 
-  const worktreesPath = getPhantomDirectory(gitRoot, basePath);
-  const worktreePath = getWorktreePath(gitRoot, name, basePath);
+  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
 
   try {
-    await fs.access(worktreesPath);
+    await fs.access(worktreeDirectory);
   } catch {
-    await fs.mkdir(worktreesPath, { recursive: true });
+    await fs.mkdir(worktreeDirectory, { recursive: true });
   }
 
   const validation = await validateWorktreeDoesNotExist(
     gitRoot,
+    worktreeDirectory,
     name,
-    basePath,
   );
   if (isErr(validation)) {
     return err(validation.error);

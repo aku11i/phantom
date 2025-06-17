@@ -55,6 +55,9 @@ mock.module("@aku11i/phantom-core", {
     ConfigParseError,
     ConfigValidationError,
     WorktreeAlreadyExistsError,
+    getWorktreeDirectory: mock.fn((gitRoot, basePath) => {
+      return basePath || `${gitRoot}/.git/phantom/worktrees`;
+    }),
   },
 });
 

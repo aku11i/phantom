@@ -36,11 +36,10 @@ describe("execInWorktree", () => {
 
     const result = await execInWorktree(
       "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
       "my-feature",
       ["npm", "test"],
-      {
-        basePath: undefined,
-      },
+      {},
     );
 
     strictEqual(isOk(result), true);
@@ -67,11 +66,10 @@ describe("execInWorktree", () => {
 
     const result = await execInWorktree(
       "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
       "non-existent",
       ["npm", "test"],
-      {
-        basePath: undefined,
-      },
+      {},
     );
 
     strictEqual(isErr(result), true);
@@ -95,9 +93,13 @@ describe("execInWorktree", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    await execInWorktree("/test/repo", "feature", ["ls"], {
-      basePath: undefined,
-    });
+    await execInWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      ["ls"],
+      {},
+    );
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0], {
       command: "ls",
@@ -123,9 +125,15 @@ describe("execInWorktree", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    await execInWorktree("/test/repo", "feature", ["echo", "test"], {
-      interactive: true,
-    });
+    await execInWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      ["echo", "test"],
+      {
+        interactive: true,
+      },
+    );
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0], {
       command: "echo",
@@ -149,9 +157,13 @@ describe("execInWorktree", () => {
       Promise.resolve(err(new ProcessExecutionError("false", 1))),
     );
 
-    const result = await execInWorktree("/test/repo", "feature", ["false"], {
-      basePath: undefined,
-    });
+    const result = await execInWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      ["false"],
+      {},
+    );
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {

@@ -3,6 +3,9 @@ import { describe, it, mock } from "node:test";
 import { z } from "zod";
 
 const listWorktreesMock = mock.fn();
+const getWorktreeDirectoryMock = mock.fn((gitRoot, basePath) => {
+  return basePath || `${gitRoot}/.git/phantom/worktrees`;
+});
 const getGitRootMock = mock.fn();
 const isOkMock = mock.fn((result) => {
   return result && result.ok === true;
@@ -13,6 +16,7 @@ const errMock = mock.fn((error) => ({ ok: false, error }));
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     listWorktrees: listWorktreesMock,
+    getWorktreeDirectory: getWorktreeDirectoryMock,
   },
 });
 
@@ -91,7 +95,7 @@ describe("listWorktreesTool", () => {
     strictEqual(listWorktreesMock.mock.calls.length, 1);
     deepStrictEqual(listWorktreesMock.mock.calls[0].arguments, [
       gitRoot,
-      undefined,
+      "/path/to/repo/.git/phantom/worktrees",
     ]);
 
     strictEqual(result.content.length, 1);

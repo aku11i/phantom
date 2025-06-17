@@ -7,14 +7,8 @@ const validateWorktreeNameMock = mock.fn();
 const existsSyncMock = mock.fn();
 const branchExistsMock = mock.fn();
 const attachWorktreeMock = mock.fn();
-const getWorktreePathMock = mock.fn((gitRoot, name, basePath) => {
-  if (basePath) {
-    if (basePath.startsWith("/")) {
-      return `${basePath}/${name}`;
-    }
-    return `${gitRoot}/${basePath}/${name}`;
-  }
-  return `${gitRoot}/.git/phantom/worktrees/${name}`;
+const getWorktreePathFromDirectoryMock = mock.fn((worktreeDirectory, name) => {
+  return `${worktreeDirectory}/${name}`;
 });
 
 mock.module("./validate.ts", {
@@ -38,7 +32,7 @@ mock.module("@aku11i/phantom-git", {
 
 mock.module("../paths.ts", {
   namedExports: {
-    getWorktreePath: getWorktreePathMock,
+    getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
   },
 });
 
@@ -50,7 +44,7 @@ describe("attachWorktreeCore", () => {
     existsSyncMock.mock.resetCalls();
     branchExistsMock.mock.resetCalls();
     attachWorktreeMock.mock.resetCalls();
-    getWorktreePathMock.mock.resetCalls();
+    getWorktreePathFromDirectoryMock.mock.resetCalls();
   };
 
   it("should attach to existing branch successfully", async () => {
@@ -62,7 +56,11 @@ describe("attachWorktreeCore", () => {
       Promise.resolve(ok(undefined)),
     );
 
-    const result = await attachWorktreeCore("/repo", "feature-branch");
+    const result = await attachWorktreeCore(
+      "/repo",
+      "/repo/.git/phantom/worktrees",
+      "feature-branch",
+    );
 
     deepStrictEqual(result.ok, true);
     if (result.ok) {
@@ -95,7 +93,11 @@ describe("attachWorktreeCore", () => {
       err(new Error("Invalid worktree name: feature/branch")),
     );
 
-    const result = await attachWorktreeCore("/repo", "feature/branch");
+    const result = await attachWorktreeCore(
+      "/repo",
+      "/repo/.git/phantom/worktrees",
+      "feature/branch",
+    );
 
     deepStrictEqual(result.ok, false);
     if (!result.ok) {
@@ -114,7 +116,11 @@ describe("attachWorktreeCore", () => {
     validateWorktreeNameMock.mock.mockImplementation(() => ok(undefined));
     existsSyncMock.mock.mockImplementation(() => true);
 
-    const result = await attachWorktreeCore("/repo", "existing-feature");
+    const result = await attachWorktreeCore(
+      "/repo",
+      "/repo/.git/phantom/worktrees",
+      "existing-feature",
+    );
 
     deepStrictEqual(result.ok, false);
     if (!result.ok) {
@@ -134,7 +140,11 @@ describe("attachWorktreeCore", () => {
     existsSyncMock.mock.mockImplementation(() => false);
     branchExistsMock.mock.mockImplementation(() => Promise.resolve(ok(false)));
 
-    const result = await attachWorktreeCore("/repo", "non-existent");
+    const result = await attachWorktreeCore(
+      "/repo",
+      "/repo/.git/phantom/worktrees",
+      "non-existent",
+    );
 
     deepStrictEqual(result.ok, false);
     if (!result.ok) {
@@ -154,7 +164,11 @@ describe("attachWorktreeCore", () => {
       Promise.resolve(err(new Error("Git operation failed"))),
     );
 
-    const result = await attachWorktreeCore("/repo", "feature");
+    const result = await attachWorktreeCore(
+      "/repo",
+      "/repo/.git/phantom/worktrees",
+      "feature",
+    );
 
     deepStrictEqual(result.ok, false);
     if (!result.ok) {
@@ -170,7 +184,11 @@ describe("attachWorktreeCore", () => {
       Promise.resolve(err(new Error("Failed to check branch"))),
     );
 
-    const result = await attachWorktreeCore("/repo", "feature");
+    const result = await attachWorktreeCore(
+      "/repo",
+      "/repo/.git/phantom/worktrees",
+      "feature",
+    );
 
     deepStrictEqual(result.ok, false);
     if (!result.ok) {

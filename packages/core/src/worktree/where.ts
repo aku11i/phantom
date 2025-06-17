@@ -8,10 +8,14 @@ export interface WhereWorktreeSuccess {
 
 export async function whereWorktree(
   gitRoot: string,
+  worktreeDirectory: string,
   name: string,
-  basePath: string | undefined,
 ): Promise<Result<WhereWorktreeSuccess, WorktreeNotFoundError>> {
-  const validation = await validateWorktreeExists(gitRoot, name, basePath);
+  const validation = await validateWorktreeExists(
+    gitRoot,
+    worktreeDirectory,
+    name,
+  );
 
   if (isErr(validation)) {
     return err(validation.error);

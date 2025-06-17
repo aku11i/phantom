@@ -3,6 +3,9 @@ import { describe, it, mock } from "node:test";
 import { z } from "zod";
 
 const deleteWorktreeMock = mock.fn();
+const getWorktreeDirectoryMock = mock.fn((gitRoot, basePath) => {
+  return basePath || `${gitRoot}/.git/phantom/worktrees`;
+});
 const getGitRootMock = mock.fn();
 const isOkMock = mock.fn((result) => {
   return result && result.ok === true;
@@ -13,6 +16,7 @@ const errMock = mock.fn((error) => ({ ok: false, error }));
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     deleteWorktree: deleteWorktreeMock,
+    getWorktreeDirectory: getWorktreeDirectoryMock,
   },
 });
 
@@ -71,8 +75,9 @@ describe("deleteWorktreeTool", () => {
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     deepStrictEqual(deleteWorktreeMock.mock.calls[0].arguments, [
       gitRoot,
+      "/path/to/repo/.git/phantom/worktrees",
       "feature-1",
-      { force: undefined, basePath: undefined },
+      { force: undefined },
     ]);
 
     strictEqual(result.content.length, 1);
@@ -102,8 +107,9 @@ describe("deleteWorktreeTool", () => {
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     deepStrictEqual(deleteWorktreeMock.mock.calls[0].arguments, [
       gitRoot,
+      "/path/to/repo/.git/phantom/worktrees",
       "feature-2",
-      { force: true, basePath: undefined },
+      { force: true },
     ]);
 
     const parsedContent = JSON.parse(result.content[0].text);
