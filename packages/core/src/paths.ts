@@ -2,7 +2,7 @@ import { isAbsolute, join } from "node:path";
 
 export function getPhantomDirectory(
   gitRoot: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): string {
   if (basePath) {
     // If basePath is absolute, use it as-is. If relative, resolve from gitRoot
@@ -14,7 +14,7 @@ export function getPhantomDirectory(
 export function getWorktreePath(
   gitRoot: string,
   name: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): string {
   return join(getPhantomDirectory(gitRoot, basePath), name);
 }

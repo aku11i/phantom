@@ -94,7 +94,9 @@ describe("createWorktree", () => {
       ),
     );
     addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
-    const result = await createWorktree("/test/repo", "feature-branch");
+    const result = await createWorktree("/test/repo", "feature-branch", {
+      basePath: undefined,
+    });
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {
@@ -130,7 +132,9 @@ describe("createWorktree", () => {
       ),
     );
     addWorktreeMock.mock.mockImplementation(() => Promise.resolve());
-    await createWorktree("/test/repo", "new-feature");
+    await createWorktree("/test/repo", "new-feature", {
+      basePath: undefined,
+    });
 
     strictEqual(mkdirMock.mock.calls.length, 1);
     deepStrictEqual(mkdirMock.mock.calls[0].arguments, [
@@ -146,7 +150,9 @@ describe("createWorktree", () => {
     validateWorktreeDoesNotExistMock.mock.mockImplementation(() =>
       Promise.resolve(err(new WorktreeAlreadyExistsError("existing"))),
     );
-    const result = await createWorktree("/test/repo", "existing");
+    const result = await createWorktree("/test/repo", "existing", {
+      basePath: undefined,
+    });
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {
@@ -187,7 +193,9 @@ describe("createWorktree", () => {
     addWorktreeMock.mock.mockImplementation(() =>
       Promise.reject(new Error("fatal: branch already exists")),
     );
-    const result = await createWorktree("/test/repo", "bad-branch");
+    const result = await createWorktree("/test/repo", "bad-branch", {
+      basePath: undefined,
+    });
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {

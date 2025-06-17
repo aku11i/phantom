@@ -56,9 +56,13 @@ export async function checkoutPullRequest(
   }
 
   // Attach the worktree to the fetched branch
-  const attachResult = await attachWorktreeCore(gitRoot, worktreeName);
+  const attachResult = await attachWorktreeCore(
+    gitRoot,
+    worktreeName,
+    undefined,
+  );
 
-  const worktreePath = getWorktreePath(gitRoot, worktreeName);
+  const worktreePath = getWorktreePath(gitRoot, worktreeName, undefined);
 
   if (isErr(attachResult)) {
     if (attachResult.error instanceof WorktreeAlreadyExistsError) {

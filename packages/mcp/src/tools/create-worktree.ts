@@ -23,6 +23,7 @@ export const createWorktreeTool: Tool<typeof schema> = {
     const result = await createWorktree(gitRoot, name, {
       branch: name,
       base: baseBranch,
+      basePath: undefined,
     });
 
     if (!isOk(result)) {

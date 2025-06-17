@@ -47,7 +47,7 @@ export async function getWorktreeStatus(
 export async function getWorktreeInfo(
   gitRoot: string,
   name: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): Promise<WorktreeInfo> {
   const worktreePath = getWorktreePath(gitRoot, name, basePath);
 
@@ -66,7 +66,7 @@ export async function getWorktreeInfo(
 
 export async function listWorktrees(
   gitRoot: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): Promise<Result<ListWorktreesSuccess, never>> {
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);

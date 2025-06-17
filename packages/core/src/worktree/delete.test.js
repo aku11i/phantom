@@ -56,7 +56,9 @@ describe("deleteWorktree", () => {
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    const result = await deleteWorktree("/test/repo", "feature");
+    const result = await deleteWorktree("/test/repo", "feature", {
+      basePath: undefined,
+    });
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {
@@ -90,7 +92,9 @@ describe("deleteWorktree", () => {
       Promise.resolve({ stdout: "", stderr: "" }),
     );
 
-    const result = await deleteWorktree("/test/repo", "feature");
+    const result = await deleteWorktree("/test/repo", "feature", {
+      basePath: undefined,
+    });
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {
@@ -132,7 +136,9 @@ describe("deleteWorktree", () => {
       Promise.resolve(err(new WorktreeNotFoundError("nonexistent"))),
     );
 
-    const result = await deleteWorktree("/test/repo", "nonexistent");
+    const result = await deleteWorktree("/test/repo", "nonexistent", {
+      basePath: undefined,
+    });
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {
@@ -156,7 +162,9 @@ describe("deleteWorktree", () => {
       }),
     );
 
-    const result = await deleteWorktree("/test/repo", "feature");
+    const result = await deleteWorktree("/test/repo", "feature", {
+      basePath: undefined,
+    });
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {

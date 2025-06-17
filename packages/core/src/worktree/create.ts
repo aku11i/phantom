@@ -13,7 +13,7 @@ export interface CreateWorktreeOptions {
   branch?: string;
   base?: string;
   copyFiles?: string[];
-  basePath?: string;
+  basePath: string | undefined;
 }
 
 export interface CreateWorktreeSuccess {
@@ -27,7 +27,7 @@ export interface CreateWorktreeSuccess {
 export async function createWorktree(
   gitRoot: string,
   name: string,
-  options: CreateWorktreeOptions = {},
+  options: CreateWorktreeOptions,
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | WorktreeError>
 > {

@@ -14,7 +14,7 @@ export interface WorktreeDoesNotExistSuccess {
 export async function validateWorktreeExists(
   gitRoot: string,
   name: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): Promise<Result<WorktreeExistsSuccess, WorktreeNotFoundError>> {
   const worktreePath = getWorktreePath(gitRoot, name, basePath);
 
@@ -29,7 +29,7 @@ export async function validateWorktreeExists(
 export async function validateWorktreeDoesNotExist(
   gitRoot: string,
   name: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): Promise<Result<WorktreeDoesNotExistSuccess, WorktreeAlreadyExistsError>> {
   const worktreePath = getWorktreePath(gitRoot, name, basePath);
 
@@ -43,7 +43,7 @@ export async function validateWorktreeDoesNotExist(
 
 export async function validatePhantomDirectoryExists(
   gitRoot: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): Promise<boolean> {
   const phantomDir = getPhantomDirectory(gitRoot, basePath);
 

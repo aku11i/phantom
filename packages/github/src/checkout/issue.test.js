@@ -125,6 +125,7 @@ describe("checkoutIssue", () => {
     deepEqual(options, {
       branch: "issue-456",
       base: undefined,
+      basePath: undefined,
     });
   });
 
@@ -154,6 +155,7 @@ describe("checkoutIssue", () => {
     deepEqual(options, {
       branch: "issue-789",
       base: "develop",
+      basePath: undefined,
     });
   });
 

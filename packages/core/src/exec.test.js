@@ -34,10 +34,14 @@ describe("execInWorktree", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    const result = await execInWorktree("/test/repo", "my-feature", [
-      "npm",
-      "test",
-    ]);
+    const result = await execInWorktree(
+      "/test/repo",
+      "my-feature",
+      ["npm", "test"],
+      {
+        basePath: undefined,
+      },
+    );
 
     strictEqual(isOk(result), true);
     if (isOk(result)) {
@@ -61,10 +65,14 @@ describe("execInWorktree", () => {
       Promise.resolve(err(new WorktreeNotFoundError("non-existent"))),
     );
 
-    const result = await execInWorktree("/test/repo", "non-existent", [
-      "npm",
-      "test",
-    ]);
+    const result = await execInWorktree(
+      "/test/repo",
+      "non-existent",
+      ["npm", "test"],
+      {
+        basePath: undefined,
+      },
+    );
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {
@@ -87,7 +95,9 @@ describe("execInWorktree", () => {
       Promise.resolve(ok({ exitCode: 0 })),
     );
 
-    await execInWorktree("/test/repo", "feature", ["ls"]);
+    await execInWorktree("/test/repo", "feature", ["ls"], {
+      basePath: undefined,
+    });
 
     deepStrictEqual(spawnMock.mock.calls[0].arguments[0], {
       command: "ls",
@@ -139,7 +149,9 @@ describe("execInWorktree", () => {
       Promise.resolve(err(new ProcessExecutionError("false", 1))),
     );
 
-    const result = await execInWorktree("/test/repo", "feature", ["false"]);
+    const result = await execInWorktree("/test/repo", "feature", ["false"], {
+      basePath: undefined,
+    });
 
     strictEqual(isErr(result), true);
     if (isErr(result)) {

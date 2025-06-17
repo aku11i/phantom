@@ -89,7 +89,10 @@ describe("listWorktreesTool", () => {
 
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesMock.mock.calls.length, 1);
-    deepStrictEqual(listWorktreesMock.mock.calls[0].arguments, [gitRoot]);
+    deepStrictEqual(listWorktreesMock.mock.calls[0].arguments, [
+      gitRoot,
+      undefined,
+    ]);
 
     strictEqual(result.content.length, 1);
     strictEqual(result.content[0].type, "text");

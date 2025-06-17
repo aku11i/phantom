@@ -12,14 +12,14 @@ export type ExecInWorktreeSuccess = SpawnSuccess;
 
 export interface ExecInWorktreeOptions {
   interactive?: boolean;
-  basePath?: string;
+  basePath: string | undefined;
 }
 
 export async function execInWorktree(
   gitRoot: string,
   worktreeName: string,
   command: string[],
-  options: ExecInWorktreeOptions = {},
+  options: ExecInWorktreeOptions,
 ): Promise<
   Result<ExecInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
 > {

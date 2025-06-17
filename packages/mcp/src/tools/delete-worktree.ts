@@ -18,7 +18,10 @@ export const deleteWorktreeTool: Tool<typeof schema> = {
   inputSchema: schema,
   handler: async ({ name, force }) => {
     const gitRoot = await getGitRoot();
-    const result = await deleteWorktree(gitRoot, name, { force });
+    const result = await deleteWorktree(gitRoot, name, {
+      force,
+      basePath: undefined,
+    });
 
     if (!isOk(result)) {
       throw new Error(result.error.message);

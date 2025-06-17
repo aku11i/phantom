@@ -13,7 +13,7 @@ export type ShellInWorktreeSuccess = SpawnSuccess;
 export async function shellInWorktree(
   gitRoot: string,
   worktreeName: string,
-  basePath?: string,
+  basePath: string | undefined,
 ): Promise<
   Result<ShellInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
 > {

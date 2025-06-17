@@ -76,6 +76,7 @@ describe("createWorktreeTool", () => {
       {
         branch: "feature-1",
         base: undefined,
+        basePath: undefined,
       },
     ]);
 
@@ -113,6 +114,7 @@ describe("createWorktreeTool", () => {
       {
         branch: "feature-2",
         base: "develop",
+        basePath: undefined,
       },
     ]);
 

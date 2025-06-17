@@ -72,7 +72,7 @@ describe("deleteWorktreeTool", () => {
     deepStrictEqual(deleteWorktreeMock.mock.calls[0].arguments, [
       gitRoot,
       "feature-1",
-      { force: undefined },
+      { force: undefined, basePath: undefined },
     ]);
 
     strictEqual(result.content.length, 1);
@@ -103,7 +103,7 @@ describe("deleteWorktreeTool", () => {
     deepStrictEqual(deleteWorktreeMock.mock.calls[0].arguments, [
       gitRoot,
       "feature-2",
-      { force: true },
+      { force: true, basePath: undefined },
     ]);
 
     const parsedContent = JSON.parse(result.content[0].text);
