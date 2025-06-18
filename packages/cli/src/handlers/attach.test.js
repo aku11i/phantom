@@ -88,7 +88,8 @@ describe("attachHandler", () => {
       "/repo",
       "/repo/.git/phantom/worktrees",
       "feature",
-      null, // config
+      undefined, // postCreateCopyFiles
+      undefined, // postCreateCommands
     ]);
   });
 
@@ -241,19 +242,15 @@ describe("attachHandler", () => {
 
     await attachHandler(["feature"]);
 
-    // Verify that attachWorktreeCore was called with full postCreate config
+    // Verify that attachWorktreeCore was called with extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, config] =
+    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
     deepStrictEqual(gitRoot, "/repo");
     deepStrictEqual(worktreeDirectory, "/repo/.git/phantom/worktrees");
     deepStrictEqual(name, "feature");
-    deepStrictEqual(config, {
-      postCreate: {
-        copyFiles: [".env", "config.json"],
-        commands: ["npm install", "npm run build"],
-      },
-    });
+    deepStrictEqual(postCreateCopyFiles, [".env", "config.json"]);
+    deepStrictEqual(postCreateCommands, ["npm install", "npm run build"]);
   });
 
   it("should handle config not found gracefully", async () => {
@@ -277,11 +274,12 @@ describe("attachHandler", () => {
 
     await attachHandler(["feature"]);
 
-    // Verify that attachWorktreeCore was called with null config
+    // Verify that attachWorktreeCore was called with undefined postCreate parameters
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, config] =
+    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
-    deepStrictEqual(config, null);
+    deepStrictEqual(postCreateCopyFiles, undefined);
+    deepStrictEqual(postCreateCommands, undefined);
     deepStrictEqual(outputErrorMock.mock.calls.length, 0);
   });
 
@@ -311,16 +309,12 @@ describe("attachHandler", () => {
 
     await attachHandler(["feature"]);
 
-    // Verify that attachWorktreeCore was called with the config
+    // Verify that attachWorktreeCore was called with the extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, config] =
+    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
-    deepStrictEqual(config, {
-      postCreate: {
-        copyFiles: [".env"],
-        commands: ["echo test"],
-      },
-    });
+    deepStrictEqual(postCreateCopyFiles, [".env"]);
+    deepStrictEqual(postCreateCommands, ["echo test"]);
   });
 
   it("should exit with error if attachWorktreeCore fails due to postCreate", async () => {
@@ -356,14 +350,11 @@ describe("attachHandler", () => {
       1,
     ]);
 
-    // Verify that attachWorktreeCore was called with config
+    // Verify that attachWorktreeCore was called with extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, config] =
+    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
-    deepStrictEqual(config, {
-      postCreate: {
-        commands: ["invalid-command"],
-      },
-    });
+    deepStrictEqual(postCreateCopyFiles, undefined);
+    deepStrictEqual(postCreateCommands, ["invalid-command"]);
   });
 });

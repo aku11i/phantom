@@ -62,7 +62,8 @@ export async function checkoutPullRequest(
     context.gitRoot,
     context.worktreesDirectory,
     worktreeName,
-    context.config,
+    context.config?.postCreate?.copyFiles,
+    context.config?.postCreate?.commands,
   );
 
   if (isErr(attachResult)) {

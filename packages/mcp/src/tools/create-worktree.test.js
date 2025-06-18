@@ -87,6 +87,7 @@ describe("createWorktreeTool", () => {
         base: undefined,
       },
       undefined,
+      undefined,
     ]);
 
     strictEqual(result.content.length, 1);
@@ -131,6 +132,7 @@ describe("createWorktreeTool", () => {
         branch: "feature-2",
         base: "develop",
       },
+      undefined,
       undefined,
     ]);
 

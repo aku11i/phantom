@@ -63,7 +63,8 @@ describe("attachWorktreeCore", () => {
       "/repo",
       "/repo/.git/phantom/worktrees",
       "feature-branch",
-      null,
+      undefined,
+      undefined,
     );
 
     deepStrictEqual(result.ok, true);
@@ -101,7 +102,8 @@ describe("attachWorktreeCore", () => {
       "/repo",
       "/repo/.git/phantom/worktrees",
       "feature/branch",
-      null,
+      undefined,
+      undefined,
     );
 
     deepStrictEqual(result.ok, false);
@@ -125,7 +127,8 @@ describe("attachWorktreeCore", () => {
       "/repo",
       "/repo/.git/phantom/worktrees",
       "existing-feature",
-      null,
+      undefined,
+      undefined,
     );
 
     deepStrictEqual(result.ok, false);
@@ -150,7 +153,8 @@ describe("attachWorktreeCore", () => {
       "/repo",
       "/repo/.git/phantom/worktrees",
       "non-existent",
-      null,
+      undefined,
+      undefined,
     );
 
     deepStrictEqual(result.ok, false);
@@ -175,7 +179,8 @@ describe("attachWorktreeCore", () => {
       "/repo",
       "/repo/.git/phantom/worktrees",
       "feature",
-      null,
+      undefined,
+      undefined,
     );
 
     deepStrictEqual(result.ok, false);
@@ -196,7 +201,8 @@ describe("attachWorktreeCore", () => {
       "/repo",
       "/repo/.git/phantom/worktrees",
       "feature",
-      null,
+      undefined,
+      undefined,
     );
 
     deepStrictEqual(result.ok, false);

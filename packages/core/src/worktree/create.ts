@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "@aku11i/phantom-git";
 import { type Result, err, isErr, isOk, ok } from "@aku11i/phantom-shared";
-import { type PhantomConfig } from "../config/loader.ts";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import { type WorktreeAlreadyExistsError, WorktreeError } from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";
@@ -33,7 +32,8 @@ export async function createWorktree(
   worktreeDirectory: string,
   name: string,
   options: CreateWorktreeOptions,
-  config: PhantomConfig | null,
+  postCreateCopyFiles?: string[],
+  postCreateCommands?: string[],
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | WorktreeError>
 > {
@@ -87,39 +87,32 @@ export async function createWorktree(
       }
     }
 
-    // Execute postCreate hooks from config
-    if (config?.postCreate) {
-      // Copy files from config
-      if (
-        config.postCreate.copyFiles &&
-        config.postCreate.copyFiles.length > 0
-      ) {
-        const copyConfigResult = await copyFilesToWorktree(
-          gitRoot,
-          worktreeDirectory,
-          name,
-          config.postCreate.copyFiles,
-        );
-        if (isErr(copyConfigResult)) {
-          // Don't fail worktree creation, just warn
-          if (!copyError) {
-            copyError = copyConfigResult.error.message;
-          }
+    // Execute postCreate hooks
+    if (postCreateCopyFiles && postCreateCopyFiles.length > 0) {
+      const copyConfigResult = await copyFilesToWorktree(
+        gitRoot,
+        worktreeDirectory,
+        name,
+        postCreateCopyFiles,
+      );
+      if (isErr(copyConfigResult)) {
+        // Don't fail worktree creation, just warn
+        if (!copyError) {
+          copyError = copyConfigResult.error.message;
         }
       }
+    }
 
-      // Execute commands from config
-      if (config.postCreate.commands && config.postCreate.commands.length > 0) {
-        console.log("\nRunning post-create commands...");
-        const commandsResult = await executePostCreateCommands({
-          gitRoot,
-          worktreesDirectory: worktreeDirectory,
-          worktreeName: name,
-          commands: config.postCreate.commands,
-        });
-        if (isErr(commandsResult)) {
-          return err(new WorktreeError(commandsResult.error.message));
-        }
+    if (postCreateCommands && postCreateCommands.length > 0) {
+      console.log("\nRunning post-create commands...");
+      const commandsResult = await executePostCreateCommands({
+        gitRoot,
+        worktreesDirectory: worktreeDirectory,
+        worktreeName: name,
+        commands: postCreateCommands,
+      });
+      if (isErr(commandsResult)) {
+        return err(new WorktreeError(commandsResult.error.message));
       }
     }
 
