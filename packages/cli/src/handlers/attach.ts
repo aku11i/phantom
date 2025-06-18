@@ -1,20 +1,16 @@
 import { parseArgs } from "node:util";
 import {
   BranchNotFoundError,
-  ConfigNotFoundError,
-  ConfigParseError,
-  ConfigValidationError,
   WorktreeAlreadyExistsError,
   attachWorktreeCore,
   copyFilesToWorktree,
   createContext,
   execInWorktree,
   executePostCreateCommands,
-  loadConfig,
   shellInWorktree,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr, isOk } from "@aku11i/phantom-shared";
+import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 
@@ -74,30 +70,13 @@ export async function attachHandler(args: string[]): Promise<void> {
   const worktreePath = result.value;
   output.log(`Attached phantom: ${branchName}`);
 
-  // Load config to get postCreate settings
-  const configResult = await loadConfig(context.gitRoot);
-  if (isErr(configResult)) {
-    const error = configResult.error;
-    if (!(error instanceof ConfigNotFoundError)) {
-      if (error instanceof ConfigParseError) {
-        output.error(`Warning: Config parse error: ${error.message}`);
-      } else if (error instanceof ConfigValidationError) {
-        output.error(`Warning: Config validation error: ${error.message}`);
-      } else {
-        // biome-ignore lint/suspicious/noExplicitAny: TypeScript can't narrow the error type properly
-        const errorMessage = (error as any).message || String(error);
-        output.error(`Warning: ${errorMessage}`);
-      }
-    }
-  }
-
   // Copy files from config
-  if (isOk(configResult) && configResult.value.postCreate?.copyFiles) {
+  if (context.config?.postCreate?.copyFiles) {
     const copyResult = await copyFilesToWorktree(
       context.gitRoot,
       context.worktreesDirectory,
       branchName,
-      configResult.value.postCreate.copyFiles,
+      context.config.postCreate.copyFiles,
     );
 
     if (isErr(copyResult)) {
@@ -110,8 +89,8 @@ export async function attachHandler(args: string[]): Promise<void> {
   }
 
   // Execute post-create commands from config
-  if (isOk(configResult) && configResult.value.postCreate?.commands) {
-    const commands = configResult.value.postCreate.commands;
+  if (context.config?.postCreate?.commands) {
+    const commands = context.config.postCreate.commands;
     output.log("\nRunning post-create commands...");
 
     for (const command of commands) {

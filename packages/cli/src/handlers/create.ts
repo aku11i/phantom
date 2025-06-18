@@ -1,14 +1,10 @@
 import { parseArgs } from "node:util";
 import {
-  ConfigNotFoundError,
-  ConfigParseError,
-  ConfigValidationError,
   WorktreeAlreadyExistsError,
   createContext,
   createWorktree as createWorktreeCore,
   execInWorktree,
   executePostCreateCommands,
-  loadConfig,
   shellInWorktree,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
@@ -115,19 +111,8 @@ export async function createHandler(args: string[]): Promise<void> {
     let filesToCopy: string[] = [];
 
     // Load files from config
-    const configResult = await loadConfig(gitRoot);
-    if (isOk(configResult)) {
-      if (configResult.value.postCreate?.copyFiles) {
-        filesToCopy = [...configResult.value.postCreate.copyFiles];
-      }
-    } else {
-      // Display warning for validation and parse errors
-      if (configResult.error instanceof ConfigValidationError) {
-        output.warn(`Configuration warning: ${configResult.error.message}`);
-      } else if (configResult.error instanceof ConfigParseError) {
-        output.warn(`Configuration warning: ${configResult.error.message}`);
-      }
-      // ConfigNotFoundError remains silent as the config file is optional
+    if (context.config?.postCreate?.copyFiles) {
+      filesToCopy = [...context.config.postCreate.copyFiles];
     }
 
     // Add files from CLI options
@@ -166,8 +151,8 @@ export async function createHandler(args: string[]): Promise<void> {
     }
 
     // Execute post-create commands from config
-    if (isOk(configResult) && configResult.value.postCreate?.commands) {
-      const commands = configResult.value.postCreate.commands;
+    if (context.config?.postCreate?.commands) {
+      const commands = context.config.postCreate.commands;
       output.log("\nRunning post-create commands...");
 
       for (const command of commands) {
