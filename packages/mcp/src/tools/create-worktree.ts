@@ -1,7 +1,8 @@
-import { createWorktree, getWorktreeDirectory } from "@aku11i/phantom-core";
+import { createWorktree } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
+import { createContext } from "../context.ts";
 import type { Tool } from "./types.ts";
 
 const schema = z.object({
@@ -20,11 +21,16 @@ export const createWorktreeTool: Tool<typeof schema> = {
   inputSchema: schema,
   handler: async ({ name, baseBranch }) => {
     const gitRoot = await getGitRoot();
-    const worktreeDirectory = getWorktreeDirectory(gitRoot, undefined);
-    const result = await createWorktree(gitRoot, worktreeDirectory, name, {
-      branch: name,
-      base: baseBranch,
-    });
+    const context = await createContext(gitRoot);
+    const result = await createWorktree(
+      context.gitRoot,
+      context.worktreeDirectory,
+      name,
+      {
+        branch: name,
+        base: baseBranch,
+      },
+    );
 
     if (!isOk(result)) {
       throw new Error(result.error.message);

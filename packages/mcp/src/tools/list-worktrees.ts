@@ -1,7 +1,8 @@
-import { getWorktreeDirectory, listWorktrees } from "@aku11i/phantom-core";
+import { listWorktrees } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
+import { createContext } from "../context.ts";
 import type { Tool } from "./types.ts";
 
 const schema = z.object({});
@@ -12,8 +13,11 @@ export const listWorktreesTool: Tool<typeof schema> = {
   inputSchema: schema,
   handler: async () => {
     const gitRoot = await getGitRoot();
-    const worktreeDirectory = getWorktreeDirectory(gitRoot, undefined);
-    const result = await listWorktrees(gitRoot, worktreeDirectory);
+    const context = await createContext(gitRoot);
+    const result = await listWorktrees(
+      context.gitRoot,
+      context.worktreeDirectory,
+    );
 
     if (!isOk(result)) {
       throw new Error("Failed to list worktrees");

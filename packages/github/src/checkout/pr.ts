@@ -2,13 +2,11 @@ import {
   WorktreeAlreadyExistsError,
   attachWorktreeCore,
 } from "@aku11i/phantom-core";
-import {
-  getWorktreeDirectory,
-  getWorktreePathFromDirectory,
-} from "@aku11i/phantom-core/src/paths.ts";
+import { getWorktreePathFromDirectory } from "@aku11i/phantom-core/src/paths.ts";
 import { fetch, getGitRoot, setUpstreamBranch } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
 import type { GitHubPullRequest } from "../api/index.ts";
+import { createContext } from "../context.ts";
 
 export interface CheckoutResult {
   message: string;
@@ -21,9 +19,9 @@ export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,
 ): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
+  const context = await createContext(gitRoot);
   const worktreeName = `pr-${pullRequest.number}`;
   const localBranch = `pr-${pullRequest.number}`;
-  const worktreeDirectory = getWorktreeDirectory(gitRoot, undefined);
 
   // Determine the upstream branch for tracking
   const upstream = pullRequest.isFromFork
@@ -61,13 +59,13 @@ export async function checkoutPullRequest(
 
   // Attach the worktree to the fetched branch
   const attachResult = await attachWorktreeCore(
-    gitRoot,
-    worktreeDirectory,
+    context.gitRoot,
+    context.worktreeDirectory,
     worktreeName,
   );
 
   const worktreePath = getWorktreePathFromDirectory(
-    worktreeDirectory,
+    context.worktreeDirectory,
     worktreeName,
   );
 
