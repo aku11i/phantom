@@ -13,14 +13,6 @@ export function getWorktreesDirectory(
   return join(gitRoot, ".git", "phantom", "worktrees");
 }
 
-export function getWorktreePath(
-  gitRoot: string,
-  name: string,
-  worktreesDirectory: string | undefined,
-): string {
-  return join(getWorktreesDirectory(gitRoot, worktreesDirectory), name);
-}
-
 // New simplified version that takes worktreeDirectory directly
 export function getWorktreePathFromDirectory(
   worktreeDirectory: string,
