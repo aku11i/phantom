@@ -5,6 +5,7 @@ const getGitRootMock = mock.fn();
 const createWorktreeCoreMock = mock.fn();
 const isPullRequestMock = mock.fn();
 const createContextMock = mock.fn();
+const getWorktreePathFromDirectoryMock = mock.fn();
 
 // Mock the WorktreeAlreadyExistsError class
 class MockWorktreeAlreadyExistsError extends Error {
@@ -25,6 +26,7 @@ mock.module("@aku11i/phantom-core", {
     createWorktree: createWorktreeCoreMock,
     WorktreeAlreadyExistsError: MockWorktreeAlreadyExistsError,
     createContext: createContextMock,
+    getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
   },
 });
 
@@ -105,6 +107,7 @@ describe("checkoutIssue", () => {
       ok: true,
       value: {
         message: "Created worktree issue-456 and checked out branch issue-456",
+        path: "/path/to/repo/.git/phantom/worktrees/issue-456",
       },
     }));
 
@@ -153,6 +156,7 @@ describe("checkoutIssue", () => {
       ok: true,
       value: {
         message: "Created worktree issue-789 from develop",
+        path: "/path/to/repo/.git/phantom/worktrees/issue-789",
       },
     }));
 
@@ -185,6 +189,9 @@ describe("checkoutIssue", () => {
       ok: false,
       error: new MockWorktreeAlreadyExistsError("Worktree already exists"),
     }));
+    getWorktreePathFromDirectoryMock.mock.mockImplementation(
+      (dir, name) => `${dir}/${name}`,
+    );
 
     const result = await checkoutIssue(mockIssue);
 

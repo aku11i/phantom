@@ -6,6 +6,7 @@ const fetchMock = mock.fn();
 const attachWorktreeCoreMock = mock.fn();
 const setUpstreamBranchMock = mock.fn();
 const createContextMock = mock.fn();
+const getWorktreePathFromDirectoryMock = mock.fn();
 
 // Mock the WorktreeAlreadyExistsError class
 class MockWorktreeAlreadyExistsError extends Error {
@@ -28,6 +29,7 @@ mock.module("@aku11i/phantom-core", {
     attachWorktreeCore: attachWorktreeCoreMock,
     WorktreeAlreadyExistsError: MockWorktreeAlreadyExistsError,
     createContext: createContextMock,
+    getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
   },
 });
 
@@ -156,6 +158,9 @@ describe("checkoutPullRequest", () => {
       ok: true,
       value: undefined,
     }));
+    getWorktreePathFromDirectoryMock.mock.mockImplementation(
+      (dir, name) => `${dir}/${name}`,
+    );
 
     const result = await checkoutPullRequest(mockPullRequest);
 
