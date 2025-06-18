@@ -8,29 +8,29 @@ const mkdirMock = mock.fn();
 const validateWorktreeDoesNotExistMock = mock.fn();
 const validateWorktreeNameMock = mock.fn();
 const addWorktreeMock = mock.fn();
-const getWorktreeDirectoryMock = mock.fn((gitRoot, basePath) => {
-  if (basePath) {
+const getWorktreeDirectoryMock = mock.fn((gitRoot, worktreeBaseDirectory) => {
+  if (worktreeBaseDirectory) {
     // Simulate node.js path.join behavior for resolving relative paths
-    if (basePath.startsWith("/")) {
-      return basePath;
+    if (worktreeBaseDirectory.startsWith("/")) {
+      return worktreeBaseDirectory;
     }
     // For relative paths like "../phantom-external", resolve them correctly
-    if (basePath === "../phantom-external") {
+    if (worktreeBaseDirectory === "../phantom-external") {
       return "/test/phantom-external";
     }
-    return `${gitRoot}/${basePath}`;
+    return `${gitRoot}/${worktreeBaseDirectory}`;
   }
   return `${gitRoot}/.git/phantom/worktrees`;
 });
-const getWorktreePathMock = mock.fn((gitRoot, name, basePath) => {
-  if (basePath) {
-    if (basePath.startsWith("/")) {
-      return `${basePath}/${name}`;
+const getWorktreePathMock = mock.fn((gitRoot, name, worktreeBaseDirectory) => {
+  if (worktreeBaseDirectory) {
+    if (worktreeBaseDirectory.startsWith("/")) {
+      return `${worktreeBaseDirectory}/${name}`;
     }
-    if (basePath === "../phantom-external") {
+    if (worktreeBaseDirectory === "../phantom-external") {
       return `/test/phantom-external/${name}`;
     }
-    return `${gitRoot}/${basePath}/${name}`;
+    return `${gitRoot}/${worktreeBaseDirectory}/${name}`;
   }
   return `${gitRoot}/.git/phantom/worktrees/${name}`;
 });
@@ -230,7 +230,7 @@ describe("createWorktree", () => {
   });
 
   describe("with different worktree directories", () => {
-    it("should create worktree with relative basePath", async () => {
+    it("should create worktree with relative worktreeBaseDirectory", async () => {
       resetMocks();
       accessMock.mock.mockImplementation(() => Promise.resolve());
       mkdirMock.mock.mockImplementation(() => Promise.resolve());
@@ -270,7 +270,7 @@ describe("createWorktree", () => {
       );
     });
 
-    it("should create worktree with absolute basePath", async () => {
+    it("should create worktree with absolute worktreeBaseDirectory", async () => {
       resetMocks();
       accessMock.mock.mockImplementation(() => Promise.resolve());
       mkdirMock.mock.mockImplementation(() => Promise.resolve());

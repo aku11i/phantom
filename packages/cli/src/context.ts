@@ -12,10 +12,10 @@ export interface Context {
 
 export async function createContext(gitRoot: string): Promise<Context> {
   const configResult = await loadConfig(gitRoot);
-  const basePath = isOk(configResult) ? configResult.value.basePath : undefined;
+  const worktreeBaseDirectory = isOk(configResult) ? configResult.value.worktreeBaseDirectory : undefined;
 
   return {
     gitRoot,
-    worktreeDirectory: getWorktreeDirectory(gitRoot, basePath),
+    worktreeDirectory: getWorktreeDirectory(gitRoot, worktreeBaseDirectory),
   };
 }

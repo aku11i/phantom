@@ -25,38 +25,38 @@ describe("paths", () => {
       strictEqual(result.includes("worktrees"), true);
     });
 
-    describe("with basePath", () => {
-      it("should return default path when basePath is undefined", () => {
+    describe("with worktreeBaseDirectory", () => {
+      it("should return default path when worktreeBaseDirectory is undefined", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreeDirectory(gitRoot, undefined);
         strictEqual(result, "/test/repo/.git/phantom/worktrees");
       });
 
-      it("should handle relative basePath", () => {
+      it("should handle relative worktreeBaseDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreeDirectory(gitRoot, "../phantom-external");
         strictEqual(result, "/test/phantom-external");
       });
 
-      it("should handle absolute basePath", () => {
+      it("should handle absolute worktreeBaseDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreeDirectory(gitRoot, "/tmp/phantom-worktrees");
         strictEqual(result, "/tmp/phantom-worktrees");
       });
 
-      it("should handle nested relative basePath", () => {
+      it("should handle nested relative worktreeBaseDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreeDirectory(gitRoot, "custom/phantom");
         strictEqual(result, "/test/repo/custom/phantom");
       });
 
-      it("should handle complex relative basePath", () => {
+      it("should handle complex relative worktreeBaseDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreeDirectory(gitRoot, "../../shared/worktrees");
         strictEqual(result, "/shared/worktrees");
       });
 
-      it("should handle basePath with trailing slash", () => {
+      it("should handle worktreeBaseDirectory with trailing slash", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreeDirectory(gitRoot, "../phantom-external/");
         // path.join normalizes paths and may add trailing slash
@@ -91,36 +91,36 @@ describe("paths", () => {
       strictEqual(result, "/test/repo/.git/phantom/worktrees");
     });
 
-    describe("with basePath", () => {
-      it("should return default worktree path when basePath is undefined", () => {
+    describe("with worktreeBaseDirectory", () => {
+      it("should return default worktree path when worktreeBaseDirectory is undefined", () => {
         const gitRoot = "/test/repo";
         const name = "feature-branch";
         const result = getWorktreePath(gitRoot, name, undefined);
         strictEqual(result, "/test/repo/.git/phantom/worktrees/feature-branch");
       });
 
-      it("should handle relative basePath for worktree path", () => {
+      it("should handle relative worktreeBaseDirectory for worktree path", () => {
         const gitRoot = "/test/repo";
         const name = "feature-branch";
         const result = getWorktreePath(gitRoot, name, "../phantom-external");
         strictEqual(result, "/test/phantom-external/feature-branch");
       });
 
-      it("should handle absolute basePath for worktree path", () => {
+      it("should handle absolute worktreeBaseDirectory for worktree path", () => {
         const gitRoot = "/test/repo";
         const name = "feature-branch";
         const result = getWorktreePath(gitRoot, name, "/tmp/phantom-worktrees");
         strictEqual(result, "/tmp/phantom-worktrees/feature-branch");
       });
 
-      it("should handle worktree names with slashes and custom basePath", () => {
+      it("should handle worktree names with slashes and custom worktreeBaseDirectory", () => {
         const gitRoot = "/test/repo";
         const name = "feature/user-auth";
         const result = getWorktreePath(gitRoot, name, "../phantom-external");
         strictEqual(result, "/test/phantom-external/feature/user-auth");
       });
 
-      it("should handle nested basePath with complex worktree names", () => {
+      it("should handle nested worktreeBaseDirectory with complex worktree names", () => {
         const gitRoot = "/test/repo";
         const name = "bugfix/issue-123";
         const result = getWorktreePath(gitRoot, name, "custom/phantom");

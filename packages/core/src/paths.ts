@@ -2,11 +2,11 @@ import { isAbsolute, join } from "node:path";
 
 export function getWorktreeDirectory(
   gitRoot: string,
-  basePath: string | undefined,
+  worktreeBaseDirectory: string | undefined,
 ): string {
-  if (basePath) {
-    // If basePath is absolute, use it as-is. If relative, resolve from gitRoot
-    return isAbsolute(basePath) ? basePath : join(gitRoot, basePath);
+  if (worktreeBaseDirectory) {
+    // If worktreeBaseDirectory is absolute, use it as-is. If relative, resolve from gitRoot
+    return isAbsolute(worktreeBaseDirectory) ? worktreeBaseDirectory : join(gitRoot, worktreeBaseDirectory);
   }
   return join(gitRoot, ".git", "phantom", "worktrees");
 }
@@ -14,9 +14,9 @@ export function getWorktreeDirectory(
 export function getWorktreePath(
   gitRoot: string,
   name: string,
-  basePath: string | undefined,
+  worktreeBaseDirectory: string | undefined,
 ): string {
-  return join(getWorktreeDirectory(gitRoot, basePath), name);
+  return join(getWorktreeDirectory(gitRoot, worktreeBaseDirectory), name);
 }
 
 // New simplified version that takes worktreeDirectory directly

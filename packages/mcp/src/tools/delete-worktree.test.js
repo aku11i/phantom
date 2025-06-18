@@ -3,8 +3,8 @@ import { describe, it, mock } from "node:test";
 import { z } from "zod";
 
 const deleteWorktreeMock = mock.fn();
-const getWorktreeDirectoryMock = mock.fn((gitRoot, basePath) => {
-  return basePath || `${gitRoot}/.git/phantom/worktrees`;
+const getWorktreeDirectoryMock = mock.fn((gitRoot, worktreeBaseDirectory) => {
+  return worktreeBaseDirectory || `${gitRoot}/.git/phantom/worktrees`;
 });
 const getGitRootMock = mock.fn();
 const isOkMock = mock.fn((result) => {

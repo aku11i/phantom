@@ -2,21 +2,21 @@ import { deepStrictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 
 const accessMock = mock.fn();
-const getWorktreeDirectoryMock = mock.fn((gitRoot, basePath) => {
-  if (basePath) {
-    if (basePath.startsWith("/")) {
-      return basePath;
+const getWorktreeDirectoryMock = mock.fn((gitRoot, worktreeBaseDirectory) => {
+  if (worktreeBaseDirectory) {
+    if (worktreeBaseDirectory.startsWith("/")) {
+      return worktreeBaseDirectory;
     }
-    return `${gitRoot}/${basePath}`;
+    return `${gitRoot}/${worktreeBaseDirectory}`;
   }
   return `${gitRoot}/.git/phantom/worktrees`;
 });
-const getWorktreePathMock = mock.fn((gitRoot, name, basePath) => {
-  if (basePath) {
-    if (basePath.startsWith("/")) {
-      return `${basePath}/${name}`;
+const getWorktreePathMock = mock.fn((gitRoot, name, worktreeBaseDirectory) => {
+  if (worktreeBaseDirectory) {
+    if (worktreeBaseDirectory.startsWith("/")) {
+      return `${worktreeBaseDirectory}/${name}`;
     }
-    return `${gitRoot}/${basePath}/${name}`;
+    return `${gitRoot}/${worktreeBaseDirectory}/${name}`;
   }
   return `${gitRoot}/.git/phantom/worktrees/${name}`;
 });
