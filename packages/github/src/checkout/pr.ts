@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import {
   WorktreeAlreadyExistsError,
   attachWorktreeCore,
@@ -66,7 +67,7 @@ export async function checkoutPullRequest(
   if (isErr(attachResult)) {
     if (attachResult.error instanceof WorktreeAlreadyExistsError) {
       // For already exists case, we need to construct the path
-      const worktreePath = `${context.worktreesDirectory}/${worktreeName}`;
+      const worktreePath = join(context.worktreesDirectory, worktreeName);
       return ok({
         message: `Worktree for PR #${pullRequest.number} is already checked out`,
         worktree: worktreeName,
