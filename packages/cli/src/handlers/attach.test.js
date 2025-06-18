@@ -2,6 +2,7 @@ import { deepStrictEqual, rejects } from "node:assert";
 import { describe, it, mock } from "node:test";
 import {
   BranchNotFoundError,
+  ConfigNotFoundError,
   WorktreeAlreadyExistsError,
 } from "@aku11i/phantom-core";
 import { err, ok } from "@aku11i/phantom-shared";
@@ -10,10 +11,14 @@ const exitWithErrorMock = mock.fn((message, code) => {
   throw new Error(`Exit with code ${code}: ${message}`);
 });
 const outputLogMock = mock.fn();
+const outputErrorMock = mock.fn();
 const getGitRootMock = mock.fn();
 const attachWorktreeCoreMock = mock.fn();
 const shellInWorktreeMock = mock.fn();
 const execInWorktreeMock = mock.fn();
+const copyFilesToWorktreeMock = mock.fn();
+const executePostCreateCommandsMock = mock.fn();
+const loadConfigMock = mock.fn();
 
 mock.module("../errors.ts", {
   namedExports: {
@@ -29,7 +34,7 @@ mock.module("../errors.ts", {
 
 mock.module("../output.ts", {
   namedExports: {
-    output: { log: outputLogMock },
+    output: { log: outputLogMock, error: outputErrorMock },
   },
 });
 
@@ -43,17 +48,18 @@ mock.module("@aku11i/phantom-core", {
   namedExports: {
     attachWorktreeCore: attachWorktreeCoreMock,
     BranchNotFoundError,
+    ConfigNotFoundError,
     WorktreeAlreadyExistsError,
     shellInWorktree: shellInWorktreeMock,
     execInWorktree: execInWorktreeMock,
+    copyFilesToWorktree: copyFilesToWorktreeMock,
+    executePostCreateCommands: executePostCreateCommandsMock,
+    loadConfig: loadConfigMock,
     createContext: mock.fn((gitRoot) =>
       Promise.resolve({
         gitRoot,
         worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
       }),
-    ),
-    loadConfig: mock.fn(() =>
-      Promise.resolve({ ok: false, error: new Error("Config not found") }),
     ),
     getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
       return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
@@ -179,5 +185,164 @@ describe("attachHandler", () => {
     deepStrictEqual(execArgs[0], "/bin/bash");
     deepStrictEqual(execArgs[1], "-c");
     deepStrictEqual(execArgs[2], "echo hello");
+  });
+
+  it("should execute postCreate commands and copy files when config is present", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    outputErrorMock.mock.resetCalls();
+    loadConfigMock.mock.resetCalls();
+    copyFilesToWorktreeMock.mock.resetCalls();
+    executePostCreateCommandsMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+    loadConfigMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          postCreate: {
+            copyFiles: [".env", "config.json"],
+            commands: ["npm install", "npm run build"],
+          },
+        }),
+      ),
+    );
+    copyFilesToWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(ok(undefined)),
+    );
+    executePostCreateCommandsMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({ executedCommands: ["npm install", "npm run build"] }),
+      ),
+    );
+
+    await attachHandler(["feature"]);
+
+    deepStrictEqual(loadConfigMock.mock.calls.length, 1);
+    deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 1);
+    deepStrictEqual(copyFilesToWorktreeMock.mock.calls[0].arguments, [
+      "/repo",
+      "/repo/.git/phantom/worktrees",
+      "feature",
+      [".env", "config.json"],
+    ]);
+    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 1);
+    deepStrictEqual(executePostCreateCommandsMock.mock.calls[0].arguments[0], {
+      gitRoot: "/repo",
+      worktreesDirectory: "/repo/.git/phantom/worktrees",
+      worktreeName: "feature",
+      commands: ["npm install", "npm run build"],
+    });
+    deepStrictEqual(
+      outputLogMock.mock.calls[1].arguments[0],
+      "\nRunning post-create commands...",
+    );
+    deepStrictEqual(
+      outputLogMock.mock.calls[2].arguments[0],
+      "Executing: npm install",
+    );
+    deepStrictEqual(
+      outputLogMock.mock.calls[3].arguments[0],
+      "Executing: npm run build",
+    );
+  });
+
+  it("should handle config not found gracefully", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    outputErrorMock.mock.resetCalls();
+    loadConfigMock.mock.resetCalls();
+    copyFilesToWorktreeMock.mock.resetCalls();
+    executePostCreateCommandsMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+    loadConfigMock.mock.mockImplementation(() =>
+      Promise.resolve(err(new ConfigNotFoundError())),
+    );
+
+    await attachHandler(["feature"]);
+
+    deepStrictEqual(loadConfigMock.mock.calls.length, 1);
+    deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 0);
+    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 0);
+    deepStrictEqual(outputErrorMock.mock.calls.length, 0);
+  });
+
+  it("should warn on file copy errors but continue execution", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    outputErrorMock.mock.resetCalls();
+    loadConfigMock.mock.resetCalls();
+    copyFilesToWorktreeMock.mock.resetCalls();
+    executePostCreateCommandsMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+    loadConfigMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          postCreate: {
+            copyFiles: [".env"],
+            commands: ["echo test"],
+          },
+        }),
+      ),
+    );
+    copyFilesToWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(err(new Error("File not found: .env"))),
+    );
+    executePostCreateCommandsMock.mock.mockImplementation(() =>
+      Promise.resolve(ok({ executedCommands: ["echo test"] })),
+    );
+
+    await attachHandler(["feature"]);
+
+    deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 1);
+    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 1);
+    deepStrictEqual(
+      outputErrorMock.mock.calls[0].arguments[0],
+      "\nWarning: Failed to copy some files: File not found: .env",
+    );
+  });
+
+  it("should exit with error if postCreate command fails", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    loadConfigMock.mock.resetCalls();
+    executePostCreateCommandsMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+    loadConfigMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          postCreate: {
+            commands: ["invalid-command"],
+          },
+        }),
+      ),
+    );
+    executePostCreateCommandsMock.mock.mockImplementation(() =>
+      Promise.resolve(err(new Error("Command failed: invalid-command"))),
+    );
+
+    await rejects(
+      async () => await attachHandler(["feature"]),
+      /Exit with code 1/,
+    );
+
+    deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
+      "Command failed: invalid-command",
+      1,
+    ]);
   });
 });

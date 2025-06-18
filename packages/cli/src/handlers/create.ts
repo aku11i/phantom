@@ -7,6 +7,7 @@ import {
   createContext,
   createWorktree as createWorktreeCore,
   execInWorktree,
+  executePostCreateCommands,
   loadConfig,
   shellInWorktree,
 } from "@aku11i/phantom-core";
@@ -171,30 +172,17 @@ export async function createHandler(args: string[]): Promise<void> {
 
       for (const command of commands) {
         output.log(`Executing: ${command}`);
-        const shell = process.env.SHELL || "/bin/sh";
-        const cmdResult = await execInWorktree(
-          context.gitRoot,
-          context.worktreesDirectory,
-          worktreeName,
-          [shell, "-c", command],
-        );
+      }
 
-        if (isErr(cmdResult)) {
-          output.error(`Failed to execute command: ${cmdResult.error.message}`);
-          const exitCode =
-            "exitCode" in cmdResult.error
-              ? (cmdResult.error.exitCode ?? exitCodes.generalError)
-              : exitCodes.generalError;
-          exitWithError(`Post-create command failed: ${command}`, exitCode);
-        }
+      const postCreateResult = await executePostCreateCommands({
+        gitRoot: context.gitRoot,
+        worktreesDirectory: context.worktreesDirectory,
+        worktreeName,
+        commands,
+      });
 
-        // Check exit code
-        if (cmdResult.value.exitCode !== 0) {
-          exitWithError(
-            `Post-create command failed: ${command}`,
-            cmdResult.value.exitCode,
-          );
-        }
+      if (isErr(postCreateResult)) {
+        exitWithError(postCreateResult.error.message, exitCodes.generalError);
       }
     }
 
