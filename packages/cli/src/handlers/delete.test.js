@@ -10,6 +10,19 @@ const getGitRootMock = mock.fn();
 const deleteWorktreeMock = mock.fn();
 const selectWorktreeWithFzfMock = mock.fn();
 const getCurrentWorktreeMock = mock.fn();
+const createContextMock = mock.fn((gitRoot) =>
+  Promise.resolve({
+    gitRoot,
+    worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+  }),
+);
+const loadConfigMock = mock.fn(() =>
+  Promise.resolve({ ok: false, error: new Error("Config not found") }),
+);
+const getWorktreesDirectoryMock = mock.fn(
+  (gitRoot, worktreesDirectory) =>
+    worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`,
+);
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
   exitMock(code);
@@ -39,18 +52,9 @@ mock.module("@aku11i/phantom-core", {
     selectWorktreeWithFzf: selectWorktreeWithFzfMock,
     WorktreeError,
     WorktreeNotFoundError,
-    createContext: mock.fn((gitRoot) =>
-      Promise.resolve({
-        gitRoot,
-        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-      }),
-    ),
-    loadConfig: mock.fn(() =>
-      Promise.resolve({ ok: false, error: new Error("Config not found") }),
-    ),
-    getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
-      return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
-    }),
+    createContext: createContextMock,
+    loadConfig: loadConfigMock,
+    getWorktreesDirectory: getWorktreesDirectoryMock,
   },
 });
 

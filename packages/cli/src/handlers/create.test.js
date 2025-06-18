@@ -20,6 +20,16 @@ const loadConfigMock = mock.fn();
 const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
+const createContextMock = mock.fn((gitRoot) =>
+  Promise.resolve({
+    gitRoot,
+    worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+  }),
+);
+const getWorktreesDirectoryMock = mock.fn(
+  (gitRoot, worktreesDirectory) =>
+    worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`,
+);
 const exitWithErrorMock = mock.fn((message, code) => {
   if (message) consoleErrorMock(`Error: ${message}`);
   exitMock(code);
@@ -55,15 +65,8 @@ mock.module("@aku11i/phantom-core", {
     ConfigParseError,
     ConfigValidationError,
     WorktreeAlreadyExistsError,
-    createContext: mock.fn((gitRoot) =>
-      Promise.resolve({
-        gitRoot,
-        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-      }),
-    ),
-    getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
-      return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
-    }),
+    createContext: createContextMock,
+    getWorktreesDirectory: getWorktreesDirectoryMock,
   },
 });
 
