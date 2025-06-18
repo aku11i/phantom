@@ -1,5 +1,5 @@
 import { isOk } from "@aku11i/phantom-shared";
-import { loadConfig, type PhantomConfig } from "./config/loader.ts";
+import { type PhantomConfig, loadConfig } from "./config/loader.ts";
 import { getWorktreesDirectory } from "./paths.ts";
 
 export interface Context {

@@ -17,6 +17,8 @@ const createWorktreeMock = mock.fn();
 const execInWorktreeMock = mock.fn();
 const shellInWorktreeMock = mock.fn();
 const loadConfigMock = mock.fn();
+const createContextMock = mock.fn();
+const executePostCreateCommandsMock = mock.fn();
 const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
@@ -55,12 +57,8 @@ mock.module("@aku11i/phantom-core", {
     ConfigParseError,
     ConfigValidationError,
     WorktreeAlreadyExistsError,
-    createContext: mock.fn((gitRoot) =>
-      Promise.resolve({
-        gitRoot,
-        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-      }),
-    ),
+    createContext: createContextMock,
+    executePostCreateCommands: executePostCreateCommandsMock,
     getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
       return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
     }),
@@ -90,6 +88,7 @@ mock.module("../errors.ts", {
     exitCodes: {
       generalError: 1,
       validationError: 2,
+      success: 0,
     },
     exitWithError: exitWithErrorMock,
     exitWithSuccess: exitWithSuccessMock,
@@ -110,6 +109,8 @@ describe("createHandler", () => {
     execInWorktreeMock.mock.resetCalls();
     shellInWorktreeMock.mock.resetCalls();
     loadConfigMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
+    executePostCreateCommandsMock.mock.resetCalls();
     isInsideTmuxMock.mock.resetCalls();
     executeTmuxCommandMock.mock.resetCalls();
     getPhantomEnvMock.mock.resetCalls();
@@ -126,8 +127,12 @@ describe("createHandler", () => {
     resetMocks();
     processEnvMock.SHELL = "/bin/bash";
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new ConfigNotFoundError())),
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
     );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -149,12 +154,20 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(createWorktreeMock.mock.calls[0].arguments[1], "feature");
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[1],
+      "/test/repo/.git/phantom/worktrees",
+    );
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "feature");
 
     strictEqual(execInWorktreeMock.mock.calls.length, 1);
     strictEqual(execInWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(execInWorktreeMock.mock.calls[0].arguments[1], "feature");
-    const execArgs = execInWorktreeMock.mock.calls[0].arguments[2];
+    strictEqual(
+      execInWorktreeMock.mock.calls[0].arguments[1],
+      "/test/repo/.git/phantom/worktrees",
+    );
+    strictEqual(execInWorktreeMock.mock.calls[0].arguments[2], "feature");
+    const execArgs = execInWorktreeMock.mock.calls[0].arguments[3];
     strictEqual(execArgs[0], "/bin/bash");
     strictEqual(execArgs[1], "-c");
     strictEqual(execArgs[2], "echo hello");
@@ -176,8 +189,12 @@ describe("createHandler", () => {
     resetMocks();
     processEnvMock.SHELL = "/bin/bash";
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new ConfigNotFoundError())),
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
     );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -231,8 +248,12 @@ describe("createHandler", () => {
     resetMocks();
     // No SHELL env var set
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new ConfigNotFoundError())),
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
     );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -278,8 +299,12 @@ describe("createHandler", () => {
     processEnvMock.SHELL = "/bin/bash";
     processEnvMock.TMUX = "/tmp/tmux-1000/default,12345,0";
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new ConfigNotFoundError())),
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
     );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -330,8 +355,12 @@ describe("createHandler", () => {
     processEnvMock.SHELL = "/bin/bash";
     processEnvMock.TMUX = "/tmp/tmux-1000/default,12345,0";
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new ConfigNotFoundError())),
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
     );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -412,8 +441,12 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(createWorktreeMock.mock.calls[0].arguments[1], "feature");
-    strictEqual(createWorktreeMock.mock.calls[0].arguments[2].base, "main");
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[1],
+      "/test/repo/.git/phantom/worktrees",
+    );
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "feature");
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[3].base, "main");
 
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
@@ -443,9 +476,13 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(createWorktreeMock.mock.calls[0].arguments[1], "hotfix");
     strictEqual(
-      createWorktreeMock.mock.calls[0].arguments[2].base,
+      createWorktreeMock.mock.calls[0].arguments[1],
+      "/test/repo/.git/phantom/worktrees",
+    );
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "hotfix");
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[3].base,
       "origin/production",
     );
 
@@ -476,8 +513,12 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(createWorktreeMock.mock.calls[0].arguments[1], "experiment");
-    strictEqual(createWorktreeMock.mock.calls[0].arguments[2].base, "abc123");
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[1],
+      "/test/repo/.git/phantom/worktrees",
+    );
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "experiment");
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[3].base, "abc123");
 
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],

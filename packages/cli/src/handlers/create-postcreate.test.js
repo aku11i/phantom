@@ -11,14 +11,18 @@ const outputErrorMock = mock.fn();
 const getGitRootMock = mock.fn();
 const createWorktreeMock = mock.fn();
 const executePostCreateCommandsMock = mock.fn();
-const loadConfigMock = mock.fn();
+const createContextMock = mock.fn();
 
 mock.module("../errors.ts", {
   namedExports: {
     exitWithError: exitWithErrorMock,
+    exitWithSuccess: mock.fn(() => {
+      throw new Error("Exit with success");
+    }),
     exitCodes: {
       validationError: 3,
       generalError: 1,
+      success: 0,
     },
   },
 });
@@ -43,13 +47,7 @@ mock.module("@aku11i/phantom-core", {
     WorktreeAlreadyExistsError: class WorktreeAlreadyExistsError extends Error {},
     createWorktree: createWorktreeMock,
     executePostCreateCommands: executePostCreateCommandsMock,
-    loadConfig: loadConfigMock,
-    createContext: mock.fn((gitRoot) =>
-      Promise.resolve({
-        gitRoot,
-        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-      }),
-    ),
+    createContext: createContextMock,
     execInWorktree: mock.fn(),
     shellInWorktree: mock.fn(),
   },
@@ -73,9 +71,20 @@ describe("createHandler postCreate", () => {
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
     executePostCreateCommandsMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: {
+          postCreate: {
+            commands: ["npm install", "npm test"],
+          },
+        },
+      }),
+    );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
         ok({
@@ -85,20 +94,14 @@ describe("createHandler postCreate", () => {
         }),
       ),
     );
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(
-        ok({
-          postCreate: {
-            commands: ["npm install", "npm test"],
-          },
-        }),
-      ),
-    );
     executePostCreateCommandsMock.mock.mockImplementation(() =>
       Promise.resolve(ok({ executedCommands: ["npm install", "npm test"] })),
     );
 
-    await createHandler(["feature"]);
+    await rejects(
+      async () => await createHandler(["feature"]),
+      /Exit with success/,
+    );
 
     deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 1);
     deepStrictEqual(executePostCreateCommandsMock.mock.calls[0].arguments[0], {
@@ -108,15 +111,15 @@ describe("createHandler postCreate", () => {
       commands: ["npm install", "npm test"],
     });
     deepStrictEqual(
-      outputLogMock.mock.calls[2].arguments[0],
+      outputLogMock.mock.calls[1].arguments[0],
       "\nRunning post-create commands...",
     );
     deepStrictEqual(
-      outputLogMock.mock.calls[3].arguments[0],
+      outputLogMock.mock.calls[2].arguments[0],
       "Executing: npm install",
     );
     deepStrictEqual(
-      outputLogMock.mock.calls[4].arguments[0],
+      outputLogMock.mock.calls[3].arguments[0],
       "Executing: npm test",
     );
   });
@@ -126,23 +129,25 @@ describe("createHandler postCreate", () => {
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
     executePostCreateCommandsMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: {
+          postCreate: {
+            commands: ["invalid-command"],
+          },
+        },
+      }),
+    );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
         ok({
           message: "Created worktree 'feature'",
           path: "/repo/.git/phantom/worktrees/feature",
-        }),
-      ),
-    );
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(
-        ok({
-          postCreate: {
-            commands: ["invalid-command"],
-          },
         }),
       ),
     );
@@ -173,9 +178,20 @@ describe("createHandler postCreate", () => {
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
     executePostCreateCommandsMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: {
+          postCreate: {
+            copyFiles: [".env"],
+          },
+        },
+      }),
+    );
     createWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
         ok({
@@ -184,17 +200,11 @@ describe("createHandler postCreate", () => {
         }),
       ),
     );
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(
-        ok({
-          postCreate: {
-            copyFiles: [".env"],
-          },
-        }),
-      ),
-    );
 
-    await createHandler(["feature"]);
+    await rejects(
+      async () => await createHandler(["feature"]),
+      /Exit with success/,
+    );
 
     deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 0);
     const logMessages = outputLogMock.mock.calls.map(

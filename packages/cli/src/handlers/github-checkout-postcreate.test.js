@@ -11,7 +11,6 @@ const outputErrorMock = mock.fn();
 const githubCheckoutMock = mock.fn();
 const getGitRootMock = mock.fn();
 const createContextMock = mock.fn();
-const loadConfigMock = mock.fn();
 const copyFilesToWorktreeMock = mock.fn();
 const executePostCreateCommandsMock = mock.fn();
 
@@ -51,7 +50,6 @@ mock.module("@aku11i/phantom-core", {
     copyFilesToWorktree: copyFilesToWorktreeMock,
     createContext: createContextMock,
     executePostCreateCommands: executePostCreateCommandsMock,
-    loadConfig: loadConfigMock,
   },
 });
 
@@ -65,7 +63,6 @@ describe("githubCheckoutHandler postCreate", () => {
     githubCheckoutMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
     copyFilesToWorktreeMock.mock.resetCalls();
     executePostCreateCommandsMock.mock.resetCalls();
 
@@ -83,17 +80,13 @@ describe("githubCheckoutHandler postCreate", () => {
       Promise.resolve({
         gitRoot,
         worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-      }),
-    );
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(
-        ok({
+        config: {
           postCreate: {
             copyFiles: [".env", "config.json"],
             commands: ["npm install", "npm run build"],
           },
-        }),
-      ),
+        },
+      }),
     );
     copyFilesToWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(ok(undefined)),
@@ -115,7 +108,6 @@ describe("githubCheckoutHandler postCreate", () => {
       outputLogMock.mock.calls[0].arguments[0],
       "Checked out issue #123",
     );
-    deepStrictEqual(loadConfigMock.mock.calls.length, 1);
     deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 1);
     deepStrictEqual(copyFilesToWorktreeMock.mock.calls[0].arguments, [
       "/repo",
@@ -137,7 +129,7 @@ describe("githubCheckoutHandler postCreate", () => {
     outputLogMock.mock.resetCalls();
     githubCheckoutMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
     copyFilesToWorktreeMock.mock.resetCalls();
     executePostCreateCommandsMock.mock.resetCalls();
 
@@ -160,7 +152,7 @@ describe("githubCheckoutHandler postCreate", () => {
       "Worktree for PR #456 is already checked out",
     );
     deepStrictEqual(getGitRootMock.mock.calls.length, 0);
-    deepStrictEqual(loadConfigMock.mock.calls.length, 0);
+    deepStrictEqual(createContextMock.mock.calls.length, 0);
     deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 0);
     deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 0);
   });
@@ -188,7 +180,7 @@ describe("githubCheckoutHandler postCreate", () => {
     exitWithErrorMock.mock.resetCalls();
     githubCheckoutMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
 
     githubCheckoutMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -204,10 +196,8 @@ describe("githubCheckoutHandler postCreate", () => {
       Promise.resolve({
         gitRoot,
         worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
       }),
-    );
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new ConfigNotFoundError())),
     );
 
     await githubCheckoutHandler(["123", "--base", "develop"]);
@@ -224,7 +214,7 @@ describe("githubCheckoutHandler postCreate", () => {
     outputErrorMock.mock.resetCalls();
     githubCheckoutMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
     copyFilesToWorktreeMock.mock.resetCalls();
     executePostCreateCommandsMock.mock.resetCalls();
 
@@ -242,15 +232,12 @@ describe("githubCheckoutHandler postCreate", () => {
       Promise.resolve({
         gitRoot,
         worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
       }),
-    );
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new ConfigNotFoundError())),
     );
 
     await githubCheckoutHandler(["123"]);
 
-    deepStrictEqual(loadConfigMock.mock.calls.length, 1);
     deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 0);
     deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 0);
     deepStrictEqual(outputErrorMock.mock.calls.length, 0);
