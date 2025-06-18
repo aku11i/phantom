@@ -34,6 +34,7 @@ export async function checkoutIssue(
       branch: branchName,
       base,
     },
+    context.config,
   );
 
   if (isErr(result)) {

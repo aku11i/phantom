@@ -4,7 +4,6 @@ import {
   createContext,
   createWorktree as createWorktreeCore,
   execInWorktree,
-  executePostCreateCommands,
   shellInWorktree,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
@@ -132,6 +131,7 @@ export async function createHandler(args: string[]): Promise<void> {
         copyFiles: filesToCopy.length > 0 ? filesToCopy : undefined,
         base: baseOption,
       },
+      context.config,
     );
 
     if (isErr(result)) {
@@ -148,23 +148,6 @@ export async function createHandler(args: string[]): Promise<void> {
       output.error(
         `\nWarning: Failed to copy some files: ${result.value.copyError}`,
       );
-    }
-
-    // Execute post-create commands from config
-    if (context.config?.postCreate?.commands) {
-      const commands = context.config.postCreate.commands;
-      output.log("\nRunning post-create commands...");
-
-      const postCreateResult = await executePostCreateCommands({
-        gitRoot: context.gitRoot,
-        worktreesDirectory: context.worktreesDirectory,
-        worktreeName,
-        commands,
-      });
-
-      if (isErr(postCreateResult)) {
-        exitWithError(postCreateResult.error.message, exitCodes.generalError);
-      }
     }
 
     if (execCommand && isOk(result)) {

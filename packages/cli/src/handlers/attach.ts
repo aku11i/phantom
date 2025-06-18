@@ -3,10 +3,8 @@ import {
   BranchNotFoundError,
   WorktreeAlreadyExistsError,
   attachWorktreeCore,
-  copyFilesToWorktree,
   createContext,
   execInWorktree,
-  executePostCreateCommands,
   shellInWorktree,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
@@ -54,6 +52,7 @@ export async function attachHandler(args: string[]): Promise<void> {
     context.gitRoot,
     context.worktreesDirectory,
     branchName,
+    context.config,
   );
 
   if (isErr(result)) {
@@ -69,41 +68,6 @@ export async function attachHandler(args: string[]): Promise<void> {
 
   const worktreePath = result.value;
   output.log(`Attached phantom: ${branchName}`);
-
-  // Copy files from config
-  if (context.config?.postCreate?.copyFiles) {
-    const copyResult = await copyFilesToWorktree(
-      context.gitRoot,
-      context.worktreesDirectory,
-      branchName,
-      context.config.postCreate.copyFiles,
-    );
-
-    if (isErr(copyResult)) {
-      const errorMessage =
-        copyResult.error instanceof Error
-          ? copyResult.error.message
-          : String(copyResult.error);
-      output.error(`\nWarning: Failed to copy some files: ${errorMessage}`);
-    }
-  }
-
-  // Execute post-create commands from config
-  if (context.config?.postCreate?.commands) {
-    const commands = context.config.postCreate.commands;
-    output.log("\nRunning post-create commands...");
-
-    const postCreateResult = await executePostCreateCommands({
-      gitRoot: context.gitRoot,
-      worktreesDirectory: context.worktreesDirectory,
-      worktreeName: branchName,
-      commands,
-    });
-
-    if (isErr(postCreateResult)) {
-      exitWithError(postCreateResult.error.message, exitCodes.generalError);
-    }
-  }
 
   if (values.shell) {
     const shellResult = await shellInWorktree(

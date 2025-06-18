@@ -14,6 +14,9 @@ const getWorktreePathFromDirectoryMock = mock.fn((worktreeDirectory, name) => {
 mock.module("./validate.ts", {
   namedExports: {
     validateWorktreeName: validateWorktreeNameMock,
+    validateWorktreeExists: mock.fn(() =>
+      Promise.resolve({ ok: true, value: { path: "/mock/path" } }),
+    ),
   },
 });
 

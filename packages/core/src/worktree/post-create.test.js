@@ -5,7 +5,7 @@ import { err, ok } from "@aku11i/phantom-shared";
 const execInWorktreeMock = mock.fn();
 const consoleLogMock = mock.fn();
 
-mock.module("../exec.ts", {
+mock.module("./exec.ts", {
   namedExports: {
     execInWorktree: execInWorktreeMock,
   },
@@ -35,7 +35,10 @@ describe("executePostCreateCommands", () => {
     deepStrictEqual(result.value.executedCommands, ["echo 'test'", "ls"]);
     deepStrictEqual(execInWorktreeMock.mock.calls.length, 2);
     deepStrictEqual(consoleLogMock.mock.calls.length, 2);
-    deepStrictEqual(consoleLogMock.mock.calls[0].arguments[0], "Executing: echo 'test'");
+    deepStrictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Executing: echo 'test'",
+    );
     deepStrictEqual(consoleLogMock.mock.calls[1].arguments[0], "Executing: ls");
     deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[3], [
       process.env.SHELL || "/bin/sh",

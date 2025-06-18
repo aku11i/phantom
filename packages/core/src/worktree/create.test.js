@@ -50,6 +50,9 @@ mock.module("./validate.ts", {
   namedExports: {
     validateWorktreeDoesNotExist: validateWorktreeDoesNotExistMock,
     validateWorktreeName: validateWorktreeNameMock,
+    validateWorktreeExists: mock.fn(() =>
+      Promise.resolve({ ok: true, value: { path: "/mock/path" } }),
+    ),
   },
 });
 

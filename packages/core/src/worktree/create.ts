@@ -5,6 +5,10 @@ import { getWorktreePathFromDirectory } from "../paths.ts";
 import { type WorktreeAlreadyExistsError, WorktreeError } from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";
 import {
+  copyFilesToWorktree,
+  executePostCreateCommands,
+} from "./post-create.ts";
+import {
   validateWorktreeDoesNotExist,
   validateWorktreeName,
 } from "./validate.ts";
@@ -28,6 +32,9 @@ export async function createWorktree(
   worktreeDirectory: string,
   name: string,
   options: CreateWorktreeOptions,
+  config?: {
+    postCreate?: { copyFiles?: string[]; commands?: string[] };
+  } | null,
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | WorktreeError>
 > {
@@ -78,6 +85,42 @@ export async function createWorktree(
         skippedFiles = copyResult.value.skippedFiles;
       } else {
         copyError = copyResult.error.message;
+      }
+    }
+
+    // Execute postCreate hooks from config
+    if (config?.postCreate) {
+      // Copy files from config
+      if (
+        config.postCreate.copyFiles &&
+        config.postCreate.copyFiles.length > 0
+      ) {
+        const copyConfigResult = await copyFilesToWorktree(
+          gitRoot,
+          worktreeDirectory,
+          name,
+          config.postCreate.copyFiles,
+        );
+        if (isErr(copyConfigResult)) {
+          // Don't fail worktree creation, just warn
+          if (!copyError) {
+            copyError = copyConfigResult.error.message;
+          }
+        }
+      }
+
+      // Execute commands from config
+      if (config.postCreate.commands && config.postCreate.commands.length > 0) {
+        console.log("\nRunning post-create commands...");
+        const commandsResult = await executePostCreateCommands({
+          gitRoot,
+          worktreesDirectory: worktreeDirectory,
+          worktreeName: name,
+          commands: config.postCreate.commands,
+        });
+        if (isErr(commandsResult)) {
+          return err(new WorktreeError(commandsResult.error.message));
+        }
       }
     }
 

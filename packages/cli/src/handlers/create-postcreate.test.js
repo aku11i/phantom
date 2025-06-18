@@ -10,7 +10,6 @@ const outputLogMock = mock.fn();
 const outputErrorMock = mock.fn();
 const getGitRootMock = mock.fn();
 const createWorktreeMock = mock.fn();
-const executePostCreateCommandsMock = mock.fn();
 const createContextMock = mock.fn();
 
 mock.module("../errors.ts", {
@@ -46,7 +45,6 @@ mock.module("@aku11i/phantom-core", {
     ConfigValidationError: class ConfigValidationError extends Error {},
     WorktreeAlreadyExistsError: class WorktreeAlreadyExistsError extends Error {},
     createWorktree: createWorktreeMock,
-    executePostCreateCommands: executePostCreateCommandsMock,
     createContext: createContextMock,
     execInWorktree: mock.fn(),
     shellInWorktree: mock.fn(),
@@ -64,13 +62,12 @@ mock.module("@aku11i/phantom-process", {
 const { createHandler } = await import("./create.ts");
 
 describe("createHandler postCreate", () => {
-  it("should use executePostCreateCommands for command execution", async () => {
+  it("should pass config to createWorktree for postCreate execution", async () => {
     exitWithErrorMock.mock.resetCalls();
     outputLogMock.mock.resetCalls();
     outputErrorMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
-    executePostCreateCommandsMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
@@ -94,33 +91,30 @@ describe("createHandler postCreate", () => {
         }),
       ),
     );
-    executePostCreateCommandsMock.mock.mockImplementation(() =>
-      Promise.resolve(ok({ executedCommands: ["npm install", "npm test"] })),
-    );
 
     await rejects(
       async () => await createHandler(["feature"]),
       /Exit with success/,
     );
 
-    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 1);
-    deepStrictEqual(executePostCreateCommandsMock.mock.calls[0].arguments[0], {
-      gitRoot: "/repo",
-      worktreesDirectory: "/repo/.git/phantom/worktrees",
-      worktreeName: "feature",
-      commands: ["npm install", "npm test"],
+    // Verify that createWorktree was called with config
+    deepStrictEqual(createWorktreeMock.mock.calls.length, 1);
+    const [gitRoot, worktreeDirectory, name, options, config] =
+      createWorktreeMock.mock.calls[0].arguments;
+    deepStrictEqual(gitRoot, "/repo");
+    deepStrictEqual(worktreeDirectory, "/repo/.git/phantom/worktrees");
+    deepStrictEqual(name, "feature");
+    deepStrictEqual(config, {
+      postCreate: {
+        commands: ["npm install", "npm test"],
+      },
     });
-    deepStrictEqual(
-      outputLogMock.mock.calls[1].arguments[0],
-      "\nRunning post-create commands...",
-    );
   });
 
-  it("should exit with error if executePostCreateCommands fails", async () => {
+  it("should exit with error if createWorktree fails due to postCreate", async () => {
     exitWithErrorMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
-    executePostCreateCommandsMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
@@ -135,15 +129,8 @@ describe("createHandler postCreate", () => {
         },
       }),
     );
+    // createWorktree now handles postCreate internally and returns error
     createWorktreeMock.mock.mockImplementation(() =>
-      Promise.resolve(
-        ok({
-          message: "Created worktree 'feature'",
-          path: "/repo/.git/phantom/worktrees/feature",
-        }),
-      ),
-    );
-    executePostCreateCommandsMock.mock.mockImplementation(() =>
       Promise.resolve(
         err(
           new Error(
@@ -164,12 +151,11 @@ describe("createHandler postCreate", () => {
     ]);
   });
 
-  it("should not execute postCreate commands if config has no commands", async () => {
+  it("should pass config with only copyFiles to createWorktree", async () => {
     exitWithErrorMock.mock.resetCalls();
     outputLogMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
-    executePostCreateCommandsMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
@@ -198,13 +184,14 @@ describe("createHandler postCreate", () => {
       /Exit with success/,
     );
 
-    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 0);
-    const logMessages = outputLogMock.mock.calls.map(
-      (call) => call.arguments[0],
-    );
-    deepStrictEqual(
-      logMessages.includes("\nRunning post-create commands..."),
-      false,
-    );
+    // Verify that createWorktree was called with correct config
+    deepStrictEqual(createWorktreeMock.mock.calls.length, 1);
+    const [gitRoot, worktreeDirectory, name, options, config] =
+      createWorktreeMock.mock.calls[0].arguments;
+    deepStrictEqual(config, {
+      postCreate: {
+        copyFiles: [".env"],
+      },
+    });
   });
 });

@@ -62,6 +62,7 @@ export async function checkoutPullRequest(
     context.gitRoot,
     context.worktreesDirectory,
     worktreeName,
+    context.config,
   );
 
   if (isErr(attachResult)) {

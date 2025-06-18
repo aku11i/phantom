@@ -9,10 +9,6 @@ const exitWithErrorMock = mock.fn((message, code) => {
 const outputLogMock = mock.fn();
 const outputErrorMock = mock.fn();
 const githubCheckoutMock = mock.fn();
-const getGitRootMock = mock.fn();
-const createContextMock = mock.fn();
-const copyFilesToWorktreeMock = mock.fn();
-const executePostCreateCommandsMock = mock.fn();
 
 mock.module("../errors.ts", {
   namedExports: {
@@ -36,35 +32,14 @@ mock.module("@aku11i/phantom-github", {
   },
 });
 
-mock.module("@aku11i/phantom-git", {
-  namedExports: {
-    getGitRoot: getGitRootMock,
-  },
-});
-
-mock.module("@aku11i/phantom-core", {
-  namedExports: {
-    ConfigNotFoundError,
-    ConfigParseError: class ConfigParseError extends Error {},
-    ConfigValidationError: class ConfigValidationError extends Error {},
-    copyFilesToWorktree: copyFilesToWorktreeMock,
-    createContext: createContextMock,
-    executePostCreateCommands: executePostCreateCommandsMock,
-  },
-});
-
 const { githubCheckoutHandler } = await import("./github-checkout.ts");
 
-describe("githubCheckoutHandler postCreate", () => {
-  it("should execute postCreate commands and copy files after successful checkout", async () => {
+describe("githubCheckoutHandler", () => {
+  it("should call githubCheckout with correct options", async () => {
     exitWithErrorMock.mock.resetCalls();
     outputLogMock.mock.resetCalls();
     outputErrorMock.mock.resetCalls();
     githubCheckoutMock.mock.resetCalls();
-    getGitRootMock.mock.resetCalls();
-    createContextMock.mock.resetCalls();
-    copyFilesToWorktreeMock.mock.resetCalls();
-    executePostCreateCommandsMock.mock.resetCalls();
 
     githubCheckoutMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -75,32 +50,14 @@ describe("githubCheckoutHandler postCreate", () => {
         }),
       ),
     );
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
-    createContextMock.mock.mockImplementation((gitRoot) =>
-      Promise.resolve({
-        gitRoot,
-        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-        config: {
-          postCreate: {
-            copyFiles: [".env", "config.json"],
-            commands: ["npm install", "npm run build"],
-          },
-        },
-      }),
-    );
-    copyFilesToWorktreeMock.mock.mockImplementation(() =>
-      Promise.resolve(ok(undefined)),
-    );
-    executePostCreateCommandsMock.mock.mockImplementation(() =>
-      Promise.resolve(
-        ok({ executedCommands: ["npm install", "npm run build"] }),
-      ),
-    );
 
     await githubCheckoutHandler(["123"]);
 
+    // Verify that githubCheckout was called with options only
+    // The github library internally creates context and handles postCreate
     deepStrictEqual(githubCheckoutMock.mock.calls.length, 1);
-    deepStrictEqual(githubCheckoutMock.mock.calls[0].arguments[0], {
+    const [options] = githubCheckoutMock.mock.calls[0].arguments;
+    deepStrictEqual(options, {
       number: "123",
       base: undefined,
     });
@@ -108,30 +65,12 @@ describe("githubCheckoutHandler postCreate", () => {
       outputLogMock.mock.calls[0].arguments[0],
       "Checked out issue #123",
     );
-    deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 1);
-    deepStrictEqual(copyFilesToWorktreeMock.mock.calls[0].arguments, [
-      "/repo",
-      "/repo/.git/phantom/worktrees",
-      "issue-123",
-      [".env", "config.json"],
-    ]);
-    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 1);
-    deepStrictEqual(executePostCreateCommandsMock.mock.calls[0].arguments[0], {
-      gitRoot: "/repo",
-      worktreesDirectory: "/repo/.git/phantom/worktrees",
-      worktreeName: "issue-123",
-      commands: ["npm install", "npm run build"],
-    });
   });
 
-  it("should skip postCreate if worktree already exists", async () => {
+  it("should handle existing worktree response", async () => {
     exitWithErrorMock.mock.resetCalls();
     outputLogMock.mock.resetCalls();
     githubCheckoutMock.mock.resetCalls();
-    getGitRootMock.mock.resetCalls();
-    createContextMock.mock.resetCalls();
-    copyFilesToWorktreeMock.mock.resetCalls();
-    executePostCreateCommandsMock.mock.resetCalls();
 
     githubCheckoutMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -151,10 +90,6 @@ describe("githubCheckoutHandler postCreate", () => {
       outputLogMock.mock.calls[0].arguments[0],
       "Worktree for PR #456 is already checked out",
     );
-    deepStrictEqual(getGitRootMock.mock.calls.length, 0);
-    deepStrictEqual(createContextMock.mock.calls.length, 0);
-    deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 0);
-    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 0);
   });
 
   it("should handle githubCheckout error", async () => {
@@ -179,8 +114,6 @@ describe("githubCheckoutHandler postCreate", () => {
   it("should pass base option to githubCheckout", async () => {
     exitWithErrorMock.mock.resetCalls();
     githubCheckoutMock.mock.resetCalls();
-    getGitRootMock.mock.resetCalls();
-    createContextMock.mock.resetCalls();
 
     githubCheckoutMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -190,14 +123,6 @@ describe("githubCheckoutHandler postCreate", () => {
           path: "/repo/.git/phantom/worktrees/issue-123",
         }),
       ),
-    );
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
-    createContextMock.mock.mockImplementation((gitRoot) =>
-      Promise.resolve({
-        gitRoot,
-        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-        config: null,
-      }),
     );
 
     await githubCheckoutHandler(["123", "--base", "develop"]);
@@ -208,15 +133,11 @@ describe("githubCheckoutHandler postCreate", () => {
     });
   });
 
-  it("should handle config not found gracefully", async () => {
+  it("should work correctly", async () => {
     exitWithErrorMock.mock.resetCalls();
     outputLogMock.mock.resetCalls();
     outputErrorMock.mock.resetCalls();
     githubCheckoutMock.mock.resetCalls();
-    getGitRootMock.mock.resetCalls();
-    createContextMock.mock.resetCalls();
-    copyFilesToWorktreeMock.mock.resetCalls();
-    executePostCreateCommandsMock.mock.resetCalls();
 
     githubCheckoutMock.mock.mockImplementation(() =>
       Promise.resolve(
@@ -227,19 +148,16 @@ describe("githubCheckoutHandler postCreate", () => {
         }),
       ),
     );
-    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
-    createContextMock.mock.mockImplementation((gitRoot) =>
-      Promise.resolve({
-        gitRoot,
-        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-        config: null,
-      }),
-    );
 
     await githubCheckoutHandler(["123"]);
 
-    deepStrictEqual(copyFilesToWorktreeMock.mock.calls.length, 0);
-    deepStrictEqual(executePostCreateCommandsMock.mock.calls.length, 0);
+    // Verify that githubCheckout was called with options only
+    deepStrictEqual(githubCheckoutMock.mock.calls.length, 1);
+    const [options] = githubCheckoutMock.mock.calls[0].arguments;
+    deepStrictEqual(options, {
+      number: "123",
+      base: undefined,
+    });
     deepStrictEqual(outputErrorMock.mock.calls.length, 0);
   });
 });
