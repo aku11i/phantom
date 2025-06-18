@@ -17,8 +17,8 @@ export async function attachWorktreeCore(
   gitRoot: string,
   worktreeDirectory: string,
   name: string,
-  postCreateCopyFiles?: string[],
-  postCreateCommands?: string[],
+  postCreateCopyFiles: string[] | undefined,
+  postCreateCommands: string[] | undefined,
 ): Promise<Result<string, Error>> {
   const validation = validateWorktreeName(name);
   if (isErr(validation)) {

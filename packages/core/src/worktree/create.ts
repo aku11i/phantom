@@ -32,8 +32,8 @@ export async function createWorktree(
   worktreeDirectory: string,
   name: string,
   options: CreateWorktreeOptions,
-  postCreateCopyFiles?: string[],
-  postCreateCommands?: string[],
+  postCreateCopyFiles: string[] | undefined,
+  postCreateCommands: string[] | undefined,
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | WorktreeError>
 > {
