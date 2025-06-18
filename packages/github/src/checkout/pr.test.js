@@ -5,6 +5,10 @@ const getGitRootMock = mock.fn();
 const fetchMock = mock.fn();
 const attachWorktreeCoreMock = mock.fn();
 const setUpstreamBranchMock = mock.fn();
+const loadConfigMock = mock.fn();
+const getWorktreesDirectoryMock = mock.fn((gitRoot, worktreesDirectory) => {
+  return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
+});
 
 // Mock the WorktreeAlreadyExistsError class
 class MockWorktreeAlreadyExistsError extends Error {
@@ -26,6 +30,8 @@ mock.module("@aku11i/phantom-core", {
   namedExports: {
     attachWorktreeCore: attachWorktreeCoreMock,
     WorktreeAlreadyExistsError: MockWorktreeAlreadyExistsError,
+    loadConfig: loadConfigMock,
+    getWorktreesDirectory: getWorktreesDirectoryMock,
   },
 });
 
@@ -68,6 +74,10 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     fetchMock.mock.mockImplementation(async () => ({
       ok: true,
       value: undefined,
@@ -134,6 +144,10 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     fetchMock.mock.mockImplementation(async () => ({
       ok: true,
       value: undefined,
@@ -178,6 +192,10 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     fetchMock.mock.mockImplementation(async () => ({
       ok: true,
       value: undefined,
@@ -222,6 +240,10 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     fetchMock.mock.mockImplementation(async () => ({
       ok: true,
       value: undefined,
@@ -263,6 +285,10 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     fetchMock.mock.mockImplementation(async () => ({
       ok: true,
       value: undefined,
@@ -320,6 +346,10 @@ describe("checkoutPullRequest", () => {
     };
 
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     fetchMock.mock.mockImplementation(async () => ({
       ok: false,
       error: new Error("Could not find remote ref"),

@@ -4,6 +4,7 @@ import {
   ConfigParseError,
   ConfigValidationError,
   WorktreeAlreadyExistsError,
+  createContext,
   createWorktree as createWorktreeCore,
   execInWorktree,
   loadConfig,
@@ -16,7 +17,6 @@ import {
   isInsideTmux,
 } from "@aku11i/phantom-process";
 import { isErr, isOk } from "@aku11i/phantom-shared";
-import { createContext } from "../context.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 

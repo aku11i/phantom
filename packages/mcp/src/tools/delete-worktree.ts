@@ -1,8 +1,11 @@
-import { deleteWorktree } from "@aku11i/phantom-core";
+import {
+  deleteWorktree,
+  getWorktreesDirectory,
+  loadConfig,
+} from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
-import { createContext } from "../context.ts";
 import type { Tool } from "./types.ts";
 
 const schema = z.object({
@@ -19,15 +22,14 @@ export const deleteWorktreeTool: Tool<typeof schema> = {
   inputSchema: schema,
   handler: async ({ name, force }) => {
     const gitRoot = await getGitRoot();
-    const context = await createContext(gitRoot);
-    const result = await deleteWorktree(
-      context.gitRoot,
-      context.worktreesDirectory,
-      name,
-      {
-        force,
-      },
-    );
+    const configResult = await loadConfig(gitRoot);
+    const worktreesDirectory = isOk(configResult)
+      ? configResult.value.worktreesDirectory
+      : undefined;
+    const worktreesPath = getWorktreesDirectory(gitRoot, worktreesDirectory);
+    const result = await deleteWorktree(gitRoot, worktreesPath, name, {
+      force,
+    });
 
     if (!isOk(result)) {
       throw new Error(result.error.message);

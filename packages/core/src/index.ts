@@ -1,3 +1,4 @@
+export * from "./context.ts";
 export * from "./paths.ts";
 export * from "./config/loader.ts";
 export * from "./config/validate.ts";

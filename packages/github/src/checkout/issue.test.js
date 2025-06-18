@@ -4,6 +4,10 @@ import { describe, it, mock } from "node:test";
 const getGitRootMock = mock.fn();
 const createWorktreeCoreMock = mock.fn();
 const isPullRequestMock = mock.fn();
+const loadConfigMock = mock.fn();
+const getWorktreesDirectoryMock = mock.fn((gitRoot, worktreesDirectory) => {
+  return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
+});
 
 // Mock the WorktreeAlreadyExistsError class
 class MockWorktreeAlreadyExistsError extends Error {
@@ -23,6 +27,8 @@ mock.module("@aku11i/phantom-core", {
   namedExports: {
     createWorktree: createWorktreeCoreMock,
     WorktreeAlreadyExistsError: MockWorktreeAlreadyExistsError,
+    loadConfig: loadConfigMock,
+    getWorktreesDirectory: getWorktreesDirectoryMock,
   },
 });
 
@@ -95,6 +101,10 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
       value: {
@@ -139,6 +149,10 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
       value: {
@@ -167,6 +181,10 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: false,
       error: new MockWorktreeAlreadyExistsError("Worktree already exists"),
@@ -212,6 +230,10 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    loadConfigMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: { message: "Config not found" },
+    }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
       value: {

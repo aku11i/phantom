@@ -1,11 +1,11 @@
 import { parseArgs } from "node:util";
 import {
+  createContext,
   selectWorktreeWithFzf,
   whereWorktree as whereWorktreeCore,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isErr } from "@aku11i/phantom-shared";
-import { createContext } from "../context.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 

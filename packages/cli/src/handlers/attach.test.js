@@ -46,6 +46,12 @@ mock.module("@aku11i/phantom-core", {
     WorktreeAlreadyExistsError,
     shellInWorktree: shellInWorktreeMock,
     execInWorktree: execInWorktreeMock,
+    createContext: mock.fn((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+      }),
+    ),
     loadConfig: mock.fn(() =>
       Promise.resolve({ ok: false, error: new Error("Config not found") }),
     ),

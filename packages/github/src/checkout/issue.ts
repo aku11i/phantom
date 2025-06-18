@@ -1,12 +1,13 @@
+import { join } from "node:path";
 import {
   WorktreeAlreadyExistsError,
   createWorktree as createWorktreeCore,
+  getWorktreesDirectory,
+  loadConfig,
 } from "@aku11i/phantom-core";
-import { getWorktreePathFromDirectory } from "@aku11i/phantom-core/src/paths.ts";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
 import { type GitHubIssue, isPullRequest } from "../api/index.ts";
-import { createContext } from "../context.ts";
 import type { CheckoutResult } from "./pr.ts";
 
 export async function checkoutIssue(
@@ -22,17 +23,18 @@ export async function checkoutIssue(
   }
 
   const gitRoot = await getGitRoot();
-  const context = await createContext(gitRoot);
+  const configResult = await loadConfig(gitRoot);
+  const worktreesDirectory = isErr(configResult)
+    ? undefined
+    : configResult.value.worktreesDirectory;
+  const worktreesPath = getWorktreesDirectory(gitRoot, worktreesDirectory);
   const worktreeName = `issue-${issue.number}`;
   const branchName = `issue-${issue.number}`;
-  const worktreePath = getWorktreePathFromDirectory(
-    context.worktreesDirectory,
-    worktreeName,
-  );
+  const worktreePath = join(worktreesPath, worktreeName);
 
   const result = await createWorktreeCore(
-    context.gitRoot,
-    context.worktreesDirectory,
+    gitRoot,
+    worktreesPath,
     worktreeName,
     {
       branch: branchName,

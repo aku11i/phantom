@@ -1,9 +1,6 @@
-import {
-  type PhantomConfig,
-  getWorktreesDirectory,
-  loadConfig,
-} from "@aku11i/phantom-core";
 import { isOk } from "@aku11i/phantom-shared";
+import { loadConfig } from "./config/loader.ts";
+import { getWorktreesDirectory } from "./paths.ts";
 
 export interface Context {
   gitRoot: string;

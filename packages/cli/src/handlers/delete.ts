@@ -2,12 +2,12 @@ import { parseArgs } from "node:util";
 import {
   WorktreeError,
   WorktreeNotFoundError,
+  createContext,
   deleteWorktree as deleteWorktreeCore,
   selectWorktreeWithFzf,
 } from "@aku11i/phantom-core";
 import { getCurrentWorktree, getGitRoot } from "@aku11i/phantom-git";
 import { isErr } from "@aku11i/phantom-shared";
-import { createContext } from "../context.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 

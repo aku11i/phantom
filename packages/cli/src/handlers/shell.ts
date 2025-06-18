@@ -1,6 +1,7 @@
 import { parseArgs } from "node:util";
 import {
   WorktreeNotFoundError,
+  createContext,
   selectWorktreeWithFzf,
   shellInWorktree as shellInWorktreeCore,
   validateWorktreeExists,
@@ -12,7 +13,6 @@ import {
   isInsideTmux,
 } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
-import { createContext } from "../context.ts";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 

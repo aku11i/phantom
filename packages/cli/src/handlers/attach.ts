@@ -3,12 +3,12 @@ import {
   BranchNotFoundError,
   WorktreeAlreadyExistsError,
   attachWorktreeCore,
+  createContext,
   execInWorktree,
   shellInWorktree,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isErr } from "@aku11i/phantom-shared";
-import { createContext } from "../context.ts";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 
