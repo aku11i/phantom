@@ -32,7 +32,7 @@ export async function listHandler(args: string[] = []): Promise<void> {
     if (values.fzf) {
       const selectResult = await selectWorktreeWithFzf(
         context.gitRoot,
-        context.worktreeDirectory,
+        context.worktreesDirectory,
       );
 
       if (isErr(selectResult)) {
@@ -45,7 +45,7 @@ export async function listHandler(args: string[] = []): Promise<void> {
     } else {
       const result = await listWorktreesCore(
         context.gitRoot,
-        context.worktreeDirectory,
+        context.worktreesDirectory,
       );
 
       if (isErr(result)) {

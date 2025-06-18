@@ -3,8 +3,8 @@ import { describe, it, mock } from "node:test";
 import { z } from "zod";
 
 const createWorktreeMock = mock.fn();
-const getWorktreeDirectoryMock = mock.fn((gitRoot, worktreeBaseDirectory) => {
-  return worktreeBaseDirectory || `${gitRoot}/.git/phantom/worktrees`;
+const getWorktreesDirectoryMock = mock.fn((gitRoot, worktreesDirectory) => {
+  return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
 });
 const getGitRootMock = mock.fn();
 const isOkMock = mock.fn((result) => {
@@ -16,7 +16,7 @@ const errMock = mock.fn((error) => ({ ok: false, error }));
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     createWorktree: createWorktreeMock,
-    getWorktreeDirectory: getWorktreeDirectoryMock,
+    getWorktreesDirectory: getWorktreesDirectoryMock,
   },
 });
 

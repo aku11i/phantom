@@ -100,7 +100,7 @@ export async function execHandler(args: string[]): Promise<void> {
     if (useFzf) {
       const selectResult = await selectWorktreeWithFzf(
         context.gitRoot,
-        context.worktreeDirectory,
+        context.worktreesDirectory,
       );
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
@@ -116,7 +116,7 @@ export async function execHandler(args: string[]): Promise<void> {
     // Validate worktree exists
     const validation = await validateWorktreeExists(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       worktreeName,
     );
     if (isErr(validation)) {
@@ -155,7 +155,7 @@ export async function execHandler(args: string[]): Promise<void> {
 
     const result = await execInWorktreeCore(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       worktreeName,
       commandArgs,
       { interactive: true },

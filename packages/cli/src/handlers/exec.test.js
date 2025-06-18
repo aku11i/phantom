@@ -55,8 +55,8 @@ mock.module("@aku11i/phantom-core", {
     loadConfig: mock.fn(() =>
       Promise.resolve({ ok: false, error: new Error("Config not found") }),
     ),
-    getWorktreeDirectory: mock.fn((gitRoot, worktreeBaseDirectory) => {
-      return worktreeBaseDirectory || `${gitRoot}/.git/phantom/worktrees`;
+    getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
+      return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
     }),
   },
 });

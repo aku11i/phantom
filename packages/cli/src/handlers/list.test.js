@@ -33,8 +33,8 @@ mock.module("@aku11i/phantom-core", {
     listWorktrees: listWorktreesCoreMock,
     selectWorktreeWithFzf: selectWorktreeWithFzfMock,
     loadConfig: loadConfigMock,
-    getWorktreeDirectory: mock.fn((gitRoot, worktreeBaseDirectory) => {
-      return worktreeBaseDirectory || `${gitRoot}/.git/phantom/worktrees`;
+    getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
+      return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
     }),
   },
 });

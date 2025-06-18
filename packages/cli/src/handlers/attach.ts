@@ -50,7 +50,7 @@ export async function attachHandler(args: string[]): Promise<void> {
 
   const result = await attachWorktreeCore(
     context.gitRoot,
-    context.worktreeDirectory,
+    context.worktreesDirectory,
     branchName,
   );
 
@@ -71,7 +71,7 @@ export async function attachHandler(args: string[]): Promise<void> {
   if (values.shell) {
     const shellResult = await shellInWorktree(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       branchName,
     );
     if (isErr(shellResult)) {
@@ -81,7 +81,7 @@ export async function attachHandler(args: string[]): Promise<void> {
     const shell = process.env.SHELL || "/bin/sh";
     const execResult = await execInWorktree(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       branchName,
       [shell, "-c", values.exec],
       { interactive: true },

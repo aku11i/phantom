@@ -60,12 +60,12 @@ export async function checkoutPullRequest(
   // Attach the worktree to the fetched branch
   const attachResult = await attachWorktreeCore(
     context.gitRoot,
-    context.worktreeDirectory,
+    context.worktreesDirectory,
     worktreeName,
   );
 
   const worktreePath = getWorktreePathFromDirectory(
-    context.worktreeDirectory,
+    context.worktreesDirectory,
     worktreeName,
   );
 

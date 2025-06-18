@@ -26,13 +26,13 @@ export async function checkoutIssue(
   const worktreeName = `issue-${issue.number}`;
   const branchName = `issue-${issue.number}`;
   const worktreePath = getWorktreePathFromDirectory(
-    context.worktreeDirectory,
+    context.worktreesDirectory,
     worktreeName,
   );
 
   const result = await createWorktreeCore(
     context.gitRoot,
-    context.worktreeDirectory,
+    context.worktreesDirectory,
     worktreeName,
     {
       branch: branchName,

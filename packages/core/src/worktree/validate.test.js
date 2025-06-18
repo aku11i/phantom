@@ -2,21 +2,21 @@ import { deepStrictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 
 const accessMock = mock.fn();
-const getWorktreeDirectoryMock = mock.fn((gitRoot, worktreeBaseDirectory) => {
-  if (worktreeBaseDirectory) {
-    if (worktreeBaseDirectory.startsWith("/")) {
-      return worktreeBaseDirectory;
+const getWorktreesDirectoryMock = mock.fn((gitRoot, worktreesDirectory) => {
+  if (worktreesDirectory) {
+    if (worktreesDirectory.startsWith("/")) {
+      return worktreesDirectory;
     }
-    return `${gitRoot}/${worktreeBaseDirectory}`;
+    return `${gitRoot}/${worktreesDirectory}`;
   }
   return `${gitRoot}/.git/phantom/worktrees`;
 });
-const getWorktreePathMock = mock.fn((gitRoot, name, worktreeBaseDirectory) => {
-  if (worktreeBaseDirectory) {
-    if (worktreeBaseDirectory.startsWith("/")) {
-      return `${worktreeBaseDirectory}/${name}`;
+const getWorktreePathMock = mock.fn((gitRoot, name, worktreesDirectory) => {
+  if (worktreesDirectory) {
+    if (worktreesDirectory.startsWith("/")) {
+      return `${worktreesDirectory}/${name}`;
     }
-    return `${gitRoot}/${worktreeBaseDirectory}/${name}`;
+    return `${gitRoot}/${worktreesDirectory}/${name}`;
   }
   return `${gitRoot}/.git/phantom/worktrees/${name}`;
 });
@@ -33,7 +33,7 @@ mock.module("node:fs/promises", {
 
 mock.module("../paths.ts", {
   namedExports: {
-    getWorktreeDirectory: getWorktreeDirectoryMock,
+    getWorktreesDirectory: getWorktreesDirectoryMock,
     getWorktreePath: getWorktreePathMock,
     getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
   },
@@ -47,7 +47,7 @@ const { isOk, isErr } = await import("@aku11i/phantom-shared");
 describe("validateWorktreeExists", () => {
   const resetMocks = () => {
     accessMock.mock.resetCalls();
-    getWorktreeDirectoryMock.mock.resetCalls();
+    getWorktreesDirectoryMock.mock.resetCalls();
     getWorktreePathMock.mock.resetCalls();
     getWorktreePathFromDirectoryMock.mock.resetCalls();
   };
@@ -104,7 +104,7 @@ describe("validateWorktreeExists", () => {
 describe("validateWorktreeDoesNotExist", () => {
   const resetMocks = () => {
     accessMock.mock.resetCalls();
-    getWorktreeDirectoryMock.mock.resetCalls();
+    getWorktreesDirectoryMock.mock.resetCalls();
     getWorktreePathMock.mock.resetCalls();
     getWorktreePathFromDirectoryMock.mock.resetCalls();
   };

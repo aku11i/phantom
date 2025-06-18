@@ -4,7 +4,7 @@
 
 - [Configuration File](#configuration-file)
 - [Configuration Options](#configuration-options)
-  - [worktreeBaseDirectory](#worktreebasedirectory)
+  - [worktreesDirectory](#worktreebasedirectory)
   - [postCreate.copyFiles](#postcreatecopyfiles)
   - [postCreate.commands](#postcreatecommands)
 
@@ -16,7 +16,7 @@ Create a `phantom.config.json` file in your repository root:
 
 ```json
 {
-  "worktreeBaseDirectory": "../phantom-worktrees",
+  "worktreesDirectory": "../phantom-worktrees",
   "postCreate": {
     "copyFiles": [
       ".env",
@@ -33,9 +33,9 @@ Create a `phantom.config.json` file in your repository root:
 
 ## Configuration Options
 
-### worktreeBaseDirectory
+### worktreesDirectory
 
-A custom base directory where Phantom worktrees will be created. By default, Phantom creates all worktrees in `.git/phantom/worktrees/`, but you can customize this location using the `worktreeBaseDirectory` option.
+A custom base directory where Phantom worktrees will be created. By default, Phantom creates all worktrees in `.git/phantom/worktrees/`, but you can customize this location using the `worktreesDirectory` option.
 
 **Use Cases:**
 - Store worktrees outside the main repository directory
@@ -48,7 +48,7 @@ A custom base directory where Phantom worktrees will be created. By default, Pha
 **Relative path (relative to repository root):**
 ```json
 {
-  "worktreeBaseDirectory": "../phantom-worktrees"
+  "worktreesDirectory": "../phantom-worktrees"
 }
 ```
 This creates worktrees directly in `../phantom-worktrees/` (e.g., `../phantom-worktrees/feature-1`)
@@ -56,13 +56,13 @@ This creates worktrees directly in `../phantom-worktrees/` (e.g., `../phantom-wo
 **Absolute path:**
 ```json
 {
-  "worktreeBaseDirectory": "/tmp/my-phantom-worktrees"
+  "worktreesDirectory": "/tmp/my-phantom-worktrees"
 }
 ```
 This creates worktrees directly in `/tmp/my-phantom-worktrees/` (e.g., `/tmp/my-phantom-worktrees/feature-1`)
 
 **Directory Structure:**
-With `worktreeBaseDirectory` set to `../phantom-worktrees`, your directory structure will look like:
+With `worktreesDirectory` set to `../phantom-worktrees`, your directory structure will look like:
 
 ```
 parent-directory/
@@ -77,11 +77,11 @@ parent-directory/
 ```
 
 **Notes:**
-- If `worktreeBaseDirectory` is not specified, defaults to `.git/phantom/worktrees`
+- If `worktreesDirectory` is not specified, defaults to `.git/phantom/worktrees`
 - Relative paths are resolved from the repository root
 - Absolute paths are used as-is
 - The directory will be created automatically if it doesn't exist
-- When worktreeBaseDirectory is specified, worktrees are created directly in that directory
+- When worktreesDirectory is specified, worktrees are created directly in that directory
 
 ### postCreate.copyFiles
 

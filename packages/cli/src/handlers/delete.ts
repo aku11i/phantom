@@ -74,7 +74,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
     } else if (useFzf) {
       const selectResult = await selectWorktreeWithFzf(
         context.gitRoot,
-        context.worktreeDirectory,
+        context.worktreesDirectory,
       );
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
@@ -89,7 +89,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
 
     const result = await deleteWorktreeCore(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       worktreeName,
       {
         force: forceDelete,

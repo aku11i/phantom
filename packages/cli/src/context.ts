@@ -1,21 +1,23 @@
 import {
   type PhantomConfig,
-  getWorktreeDirectory,
+  getWorktreesDirectory,
   loadConfig,
 } from "@aku11i/phantom-core";
 import { isOk } from "@aku11i/phantom-shared";
 
 export interface Context {
   gitRoot: string;
-  worktreeDirectory: string;
+  worktreesDirectory: string;
 }
 
 export async function createContext(gitRoot: string): Promise<Context> {
   const configResult = await loadConfig(gitRoot);
-  const worktreeBaseDirectory = isOk(configResult) ? configResult.value.worktreeBaseDirectory : undefined;
+  const worktreesDirectory = isOk(configResult)
+    ? configResult.value.worktreesDirectory
+    : undefined;
 
   return {
     gitRoot,
-    worktreeDirectory: getWorktreeDirectory(gitRoot, worktreeBaseDirectory),
+    worktreesDirectory: getWorktreesDirectory(gitRoot, worktreesDirectory),
   };
 }

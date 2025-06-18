@@ -140,7 +140,7 @@ export async function createHandler(args: string[]): Promise<void> {
 
     const result = await createWorktreeCore(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       worktreeName,
       {
         copyFiles: filesToCopy.length > 0 ? filesToCopy : undefined,
@@ -174,7 +174,7 @@ export async function createHandler(args: string[]): Promise<void> {
         const shell = process.env.SHELL || "/bin/sh";
         const cmdResult = await execInWorktree(
           context.gitRoot,
-          context.worktreeDirectory,
+          context.worktreesDirectory,
           worktreeName,
           [shell, "-c", command],
         );
@@ -206,7 +206,7 @@ export async function createHandler(args: string[]): Promise<void> {
       const shell = process.env.SHELL || "/bin/sh";
       const execResult = await execInWorktree(
         context.gitRoot,
-        context.worktreeDirectory,
+        context.worktreesDirectory,
         worktreeName,
         [shell, "-c", execCommand],
         { interactive: true },
@@ -232,7 +232,7 @@ export async function createHandler(args: string[]): Promise<void> {
 
       const shellResult = await shellInWorktree(
         context.gitRoot,
-        context.worktreeDirectory,
+        context.worktreesDirectory,
         worktreeName,
       );
 

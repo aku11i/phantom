@@ -16,7 +16,7 @@ export const listWorktreesTool: Tool<typeof schema> = {
     const context = await createContext(gitRoot);
     const result = await listWorktrees(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
     );
 
     if (!isOk(result)) {

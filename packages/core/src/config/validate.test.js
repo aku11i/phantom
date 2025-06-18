@@ -89,9 +89,9 @@ describe("validateConfig", () => {
     }
   });
 
-  test("should accept config with worktreeBaseDirectory", () => {
+  test("should accept config with worktreesDirectory", () => {
     const config = {
-      worktreeBaseDirectory: "../phantom-worktrees",
+      worktreesDirectory: "../phantom-worktrees",
     };
 
     const result = validateConfig(config);
@@ -102,9 +102,9 @@ describe("validateConfig", () => {
     }
   });
 
-  test("should accept config with absolute worktreeBaseDirectory", () => {
+  test("should accept config with absolute worktreesDirectory", () => {
     const config = {
-      worktreeBaseDirectory: "/tmp/phantom-worktrees",
+      worktreesDirectory: "/tmp/phantom-worktrees",
     };
 
     const result = validateConfig(config);
@@ -115,9 +115,9 @@ describe("validateConfig", () => {
     }
   });
 
-  test("should accept config with worktreeBaseDirectory and postCreate", () => {
+  test("should accept config with worktreesDirectory and postCreate", () => {
     const config = {
-      worktreeBaseDirectory: "../custom-phantom",
+      worktreesDirectory: "../custom-phantom",
       postCreate: {
         copyFiles: [".env"],
         commands: ["pnpm install"],
@@ -476,67 +476,67 @@ describe("validateConfig", () => {
       }
     });
 
-    test("should reject when worktreeBaseDirectory is number", () => {
-      const result = validateConfig({ worktreeBaseDirectory: 123 });
+    test("should reject when worktreesDirectory is number", () => {
+      const result = validateConfig({ worktreesDirectory: 123 });
 
       assert.strictEqual(isErr(result), true);
       if (isErr(result)) {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreeBaseDirectory: Expected string, received number",
+          "Invalid phantom.config.json: worktreesDirectory: Expected string, received number",
         );
       }
     });
 
-    test("should reject when worktreeBaseDirectory is object", () => {
-      const result = validateConfig({ worktreeBaseDirectory: {} });
+    test("should reject when worktreesDirectory is object", () => {
+      const result = validateConfig({ worktreesDirectory: {} });
 
       assert.strictEqual(isErr(result), true);
       if (isErr(result)) {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreeBaseDirectory: Expected string, received object",
+          "Invalid phantom.config.json: worktreesDirectory: Expected string, received object",
         );
       }
     });
 
-    test("should reject when worktreeBaseDirectory is array", () => {
-      const result = validateConfig({ worktreeBaseDirectory: [] });
+    test("should reject when worktreesDirectory is array", () => {
+      const result = validateConfig({ worktreesDirectory: [] });
 
       assert.strictEqual(isErr(result), true);
       if (isErr(result)) {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreeBaseDirectory: Expected string, received array",
+          "Invalid phantom.config.json: worktreesDirectory: Expected string, received array",
         );
       }
     });
 
-    test("should reject when worktreeBaseDirectory is null", () => {
-      const result = validateConfig({ worktreeBaseDirectory: null });
+    test("should reject when worktreesDirectory is null", () => {
+      const result = validateConfig({ worktreesDirectory: null });
 
       assert.strictEqual(isErr(result), true);
       if (isErr(result)) {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreeBaseDirectory: Expected string, received null",
+          "Invalid phantom.config.json: worktreesDirectory: Expected string, received null",
         );
       }
     });
 
-    test("should reject when worktreeBaseDirectory is boolean", () => {
-      const result = validateConfig({ worktreeBaseDirectory: true });
+    test("should reject when worktreesDirectory is boolean", () => {
+      const result = validateConfig({ worktreesDirectory: true });
 
       assert.strictEqual(isErr(result), true);
       if (isErr(result)) {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreeBaseDirectory: Expected string, received boolean",
+          "Invalid phantom.config.json: worktreesDirectory: Expected string, received boolean",
         );
       }
     });
@@ -609,9 +609,9 @@ describe("validateConfig", () => {
       }
     });
 
-    test("should accept worktreeBaseDirectory with empty string", () => {
+    test("should accept worktreesDirectory with empty string", () => {
       const config = {
-        worktreeBaseDirectory: "",
+        worktreesDirectory: "",
       };
 
       const result = validateConfig(config);
@@ -622,9 +622,9 @@ describe("validateConfig", () => {
       }
     });
 
-    test("should accept worktreeBaseDirectory with special characters", () => {
+    test("should accept worktreesDirectory with special characters", () => {
       const config = {
-        worktreeBaseDirectory: "../phantom-worktrees/custom_dir",
+        worktreesDirectory: "../phantom-worktrees/custom_dir",
       };
 
       const result = validateConfig(config);
@@ -635,9 +635,9 @@ describe("validateConfig", () => {
       }
     });
 
-    test("should accept worktreeBaseDirectory with Windows-style path", () => {
+    test("should accept worktreesDirectory with Windows-style path", () => {
       const config = {
-        worktreeBaseDirectory: "C:\\temp\\phantom-worktrees",
+        worktreesDirectory: "C:\\temp\\phantom-worktrees",
       };
 
       const result = validateConfig(config);

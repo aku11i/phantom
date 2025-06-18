@@ -1,9 +1,9 @@
 import fs from "node:fs/promises";
 import { type Result, err, ok } from "@aku11i/phantom-shared";
 import {
-  getWorktreeDirectory,
   getWorktreePath,
   getWorktreePathFromDirectory,
+  getWorktreesDirectory,
 } from "../paths.ts";
 import { WorktreeAlreadyExistsError, WorktreeNotFoundError } from "./errors.ts";
 

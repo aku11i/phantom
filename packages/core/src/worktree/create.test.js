@@ -8,29 +8,29 @@ const mkdirMock = mock.fn();
 const validateWorktreeDoesNotExistMock = mock.fn();
 const validateWorktreeNameMock = mock.fn();
 const addWorktreeMock = mock.fn();
-const getWorktreeDirectoryMock = mock.fn((gitRoot, worktreeBaseDirectory) => {
-  if (worktreeBaseDirectory) {
+const getWorktreesDirectoryMock = mock.fn((gitRoot, worktreesDirectory) => {
+  if (worktreesDirectory) {
     // Simulate node.js path.join behavior for resolving relative paths
-    if (worktreeBaseDirectory.startsWith("/")) {
-      return worktreeBaseDirectory;
+    if (worktreesDirectory.startsWith("/")) {
+      return worktreesDirectory;
     }
     // For relative paths like "../phantom-external", resolve them correctly
-    if (worktreeBaseDirectory === "../phantom-external") {
+    if (worktreesDirectory === "../phantom-external") {
       return "/test/phantom-external";
     }
-    return `${gitRoot}/${worktreeBaseDirectory}`;
+    return `${gitRoot}/${worktreesDirectory}`;
   }
   return `${gitRoot}/.git/phantom/worktrees`;
 });
-const getWorktreePathMock = mock.fn((gitRoot, name, worktreeBaseDirectory) => {
-  if (worktreeBaseDirectory) {
-    if (worktreeBaseDirectory.startsWith("/")) {
-      return `${worktreeBaseDirectory}/${name}`;
+const getWorktreePathMock = mock.fn((gitRoot, name, worktreesDirectory) => {
+  if (worktreesDirectory) {
+    if (worktreesDirectory.startsWith("/")) {
+      return `${worktreesDirectory}/${name}`;
     }
-    if (worktreeBaseDirectory === "../phantom-external") {
+    if (worktreesDirectory === "../phantom-external") {
       return `/test/phantom-external/${name}`;
     }
-    return `${gitRoot}/${worktreeBaseDirectory}/${name}`;
+    return `${gitRoot}/${worktreesDirectory}/${name}`;
   }
   return `${gitRoot}/.git/phantom/worktrees/${name}`;
 });
@@ -61,7 +61,7 @@ mock.module("@aku11i/phantom-git", {
 
 mock.module("../paths.ts", {
   namedExports: {
-    getWorktreeDirectory: getWorktreeDirectoryMock,
+    getWorktreesDirectory: getWorktreesDirectoryMock,
     getWorktreePath: getWorktreePathMock,
     getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
   },
@@ -82,7 +82,7 @@ describe("createWorktree", () => {
     validateWorktreeDoesNotExistMock.mock.resetCalls();
     validateWorktreeNameMock.mock.resetCalls();
     addWorktreeMock.mock.resetCalls();
-    getWorktreeDirectoryMock.mock.resetCalls();
+    getWorktreesDirectoryMock.mock.resetCalls();
     getWorktreePathMock.mock.resetCalls();
     getWorktreePathFromDirectoryMock.mock.resetCalls();
     copyFilesMock.mock.resetCalls();
@@ -230,7 +230,7 @@ describe("createWorktree", () => {
   });
 
   describe("with different worktree directories", () => {
-    it("should create worktree with relative worktreeBaseDirectory", async () => {
+    it("should create worktree with relative worktreesDirectory", async () => {
       resetMocks();
       accessMock.mock.mockImplementation(() => Promise.resolve());
       mkdirMock.mock.mockImplementation(() => Promise.resolve());
@@ -270,7 +270,7 @@ describe("createWorktree", () => {
       );
     });
 
-    it("should create worktree with absolute worktreeBaseDirectory", async () => {
+    it("should create worktree with absolute worktreesDirectory", async () => {
       resetMocks();
       accessMock.mock.mockImplementation(() => Promise.resolve());
       mkdirMock.mock.mockImplementation(() => Promise.resolve());

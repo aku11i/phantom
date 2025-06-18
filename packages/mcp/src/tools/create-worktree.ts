@@ -24,7 +24,7 @@ export const createWorktreeTool: Tool<typeof schema> = {
     const context = await createContext(gitRoot);
     const result = await createWorktree(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       name,
       {
         branch: name,

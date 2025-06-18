@@ -18,7 +18,7 @@ const phantomConfigSchema = z
       })
       .passthrough()
       .optional(),
-    worktreeBaseDirectory: z.string().optional(),
+    worktreesDirectory: z.string().optional(),
   })
   .passthrough();
 

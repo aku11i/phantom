@@ -22,7 +22,7 @@ export const deleteWorktreeTool: Tool<typeof schema> = {
     const context = await createContext(gitRoot);
     const result = await deleteWorktree(
       context.gitRoot,
-      context.worktreeDirectory,
+      context.worktreesDirectory,
       name,
       {
         force,
