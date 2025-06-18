@@ -29,6 +29,7 @@ export const createWorktreeTool: Tool<typeof schema> = {
         branch: name,
         base: baseBranch,
       },
+      context.config,
     );
 
     if (!isOk(result)) {

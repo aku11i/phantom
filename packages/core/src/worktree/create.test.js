@@ -107,6 +107,7 @@ describe("createWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "feature-branch",
       {},
+      null,
     );
 
     strictEqual(isOk(result), true);
@@ -148,6 +149,7 @@ describe("createWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "new-feature",
       {},
+      null,
     );
 
     strictEqual(mkdirMock.mock.calls.length, 1);
@@ -169,6 +171,7 @@ describe("createWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "existing",
       {},
+      null,
     );
 
     strictEqual(isErr(result), true);
@@ -196,6 +199,7 @@ describe("createWorktree", () => {
         branch: "custom-branch",
         base: "main",
       },
+      null,
     );
 
     const worktreeOptions2 = addWorktreeMock.mock.calls[0].arguments[0];
@@ -220,6 +224,7 @@ describe("createWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "bad-branch",
       {},
+      null,
     );
 
     strictEqual(isErr(result), true);
@@ -252,6 +257,7 @@ describe("createWorktree", () => {
         "/test/phantom-external",
         "feature-branch",
         {},
+        null,
       );
 
       strictEqual(isOk(result), true);
@@ -292,6 +298,7 @@ describe("createWorktree", () => {
         "/tmp/phantom-worktrees",
         "feature-branch",
         {},
+        null,
       );
 
       strictEqual(isOk(result), true);
@@ -326,6 +333,7 @@ describe("createWorktree", () => {
         "/test/phantom-external",
         "feature-branch",
         {},
+        null,
       );
 
       strictEqual(validateWorktreeDoesNotExistMock.mock.callCount(), 1);

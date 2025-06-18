@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "@aku11i/phantom-git";
 import { type Result, err, isErr, isOk, ok } from "@aku11i/phantom-shared";
+import { type PhantomConfig } from "../config/loader.ts";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import { type WorktreeAlreadyExistsError, WorktreeError } from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";
@@ -32,9 +33,7 @@ export async function createWorktree(
   worktreeDirectory: string,
   name: string,
   options: CreateWorktreeOptions,
-  config?: {
-    postCreate?: { copyFiles?: string[]; commands?: string[] };
-  } | null,
+  config: PhantomConfig | null,
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | WorktreeError>
 > {

@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { attachWorktree, branchExists } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import { type PhantomConfig } from "../config/loader.ts";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import {
   BranchNotFoundError,
@@ -17,9 +18,7 @@ export async function attachWorktreeCore(
   gitRoot: string,
   worktreeDirectory: string,
   name: string,
-  config?: {
-    postCreate?: { copyFiles?: string[]; commands?: string[] };
-  } | null,
+  config: PhantomConfig | null,
 ): Promise<Result<string, Error>> {
   const validation = validateWorktreeName(name);
   if (isErr(validation)) {
