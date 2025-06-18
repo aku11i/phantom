@@ -114,14 +114,6 @@ describe("createHandler postCreate", () => {
       outputLogMock.mock.calls[1].arguments[0],
       "\nRunning post-create commands...",
     );
-    deepStrictEqual(
-      outputLogMock.mock.calls[2].arguments[0],
-      "Executing: npm install",
-    );
-    deepStrictEqual(
-      outputLogMock.mock.calls[3].arguments[0],
-      "Executing: npm test",
-    );
   });
 
   it("should exit with error if executePostCreateCommands fails", async () => {

@@ -269,14 +269,6 @@ describe("attachHandler", () => {
       outputLogMock.mock.calls[1].arguments[0],
       "\nRunning post-create commands...",
     );
-    deepStrictEqual(
-      outputLogMock.mock.calls[2].arguments[0],
-      "Executing: npm install",
-    );
-    deepStrictEqual(
-      outputLogMock.mock.calls[3].arguments[0],
-      "Executing: npm run build",
-    );
   });
 
   it("should handle config not found gracefully", async () => {

@@ -3,6 +3,7 @@ import { describe, it, mock } from "node:test";
 import { err, ok } from "@aku11i/phantom-shared";
 
 const execInWorktreeMock = mock.fn();
+const consoleLogMock = mock.fn();
 
 mock.module("../exec.ts", {
   namedExports: {
@@ -10,11 +11,16 @@ mock.module("../exec.ts", {
   },
 });
 
+// Mock console.log
+const originalConsoleLog = console.log;
+console.log = consoleLogMock;
+
 const { executePostCreateCommands } = await import("./post-create.ts");
 
 describe("executePostCreateCommands", () => {
   it("should execute commands successfully", async () => {
     execInWorktreeMock.mock.resetCalls();
+    consoleLogMock.mock.resetCalls();
     execInWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(ok({ exitCode: 0, stdout: "", stderr: "" })),
     );
@@ -28,6 +34,9 @@ describe("executePostCreateCommands", () => {
 
     deepStrictEqual(result.value.executedCommands, ["echo 'test'", "ls"]);
     deepStrictEqual(execInWorktreeMock.mock.calls.length, 2);
+    deepStrictEqual(consoleLogMock.mock.calls.length, 2);
+    deepStrictEqual(consoleLogMock.mock.calls[0].arguments[0], "Executing: echo 'test'");
+    deepStrictEqual(consoleLogMock.mock.calls[1].arguments[0], "Executing: ls");
     deepStrictEqual(execInWorktreeMock.mock.calls[0].arguments[3], [
       process.env.SHELL || "/bin/sh",
       "-c",
@@ -42,6 +51,7 @@ describe("executePostCreateCommands", () => {
 
   it("should return error if command execution fails", async () => {
     execInWorktreeMock.mock.resetCalls();
+    consoleLogMock.mock.resetCalls();
     execInWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(err(new Error("Command execution failed"))),
     );
@@ -62,6 +72,7 @@ describe("executePostCreateCommands", () => {
 
   it("should return error if command exits with non-zero code", async () => {
     execInWorktreeMock.mock.resetCalls();
+    consoleLogMock.mock.resetCalls();
     execInWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(ok({ exitCode: 1, stdout: "", stderr: "Error" })),
     );
@@ -83,6 +94,7 @@ describe("executePostCreateCommands", () => {
   it("should execute multiple commands in sequence", async () => {
     let callCount = 0;
     execInWorktreeMock.mock.resetCalls();
+    consoleLogMock.mock.resetCalls();
     execInWorktreeMock.mock.mockImplementation(() => {
       callCount++;
       return Promise.resolve(ok({ exitCode: 0, stdout: "", stderr: "" }));
@@ -102,6 +114,7 @@ describe("executePostCreateCommands", () => {
   it("should stop execution on first failed command", async () => {
     let callCount = 0;
     execInWorktreeMock.mock.resetCalls();
+    consoleLogMock.mock.resetCalls();
     execInWorktreeMock.mock.mockImplementation(() => {
       callCount++;
       if (callCount === 2) {

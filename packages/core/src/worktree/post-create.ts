@@ -22,6 +22,7 @@ export async function executePostCreateCommands(
   const executedCommands: string[] = [];
 
   for (const command of commands) {
+    console.log(`Executing: ${command}`);
     const shell = process.env.SHELL || "/bin/sh";
     const cmdResult = await execInWorktree(
       gitRoot,

@@ -155,10 +155,6 @@ export async function createHandler(args: string[]): Promise<void> {
       const commands = context.config.postCreate.commands;
       output.log("\nRunning post-create commands...");
 
-      for (const command of commands) {
-        output.log(`Executing: ${command}`);
-      }
-
       const postCreateResult = await executePostCreateCommands({
         gitRoot: context.gitRoot,
         worktreesDirectory: context.worktreesDirectory,
