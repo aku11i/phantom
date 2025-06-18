@@ -5,7 +5,7 @@ import { err, ok } from "@aku11i/phantom-shared";
 const execInWorktreeMock = mock.fn();
 const consoleLogMock = mock.fn();
 
-mock.module("./exec.ts", {
+mock.module("../exec.ts", {
   namedExports: {
     execInWorktree: execInWorktreeMock,
   },

@@ -1,6 +1,6 @@
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
-import { execInWorktree } from "./exec.ts";
+import { execInWorktree } from "../exec.ts";
 import { copyFiles } from "./file-copier.ts";
 
 export interface PostCreateExecutionOptions {
