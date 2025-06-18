@@ -3,10 +3,7 @@ import { describe, it, mock } from "node:test";
 import { z } from "zod";
 
 const deleteWorktreeMock = mock.fn();
-const getWorktreesDirectoryMock = mock.fn((gitRoot, worktreesDirectory) => {
-  return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
-});
-const loadConfigMock = mock.fn();
+const createContextMock = mock.fn();
 const getGitRootMock = mock.fn();
 const isOkMock = mock.fn((result) => {
   return result && result.ok === true;
@@ -17,8 +14,7 @@ const errMock = mock.fn((error) => ({ ok: false, error }));
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     deleteWorktree: deleteWorktreeMock,
-    getWorktreesDirectory: getWorktreesDirectoryMock,
-    loadConfig: loadConfigMock,
+    createContext: createContextMock,
   },
 });
 
@@ -67,8 +63,11 @@ describe("deleteWorktreeTool", () => {
     const gitRoot = "/path/to/repo";
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve(gitRoot));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(errMock({ message: "Config not found" })),
+    createContextMock.mock.mockImplementation(() =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: "/path/to/repo/.git/phantom/worktrees",
+      }),
     );
     deleteWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(okMock({})),
@@ -100,8 +99,11 @@ describe("deleteWorktreeTool", () => {
     const gitRoot = "/path/to/repo";
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve(gitRoot));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(errMock({ message: "Config not found" })),
+    createContextMock.mock.mockImplementation(() =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: "/path/to/repo/.git/phantom/worktrees",
+      }),
     );
     deleteWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(okMock({})),
@@ -135,8 +137,11 @@ describe("deleteWorktreeTool", () => {
     const errorResult = { ok: false, error: { message: errorMessage } };
 
     getGitRootMock.mock.mockImplementation(() => Promise.resolve(gitRoot));
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(errMock({ message: "Config not found" })),
+    createContextMock.mock.mockImplementation(() =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: "/path/to/repo/.git/phantom/worktrees",
+      }),
     );
     deleteWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(errorResult),

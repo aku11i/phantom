@@ -2,8 +2,7 @@ import { join } from "node:path";
 import {
   WorktreeAlreadyExistsError,
   attachWorktreeCore,
-  getWorktreesDirectory,
-  loadConfig,
+  createContext,
 } from "@aku11i/phantom-core";
 import { fetch, getGitRoot, setUpstreamBranch } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
@@ -20,11 +19,7 @@ export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,
 ): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
-  const configResult = await loadConfig(gitRoot);
-  const worktreesDirectory = isErr(configResult)
-    ? undefined
-    : configResult.value.worktreesDirectory;
-  const worktreesPath = getWorktreesDirectory(gitRoot, worktreesDirectory);
+  const context = await createContext(gitRoot);
   const worktreeName = `pr-${pullRequest.number}`;
   const localBranch = `pr-${pullRequest.number}`;
 
@@ -64,12 +59,12 @@ export async function checkoutPullRequest(
 
   // Attach the worktree to the fetched branch
   const attachResult = await attachWorktreeCore(
-    gitRoot,
-    worktreesPath,
+    context.gitRoot,
+    context.worktreesDirectory,
     worktreeName,
   );
 
-  const worktreePath = join(worktreesPath, worktreeName);
+  const worktreePath = join(context.worktreesDirectory, worktreeName);
 
   if (isErr(attachResult)) {
     if (attachResult.error instanceof WorktreeAlreadyExistsError) {

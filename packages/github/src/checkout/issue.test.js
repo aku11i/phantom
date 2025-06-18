@@ -4,10 +4,7 @@ import { describe, it, mock } from "node:test";
 const getGitRootMock = mock.fn();
 const createWorktreeCoreMock = mock.fn();
 const isPullRequestMock = mock.fn();
-const loadConfigMock = mock.fn();
-const getWorktreesDirectoryMock = mock.fn((gitRoot, worktreesDirectory) => {
-  return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
-});
+const createContextMock = mock.fn();
 
 // Mock the WorktreeAlreadyExistsError class
 class MockWorktreeAlreadyExistsError extends Error {
@@ -27,8 +24,7 @@ mock.module("@aku11i/phantom-core", {
   namedExports: {
     createWorktree: createWorktreeCoreMock,
     WorktreeAlreadyExistsError: MockWorktreeAlreadyExistsError,
-    loadConfig: loadConfigMock,
-    getWorktreesDirectory: getWorktreesDirectoryMock,
+    createContext: createContextMock,
   },
 });
 
@@ -101,9 +97,9 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    loadConfigMock.mock.mockImplementation(async () => ({
-      ok: false,
-      error: { message: "Config not found" },
+    createContextMock.mock.mockImplementation(async () => ({
+      gitRoot: mockGitRoot,
+      worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
     }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
@@ -149,9 +145,9 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    loadConfigMock.mock.mockImplementation(async () => ({
-      ok: false,
-      error: { message: "Config not found" },
+    createContextMock.mock.mockImplementation(async () => ({
+      gitRoot: mockGitRoot,
+      worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
     }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
@@ -181,9 +177,9 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    loadConfigMock.mock.mockImplementation(async () => ({
-      ok: false,
-      error: { message: "Config not found" },
+    createContextMock.mock.mockImplementation(async () => ({
+      gitRoot: mockGitRoot,
+      worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
     }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: false,
@@ -209,6 +205,10 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
+    createContextMock.mock.mockImplementation(async () => ({
+      gitRoot: mockGitRoot,
+      worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
+    }));
     const expectedError = new Error("Permission denied");
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: false,
@@ -230,9 +230,9 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => false);
     getGitRootMock.mock.mockImplementation(async () => mockGitRoot);
-    loadConfigMock.mock.mockImplementation(async () => ({
-      ok: false,
-      error: { message: "Config not found" },
+    createContextMock.mock.mockImplementation(async () => ({
+      gitRoot: mockGitRoot,
+      worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
     }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,

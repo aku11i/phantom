@@ -1,9 +1,8 @@
 import { join } from "node:path";
 import {
   WorktreeAlreadyExistsError,
+  createContext,
   createWorktree as createWorktreeCore,
-  getWorktreesDirectory,
-  loadConfig,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
@@ -23,18 +22,14 @@ export async function checkoutIssue(
   }
 
   const gitRoot = await getGitRoot();
-  const configResult = await loadConfig(gitRoot);
-  const worktreesDirectory = isErr(configResult)
-    ? undefined
-    : configResult.value.worktreesDirectory;
-  const worktreesPath = getWorktreesDirectory(gitRoot, worktreesDirectory);
+  const context = await createContext(gitRoot);
   const worktreeName = `issue-${issue.number}`;
   const branchName = `issue-${issue.number}`;
-  const worktreePath = join(worktreesPath, worktreeName);
+  const worktreePath = join(context.worktreesDirectory, worktreeName);
 
   const result = await createWorktreeCore(
-    gitRoot,
-    worktreesPath,
+    context.gitRoot,
+    context.worktreesDirectory,
     worktreeName,
     {
       branch: branchName,
