@@ -1,4 +1,3 @@
-import { join } from "node:path";
 import {
   WorktreeAlreadyExistsError,
   createContext,
@@ -25,7 +24,6 @@ export async function checkoutIssue(
   const context = await createContext(gitRoot);
   const worktreeName = `issue-${issue.number}`;
   const branchName = `issue-${issue.number}`;
-  const worktreePath = join(context.worktreesDirectory, worktreeName);
 
   const result = await createWorktreeCore(
     context.gitRoot,
@@ -39,6 +37,8 @@ export async function checkoutIssue(
 
   if (isErr(result)) {
     if (result.error instanceof WorktreeAlreadyExistsError) {
+      // For already exists case, we need to construct the path
+      const worktreePath = `${context.worktreesDirectory}/${worktreeName}`;
       return ok({
         message: `Worktree for issue #${issue.number} is already checked out`,
         worktree: worktreeName,
@@ -52,6 +52,6 @@ export async function checkoutIssue(
   return ok({
     message: result.value.message,
     worktree: worktreeName,
-    path: worktreePath,
+    path: result.value.path,
   });
 }
