@@ -12,7 +12,6 @@ export interface WorktreeDoesNotExistSuccess {
 }
 
 export async function validateWorktreeExists(
-  gitRoot: string,
   worktreeDirectory: string,
   name: string,
 ): Promise<Result<WorktreeExistsSuccess, WorktreeNotFoundError>> {
@@ -27,7 +26,6 @@ export async function validateWorktreeExists(
 }
 
 export async function validateWorktreeDoesNotExist(
-  gitRoot: string,
   worktreeDirectory: string,
   name: string,
 ): Promise<Result<WorktreeDoesNotExistSuccess, WorktreeAlreadyExistsError>> {

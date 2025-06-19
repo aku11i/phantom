@@ -57,7 +57,6 @@ describe("validateWorktreeExists", () => {
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
     const result = await validateWorktreeExists(
-      "/test/repo",
       "/test/repo/.git/phantom/worktrees",
       "my-feature",
     );
@@ -75,7 +74,6 @@ describe("validateWorktreeExists", () => {
     );
 
     const result = await validateWorktreeExists(
-      "/test/repo",
       "/test/repo/.git/phantom/worktrees",
       "non-existent",
     );
@@ -91,7 +89,6 @@ describe("validateWorktreeExists", () => {
     );
 
     const result = await validateWorktreeExists(
-      "/test/repo",
       "/test/repo/.git/phantom/worktrees",
       "any",
     );
@@ -116,7 +113,6 @@ describe("validateWorktreeDoesNotExist", () => {
     );
 
     const result = await validateWorktreeDoesNotExist(
-      "/test/repo",
       "/test/repo/.git/phantom/worktrees",
       "new-feature",
     );
@@ -132,7 +128,6 @@ describe("validateWorktreeDoesNotExist", () => {
     accessMock.mock.mockImplementation(() => Promise.resolve());
 
     const result = await validateWorktreeDoesNotExist(
-      "/test/repo",
       "/test/repo/.git/phantom/worktrees",
       "existing-feature",
     );
@@ -151,7 +146,6 @@ describe("validateWorktreeDoesNotExist", () => {
     );
 
     const result = await validateWorktreeDoesNotExist(
-      "/test/repo",
       "/test/repo/.git/phantom/worktrees",
       "new-feature",
     );

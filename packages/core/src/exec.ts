@@ -24,7 +24,6 @@ export async function execInWorktree(
   Result<ExecInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
 > {
   const validation = await validateWorktreeExists(
-    gitRoot,
     worktreeDirectory,
     worktreeName,
   );

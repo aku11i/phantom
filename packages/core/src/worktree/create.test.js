@@ -281,7 +281,7 @@ describe("createWorktree", () => {
       strictEqual(validateWorktreeDoesNotExistMock.mock.callCount(), 1);
       deepStrictEqual(
         validateWorktreeDoesNotExistMock.mock.calls[0].arguments,
-        ["/test/repo", "/test/phantom-external", "feature-branch"],
+        ["/test/phantom-external", "feature-branch"],
       );
     });
 
@@ -347,7 +347,7 @@ describe("createWorktree", () => {
       strictEqual(validateWorktreeDoesNotExistMock.mock.callCount(), 1);
       deepStrictEqual(
         validateWorktreeDoesNotExistMock.mock.calls[0].arguments,
-        ["/test/repo", "/test/phantom-external", "feature-branch"],
+        ["/test/phantom-external", "feature-branch"],
       );
     });
   });

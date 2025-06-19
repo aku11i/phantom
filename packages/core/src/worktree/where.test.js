@@ -21,7 +21,11 @@ describe("whereWorktree", () => {
       ),
     );
 
-    const result = await whereWorktree("/test/repo", "my-feature");
+    const result = await whereWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "my-feature",
+    );
 
     strictEqual(result.ok, true);
     if (result.ok) {
@@ -32,9 +36,8 @@ describe("whereWorktree", () => {
 
     strictEqual(validateMock.mock.calls.length, 1);
     deepStrictEqual(validateMock.mock.calls[0].arguments, [
-      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
       "my-feature",
-      undefined,
     ]);
 
     validateMock.mock.resetCalls();
@@ -45,7 +48,11 @@ describe("whereWorktree", () => {
       Promise.resolve(err(new WorktreeNotFoundError("non-existent"))),
     );
 
-    const result = await whereWorktree("/test/repo", "non-existent");
+    const result = await whereWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "non-existent",
+    );
 
     strictEqual(result.ok, false);
     if (!result.ok) {
@@ -61,7 +68,11 @@ describe("whereWorktree", () => {
       Promise.resolve(err(new WorktreeNotFoundError("missing"))),
     );
 
-    const result = await whereWorktree("/test/repo", "missing");
+    const result = await whereWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "missing",
+    );
 
     strictEqual(result.ok, false);
     if (!result.ok) {

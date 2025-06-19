@@ -109,7 +109,6 @@ export async function shellHandler(args: string[]): Promise<void> {
 
     // Get worktree path for display
     const validation = await validateWorktreeExists(
-      context.gitRoot,
       context.worktreesDirectory,
       worktreeName,
     );

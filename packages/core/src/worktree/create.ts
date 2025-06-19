@@ -53,7 +53,6 @@ export async function createWorktree(
   }
 
   const validation = await validateWorktreeDoesNotExist(
-    gitRoot,
     worktreeDirectory,
     name,
   );

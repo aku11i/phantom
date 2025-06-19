@@ -115,7 +115,6 @@ export async function execHandler(args: string[]): Promise<void> {
 
     // Validate worktree exists
     const validation = await validateWorktreeExists(
-      context.gitRoot,
       context.worktreesDirectory,
       worktreeName,
     );

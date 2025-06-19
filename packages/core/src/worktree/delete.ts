@@ -88,11 +88,7 @@ export async function deleteWorktree(
 > {
   const { force = false } = options || {};
 
-  const validation = await validateWorktreeExists(
-    gitRoot,
-    worktreeDirectory,
-    name,
-  );
+  const validation = await validateWorktreeExists(worktreeDirectory, name);
   if (isErr(validation)) {
     return err(validation.error);
   }
