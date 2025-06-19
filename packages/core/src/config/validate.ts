@@ -29,7 +29,7 @@ export function validateConfig(
 
   if (!result.success) {
     const error = result.error;
-    const formattedError = error.format();
+    const _formattedError = error.format();
 
     // Get the first error message from Zod's formatted output
     const firstError = error.errors[0];

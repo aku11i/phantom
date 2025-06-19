@@ -15,7 +15,7 @@ export interface ExecInWorktreeOptions {
 }
 
 export async function execInWorktree(
-  gitRoot: string,
+  _gitRoot: string,
   worktreeDirectory: string,
   worktreeName: string,
   command: string[],

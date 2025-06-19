@@ -7,7 +7,7 @@ export interface WhereWorktreeSuccess {
 }
 
 export async function whereWorktree(
-  gitRoot: string,
+  _gitRoot: string,
   worktreeDirectory: string,
   name: string,
 ): Promise<Result<WhereWorktreeSuccess, WorktreeNotFoundError>> {

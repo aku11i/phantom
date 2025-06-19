@@ -47,13 +47,13 @@ export async function getWorktreeChangesStatus(
 export async function removeWorktree(
   gitRoot: string,
   worktreePath: string,
-  force = false,
+  _force = false,
 ): Promise<void> {
   try {
     await executeGitCommand(["worktree", "remove", worktreePath], {
       cwd: gitRoot,
     });
-  } catch (error) {
+  } catch (_error) {
     // Always try force removal if the regular removal fails
     try {
       await executeGitCommand(["worktree", "remove", "--force", worktreePath], {

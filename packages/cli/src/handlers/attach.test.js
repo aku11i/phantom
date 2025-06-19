@@ -282,9 +282,9 @@ describe("attachHandler", () => {
     // Verify that attachWorktreeCore was called with undefined postCreate parameters
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
     const [
-      gitRoot,
-      worktreeDirectory,
-      name,
+      _gitRoot,
+      _worktreeDirectory,
+      _name,
       postCreateCopyFiles,
       postCreateCommands,
     ] = attachWorktreeCoreMock.mock.calls[0].arguments;
@@ -322,9 +322,9 @@ describe("attachHandler", () => {
     // Verify that attachWorktreeCore was called with the extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
     const [
-      gitRoot,
-      worktreeDirectory,
-      name,
+      _gitRoot,
+      _worktreeDirectory,
+      _name,
       postCreateCopyFiles,
       postCreateCommands,
     ] = attachWorktreeCoreMock.mock.calls[0].arguments;
@@ -368,9 +368,9 @@ describe("attachHandler", () => {
     // Verify that attachWorktreeCore was called with extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
     const [
-      gitRoot,
-      worktreeDirectory,
-      name,
+      _gitRoot,
+      _worktreeDirectory,
+      _name,
       postCreateCopyFiles,
       postCreateCommands,
     ] = attachWorktreeCoreMock.mock.calls[0].arguments;

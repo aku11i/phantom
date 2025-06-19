@@ -45,7 +45,7 @@ export async function getWorktreeStatus(
 }
 
 export async function getWorktreeInfo(
-  gitRoot: string,
+  _gitRoot: string,
   worktreeDirectory: string,
   name: string,
 ): Promise<WorktreeInfo> {

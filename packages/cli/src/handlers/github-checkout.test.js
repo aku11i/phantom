@@ -20,7 +20,7 @@ describe("githubCheckoutHandler", () => {
 
     try {
       await githubCheckoutHandler([]);
-    } catch (error) {
+    } catch (_error) {
       // Expected to throw due to mocked process.exit
     }
 
@@ -36,7 +36,7 @@ describe("githubCheckoutHandler", () => {
 
     try {
       await githubCheckoutHandler(["--base", "develop"]);
-    } catch (error) {
+    } catch (_error) {
       // Expected to throw due to mocked process.exit
     }
 

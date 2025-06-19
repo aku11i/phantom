@@ -11,7 +11,7 @@ import { validateWorktreeExists } from "./worktree/validate.ts";
 export type ShellInWorktreeSuccess = SpawnSuccess;
 
 export async function shellInWorktree(
-  gitRoot: string,
+  _gitRoot: string,
   worktreeDirectory: string,
   worktreeName: string,
 ): Promise<

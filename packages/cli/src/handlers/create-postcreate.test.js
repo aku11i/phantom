@@ -103,7 +103,7 @@ describe("createHandler postCreate", () => {
       gitRoot,
       worktreeDirectory,
       name,
-      options,
+      _options,
       postCreateCopyFiles,
       postCreateCommands,
     ] = createWorktreeMock.mock.calls[0].arguments;
@@ -190,10 +190,10 @@ describe("createHandler postCreate", () => {
     // Verify that createWorktree was called with correct config
     deepStrictEqual(createWorktreeMock.mock.calls.length, 1);
     const [
-      gitRoot,
-      worktreeDirectory,
-      name,
-      options,
+      _gitRoot,
+      _worktreeDirectory,
+      _name,
+      _options,
       postCreateCopyFiles,
       postCreateCommands,
     ] = createWorktreeMock.mock.calls[0].arguments;
