@@ -244,8 +244,13 @@ describe("attachHandler", () => {
 
     // Verify that attachWorktreeCore was called with extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
-      attachWorktreeCoreMock.mock.calls[0].arguments;
+    const [
+      gitRoot,
+      worktreeDirectory,
+      name,
+      postCreateCopyFiles,
+      postCreateCommands,
+    ] = attachWorktreeCoreMock.mock.calls[0].arguments;
     deepStrictEqual(gitRoot, "/repo");
     deepStrictEqual(worktreeDirectory, "/repo/.git/phantom/worktrees");
     deepStrictEqual(name, "feature");
@@ -276,8 +281,13 @@ describe("attachHandler", () => {
 
     // Verify that attachWorktreeCore was called with undefined postCreate parameters
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
-      attachWorktreeCoreMock.mock.calls[0].arguments;
+    const [
+      gitRoot,
+      worktreeDirectory,
+      name,
+      postCreateCopyFiles,
+      postCreateCommands,
+    ] = attachWorktreeCoreMock.mock.calls[0].arguments;
     deepStrictEqual(postCreateCopyFiles, undefined);
     deepStrictEqual(postCreateCommands, undefined);
     deepStrictEqual(outputErrorMock.mock.calls.length, 0);
@@ -311,8 +321,13 @@ describe("attachHandler", () => {
 
     // Verify that attachWorktreeCore was called with the extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
-      attachWorktreeCoreMock.mock.calls[0].arguments;
+    const [
+      gitRoot,
+      worktreeDirectory,
+      name,
+      postCreateCopyFiles,
+      postCreateCommands,
+    ] = attachWorktreeCoreMock.mock.calls[0].arguments;
     deepStrictEqual(postCreateCopyFiles, [".env"]);
     deepStrictEqual(postCreateCommands, ["echo test"]);
   });
@@ -352,8 +367,13 @@ describe("attachHandler", () => {
 
     // Verify that attachWorktreeCore was called with extracted postCreate values
     deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
-    const [gitRoot, worktreeDirectory, name, postCreateCopyFiles, postCreateCommands] =
-      attachWorktreeCoreMock.mock.calls[0].arguments;
+    const [
+      gitRoot,
+      worktreeDirectory,
+      name,
+      postCreateCopyFiles,
+      postCreateCommands,
+    ] = attachWorktreeCoreMock.mock.calls[0].arguments;
     deepStrictEqual(postCreateCopyFiles, undefined);
     deepStrictEqual(postCreateCommands, ["invalid-command"]);
   });
