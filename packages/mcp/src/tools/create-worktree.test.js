@@ -29,12 +29,26 @@ mock.module("@aku11i/phantom-shared", {
     isOk: isOkMock,
     ok: okMock,
     err: errMock,
-    DefaultLogger: class MockDefaultLogger {
-      log = mock.fn();
-      error = mock.fn();
-      warn = mock.fn();
-      table = mock.fn();
-      processOutput = mock.fn();
+  },
+});
+
+// Create a mock for the NoopLogger
+const mockNoopLogger = {
+  log: mock.fn(),
+  error: mock.fn(),
+  warn: mock.fn(),
+  table: mock.fn(),
+  processOutput: mock.fn(),
+};
+
+mock.module("../logger/noop-logger.ts", {
+  namedExports: {
+    NoopLogger: class MockNoopLogger {
+      log = mockNoopLogger.log;
+      error = mockNoopLogger.error;
+      warn = mockNoopLogger.warn;
+      table = mockNoopLogger.table;
+      processOutput = mockNoopLogger.processOutput;
     },
   },
 });

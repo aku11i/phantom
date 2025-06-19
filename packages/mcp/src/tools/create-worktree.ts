@@ -1,7 +1,8 @@
 import { createContext, createWorktree } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { DefaultLogger, isOk } from "@aku11i/phantom-shared";
+import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
+import { NoopLogger } from "../logger/noop-logger.ts";
 import type { Tool } from "./types.ts";
 
 const schema = z.object({
@@ -21,7 +22,7 @@ export const createWorktreeTool: Tool<typeof schema> = {
   handler: async ({ name, baseBranch }) => {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
-    const logger = new DefaultLogger();
+    const logger = new NoopLogger();
     const result = await createWorktree(
       context.gitRoot,
       context.worktreesDirectory,
