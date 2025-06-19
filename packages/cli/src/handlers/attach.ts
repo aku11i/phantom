@@ -67,7 +67,6 @@ export async function attachHandler(args: string[]): Promise<void> {
     exitWithError(error.message, exitCodes.generalError);
   }
 
-  const worktreePath = result.value;
   output.log(`Attached phantom: ${branchName}`);
 
   if (values.shell) {

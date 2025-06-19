@@ -47,13 +47,12 @@ export async function getWorktreeChangesStatus(
 export async function removeWorktree(
   gitRoot: string,
   worktreePath: string,
-  force = false,
 ): Promise<void> {
   try {
     await executeGitCommand(["worktree", "remove", worktreePath], {
       cwd: gitRoot,
     });
-  } catch (error) {
+  } catch {
     // Always try force removal if the regular removal fails
     try {
       await executeGitCommand(["worktree", "remove", "--force", worktreePath], {
@@ -110,7 +109,7 @@ export async function deleteWorktree(
   }
 
   try {
-    await removeWorktree(gitRoot, worktreePath, force);
+    await removeWorktree(gitRoot, worktreePath);
 
     const branchName = name;
     const branchResult = await deleteBranch(gitRoot, branchName);

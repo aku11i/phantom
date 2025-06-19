@@ -12,7 +12,6 @@ mock.module("../exec.ts", {
 });
 
 // Mock console.log
-const originalConsoleLog = console.log;
 console.log = consoleLogMock;
 
 const { executePostCreateCommands } = await import("./post-create.ts");
