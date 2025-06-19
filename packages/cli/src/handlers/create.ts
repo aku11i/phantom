@@ -133,6 +133,7 @@ export async function createHandler(args: string[]): Promise<void> {
       },
       filesToCopy.length > 0 ? filesToCopy : undefined,
       context.config?.postCreate?.commands,
+      output,
     );
 
     if (isErr(result)) {

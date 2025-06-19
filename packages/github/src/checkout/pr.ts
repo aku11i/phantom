@@ -6,7 +6,14 @@ import {
   validateWorktreeExists,
 } from "@aku11i/phantom-core";
 import { fetch, getGitRoot, setUpstreamBranch } from "@aku11i/phantom-git";
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import {
+  type Logger,
+  type Result,
+  err,
+  isErr,
+  noopLogger,
+  ok,
+} from "@aku11i/phantom-shared";
 import type { GitHubPullRequest } from "../api/index.ts";
 
 export interface CheckoutResult {
@@ -18,6 +25,7 @@ export interface CheckoutResult {
 
 export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,
+  logger: Logger = noopLogger,
 ): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
@@ -70,7 +78,7 @@ export async function checkoutPullRequest(
   );
   if (isErr(setUpstreamResult)) {
     // Log the error but don't fail the checkout
-    console.warn(
+    logger.warn(
       `Warning: Could not set upstream branch: ${setUpstreamResult.error.message}`,
     );
   }
@@ -82,6 +90,7 @@ export async function checkoutPullRequest(
     worktreeName,
     context.config?.postCreate?.copyFiles,
     context.config?.postCreate?.commands,
+    logger,
   );
 
   if (isErr(attachResult)) {

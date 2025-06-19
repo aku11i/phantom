@@ -1,6 +1,14 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "@aku11i/phantom-git";
-import { type Result, err, isErr, isOk, ok } from "@aku11i/phantom-shared";
+import {
+  type Logger,
+  type Result,
+  err,
+  isErr,
+  isOk,
+  noopLogger,
+  ok,
+} from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import { type WorktreeAlreadyExistsError, WorktreeError } from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";
@@ -34,6 +42,7 @@ export async function createWorktree(
   options: CreateWorktreeOptions,
   postCreateCopyFiles: string[] | undefined,
   postCreateCommands: string[] | undefined,
+  logger: Logger = noopLogger,
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | WorktreeError>
 > {
@@ -104,12 +113,13 @@ export async function createWorktree(
     }
 
     if (postCreateCommands && postCreateCommands.length > 0) {
-      console.log("\nRunning post-create commands...");
+      logger.log("\nRunning post-create commands...");
       const commandsResult = await executePostCreateCommands({
         gitRoot,
         worktreesDirectory: worktreeDirectory,
         worktreeName: name,
         commands: postCreateCommands,
+        logger,
       });
       if (isErr(commandsResult)) {
         return err(new WorktreeError(commandsResult.error.message));

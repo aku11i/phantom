@@ -1,6 +1,13 @@
 import { existsSync } from "node:fs";
 import { attachWorktree, branchExists } from "@aku11i/phantom-git";
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import {
+  type Logger,
+  type Result,
+  err,
+  isErr,
+  noopLogger,
+  ok,
+} from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import {
   BranchNotFoundError,
@@ -19,6 +26,7 @@ export async function attachWorktreeCore(
   name: string,
   postCreateCopyFiles: string[] | undefined,
   postCreateCommands: string[] | undefined,
+  logger: Logger = noopLogger,
 ): Promise<Result<string, Error>> {
   const validation = validateWorktreeName(name);
   if (isErr(validation)) {
@@ -54,19 +62,20 @@ export async function attachWorktreeCore(
     );
     if (isErr(copyResult)) {
       // Don't fail attach, just warn
-      console.warn(
+      logger.warn(
         `Warning: Failed to copy some files: ${copyResult.error.message}`,
       );
     }
   }
 
   if (postCreateCommands && postCreateCommands.length > 0) {
-    console.log("\nRunning post-create commands...");
+    logger.log("\nRunning post-create commands...");
     const commandsResult = await executePostCreateCommands({
       gitRoot,
       worktreesDirectory: worktreeDirectory,
       worktreeName: name,
       commands: postCreateCommands,
+      logger,
     });
     if (isErr(commandsResult)) {
       return err(new WorktreeError(commandsResult.error.message));

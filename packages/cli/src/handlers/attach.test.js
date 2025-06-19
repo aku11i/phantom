@@ -84,13 +84,24 @@ describe("attachHandler", () => {
       outputLogMock.mock.calls[0].arguments[0],
       "Attached phantom: feature",
     );
-    deepStrictEqual(attachWorktreeCoreMock.mock.calls[0].arguments, [
-      "/repo",
+    // Check first 5 arguments (excluding logger)
+    deepStrictEqual(attachWorktreeCoreMock.mock.calls[0].arguments[0], "/repo");
+    deepStrictEqual(
+      attachWorktreeCoreMock.mock.calls[0].arguments[1],
       "/repo/.git/phantom/worktrees",
+    );
+    deepStrictEqual(
+      attachWorktreeCoreMock.mock.calls[0].arguments[2],
       "feature",
-      undefined, // postCreateCopyFiles
-      undefined, // postCreateCommands
-    ]);
+    );
+    deepStrictEqual(
+      attachWorktreeCoreMock.mock.calls[0].arguments[3],
+      undefined,
+    ); // postCreateCopyFiles
+    deepStrictEqual(
+      attachWorktreeCoreMock.mock.calls[0].arguments[4],
+      undefined,
+    ); // postCreateCommands
   });
 
   it("should exit with error when no branch name provided", async () => {
