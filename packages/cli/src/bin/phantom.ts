@@ -25,6 +25,7 @@ import { mcpHelp } from "../help/mcp.ts";
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
+import { output } from "../output.ts";
 
 interface Command {
   name: string;
@@ -130,7 +131,7 @@ function printHelp(commands: Command[]) {
     name: cmd.name,
     description: cmd.description,
   }));
-  console.log(helpFormatter.formatMainHelp(simpleCommands));
+  output.log(helpFormatter.formatMainHelp(simpleCommands));
 }
 
 function findCommand(
@@ -176,7 +177,7 @@ if (args[0] === "--version" || args[0] === "-v") {
 const { command, remainingArgs } = findCommand(args, commands);
 
 if (!command || !command.handler) {
-  console.error(`Error: Unknown command '${args.join(" ")}'\n`);
+  output.error(`Error: Unknown command '${args.join(" ")}'\n`);
   printHelp(commands);
   exit(1);
 }
@@ -184,9 +185,9 @@ if (!command || !command.handler) {
 // Check if user is requesting help for a specific command
 if (remainingArgs.includes("--help") || remainingArgs.includes("-h")) {
   if (command.help) {
-    console.log(helpFormatter.formatCommandHelp(command.help));
+    output.log(helpFormatter.formatCommandHelp(command.help));
   } else {
-    console.log(`Help not available for command '${command.name}'`);
+    output.log(`Help not available for command '${command.name}'`);
   }
   exit(0);
 }

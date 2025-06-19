@@ -24,7 +24,7 @@ export async function githubCheckoutHandler(args: string[]): Promise<void> {
     );
   }
 
-  const result = await githubCheckout({ number, base: values.base });
+  const result = await githubCheckout({ number, base: values.base }, output);
 
   if (isErr(result)) {
     exitWithError(result.error.message, exitCodes.generalError);

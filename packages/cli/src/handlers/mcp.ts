@@ -3,6 +3,7 @@ import { serve } from "@aku11i/phantom-mcp";
 import { exitWithError } from "../errors.ts";
 import { helpFormatter } from "../help.ts";
 import { mcpHelp } from "../help/mcp.ts";
+import { output } from "../output.ts";
 
 export async function mcpHandler(args: string[] = []): Promise<void> {
   const { values, positionals } = parseArgs({
@@ -18,12 +19,12 @@ export async function mcpHandler(args: string[] = []): Promise<void> {
   });
 
   if (values.help) {
-    console.log(helpFormatter.formatCommandHelp(mcpHelp));
+    output.log(helpFormatter.formatCommandHelp(mcpHelp));
     return;
   }
 
   if (positionals.length === 0) {
-    console.log(helpFormatter.formatCommandHelp(mcpHelp));
+    output.log(helpFormatter.formatCommandHelp(mcpHelp));
     return;
   }
 

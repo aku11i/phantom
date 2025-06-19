@@ -54,6 +54,7 @@ export async function attachHandler(args: string[]): Promise<void> {
     branchName,
     context.config?.postCreate?.copyFiles,
     context.config?.postCreate?.commands,
+    output,
   );
 
   if (isErr(result)) {

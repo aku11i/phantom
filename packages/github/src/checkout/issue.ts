@@ -5,13 +5,21 @@ import {
   getWorktreePathFromDirectory,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import {
+  type Logger,
+  type Result,
+  err,
+  isErr,
+  noopLogger,
+  ok,
+} from "@aku11i/phantom-shared";
 import { type GitHubIssue, isPullRequest } from "../api/index.ts";
 import type { CheckoutResult } from "./pr.ts";
 
 export async function checkoutIssue(
   issue: GitHubIssue,
   base?: string,
+  logger: Logger = noopLogger,
 ): Promise<Result<CheckoutResult>> {
   if (isPullRequest(issue)) {
     return err(
@@ -36,6 +44,7 @@ export async function checkoutIssue(
     },
     context.config?.postCreate?.copyFiles,
     context.config?.postCreate?.commands,
+    logger,
   );
 
   if (isErr(result)) {

@@ -43,7 +43,7 @@ describe("githubCheckout", () => {
   });
 
   it("should have correct function signature", () => {
-    // Check function accepts 1 parameter
+    // Check function accepts 1 required parameter (options), with optional logger parameter
     equal(githubCheckout.length, 1);
   });
 
@@ -182,10 +182,9 @@ describe("githubCheckout", () => {
 
     // Verify calls
     equal(checkoutIssueMock.mock.calls.length, 1);
-    deepEqual(checkoutIssueMock.mock.calls[0].arguments, [
-      mockIssue,
-      undefined,
-    ]);
+    // Check first two arguments (issue and base)
+    equal(checkoutIssueMock.mock.calls[0].arguments[0], mockIssue);
+    equal(checkoutIssueMock.mock.calls[0].arguments[1], undefined);
     equal(checkoutPullRequestMock.mock.calls.length, 0);
   });
 
@@ -213,10 +212,9 @@ describe("githubCheckout", () => {
 
     // Verify calls
     equal(checkoutIssueMock.mock.calls.length, 1);
-    deepEqual(checkoutIssueMock.mock.calls[0].arguments, [
-      mockIssue,
-      "develop",
-    ]);
+    // Check first two arguments (issue and base)
+    equal(checkoutIssueMock.mock.calls[0].arguments[0], mockIssue);
+    equal(checkoutIssueMock.mock.calls[0].arguments[1], "develop");
   });
 
   it("should pass through errors from checkoutPullRequest", async () => {
