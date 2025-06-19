@@ -89,16 +89,16 @@ export async function createWorktree(
 
     // Execute postCreate hooks
     if (postCreateCopyFiles && postCreateCopyFiles.length > 0) {
-      const copyConfigResult = await copyFilesToWorktree(
+      const copyResult = await copyFilesToWorktree(
         gitRoot,
         worktreeDirectory,
         name,
         postCreateCopyFiles,
       );
-      if (isErr(copyConfigResult)) {
+      if (isErr(copyResult)) {
         // Don't fail worktree creation, just warn
         if (!copyError) {
-          copyError = copyConfigResult.error.message;
+          copyError = copyResult.error.message;
         }
       }
     }
