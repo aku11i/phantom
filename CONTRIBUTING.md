@@ -159,54 +159,76 @@ To release a new version of Phantom:
    pnpm version:major
    ```
 
-5. **Commit and tag the version changes**
+5. **Create a release branch**
    ```bash
-   # Add all version changes
+   git checkout -b release/v<version>
+   ```
+
+6. **Commit and push the version changes**
+   ```bash
    git add -A
+   git commit -m "chore: bump version to <version>"
+   git push -u origin release/v<version>
+   ```
+
+7. **Create a Pull Request**
+   ```bash
+   gh pr create --title "Release v<version>" --body "$(cat <<'EOF'
+   ## Summary
+   - Bump version from <old-version> to <new-version>
+   - This release includes <brief summary of changes>
    
-   # Commit with version number as message (e.g., "1.0.1" for v1.0.1)
-   git commit -m "<version>"
+   ## Changes Included
+   - Feature/Fix description (#PR-number)
    
-   # Create tag with v prefix (e.g., "v1.0.1")
+   ## Release Plan
+   After this PR is merged:
+   1. Create git tag v<version>
+   2. Build the project
+   3. Publish to npm
+   4. Create GitHub release with detailed notes
+   EOF
+   )"
+   ```
+
+8. **After PR is merged, switch back to main**
+   ```bash
+   git checkout main
+   git pull
+   ```
+
+9. **Create and push tag**
+   ```bash
    git tag v<version>
-   
-   # Example for v0.1.3:
-   git add -A
-   git commit -m "0.1.3"
-   git tag v0.1.3
+   git push --tags
    ```
 
-6. **Push the version commit and tag**
-   ```bash
-   git push && git push --tags
-   ```
+10. **Build the project before publishing**
+    ```bash
+    pnpm build
+    ```
 
-7. **Build the project before publishing**
-   ```bash
-   pnpm build
-   ```
+11. **Publish to npm**
+    ```bash
+    pnpm publish --recursive
+    ```
 
-8. **Publish to npm**
-   ```bash
-   pnpm publish --recursive
-   ```
+12. **Create GitHub release**
+    ```bash
+    # Create a release with automatically generated notes
+    gh release create v<version> \
+      --title "Phantom v<version>" \
+      --generate-notes \
+      --target main
 
-9. **Create GitHub release**
-   ```bash
-   # Create a release with automatically generated notes
-   gh release create v<version> \
-     --title "Phantom v<version>" \
-     --generate-notes \
-     --target main
+    # Example for v1.3.0:
+    gh release create v1.3.0 \
+      --title "Phantom v1.3.0" \
+      --generate-notes \
+      --target main
+    ```
 
-   # Example for v0.1.3:
-   gh release create v0.1.3 \
-     --title "Phantom v0.1.3" \
-     --generate-notes \
-     --target main
-   ```
-
-10. **Update release notes for clarity**
+13. **Update release notes for clarity**
    - Review the auto-generated release notes using `gh release view v<version>`
    - Check PR descriptions for important details using `gh pr view <number>`
    - Update the release notes to be more user-friendly:
