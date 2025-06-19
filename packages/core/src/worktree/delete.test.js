@@ -307,28 +307,20 @@ describe("removeWorktree", () => {
     ]);
   });
 
-  it("should use force removal when regular removal fails", async () => {
+  it("should use force flag when force parameter is true", async () => {
     resetMocks();
-    let callCount = 0;
-    executeGitCommandMock.mock.mockImplementation(() => {
-      callCount++;
-      if (callCount === 1) {
-        return Promise.reject(new Error("Worktree is dirty"));
-      }
-      return Promise.resolve({ stdout: "", stderr: "" });
-    });
+    executeGitCommandMock.mock.mockImplementation(() =>
+      Promise.resolve({ stdout: "", stderr: "" }),
+    );
 
     await removeWorktree(
       "/test/repo",
       "/test/repo/.git/phantom/worktrees/feature",
+      true,
     );
 
-    strictEqual(executeGitCommandMock.mock.calls.length, 2);
+    strictEqual(executeGitCommandMock.mock.calls.length, 1);
     deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments, [
-      ["worktree", "remove", "/test/repo/.git/phantom/worktrees/feature"],
-      { cwd: "/test/repo" },
-    ]);
-    deepStrictEqual(executeGitCommandMock.mock.calls[1].arguments, [
       [
         "worktree",
         "remove",
@@ -339,7 +331,7 @@ describe("removeWorktree", () => {
     ]);
   });
 
-  it("should throw error when both regular and force removal fail", async () => {
+  it("should throw error when removal fails", async () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(() =>
       Promise.reject(new Error("Permission denied")),
@@ -352,10 +344,10 @@ describe("removeWorktree", () => {
       );
       throw new Error("Expected removeWorktree to throw");
     } catch (error) {
-      strictEqual(error.message, "Failed to remove worktree");
+      strictEqual(error.message, "Permission denied");
     }
 
-    strictEqual(executeGitCommandMock.mock.calls.length, 2);
+    strictEqual(executeGitCommandMock.mock.calls.length, 1);
   });
 });
 
