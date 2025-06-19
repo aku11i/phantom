@@ -6,7 +6,6 @@ import {
   err,
   isErr,
   isOk,
-  noopLogger,
   ok,
 } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
@@ -42,7 +41,7 @@ export async function createWorktree(
   options: CreateWorktreeOptions,
   postCreateCopyFiles: string[] | undefined,
   postCreateCommands: string[] | undefined,
-  logger: Logger = noopLogger,
+  logger: Logger,
 ): Promise<
   Result<CreateWorktreeSuccess, WorktreeAlreadyExistsError | WorktreeError>
 > {

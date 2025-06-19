@@ -5,7 +5,6 @@ import {
   type Result,
   err,
   isErr,
-  noopLogger,
   ok,
 } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
@@ -26,7 +25,7 @@ export async function attachWorktreeCore(
   name: string,
   postCreateCopyFiles: string[] | undefined,
   postCreateCommands: string[] | undefined,
-  logger: Logger = noopLogger,
+  logger: Logger,
 ): Promise<Result<string, Error>> {
   const validation = validateWorktreeName(name);
   if (isErr(validation)) {

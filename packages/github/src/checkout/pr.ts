@@ -11,7 +11,6 @@ import {
   type Result,
   err,
   isErr,
-  noopLogger,
   ok,
 } from "@aku11i/phantom-shared";
 import type { GitHubPullRequest } from "../api/index.ts";
@@ -25,7 +24,7 @@ export interface CheckoutResult {
 
 export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,
-  logger: Logger = noopLogger,
+  logger: Logger,
 ): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);

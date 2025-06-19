@@ -3,7 +3,6 @@ import {
   type Result,
   err,
   isErr,
-  noopLogger,
   ok,
 } from "@aku11i/phantom-shared";
 import { fetchIssue, getGitHubRepoInfo, isPullRequest } from "./api/index.ts";
@@ -17,7 +16,7 @@ export interface GitHubCheckoutOptions {
 
 export async function githubCheckout(
   options: GitHubCheckoutOptions,
-  logger: Logger = noopLogger,
+  logger: Logger,
 ): Promise<Result<CheckoutResult>> {
   const { number, base } = options;
   const { owner, repo } = await getGitHubRepoInfo();
@@ -46,6 +45,6 @@ export async function githubCheckout(
     return result;
   }
 
-  const result = await checkoutIssue(issue, base, logger);
+  const result = await checkoutIssue(issue, logger, base);
   return result;
 }
