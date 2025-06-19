@@ -36,11 +36,24 @@ mock.module("@aku11i/phantom-core", {
 const { checkoutPullRequest } = await import("./pr.ts");
 
 describe("checkoutPullRequest", () => {
+  const mockLogger = {
+    log: mock.fn(),
+    error: mock.fn(),
+    warn: mock.fn(),
+    table: mock.fn(),
+    processOutput: mock.fn(),
+  };
+
   const resetMocks = () => {
     getGitRootMock.mock.resetCalls();
     fetchMock.mock.resetCalls();
     attachWorktreeCoreMock.mock.resetCalls();
     setUpstreamBranchMock.mock.resetCalls();
+    mockLogger.log.mock.resetCalls();
+    mockLogger.error.mock.resetCalls();
+    mockLogger.warn.mock.resetCalls();
+    mockLogger.table.mock.resetCalls();
+    mockLogger.processOutput.mock.resetCalls();
   };
 
   it("should export checkoutPullRequest function", () => {
@@ -48,8 +61,8 @@ describe("checkoutPullRequest", () => {
   });
 
   it("should have correct function signature", () => {
-    // Takes 1 parameter: pullRequest
-    equal(checkoutPullRequest.length, 1);
+    // Takes 2 parameters: pullRequest, logger
+    equal(checkoutPullRequest.length, 2);
   });
 
   it("should checkout pull request successfully", async () => {
@@ -89,7 +102,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, mockLogger);
 
     ok(result.value);
     equal(
@@ -162,7 +175,7 @@ describe("checkoutPullRequest", () => {
       (dir, name) => `${dir}/${name}`,
     );
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, mockLogger);
 
     ok(result.value);
     equal(result.value.message, "Worktree for PR #456 is already checked out");
@@ -211,7 +224,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, mockLogger);
 
     ok(result.error);
     equal(result.error, expectedError);
@@ -258,7 +271,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    await checkoutPullRequest(mockPullRequest);
+    await checkoutPullRequest(mockPullRequest, mockLogger);
 
     const [, worktreeDirectory, worktreeName] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
@@ -303,7 +316,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, mockLogger);
 
     ok(result.value);
     equal(
@@ -360,7 +373,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, mockLogger);
 
     ok(result.error);
     ok(result.error.message.includes("Failed to fetch PR #555"));

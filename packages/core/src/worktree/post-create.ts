@@ -1,4 +1,10 @@
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import {
+  type Logger,
+  type Result,
+  err,
+  isErr,
+  ok,
+} from "@aku11i/phantom-shared";
 import { execInWorktree } from "../exec.ts";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import { copyFiles } from "./file-copier.ts";
@@ -8,6 +14,7 @@ export interface PostCreateExecutionOptions {
   worktreesDirectory: string;
   worktreeName: string;
   commands: string[];
+  logger: Logger;
 }
 
 export interface PostCreateExecutionResult {
@@ -17,12 +24,13 @@ export interface PostCreateExecutionResult {
 export async function executePostCreateCommands(
   options: PostCreateExecutionOptions,
 ): Promise<Result<PostCreateExecutionResult>> {
-  const { gitRoot, worktreesDirectory, worktreeName, commands } = options;
+  const { gitRoot, worktreesDirectory, worktreeName, commands, logger } =
+    options;
 
   const executedCommands: string[] = [];
 
   for (const command of commands) {
-    console.log(`Executing: ${command}`);
+    logger.log(`Executing: ${command}`);
     const shell = process.env.SHELL || "/bin/sh";
     const cmdResult = await execInWorktree(
       gitRoot,

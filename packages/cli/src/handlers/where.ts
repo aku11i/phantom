@@ -5,11 +5,11 @@ import {
   whereWorktree as whereWorktreeCore,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function whereHandler(args: string[]): Promise<void> {
+  const logger = new DefaultLogger();
   const { positionals, values } = parseArgs({
     args,
     options: {
@@ -79,6 +79,6 @@ export async function whereHandler(args: string[]): Promise<void> {
     exitWithError(result.error.message, exitCodes.notFound);
   }
 
-  output.log(result.value.path);
+  logger.log(result.value.path);
   exitWithSuccess();
 }

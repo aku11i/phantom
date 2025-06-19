@@ -32,6 +32,27 @@ mock.module("@aku11i/phantom-shared", {
   },
 });
 
+// Create a mock for the NoopLogger
+const mockNoopLogger = {
+  log: mock.fn(),
+  error: mock.fn(),
+  warn: mock.fn(),
+  table: mock.fn(),
+  processOutput: mock.fn(),
+};
+
+mock.module("../logger/noop-logger.ts", {
+  namedExports: {
+    NoopLogger: class MockNoopLogger {
+      log = mockNoopLogger.log;
+      error = mockNoopLogger.error;
+      warn = mockNoopLogger.warn;
+      table = mockNoopLogger.table;
+      processOutput = mockNoopLogger.processOutput;
+    },
+  },
+});
+
 const { createWorktreeTool } = await import("./create-worktree.ts");
 
 describe("createWorktreeTool", () => {
@@ -78,17 +99,26 @@ describe("createWorktreeTool", () => {
 
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls.length, 1);
-    deepStrictEqual(createWorktreeMock.mock.calls[0].arguments, [
-      gitRoot,
+    strictEqual(createWorktreeMock.mock.calls[0].arguments.length, 7);
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[0], gitRoot);
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[1],
       "/path/to/repo/.git/phantom/worktrees",
-      "feature-1",
-      {
-        branch: "feature-1",
-        base: undefined,
-      },
-      undefined,
-      undefined,
-    ]);
+    );
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "feature-1");
+    deepStrictEqual(createWorktreeMock.mock.calls[0].arguments[3], {
+      branch: "feature-1",
+      base: undefined,
+    });
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[4], undefined);
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[5], undefined);
+    // Check that logger is an object with expected methods
+    const logger = createWorktreeMock.mock.calls[0].arguments[6];
+    strictEqual(typeof logger.log, "function");
+    strictEqual(typeof logger.error, "function");
+    strictEqual(typeof logger.warn, "function");
+    strictEqual(typeof logger.table, "function");
+    strictEqual(typeof logger.processOutput, "function");
 
     strictEqual(result.content.length, 1);
     strictEqual(result.content[0].type, "text");
@@ -124,17 +154,26 @@ describe("createWorktreeTool", () => {
     });
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
-    deepStrictEqual(createWorktreeMock.mock.calls[0].arguments, [
-      gitRoot,
+    strictEqual(createWorktreeMock.mock.calls[0].arguments.length, 7);
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[0], gitRoot);
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[1],
       "/path/to/repo/.git/phantom/worktrees",
-      "feature-2",
-      {
-        branch: "feature-2",
-        base: "develop",
-      },
-      undefined,
-      undefined,
-    ]);
+    );
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "feature-2");
+    deepStrictEqual(createWorktreeMock.mock.calls[0].arguments[3], {
+      branch: "feature-2",
+      base: "develop",
+    });
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[4], undefined);
+    strictEqual(createWorktreeMock.mock.calls[0].arguments[5], undefined);
+    // Check that logger is an object with expected methods
+    const logger = createWorktreeMock.mock.calls[0].arguments[6];
+    strictEqual(typeof logger.log, "function");
+    strictEqual(typeof logger.error, "function");
+    strictEqual(typeof logger.warn, "function");
+    strictEqual(typeof logger.table, "function");
+    strictEqual(typeof logger.processOutput, "function");
 
     const parsedContent = JSON.parse(result.content[0].text);
     strictEqual(parsedContent.success, true);

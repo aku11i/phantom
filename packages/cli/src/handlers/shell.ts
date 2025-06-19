@@ -12,11 +12,11 @@ import {
   getPhantomEnv,
   isInsideTmux,
 } from "@aku11i/phantom-process";
-import { isErr } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function shellHandler(args: string[]): Promise<void> {
+  const logger = new DefaultLogger();
   const { positionals, values } = parseArgs({
     args,
     options: {
@@ -118,7 +118,7 @@ export async function shellHandler(args: string[]): Promise<void> {
     }
 
     if (tmuxDirection) {
-      output.log(
+      logger.log(
         `Opening worktree '${worktreeName}' in tmux ${
           tmuxDirection === "new" ? "window" : "pane"
         }...`,
@@ -135,7 +135,7 @@ export async function shellHandler(args: string[]): Promise<void> {
       });
 
       if (isErr(tmuxResult)) {
-        output.error(tmuxResult.error.message);
+        logger.error(tmuxResult.error.message);
         const exitCode =
           "exitCode" in tmuxResult.error
             ? (tmuxResult.error.exitCode ?? exitCodes.generalError)
@@ -146,10 +146,10 @@ export async function shellHandler(args: string[]): Promise<void> {
       exitWithSuccess();
     }
 
-    output.log(
+    logger.log(
       `Entering worktree '${worktreeName}' at ${validation.value.path}`,
     );
-    output.log("Type 'exit' to return to your original directory\n");
+    logger.log("Type 'exit' to return to your original directory\n");
 
     const result = await shellInWorktreeCore(
       context.gitRoot,

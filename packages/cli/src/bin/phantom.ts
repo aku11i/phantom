@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
+import { DefaultLogger } from "@aku11i/phantom-shared";
 import { attachHandler } from "../handlers/attach.ts";
 import { completionHandler } from "../handlers/completion.ts";
 import { createHandler } from "../handlers/create.ts";
@@ -125,12 +126,12 @@ const commands: Command[] = [
   },
 ];
 
-function printHelp(commands: Command[]) {
+function printHelp(commands: Command[], logger: DefaultLogger) {
   const simpleCommands = commands.map((cmd) => ({
     name: cmd.name,
     description: cmd.description,
   }));
-  console.log(helpFormatter.formatMainHelp(simpleCommands));
+  logger.log(helpFormatter.formatMainHelp(simpleCommands));
 }
 
 function findCommand(
@@ -162,9 +163,10 @@ function findCommand(
 }
 
 const args = argv.slice(2);
+const logger = new DefaultLogger();
 
 if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
-  printHelp(commands);
+  printHelp(commands, logger);
   exit(0);
 }
 
@@ -176,17 +178,17 @@ if (args[0] === "--version" || args[0] === "-v") {
 const { command, remainingArgs } = findCommand(args, commands);
 
 if (!command || !command.handler) {
-  console.error(`Error: Unknown command '${args.join(" ")}'\n`);
-  printHelp(commands);
+  logger.error(`Error: Unknown command '${args.join(" ")}'\n`);
+  printHelp(commands, logger);
   exit(1);
 }
 
 // Check if user is requesting help for a specific command
 if (remainingArgs.includes("--help") || remainingArgs.includes("-h")) {
   if (command.help) {
-    console.log(helpFormatter.formatCommandHelp(command.help));
+    logger.log(helpFormatter.formatCommandHelp(command.help));
   } else {
-    console.log(`Help not available for command '${command.name}'`);
+    logger.log(`Help not available for command '${command.name}'`);
   }
   exit(0);
 }
