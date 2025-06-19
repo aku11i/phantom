@@ -131,7 +131,7 @@ export async function createHandler(args: string[]): Promise<void> {
         copyFiles: filesToCopy.length > 0 ? filesToCopy : undefined,
         base: baseOption,
       },
-      context.config?.postCreate?.copyFiles,
+      filesToCopy.length > 0 ? filesToCopy : undefined,
       context.config?.postCreate?.commands,
     );
 
