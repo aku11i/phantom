@@ -3,7 +3,6 @@ import {
   type Result,
   err,
   isErr,
-  noopLogger,
   ok,
 } from "@aku11i/phantom-shared";
 import { execInWorktree } from "../exec.ts";
@@ -15,7 +14,7 @@ export interface PostCreateExecutionOptions {
   worktreesDirectory: string;
   worktreeName: string;
   commands: string[];
-  logger?: Logger;
+  logger: Logger;
 }
 
 export interface PostCreateExecutionResult {
@@ -25,13 +24,8 @@ export interface PostCreateExecutionResult {
 export async function executePostCreateCommands(
   options: PostCreateExecutionOptions,
 ): Promise<Result<PostCreateExecutionResult>> {
-  const {
-    gitRoot,
-    worktreesDirectory,
-    worktreeName,
-    commands,
-    logger = noopLogger,
-  } = options;
+  const { gitRoot, worktreesDirectory, worktreeName, commands, logger } =
+    options;
 
   const executedCommands: string[] = [];
 

@@ -1,6 +1,6 @@
 import { createContext, createWorktree } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isOk } from "@aku11i/phantom-shared";
+import { isOk, noopLogger } from "@aku11i/phantom-shared";
 import { z } from "zod";
 import type { Tool } from "./types.ts";
 
@@ -31,6 +31,7 @@ export const createWorktreeTool: Tool<typeof schema> = {
       },
       context.config?.postCreate?.copyFiles,
       context.config?.postCreate?.commands,
+      noopLogger,
     );
 
     if (!isOk(result)) {

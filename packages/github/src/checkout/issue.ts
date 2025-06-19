@@ -10,7 +10,6 @@ import {
   type Result,
   err,
   isErr,
-  noopLogger,
   ok,
 } from "@aku11i/phantom-shared";
 import { type GitHubIssue, isPullRequest } from "../api/index.ts";
@@ -18,8 +17,8 @@ import type { CheckoutResult } from "./pr.ts";
 
 export async function checkoutIssue(
   issue: GitHubIssue,
+  logger: Logger,
   base?: string,
-  logger: Logger = noopLogger,
 ): Promise<Result<CheckoutResult>> {
   if (isPullRequest(issue)) {
     return err(

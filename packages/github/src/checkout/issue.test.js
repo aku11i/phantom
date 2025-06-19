@@ -1,5 +1,6 @@
 import { deepEqual, equal, ok } from "node:assert/strict";
 import { describe, it, mock } from "node:test";
+import { noopLogger } from "@aku11i/phantom-shared";
 
 const getGitRootMock = mock.fn();
 const createWorktreeCoreMock = mock.fn();
@@ -50,8 +51,8 @@ describe("checkoutIssue", () => {
   });
 
   it("should have correct function signature", () => {
-    // Takes 2 parameters: issue, base (optional)
-    equal(checkoutIssue.length, 2);
+    // Takes 3 parameters: issue, logger, base (optional)
+    equal(checkoutIssue.length, 3);
   });
 
   it("should reject pull requests", async () => {
@@ -77,7 +78,7 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => true);
 
-    const result = await checkoutIssue(mockIssue);
+    const result = await checkoutIssue(mockIssue, noopLogger);
 
     ok(result.error);
     equal(
@@ -111,7 +112,7 @@ describe("checkoutIssue", () => {
       },
     }));
 
-    const result = await checkoutIssue(mockIssue);
+    const result = await checkoutIssue(mockIssue, noopLogger);
 
     ok(result.value);
     equal(
@@ -160,7 +161,7 @@ describe("checkoutIssue", () => {
       },
     }));
 
-    const result = await checkoutIssue(mockIssue, customBase);
+    const result = await checkoutIssue(mockIssue, noopLogger, customBase);
 
     ok(result.value);
     equal(result.value.message, "Created worktree issue-789 from develop");
@@ -193,7 +194,7 @@ describe("checkoutIssue", () => {
       (dir, name) => `${dir}/${name}`,
     );
 
-    const result = await checkoutIssue(mockIssue);
+    const result = await checkoutIssue(mockIssue, noopLogger);
 
     ok(result.value);
     equal(
@@ -222,7 +223,7 @@ describe("checkoutIssue", () => {
       error: expectedError,
     }));
 
-    const result = await checkoutIssue(mockIssue);
+    const result = await checkoutIssue(mockIssue, noopLogger);
 
     ok(result.error);
     equal(result.error, expectedError);
@@ -248,7 +249,7 @@ describe("checkoutIssue", () => {
       },
     }));
 
-    await checkoutIssue(mockIssue);
+    await checkoutIssue(mockIssue, noopLogger);
 
     const [, worktreeDirectory, worktreeName, options] =
       createWorktreeCoreMock.mock.calls[0].arguments;

@@ -24,11 +24,20 @@ mock.module("@aku11i/phantom-git", {
   },
 });
 
+const noopLoggerMock = {
+  log: mock.fn(),
+  error: mock.fn(),
+  warn: mock.fn(),
+  table: mock.fn(),
+  processOutput: mock.fn(),
+};
+
 mock.module("@aku11i/phantom-shared", {
   namedExports: {
     isOk: isOkMock,
     ok: okMock,
     err: errMock,
+    noopLogger: noopLoggerMock,
   },
 });
 
@@ -88,6 +97,7 @@ describe("createWorktreeTool", () => {
       },
       undefined,
       undefined,
+      noopLoggerMock,
     ]);
 
     strictEqual(result.content.length, 1);
@@ -134,6 +144,7 @@ describe("createWorktreeTool", () => {
       },
       undefined,
       undefined,
+      noopLoggerMock,
     ]);
 
     const parsedContent = JSON.parse(result.content[0].text);

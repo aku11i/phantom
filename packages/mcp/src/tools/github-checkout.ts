@@ -1,5 +1,5 @@
 import { githubCheckout } from "@aku11i/phantom-github";
-import { isOk } from "@aku11i/phantom-shared";
+import { isOk, noopLogger } from "@aku11i/phantom-shared";
 import { z } from "zod";
 import type { Tool } from "./types.ts";
 
@@ -17,7 +17,7 @@ export const githubCheckoutTool: Tool<typeof schema> = {
     "Checkout a GitHub issue or pull request by number into a new worktree",
   inputSchema: schema,
   handler: async ({ number, base }) => {
-    const result = await githubCheckout({ number, base });
+    const result = await githubCheckout({ number, base }, noopLogger);
 
     if (!isOk(result)) {
       throw new Error(result.error.message);

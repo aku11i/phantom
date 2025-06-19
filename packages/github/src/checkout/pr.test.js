@@ -1,5 +1,6 @@
 import { deepEqual, equal, ok } from "node:assert/strict";
 import { describe, it, mock } from "node:test";
+import { noopLogger } from "@aku11i/phantom-shared";
 
 const getGitRootMock = mock.fn();
 const fetchMock = mock.fn();
@@ -48,8 +49,8 @@ describe("checkoutPullRequest", () => {
   });
 
   it("should have correct function signature", () => {
-    // Takes 1 parameter: pullRequest
-    equal(checkoutPullRequest.length, 1);
+    // Takes 2 parameters: pullRequest, logger
+    equal(checkoutPullRequest.length, 2);
   });
 
   it("should checkout pull request successfully", async () => {
@@ -89,7 +90,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, noopLogger);
 
     ok(result.value);
     equal(
@@ -162,7 +163,7 @@ describe("checkoutPullRequest", () => {
       (dir, name) => `${dir}/${name}`,
     );
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, noopLogger);
 
     ok(result.value);
     equal(result.value.message, "Worktree for PR #456 is already checked out");
@@ -211,7 +212,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, noopLogger);
 
     ok(result.error);
     equal(result.error, expectedError);
@@ -258,7 +259,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    await checkoutPullRequest(mockPullRequest);
+    await checkoutPullRequest(mockPullRequest, noopLogger);
 
     const [, worktreeDirectory, worktreeName] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
@@ -303,7 +304,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, noopLogger);
 
     ok(result.value);
     equal(
@@ -360,7 +361,7 @@ describe("checkoutPullRequest", () => {
       value: undefined,
     }));
 
-    const result = await checkoutPullRequest(mockPullRequest);
+    const result = await checkoutPullRequest(mockPullRequest, noopLogger);
 
     ok(result.error);
     ok(result.error.message.includes("Failed to fetch PR #555"));
