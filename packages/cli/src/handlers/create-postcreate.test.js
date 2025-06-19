@@ -6,8 +6,6 @@ import { err, ok } from "@aku11i/phantom-shared";
 const exitWithErrorMock = mock.fn((message, code) => {
   throw new Error(`Exit with code ${code}: ${message}`);
 });
-const outputLogMock = mock.fn();
-const outputErrorMock = mock.fn();
 const getGitRootMock = mock.fn();
 const createWorktreeMock = mock.fn();
 const createContextMock = mock.fn();
@@ -25,13 +23,6 @@ mock.module("../errors.ts", {
     },
   },
 });
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: { log: outputLogMock, error: outputErrorMock },
-  },
-});
-
 mock.module("@aku11i/phantom-git", {
   namedExports: {
     getGitRoot: getGitRootMock,
@@ -64,8 +55,6 @@ const { createHandler } = await import("./create.ts");
 describe("createHandler postCreate", () => {
   it("should pass config to createWorktree for postCreate execution", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
-    outputErrorMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
@@ -156,7 +145,6 @@ describe("createHandler postCreate", () => {
 
   it("should pass config with only copyFiles to createWorktree", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
     createWorktreeMock.mock.resetCalls();
     createContextMock.mock.resetCalls();

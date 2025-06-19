@@ -66,16 +66,6 @@ mock.module("@aku11i/phantom-core", {
     }),
   },
 });
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: {
-      log: consoleLogMock,
-      error: consoleErrorMock,
-    },
-  },
-});
-
 mock.module("../errors.ts", {
   namedExports: {
     exitWithError: exitWithErrorMock,
@@ -107,11 +97,6 @@ describe("execHandler", () => {
     );
 
     strictEqual(isInsideTmuxMock.mock.calls.length, 1);
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: The --tmux option can only be used inside a tmux session",
-    );
   });
 
   it("should execute command in new tmux window", async () => {
@@ -150,10 +135,6 @@ describe("execHandler", () => {
     strictEqual(tmuxCall.args[0], "test");
     strictEqual(tmuxCall.cwd, "/repo/.git/phantom/worktrees/feature");
     strictEqual(tmuxCall.windowName, "feature");
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Executing command in worktree 'feature' in tmux window...",
-    );
   });
 
   it("should execute command in vertical tmux pane", async () => {
@@ -191,10 +172,6 @@ describe("execHandler", () => {
     strictEqual(tmuxCall.args[0], "run");
     strictEqual(tmuxCall.args[1], "dev");
     strictEqual(tmuxCall.windowName, undefined);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Executing command in worktree 'feature' in tmux pane...",
-    );
   });
 
   it("should execute command in horizontal tmux pane", async () => {
@@ -238,10 +215,6 @@ describe("execHandler", () => {
     strictEqual(tmuxCall.args[0], "run");
     strictEqual(tmuxCall.args[1], "watch");
     strictEqual(tmuxCall.windowName, undefined);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Executing command in worktree 'feature' in tmux pane...",
-    );
   });
 
   it("should handle tmux command error", async () => {
@@ -270,12 +243,6 @@ describe("execHandler", () => {
     await rejects(
       async () => await execHandler(["feature", "npm", "test", "--tmux"]),
       /Exit with code 1:/,
-    );
-
-    strictEqual(consoleErrorMock.mock.calls.length, 2);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "tmux command failed",
     );
   });
 

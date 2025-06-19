@@ -7,11 +7,11 @@ import {
   selectWorktreeWithFzf,
 } from "@aku11i/phantom-core";
 import { getCurrentWorktree, getGitRoot } from "@aku11i/phantom-git";
-import { isErr } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function deleteHandler(args: string[]): Promise<void> {
+  const logger = new DefaultLogger();
   const { values, positionals } = parseArgs({
     args,
     options: {
@@ -108,7 +108,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
       exitWithError(result.error.message, exitCode);
     }
 
-    output.log(result.value.message);
+    logger.log(result.value.message);
     exitWithSuccess();
   } catch (error) {
     exitWithError(

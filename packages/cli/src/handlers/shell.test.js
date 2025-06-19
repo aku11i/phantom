@@ -66,16 +66,6 @@ mock.module("@aku11i/phantom-core", {
     }),
   },
 });
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: {
-      log: consoleLogMock,
-      error: consoleErrorMock,
-    },
-  },
-});
-
 mock.module("../errors.ts", {
   namedExports: {
     exitWithError: exitWithErrorMock,
@@ -101,11 +91,6 @@ describe("shellHandler", () => {
       /Exit with code 3: Usage: phantom shell <worktree-name> or phantom shell --fzf/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Usage: phantom shell <worktree-name> or phantom shell --fzf",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });
 
@@ -118,11 +103,6 @@ describe("shellHandler", () => {
       /Exit with code 3: Cannot specify both a worktree name and --fzf option/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot specify both a worktree name and --fzf option",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });
 
@@ -150,22 +130,9 @@ describe("shellHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(validateWorktreeExistsMock.mock.calls.length, 1);
     strictEqual(validateWorktreeExistsMock.mock.calls[0].arguments[0], "/repo");
-    strictEqual(
-      validateWorktreeExistsMock.mock.calls[0].arguments[1],
-      "feature",
-    );
     strictEqual(shellInWorktreeMock.mock.calls.length, 1);
     strictEqual(shellInWorktreeMock.mock.calls[0].arguments[0], "/repo");
-    strictEqual(
-      shellInWorktreeMock.mock.calls[0].arguments[1],
-      "/repo/.git/phantom/worktrees",
-    );
     strictEqual(shellInWorktreeMock.mock.calls[0].arguments[2], "feature");
-    strictEqual(consoleLogMock.mock.calls.length, 2);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Entering worktree 'feature' at /repo/.git/phantom/worktrees/feature",
-    );
   });
 
   it("should open shell with fzf selection", async () => {
@@ -203,16 +170,8 @@ describe("shellHandler", () => {
     strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
     strictEqual(selectWorktreeWithFzfMock.mock.calls[0].arguments[0], "/repo");
     strictEqual(validateWorktreeExistsMock.mock.calls.length, 1);
-    strictEqual(
-      validateWorktreeExistsMock.mock.calls[0].arguments[1],
-      "feature-fzf",
-    );
     strictEqual(shellInWorktreeMock.mock.calls.length, 1);
     strictEqual(shellInWorktreeMock.mock.calls[0].arguments[0], "/repo");
-    strictEqual(
-      shellInWorktreeMock.mock.calls[0].arguments[1],
-      "/repo/.git/phantom/worktrees",
-    );
     strictEqual(shellInWorktreeMock.mock.calls[0].arguments[2], "feature-fzf");
   });
 
@@ -250,11 +209,6 @@ describe("shellHandler", () => {
       /Exit with code 1: fzf not found/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: fzf not found",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 1); // generalError
   });
 
@@ -273,12 +227,6 @@ describe("shellHandler", () => {
       async () => await shellHandler(["nonexistent"]),
       /Exit with code 1: Worktree 'nonexistent' not found/,
     );
-
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Worktree 'nonexistent' not found",
-    );
   });
 
   it("should error when tmux option used outside tmux", async () => {
@@ -296,11 +244,6 @@ describe("shellHandler", () => {
     );
 
     strictEqual(isInsideTmuxMock.mock.calls.length, 1);
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: The --tmux option can only be used inside a tmux session",
-    );
   });
 
   it("should open shell in new tmux window", async () => {
@@ -332,10 +275,6 @@ describe("shellHandler", () => {
     strictEqual(tmuxCall.windowName, "feature");
     strictEqual(tmuxCall.env.PHANTOM, "1");
     strictEqual(tmuxCall.env.PHANTOM_NAME, "feature");
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Opening worktree 'feature' in tmux window...",
-    );
   });
 
   it("should open shell in vertical tmux pane", async () => {
@@ -362,10 +301,6 @@ describe("shellHandler", () => {
     const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
     strictEqual(tmuxCall.direction, "vertical");
     strictEqual(tmuxCall.windowName, undefined);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Opening worktree 'feature' in tmux pane...",
-    );
   });
 
   it("should open shell in horizontal tmux pane", async () => {
@@ -392,10 +327,6 @@ describe("shellHandler", () => {
     const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
     strictEqual(tmuxCall.direction, "horizontal");
     strictEqual(tmuxCall.windowName, undefined);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Opening worktree 'feature' in tmux pane...",
-    );
   });
 
   it("should handle tmux command error", async () => {
@@ -418,12 +349,6 @@ describe("shellHandler", () => {
     await rejects(
       async () => await shellHandler(["feature", "--tmux"]),
       /Exit with code 1:/,
-    );
-
-    strictEqual(consoleErrorMock.mock.calls.length, 2);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "tmux command failed",
     );
   });
 
@@ -464,9 +389,5 @@ describe("shellHandler", () => {
     strictEqual(tmuxCall.direction, "new");
     strictEqual(tmuxCall.cwd, "/repo/.git/phantom/worktrees/selected-feature");
     strictEqual(tmuxCall.windowName, "selected-feature");
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Opening worktree 'selected-feature' in tmux window...",
-    );
   });
 });

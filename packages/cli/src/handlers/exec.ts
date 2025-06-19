@@ -12,11 +12,11 @@ import {
   getPhantomEnv,
   isInsideTmux,
 } from "@aku11i/phantom-process";
-import { isErr } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function execHandler(args: string[]): Promise<void> {
+  const logger = new DefaultLogger();
   const { positionals, values } = parseArgs({
     args,
     options: {
@@ -124,7 +124,7 @@ export async function execHandler(args: string[]): Promise<void> {
     }
 
     if (tmuxDirection) {
-      output.log(
+      logger.log(
         `Executing command in worktree '${worktreeName}' in tmux ${
           tmuxDirection === "new" ? "window" : "pane"
         }...`,
@@ -142,7 +142,7 @@ export async function execHandler(args: string[]): Promise<void> {
       });
 
       if (isErr(tmuxResult)) {
-        output.error(tmuxResult.error.message);
+        logger.error(tmuxResult.error.message);
         const exitCode =
           "exitCode" in tmuxResult.error
             ? (tmuxResult.error.exitCode ?? exitCodes.generalError)

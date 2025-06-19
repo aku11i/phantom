@@ -1,10 +1,10 @@
 import { parseArgs } from "node:util";
 import { githubCheckout } from "@aku11i/phantom-github";
-import { isErr } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function githubCheckoutHandler(args: string[]): Promise<void> {
+  const logger = new DefaultLogger();
   const { positionals, values } = parseArgs({
     args,
     options: {
@@ -24,12 +24,12 @@ export async function githubCheckoutHandler(args: string[]): Promise<void> {
     );
   }
 
-  const result = await githubCheckout({ number, base: values.base }, output);
+  const result = await githubCheckout({ number, base: values.base }, logger);
 
   if (isErr(result)) {
     exitWithError(result.error.message, exitCodes.generalError);
   }
 
   // Output the success message
-  output.log(result.value.message);
+  logger.log(result.value.message);
 }

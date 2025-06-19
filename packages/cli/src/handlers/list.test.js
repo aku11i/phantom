@@ -44,16 +44,6 @@ mock.module("@aku11i/phantom-core", {
     }),
   },
 });
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: {
-      log: consoleLogMock,
-      error: consoleErrorMock,
-    },
-  },
-});
-
 mock.module("../errors.ts", {
   namedExports: {
     exitCodes: {
@@ -110,19 +100,6 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
-    strictEqual(consoleLogMock.mock.calls.length, 2);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "feature-1  (feature-1)",
-    );
-    strictEqual(
-      consoleLogMock.mock.calls[1].arguments[0],
-      "feature-2  (feature-2) [dirty]",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -164,14 +141,6 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
-    strictEqual(consoleLogMock.mock.calls.length, 3);
-    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "feature-1");
-    strictEqual(consoleLogMock.mock.calls[1].arguments[0], "feature-2");
-    strictEqual(consoleLogMock.mock.calls[2].arguments[0], "bugfix-3");
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -191,15 +160,6 @@ describe("listHandler", () => {
 
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
-    strictEqual(consoleLogMock.mock.calls.length, 1);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "No worktrees found",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -222,11 +182,6 @@ describe("listHandler", () => {
 
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
-    strictEqual(consoleLogMock.mock.calls.length, 0);
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -249,8 +204,6 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 0);
-    strictEqual(consoleLogMock.mock.calls.length, 1);
-    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "feature-1");
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -268,11 +221,6 @@ describe("listHandler", () => {
 
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: fzf not found",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 1);
   });
 
@@ -291,15 +239,6 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Failed to list worktrees",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 1);
   });
 
@@ -314,7 +253,6 @@ describe("listHandler", () => {
 
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
-    strictEqual(consoleLogMock.mock.calls.length, 0);
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 });

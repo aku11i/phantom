@@ -1,5 +1,5 @@
 import { exit } from "node:process";
-import { output } from "../output.ts";
+import { DefaultLogger } from "@aku11i/phantom-shared";
 
 const FISH_COMPLETION_SCRIPT = `# Fish completion for phantom
 # Load with: phantom completion fish | source
@@ -435,11 +435,12 @@ _phantom_completion() {
 complete -F _phantom_completion phantom`;
 
 export function completionHandler(args: string[]): void {
+  const logger = new DefaultLogger();
   const shell = args[0];
 
   if (!shell) {
-    output.error("Usage: phantom completion <shell>");
-    output.error("Supported shells: fish, zsh, bash");
+    logger.error("Usage: phantom completion <shell>");
+    logger.error("Supported shells: fish, zsh, bash");
     exit(1);
   }
 
@@ -454,8 +455,8 @@ export function completionHandler(args: string[]): void {
       console.log(BASH_COMPLETION_SCRIPT);
       break;
     default:
-      output.error(`Unsupported shell: ${shell}`);
-      output.error("Supported shells: fish, zsh, bash");
+      logger.error(`Unsupported shell: ${shell}`);
+      logger.error("Supported shells: fish, zsh, bash");
       exit(1);
   }
 }

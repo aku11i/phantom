@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
+import { DefaultLogger } from "@aku11i/phantom-shared";
 import { attachHandler } from "../handlers/attach.ts";
 import { completionHandler } from "../handlers/completion.ts";
 import { createHandler } from "../handlers/create.ts";
@@ -27,7 +28,6 @@ import { reviewHelp } from "../help/review.ts";
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
-import { output } from "../output.ts";
 
 interface Command {
   name: string;
@@ -135,12 +135,12 @@ const commands: Command[] = [
   },
 ];
 
-function printHelp(commands: Command[]) {
+function printHelp(commands: Command[], logger: DefaultLogger) {
   const simpleCommands = commands.map((cmd) => ({
     name: cmd.name,
     description: cmd.description,
   }));
-  output.log(helpFormatter.formatMainHelp(simpleCommands));
+  logger.log(helpFormatter.formatMainHelp(simpleCommands));
 }
 
 function findCommand(
@@ -172,9 +172,10 @@ function findCommand(
 }
 
 const args = argv.slice(2);
+const logger = new DefaultLogger();
 
 if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
-  printHelp(commands);
+  printHelp(commands, logger);
   exit(0);
 }
 
@@ -186,17 +187,17 @@ if (args[0] === "--version" || args[0] === "-v") {
 const { command, remainingArgs } = findCommand(args, commands);
 
 if (!command || !command.handler) {
-  output.error(`Error: Unknown command '${args.join(" ")}'\n`);
-  printHelp(commands);
+  logger.error(`Error: Unknown command '${args.join(" ")}'\n`);
+  printHelp(commands, logger);
   exit(1);
 }
 
 // Check if user is requesting help for a specific command
 if (remainingArgs.includes("--help") || remainingArgs.includes("-h")) {
   if (command.help) {
-    output.log(helpFormatter.formatCommandHelp(command.help));
+    logger.log(helpFormatter.formatCommandHelp(command.help));
   } else {
-    output.log(`Help not available for command '${command.name}'`);
+    logger.log(`Help not available for command '${command.name}'`);
   }
   exit(0);
 }

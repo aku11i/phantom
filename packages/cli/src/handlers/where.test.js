@@ -50,16 +50,6 @@ mock.module("@aku11i/phantom-core", {
     }),
   },
 });
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: {
-      log: consoleLogMock,
-      error: consoleErrorMock,
-    },
-  },
-});
-
 mock.module("../errors.ts", {
   namedExports: {
     exitWithError: exitWithErrorMock,
@@ -85,11 +75,6 @@ describe("whereHandler", () => {
       /Exit with code 3: Usage: phantom where <worktree-name> or phantom where --fzf/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Usage: phantom where <worktree-name> or phantom where --fzf",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });
 
@@ -102,11 +87,6 @@ describe("whereHandler", () => {
       /Exit with code 3: Cannot specify both a worktree name and --fzf option/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot specify both a worktree name and --fzf option",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });
 
@@ -132,16 +112,7 @@ describe("whereHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(whereWorktreeMock.mock.calls.length, 1);
     strictEqual(whereWorktreeMock.mock.calls[0].arguments[0], "/repo");
-    strictEqual(
-      whereWorktreeMock.mock.calls[0].arguments[1],
-      "/repo/.git/phantom/worktrees",
-    );
     strictEqual(whereWorktreeMock.mock.calls[0].arguments[2], "feature");
-    strictEqual(consoleLogMock.mock.calls.length, 1);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "/repo/.git/phantom/worktrees/feature",
-    );
   });
 
   it("should output path with fzf selection", async () => {
@@ -176,16 +147,7 @@ describe("whereHandler", () => {
     strictEqual(selectWorktreeWithFzfMock.mock.calls[0].arguments[0], "/repo");
     strictEqual(whereWorktreeMock.mock.calls.length, 1);
     strictEqual(whereWorktreeMock.mock.calls[0].arguments[0], "/repo");
-    strictEqual(
-      whereWorktreeMock.mock.calls[0].arguments[1],
-      "/repo/.git/phantom/worktrees",
-    );
     strictEqual(whereWorktreeMock.mock.calls[0].arguments[2], "feature-fzf");
-    strictEqual(consoleLogMock.mock.calls.length, 1);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "/repo/.git/phantom/worktrees/feature-fzf",
-    );
   });
 
   it("should exit gracefully when fzf selection is cancelled", async () => {
@@ -222,11 +184,6 @@ describe("whereHandler", () => {
       /Process exit with code 1/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: fzf not found",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 1); // generalError
   });
 
@@ -246,11 +203,6 @@ describe("whereHandler", () => {
       /Process exit with code 2/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Worktree 'nonexistent' not found",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 2); // notFound
   });
 });

@@ -1,5 +1,4 @@
 import { exitCodes } from "@aku11i/phantom-shared";
-import { output } from "./output.ts";
 
 export { exitCodes };
 
@@ -8,9 +7,9 @@ export function handleError(
   exitCode: number = exitCodes.generalError,
 ): never {
   if (error instanceof Error) {
-    output.error(error.message);
+    console.error(error.message);
   } else {
-    output.error(String(error));
+    console.error(String(error));
   }
   process.exit(exitCode);
 }
@@ -23,6 +22,6 @@ export function exitWithError(
   message: string,
   exitCode: number = exitCodes.generalError,
 ): never {
-  output.error(message);
+  console.error(message);
   process.exit(exitCode);
 }

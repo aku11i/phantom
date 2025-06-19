@@ -1,6 +1,5 @@
 import { deepEqual, equal, ok } from "node:assert/strict";
 import { describe, it, mock } from "node:test";
-import { noopLogger } from "@aku11i/phantom-shared";
 
 const getGitRootMock = mock.fn();
 const createWorktreeCoreMock = mock.fn();
@@ -42,11 +41,24 @@ mock.module("../api/index.ts", {
 const { checkoutIssue } = await import("./issue.ts");
 
 describe("checkoutIssue", () => {
+  const mockLogger = {
+    log: mock.fn(),
+    error: mock.fn(),
+    warn: mock.fn(),
+    table: mock.fn(),
+    processOutput: mock.fn(),
+  };
+
   const resetMocks = () => {
     getGitRootMock.mock.resetCalls();
     createWorktreeCoreMock.mock.resetCalls();
     isPullRequestMock.mock.resetCalls();
     validateWorktreeExistsMock.mock.resetCalls();
+    mockLogger.log.mock.resetCalls();
+    mockLogger.error.mock.resetCalls();
+    mockLogger.warn.mock.resetCalls();
+    mockLogger.table.mock.resetCalls();
+    mockLogger.processOutput.mock.resetCalls();
   };
 
   it("should export checkoutIssue function", () => {
@@ -81,7 +93,7 @@ describe("checkoutIssue", () => {
 
     isPullRequestMock.mock.mockImplementation(() => true);
 
-    const result = await checkoutIssue(mockIssue, noopLogger);
+    const result = await checkoutIssue(mockIssue, mockLogger);
 
     ok(result.error);
     equal(
@@ -121,7 +133,7 @@ describe("checkoutIssue", () => {
       },
     }));
 
-    const result = await checkoutIssue(mockIssue, noopLogger);
+    const result = await checkoutIssue(mockIssue, mockLogger);
 
     ok(result.value);
     equal(
@@ -175,7 +187,7 @@ describe("checkoutIssue", () => {
       },
     }));
 
-    const result = await checkoutIssue(mockIssue, noopLogger, customBase);
+    const result = await checkoutIssue(mockIssue, mockLogger, customBase);
 
     ok(result.value);
     equal(result.value.message, "Created worktree issues/789 from develop");
@@ -206,7 +218,7 @@ describe("checkoutIssue", () => {
       value: { path: `${mockGitRoot}/.git/phantom/worktrees/issues/111` },
     }));
 
-    const result = await checkoutIssue(mockIssue, noopLogger);
+    const result = await checkoutIssue(mockIssue, mockLogger);
 
     ok(result.value);
     equal(result.value.message, "Issue #111 is already checked out");
@@ -244,7 +256,7 @@ describe("checkoutIssue", () => {
       error: expectedError,
     }));
 
-    const result = await checkoutIssue(mockIssue, noopLogger);
+    const result = await checkoutIssue(mockIssue, mockLogger);
 
     ok(result.error);
     equal(result.error, expectedError);
@@ -275,7 +287,7 @@ describe("checkoutIssue", () => {
       },
     }));
 
-    await checkoutIssue(mockIssue, noopLogger);
+    await checkoutIssue(mockIssue, mockLogger);
 
     const [, worktreeDirectory, worktreeName, options] =
       createWorktreeCoreMock.mock.calls[0].arguments;

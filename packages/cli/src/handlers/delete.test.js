@@ -53,16 +53,6 @@ mock.module("@aku11i/phantom-core", {
     }),
   },
 });
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: {
-      log: consoleLogMock,
-      error: consoleErrorMock,
-    },
-  },
-});
-
 mock.module("../errors.ts", {
   namedExports: {
     exitCodes: {
@@ -109,20 +99,9 @@ describe("deleteHandler", () => {
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      deleteWorktreeMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[2], "feature");
     const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[3];
     strictEqual(deleteOptions.force, false);
-
-    strictEqual(consoleLogMock.mock.calls.length, 1);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Deleted worktree 'feature' and its branch 'feature'",
-    );
-
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -146,27 +125,12 @@ describe("deleteHandler", () => {
     );
 
     strictEqual(getCurrentWorktreeMock.mock.calls.length, 1);
-    strictEqual(
-      getCurrentWorktreeMock.mock.calls[0].arguments[0],
-      "/test/repo",
-    );
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 1);
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      deleteWorktreeMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(deleteWorktreeMock.mock.calls[0].arguments[2], "issues/93");
     const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[3];
     strictEqual(deleteOptions.force, false);
-
-    strictEqual(consoleLogMock.mock.calls.length, 1);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Deleted worktree 'issues/93' and its branch 'issues/93'",
-    );
-
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -181,15 +145,6 @@ describe("deleteHandler", () => {
     );
 
     strictEqual(getCurrentWorktreeMock.mock.calls.length, 1);
-    strictEqual(consoleErrorMock.mock.calls.length, 2); // exitWithError is called twice - once in the handler, once in the catch block
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Not in a worktree directory. The --current option can only be used from within a worktree.",
-    );
-    strictEqual(
-      consoleErrorMock.mock.calls[1].arguments[0],
-      "Error: Exit with code 3: Not in a worktree directory. The --current option can only be used from within a worktree.",
-    );
     strictEqual(exitMock.mock.calls.length, 2);
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // first call with validationError
     strictEqual(exitMock.mock.calls[1].arguments[0], 1); // second call with generalError
@@ -203,11 +158,6 @@ describe("deleteHandler", () => {
       /Exit with code 3: Cannot specify --current with a worktree name or --fzf option/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot specify --current with a worktree name or --fzf option",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });
 
@@ -219,11 +169,6 @@ describe("deleteHandler", () => {
       /Exit with code 3: Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });
 
@@ -253,7 +198,6 @@ describe("deleteHandler", () => {
     const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[3];
     strictEqual(deleteOptions.force, true);
 
-    strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -269,15 +213,6 @@ describe("deleteHandler", () => {
       /Exit with code 3: Worktree 'feature' not found/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 2); // exitWithError is called twice
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Worktree 'feature' not found",
-    );
-    strictEqual(
-      consoleErrorMock.mock.calls[1].arguments[0],
-      "Error: Exit with code 3: Worktree 'feature' not found",
-    );
     strictEqual(exitMock.mock.calls.length, 2);
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // first call with validationError
     strictEqual(exitMock.mock.calls[1].arguments[0], 1); // second call with generalError

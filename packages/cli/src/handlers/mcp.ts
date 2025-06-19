@@ -1,11 +1,12 @@
 import { parseArgs } from "node:util";
 import { serve } from "@aku11i/phantom-mcp";
+import { DefaultLogger } from "@aku11i/phantom-shared";
 import { exitWithError } from "../errors.ts";
 import { helpFormatter } from "../help.ts";
 import { mcpHelp } from "../help/mcp.ts";
-import { output } from "../output.ts";
 
 export async function mcpHandler(args: string[] = []): Promise<void> {
+  const logger = new DefaultLogger();
   const { values, positionals } = parseArgs({
     args,
     options: {
@@ -19,12 +20,12 @@ export async function mcpHandler(args: string[] = []): Promise<void> {
   });
 
   if (values.help) {
-    output.log(helpFormatter.formatCommandHelp(mcpHelp));
+    logger.log(helpFormatter.formatCommandHelp(mcpHelp));
     return;
   }
 
   if (positionals.length === 0) {
-    output.log(helpFormatter.formatCommandHelp(mcpHelp));
+    logger.log(helpFormatter.formatCommandHelp(mcpHelp));
     return;
   }
 
