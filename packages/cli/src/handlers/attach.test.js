@@ -10,8 +10,6 @@ import { err, ok } from "@aku11i/phantom-shared";
 const exitWithErrorMock = mock.fn((message, code) => {
   throw new Error(`Exit with code ${code}: ${message}`);
 });
-const outputLogMock = mock.fn();
-const outputErrorMock = mock.fn();
 const getGitRootMock = mock.fn();
 const attachWorktreeCoreMock = mock.fn();
 const shellInWorktreeMock = mock.fn();
@@ -27,12 +25,6 @@ mock.module("../errors.ts", {
       generalError: 1,
       success: 0,
     },
-  },
-});
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: { log: outputLogMock, error: outputErrorMock },
   },
 });
 
@@ -61,7 +53,6 @@ const { attachHandler } = await import("./attach.ts");
 describe("attachHandler", () => {
   it("should attach to existing branch successfully", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
     attachWorktreeCoreMock.mock.resetCalls();
 
@@ -80,10 +71,6 @@ describe("attachHandler", () => {
     await attachHandler(["feature"]);
 
     deepStrictEqual(exitWithErrorMock.mock.calls.length, 0);
-    deepStrictEqual(
-      outputLogMock.mock.calls[0].arguments[0],
-      "Attached phantom: feature",
-    );
     // Check first 5 arguments (excluding logger)
     deepStrictEqual(attachWorktreeCoreMock.mock.calls[0].arguments[0], "/repo");
     deepStrictEqual(
@@ -165,7 +152,6 @@ describe("attachHandler", () => {
 
   it("should spawn shell when --shell flag is provided", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
     shellInWorktreeMock.mock.resetCalls();
     shellInWorktreeMock.mock.mockImplementation(() =>
@@ -194,7 +180,6 @@ describe("attachHandler", () => {
 
   it("should execute command when --exec flag is provided", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
     execInWorktreeMock.mock.resetCalls();
     execInWorktreeMock.mock.mockImplementation(() =>
@@ -229,8 +214,6 @@ describe("attachHandler", () => {
 
   it("should pass postCreate config to attachWorktreeCore", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
-    outputErrorMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
     attachWorktreeCoreMock.mock.resetCalls();
 
@@ -271,8 +254,6 @@ describe("attachHandler", () => {
 
   it("should handle config not found gracefully", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
-    outputErrorMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
     attachWorktreeCoreMock.mock.resetCalls();
 
@@ -296,13 +277,10 @@ describe("attachHandler", () => {
       attachWorktreeCoreMock.mock.calls[0].arguments;
     deepStrictEqual(postCreateCopyFiles, undefined);
     deepStrictEqual(postCreateCommands, undefined);
-    deepStrictEqual(outputErrorMock.mock.calls.length, 0);
   });
 
   it("should pass config with postCreate to attachWorktreeCore", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
-    outputErrorMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
     attachWorktreeCoreMock.mock.resetCalls();
 
@@ -335,7 +313,6 @@ describe("attachHandler", () => {
 
   it("should exit with error if attachWorktreeCore fails due to postCreate", async () => {
     exitWithErrorMock.mock.resetCalls();
-    outputLogMock.mock.resetCalls();
     createContextMock.mock.resetCalls();
     attachWorktreeCoreMock.mock.resetCalls();
 

@@ -1,6 +1,6 @@
 import { createContext, createWorktree } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isOk, noopLogger } from "@aku11i/phantom-shared";
+import { DefaultLogger, isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
 import type { Tool } from "./types.ts";
 
@@ -21,6 +21,7 @@ export const createWorktreeTool: Tool<typeof schema> = {
   handler: async ({ name, baseBranch }) => {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
+    const logger = new DefaultLogger();
     const result = await createWorktree(
       context.gitRoot,
       context.worktreesDirectory,
@@ -31,7 +32,7 @@ export const createWorktreeTool: Tool<typeof schema> = {
       },
       context.config?.postCreate?.copyFiles,
       context.config?.postCreate?.commands,
-      noopLogger,
+      logger,
     );
 
     if (!isOk(result)) {

@@ -8,11 +8,11 @@ import {
   shellInWorktree,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function attachHandler(args: string[]): Promise<void> {
+  const logger = new DefaultLogger();
   const { positionals, values } = parseArgs({
     args,
     strict: true,
@@ -54,7 +54,7 @@ export async function attachHandler(args: string[]): Promise<void> {
     branchName,
     context.config?.postCreate?.copyFiles,
     context.config?.postCreate?.commands,
-    output,
+    logger,
   );
 
   if (isErr(result)) {
@@ -68,7 +68,7 @@ export async function attachHandler(args: string[]): Promise<void> {
     exitWithError(error.message, exitCodes.generalError);
   }
 
-  output.log(`Attached phantom: ${branchName}`);
+  logger.log(`Attached phantom: ${branchName}`);
 
   if (values.shell) {
     const shellResult = await shellInWorktree(

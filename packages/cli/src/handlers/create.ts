@@ -12,11 +12,11 @@ import {
   getPhantomEnv,
   isInsideTmux,
 } from "@aku11i/phantom-process";
-import { isErr, isOk } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr, isOk } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function createHandler(args: string[]): Promise<void> {
+  const logger = new DefaultLogger();
   const { values, positionals } = parseArgs({
     args,
     options: {
@@ -133,7 +133,7 @@ export async function createHandler(args: string[]): Promise<void> {
       },
       filesToCopy.length > 0 ? filesToCopy : undefined,
       context.config?.postCreate?.commands,
-      output,
+      logger,
     );
 
     if (isErr(result)) {
@@ -144,16 +144,16 @@ export async function createHandler(args: string[]): Promise<void> {
       exitWithError(result.error.message, exitCode);
     }
 
-    output.log(result.value.message);
+    logger.log(result.value.message);
 
     if (result.value.copyError) {
-      output.error(
+      logger.error(
         `\nWarning: Failed to copy some files: ${result.value.copyError}`,
       );
     }
 
     if (execCommand && isOk(result)) {
-      output.log(
+      logger.log(
         `\nExecuting command in worktree '${worktreeName}': ${execCommand}`,
       );
 
@@ -167,7 +167,7 @@ export async function createHandler(args: string[]): Promise<void> {
       );
 
       if (isErr(execResult)) {
-        output.error(execResult.error.message);
+        logger.error(execResult.error.message);
         const exitCode =
           "exitCode" in execResult.error
             ? (execResult.error.exitCode ?? exitCodes.generalError)
@@ -179,10 +179,10 @@ export async function createHandler(args: string[]): Promise<void> {
     }
 
     if (openShell && isOk(result)) {
-      output.log(
+      logger.log(
         `\nEntering worktree '${worktreeName}' at ${result.value.path}`,
       );
-      output.log("Type 'exit' to return to your original directory\n");
+      logger.log("Type 'exit' to return to your original directory\n");
 
       const shellResult = await shellInWorktree(
         context.gitRoot,
@@ -191,7 +191,7 @@ export async function createHandler(args: string[]): Promise<void> {
       );
 
       if (isErr(shellResult)) {
-        output.error(shellResult.error.message);
+        logger.error(shellResult.error.message);
         const exitCode =
           "exitCode" in shellResult.error
             ? (shellResult.error.exitCode ?? exitCodes.generalError)
@@ -203,7 +203,7 @@ export async function createHandler(args: string[]): Promise<void> {
     }
 
     if (tmuxDirection && isOk(result)) {
-      output.log(
+      logger.log(
         `\nOpening worktree '${worktreeName}' in tmux ${
           tmuxDirection === "new" ? "window" : "pane"
         }...`,
@@ -220,7 +220,7 @@ export async function createHandler(args: string[]): Promise<void> {
       });
 
       if (isErr(tmuxResult)) {
-        output.error(tmuxResult.error.message);
+        logger.error(tmuxResult.error.message);
         const exitCode =
           "exitCode" in tmuxResult.error
             ? (tmuxResult.error.exitCode ?? exitCodes.generalError)

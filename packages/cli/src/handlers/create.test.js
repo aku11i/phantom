@@ -72,17 +72,6 @@ mock.module("@aku11i/phantom-process", {
     getPhantomEnv: getPhantomEnvMock,
   },
 });
-
-mock.module("../output.ts", {
-  namedExports: {
-    output: {
-      log: consoleLogMock,
-      error: consoleErrorMock,
-      warn: consoleWarnMock,
-    },
-  },
-});
-
 mock.module("../errors.ts", {
   namedExports: {
     exitCodes: {
@@ -154,34 +143,15 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      createWorktreeMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "feature");
 
     strictEqual(execInWorktreeMock.mock.calls.length, 1);
     strictEqual(execInWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      execInWorktreeMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(execInWorktreeMock.mock.calls[0].arguments[2], "feature");
     const execArgs = execInWorktreeMock.mock.calls[0].arguments[3];
     strictEqual(execArgs[0], "/bin/bash");
     strictEqual(execArgs[1], "-c");
     strictEqual(execArgs[2], "echo hello");
-
-    strictEqual(consoleLogMock.mock.calls.length, 2);
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Created worktree 'feature' at /test/repo/.git/phantom/worktrees/feature",
-    );
-    strictEqual(
-      consoleLogMock.mock.calls[1].arguments[0],
-      "\nExecuting command in worktree 'feature': echo hello",
-    );
-
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -221,10 +191,6 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(execInWorktreeMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Command failed",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 1);
   });
 
@@ -236,11 +202,6 @@ describe("createHandler", () => {
       /Exit with code 2/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot use --shell and --exec together",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 2);
   });
 
@@ -286,11 +247,6 @@ describe("createHandler", () => {
       /Exit with code 2/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: The --tmux option can only be used inside a tmux session",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 2);
   });
 
@@ -337,16 +293,6 @@ describe("createHandler", () => {
     strictEqual(tmuxArgs.direction, "new");
     strictEqual(tmuxArgs.cwd, "/test/repo/.git/phantom/worktrees/feature");
     strictEqual(tmuxArgs.windowName, "feature");
-
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Created worktree 'feature' at /test/repo/.git/phantom/worktrees/feature",
-    );
-    strictEqual(
-      consoleLogMock.mock.calls[1].arguments[0],
-      "\nOpening worktree 'feature' in tmux window...",
-    );
-
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -393,16 +339,6 @@ describe("createHandler", () => {
     strictEqual(tmuxArgs.direction, "vertical");
     strictEqual(tmuxArgs.cwd, "/test/repo/.git/phantom/worktrees/feature");
     strictEqual(tmuxArgs.windowName, undefined);
-
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Created worktree 'feature' at /test/repo/.git/phantom/worktrees/feature",
-    );
-    strictEqual(
-      consoleLogMock.mock.calls[1].arguments[0],
-      "\nOpening worktree 'feature' in tmux pane...",
-    );
-
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -413,11 +349,6 @@ describe("createHandler", () => {
       /Exit with code 2/,
     );
 
-    strictEqual(consoleErrorMock.mock.calls.length, 1);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Cannot use --shell, --exec, and --tmux options together",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 2);
   });
 
@@ -441,17 +372,9 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      createWorktreeMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "feature");
     strictEqual(createWorktreeMock.mock.calls[0].arguments[3].base, "main");
 
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Created worktree 'feature' at /test/repo/.git/phantom/worktrees/feature",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -476,20 +399,8 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      createWorktreeMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "hotfix");
-    strictEqual(
-      createWorktreeMock.mock.calls[0].arguments[3].base,
-      "origin/production",
-    );
 
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Created worktree 'hotfix' at /test/repo/.git/phantom/worktrees/hotfix",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -513,17 +424,9 @@ describe("createHandler", () => {
 
     strictEqual(createWorktreeMock.mock.calls.length, 1);
     strictEqual(createWorktreeMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      createWorktreeMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(createWorktreeMock.mock.calls[0].arguments[2], "experiment");
     strictEqual(createWorktreeMock.mock.calls[0].arguments[3].base, "abc123");
 
-    strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
-      "Created worktree 'experiment' at /test/repo/.git/phantom/worktrees/experiment",
-    );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 });

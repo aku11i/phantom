@@ -5,11 +5,11 @@ import {
   selectWorktreeWithFzf,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { isErr } from "@aku11i/phantom-shared";
+import { DefaultLogger, isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
-import { output } from "../output.ts";
 
 export async function listHandler(args: string[] = []): Promise<void> {
+  const logger = new DefaultLogger();
   const { values } = parseArgs({
     args,
     options: {
@@ -40,7 +40,7 @@ export async function listHandler(args: string[] = []): Promise<void> {
       }
 
       if (selectResult.value) {
-        output.log(selectResult.value.name);
+        logger.log(selectResult.value.name);
       }
     } else {
       const result = await listWorktreesCore(
@@ -56,14 +56,14 @@ export async function listHandler(args: string[] = []): Promise<void> {
 
       if (worktrees.length === 0) {
         if (!values.names) {
-          output.log(message || "No worktrees found.");
+          logger.log(message || "No worktrees found.");
         }
         process.exit(exitCodes.success);
       }
 
       if (values.names) {
         for (const worktree of worktrees) {
-          output.log(worktree.name);
+          logger.log(worktree.name);
         }
       } else {
         const maxNameLength = Math.max(
@@ -75,7 +75,7 @@ export async function listHandler(args: string[] = []): Promise<void> {
           const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
           const status = !worktree.isClean ? " [dirty]" : "";
 
-          output.log(`${paddedName} ${branchInfo}${status}`);
+          logger.log(`${paddedName} ${branchInfo}${status}`);
         }
       }
     }

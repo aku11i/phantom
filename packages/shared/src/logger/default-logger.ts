@@ -23,5 +23,3 @@ export class DefaultLogger implements Logger {
     proc.stderr?.pipe(process.stderr);
   }
 }
-
-export const defaultLogger = new DefaultLogger();
