@@ -6,8 +6,6 @@ import { WorktreeError, WorktreeNotFoundError } from "./errors.ts";
 const validateWorktreeExistsMock = mock.fn();
 const executeGitCommandMock = mock.fn();
 const executeGitCommandInDirectoryMock = mock.fn();
-const execInWorktreeMock = mock.fn();
-const loadConfigMock = mock.fn();
 
 mock.module("./validate.ts", {
   namedExports: {
@@ -22,24 +20,11 @@ mock.module("@aku11i/phantom-git", {
   },
 });
 
-mock.module("../exec.ts", {
-  namedExports: {
-    execInWorktree: execInWorktreeMock,
-  },
-});
-
-mock.module("../config/loader.ts", {
-  namedExports: {
-    loadConfig: loadConfigMock,
-  },
-});
-
 const {
   deleteWorktree,
   getWorktreeChangesStatus: getWorktreeStatus,
   removeWorktree,
   deleteBranch,
-  executePreDeleteCommands,
 } = await import("./delete.ts");
 const { ok, err } = await import("@aku11i/phantom-shared");
 
@@ -48,15 +33,10 @@ describe("deleteWorktree", () => {
     validateWorktreeExistsMock.mock.resetCalls();
     executeGitCommandMock.mock.resetCalls();
     executeGitCommandInDirectoryMock.mock.resetCalls();
-    execInWorktreeMock.mock.resetCalls();
-    loadConfigMock.mock.resetCalls();
   };
 
   it("should delete worktree and report when branch deletion fails", async () => {
     resetMocks();
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new Error("Config not found"))),
-    );
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve(
         ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
@@ -81,6 +61,7 @@ describe("deleteWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "feature",
       {},
+      undefined,
     );
 
     strictEqual(isOk(result), true);
@@ -96,9 +77,6 @@ describe("deleteWorktree", () => {
 
   it("should delete a worktree successfully when no uncommitted changes", async () => {
     resetMocks();
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new Error("Config not found"))),
-    );
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve(
         ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
@@ -123,6 +101,7 @@ describe("deleteWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "feature",
       {},
+      undefined,
     );
 
     strictEqual(isOk(result), true);
@@ -170,6 +149,7 @@ describe("deleteWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "nonexistent",
       {},
+      undefined,
     );
 
     strictEqual(isErr(result), true);
@@ -199,6 +179,7 @@ describe("deleteWorktree", () => {
       "/test/repo/.git/phantom/worktrees",
       "feature",
       {},
+      undefined,
     );
 
     strictEqual(isErr(result), true);
@@ -213,9 +194,6 @@ describe("deleteWorktree", () => {
 
   it("should delete worktree with uncommitted changes when force is true", async () => {
     resetMocks();
-    loadConfigMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new Error("Config not found"))),
-    );
     validateWorktreeExistsMock.mock.mockImplementation(() =>
       Promise.resolve(
         ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
@@ -245,6 +223,7 @@ describe("deleteWorktree", () => {
       {
         force: true,
       },
+      undefined,
     );
 
     strictEqual(isOk(result), true);
@@ -418,103 +397,5 @@ describe("deleteBranch", () => {
       );
     }
     strictEqual(executeGitCommandMock.mock.calls.length, 1);
-  });
-});
-
-describe("executePreDeleteCommands", () => {
-  const resetPreDeleteMocks = () => {
-    execInWorktreeMock.mock.resetCalls();
-  };
-
-  it("should execute pre-delete commands successfully", async () => {
-    resetPreDeleteMocks();
-    execInWorktreeMock.mock.mockImplementation(() =>
-      Promise.resolve(ok({ exitCode: 0, stdout: "", stderr: "" })),
-    );
-
-    const result = await executePreDeleteCommands({
-      gitRoot: "/test/repo",
-      worktreesDirectory: "/test/repo/.git/phantom/worktrees",
-      worktreeName: "feature",
-      commands: ["docker compose down", "rm -rf temp"],
-    });
-
-    strictEqual(isOk(result), true);
-    if (isOk(result)) {
-      deepStrictEqual(result.value.executedCommands, [
-        "docker compose down",
-        "rm -rf temp",
-      ]);
-    }
-    strictEqual(execInWorktreeMock.mock.calls.length, 2);
-  });
-
-  it("should handle command execution failure", async () => {
-    resetPreDeleteMocks();
-    execInWorktreeMock.mock.mockImplementation(() =>
-      Promise.resolve(err(new Error("Command failed"))),
-    );
-
-    const result = await executePreDeleteCommands({
-      gitRoot: "/test/repo",
-      worktreesDirectory: "/test/repo/.git/phantom/worktrees",
-      worktreeName: "feature",
-      commands: ["docker compose down"],
-    });
-
-    strictEqual(isErr(result), true);
-    if (isErr(result)) {
-      strictEqual(
-        result.error.message,
-        'Failed to execute pre-delete command "docker compose down": Command failed',
-      );
-    }
-    strictEqual(execInWorktreeMock.mock.calls.length, 1);
-  });
-
-  it("should handle command exit code failure", async () => {
-    resetPreDeleteMocks();
-    execInWorktreeMock.mock.mockImplementation(() =>
-      Promise.resolve(ok({ exitCode: 1, stdout: "", stderr: "Error" })),
-    );
-
-    const result = await executePreDeleteCommands({
-      gitRoot: "/test/repo",
-      worktreesDirectory: "/test/repo/.git/phantom/worktrees",
-      worktreeName: "feature",
-      commands: ["docker compose down"],
-    });
-
-    strictEqual(isErr(result), true);
-    if (isErr(result)) {
-      strictEqual(
-        result.error.message,
-        "Pre-delete command failed with exit code 1: docker compose down",
-      );
-    }
-    strictEqual(execInWorktreeMock.mock.calls.length, 1);
-  });
-
-  it("should stop execution on first command failure", async () => {
-    resetPreDeleteMocks();
-    execInWorktreeMock.mock.mockImplementationOnce(() =>
-      Promise.resolve(ok({ exitCode: 1, stdout: "", stderr: "Error" })),
-    );
-
-    const result = await executePreDeleteCommands({
-      gitRoot: "/test/repo",
-      worktreesDirectory: "/test/repo/.git/phantom/worktrees",
-      worktreeName: "feature",
-      commands: ["echo 'first'", "exit 1", "echo 'should not run'"],
-    });
-
-    strictEqual(isErr(result), true);
-    if (isErr(result)) {
-      strictEqual(
-        result.error.message,
-        "Pre-delete command failed with exit code 1: echo 'first'",
-      );
-    }
-    strictEqual(execInWorktreeMock.mock.calls.length, 1);
   });
 });
