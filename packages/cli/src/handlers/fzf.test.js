@@ -9,9 +9,13 @@ const consoleLogMock = mock.fn();
 const consoleErrorMock = mock.fn();
 const listWorktreesMock = mock.fn();
 const getGitRootMock = mock.fn();
+const createContextMock = mock.fn();
 const spawnMock = mock.fn();
 const spawnFzfMock = mock.fn();
 const platformMock = mock.fn();
+const getClipboardCommandMock = mock.fn();
+const getFileManagerCommandMock = mock.fn();
+const spawnPhantomCommandMock = mock.fn();
 
 // Mock modules
 mock.module("node:process", {
@@ -35,12 +39,16 @@ mock.module("node:os", {
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     listWorktrees: listWorktreesMock,
+    createContext: createContextMock,
   },
 });
 
 mock.module("@aku11i/phantom-process", {
   namedExports: {
     spawnFzf: spawnFzfMock,
+    getClipboardCommand: getClipboardCommandMock,
+    getFileManagerCommand: getFileManagerCommandMock,
+    spawnPhantomCommand: spawnPhantomCommandMock,
   },
 });
 
@@ -90,9 +98,13 @@ const resetMocks = () => {
   consoleErrorMock.mock.resetCalls();
   listWorktreesMock.mock.resetCalls();
   getGitRootMock.mock.resetCalls();
+  createContextMock.mock.resetCalls();
   spawnMock.mock.resetCalls();
   spawnFzfMock.mock.resetCalls();
   platformMock.mock.resetCalls();
+  getClipboardCommandMock.mock.resetCalls();
+  getFileManagerCommandMock.mock.resetCalls();
+  spawnPhantomCommandMock.mock.resetCalls();
   exitWithErrorMock.mock.resetCalls();
   exitMock.mock.mockImplementation(mockExit);
 };
@@ -120,6 +132,12 @@ describe("fzfHandler", () => {
       getGitRootMock.mock.mockImplementation(() =>
         Promise.resolve("/test/repo"),
       );
+      createContextMock.mock.mockImplementation(() =>
+        Promise.resolve({
+          gitRoot: "/test/repo",
+          worktreesDirectory: "/test/repo/.git/phantom/worktrees",
+        }),
+      );
       listWorktreesMock.mock.mockImplementation(() =>
         Promise.resolve(ok({ worktrees: [] })),
       );
@@ -134,13 +152,20 @@ describe("fzfHandler", () => {
     });
   });
 
-
   describe("when fzf is executed successfully", () => {
     it("should spawn fzf with correct arguments on macOS", async () => {
       resetMocks();
       platformMock.mock.mockImplementation(() => "darwin");
+      getClipboardCommandMock.mock.mockImplementation(() => "pbcopy");
+      getFileManagerCommandMock.mock.mockImplementation(() => "open");
       getGitRootMock.mock.mockImplementation(() =>
         Promise.resolve("/test/repo"),
+      );
+      createContextMock.mock.mockImplementation(() =>
+        Promise.resolve({
+          gitRoot: "/test/repo",
+          worktreesDirectory: "/test/repo/.git/phantom/worktrees",
+        }),
       );
       listWorktreesMock.mock.mockImplementation(() =>
         Promise.resolve(
@@ -181,15 +206,15 @@ describe("fzfHandler", () => {
 
       // Verify spawnFzf was called with correct arguments
       strictEqual(spawnFzfMock.mock.calls.length, 1);
-      
+
       const [items, options] = spawnFzfMock.mock.calls[0].arguments;
       deepStrictEqual(items, ["main (main)", "feature (feature) [dirty]"]);
-      
+
       strictEqual(options.ansi, true);
       strictEqual(options.layout, "reverse");
       strictEqual(options.border, "rounded");
       strictEqual(options.borderLabel, " Phantom Worktrees ");
-      
+
       // Verify keybindings include correct commands for macOS
       const ctrlYBinding = options.bindings.find((b) => b.key === "ctrl-y");
       strictEqual(ctrlYBinding.action.includes("pbcopy"), true);
@@ -201,8 +226,18 @@ describe("fzfHandler", () => {
     it("should use correct clipboard and file manager commands on Linux", async () => {
       resetMocks();
       platformMock.mock.mockImplementation(() => "linux");
+      getClipboardCommandMock.mock.mockImplementation(
+        () => "xclip -selection clipboard",
+      );
+      getFileManagerCommandMock.mock.mockImplementation(() => "xdg-open");
       getGitRootMock.mock.mockImplementation(() =>
         Promise.resolve("/test/repo"),
+      );
+      createContextMock.mock.mockImplementation(() =>
+        Promise.resolve({
+          gitRoot: "/test/repo",
+          worktreesDirectory: "/test/repo/.git/phantom/worktrees",
+        }),
       );
       listWorktreesMock.mock.mockImplementation(() =>
         Promise.resolve(
@@ -236,7 +271,10 @@ describe("fzfHandler", () => {
 
       // Verify Linux-specific commands
       const ctrlYBinding = options.bindings.find((b) => b.key === "ctrl-y");
-      strictEqual(ctrlYBinding.action.includes("xclip -selection clipboard"), true);
+      strictEqual(
+        ctrlYBinding.action.includes("xclip -selection clipboard"),
+        true,
+      );
 
       const ctrlOBinding = options.bindings.find((b) => b.key === "ctrl-o");
       strictEqual(ctrlOBinding.action.includes("xdg-open"), true);
@@ -245,8 +283,16 @@ describe("fzfHandler", () => {
     it("should open shell when user selects a worktree", async () => {
       resetMocks();
       platformMock.mock.mockImplementation(() => "darwin");
+      getClipboardCommandMock.mock.mockImplementation(() => "pbcopy");
+      getFileManagerCommandMock.mock.mockImplementation(() => "open");
       getGitRootMock.mock.mockImplementation(() =>
         Promise.resolve("/test/repo"),
+      );
+      createContextMock.mock.mockImplementation(() =>
+        Promise.resolve({
+          gitRoot: "/test/repo",
+          worktreesDirectory: "/test/repo/.git/phantom/worktrees",
+        }),
       );
       listWorktreesMock.mock.mockImplementation(() =>
         Promise.resolve(
@@ -267,14 +313,7 @@ describe("fzfHandler", () => {
       fzfProcess.stdin = { write: mock.fn(), end: mock.fn() };
       fzfProcess.stdout = new EventEmitter();
 
-      const phantomShellProcess = new EventEmitter();
-
       spawnFzfMock.mock.mockImplementation(() => fzfProcess);
-      spawnMock.mock.mockImplementation((cmd) => {
-        if (cmd === "phantom") {
-          return phantomShellProcess;
-        }
-      });
 
       const handlerPromise = fzfHandler([]);
 
@@ -290,15 +329,11 @@ describe("fzfHandler", () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Verify phantom shell was spawned
-      strictEqual(spawnMock.mock.calls.length, 1);
-      strictEqual(spawnMock.mock.calls[0].arguments[0], "phantom");
-      deepStrictEqual(spawnMock.mock.calls[0].arguments[1], [
+      strictEqual(spawnPhantomCommandMock.mock.calls.length, 1);
+      deepStrictEqual(spawnPhantomCommandMock.mock.calls[0].arguments[0], [
         "shell",
         "feature",
       ]);
-      deepStrictEqual(spawnMock.mock.calls[0].arguments[2], {
-        stdio: "inherit",
-      });
     });
   });
 
@@ -306,8 +341,16 @@ describe("fzfHandler", () => {
     it("should exit with appropriate error message", async () => {
       resetMocks();
       platformMock.mock.mockImplementation(() => "darwin");
+      getClipboardCommandMock.mock.mockImplementation(() => "pbcopy");
+      getFileManagerCommandMock.mock.mockImplementation(() => "open");
       getGitRootMock.mock.mockImplementation(() =>
         Promise.resolve("/test/repo"),
+      );
+      createContextMock.mock.mockImplementation(() =>
+        Promise.resolve({
+          gitRoot: "/test/repo",
+          worktreesDirectory: "/test/repo/.git/phantom/worktrees",
+        }),
       );
       listWorktreesMock.mock.mockImplementation(() =>
         Promise.resolve(
@@ -331,7 +374,7 @@ describe("fzfHandler", () => {
 
       // Start the handler - it will throw due to exitWithError
       await rejects(async () => {
-        const handlerPromise = fzfHandler([]);
+        fzfHandler([]);
 
         // Need to give the handler time to set up before emitting error
         await new Promise((resolve) => setImmediate(resolve));
