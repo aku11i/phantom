@@ -130,12 +130,12 @@ describe("deleteHandler", () => {
     resetMocks();
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
     getCurrentWorktreeMock.mock.mockImplementation(() =>
-      Promise.resolve("issue-93"),
+      Promise.resolve("issues/93"),
     );
     deleteWorktreeMock.mock.mockImplementation(() =>
       Promise.resolve(
         ok({
-          message: "Deleted worktree 'issue-93' and its branch 'issue-93'",
+          message: "Deleted worktree 'issues/93' and its branch 'issues/93'",
         }),
       ),
     );
@@ -157,14 +157,14 @@ describe("deleteHandler", () => {
       deleteWorktreeMock.mock.calls[0].arguments[1],
       "/test/repo/.git/phantom/worktrees",
     );
-    strictEqual(deleteWorktreeMock.mock.calls[0].arguments[2], "issue-93");
+    strictEqual(deleteWorktreeMock.mock.calls[0].arguments[2], "issues/93");
     const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[3];
     strictEqual(deleteOptions.force, false);
 
     strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
-      "Deleted worktree 'issue-93' and its branch 'issue-93'",
+      "Deleted worktree 'issues/93' and its branch 'issues/93'",
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);

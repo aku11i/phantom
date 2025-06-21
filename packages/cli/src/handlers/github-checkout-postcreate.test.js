@@ -45,8 +45,8 @@ describe("githubCheckoutHandler", () => {
       Promise.resolve(
         ok({
           message: "Checked out issue #123",
-          worktree: "issue-123",
-          path: "/repo/.git/phantom/worktrees/issue-123",
+          worktree: "issues/123",
+          path: "/repo/.git/phantom/worktrees/issues/123",
         }),
       ),
     );
@@ -76,8 +76,8 @@ describe("githubCheckoutHandler", () => {
       Promise.resolve(
         ok({
           message: "Worktree for PR #456 is already checked out",
-          worktree: "pr-456",
-          path: "/repo/.git/phantom/worktrees/pr-456",
+          worktree: "pulls/456",
+          path: "/repo/.git/phantom/worktrees/pulls/456",
           alreadyExists: true,
         }),
       ),
@@ -119,8 +119,8 @@ describe("githubCheckoutHandler", () => {
       Promise.resolve(
         ok({
           message: "Checked out issue #123",
-          worktree: "issue-123",
-          path: "/repo/.git/phantom/worktrees/issue-123",
+          worktree: "issues/123",
+          path: "/repo/.git/phantom/worktrees/issues/123",
         }),
       ),
     );
@@ -143,8 +143,8 @@ describe("githubCheckoutHandler", () => {
       Promise.resolve(
         ok({
           message: "Checked out issue #123",
-          worktree: "issue-123",
-          path: "/repo/.git/phantom/worktrees/issue-123",
+          worktree: "issues/123",
+          path: "/repo/.git/phantom/worktrees/issues/123",
         }),
       ),
     );

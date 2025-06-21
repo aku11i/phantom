@@ -53,8 +53,8 @@ export const githubCheckoutHelp: CommandHelp = {
     },
   ],
   notes: [
-    "For PRs: Creates worktree named 'pr-{number}' with the PR's branch",
-    "For Issues: Creates worktree named 'issue-{number}' with a new branch",
+    "For PRs: Creates worktree named 'pulls/{number}' with the PR's branch",
+    "For Issues: Creates worktree named 'issues/{number}' with a new branch",
     "",
     "Requirements:",
     "  - GitHub CLI (gh) must be installed",
