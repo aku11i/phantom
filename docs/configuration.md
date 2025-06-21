@@ -2,21 +2,42 @@
 
 ## Table of Contents
 
-- [Configuration File](#configuration-file)
+- [Global Preferences](#global-preferences)
+- [Project Configuration](#project-configuration)
 - [Configuration Options](#configuration-options)
   - [worktreesDirectory](#worktreebasedirectory)
   - [postCreate.copyFiles](#postcreatecopyfiles)
   - [postCreate.commands](#postcreatecommands)
+- [Configuration Priority](#configuration-priority)
 
-Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied and commands to be executed when creating new worktrees.
+Phantom supports two types of configuration files:
+1. **Global Preferences** (`~/.config/phantom/phantom.json`) - User-specific settings that apply to all projects
+2. **Project Configuration** (`phantom.config.json`) - Project-specific settings that are committed to the repository
 
-## Configuration File
+## Global Preferences
 
-Create a `phantom.config.json` file in your repository root:
+The global preferences file allows you to configure user-specific settings that should not be committed to project repositories.
+
+### Location
+
+The preferences file is located at:
+- Linux/macOS: `~/.config/phantom/phantom.json`
+- With XDG_CONFIG_HOME: `$XDG_CONFIG_HOME/phantom/phantom.json`
+
+### Example
 
 ```json
 {
-  "worktreesDirectory": "../phantom-worktrees",
+  "worktreesDirectory": "/home/user/phantom-worktrees"
+}
+```
+
+## Project Configuration
+
+Create a `phantom.config.json` file in your repository root to define project-specific settings. This file is committed to the repository and shared among all contributors.
+
+```json
+{
   "postCreate": {
     "copyFiles": [
       ".env",
@@ -37,6 +58,27 @@ Create a `phantom.config.json` file in your repository root:
 
 A custom base directory where Phantom worktrees will be created. By default, Phantom creates all worktrees in `.git/phantom/worktrees/`, but you can customize this location using the `worktreesDirectory` option.
 
+> **⚠️ Deprecation Notice**
+> 
+> Setting `worktreesDirectory` in `phantom.config.json` is deprecated and will be removed in a future version.
+> Please move this setting to the global preferences file (`~/.config/phantom/phantom.json`).
+
+**Migration Guide:**
+
+1. Create the global preferences directory:
+   ```bash
+   mkdir -p ~/.config/phantom
+   ```
+
+2. Create or update `~/.config/phantom/phantom.json`:
+   ```json
+   {
+     "worktreesDirectory": "/your/preferred/path"
+   }
+   ```
+
+3. Remove `worktreesDirectory` from your project's `phantom.config.json`
+
 **Use Cases:**
 - Store worktrees outside the main repository directory
 - Use a shared location for multiple repositories
@@ -45,21 +87,21 @@ A custom base directory where Phantom worktrees will be created. By default, Pha
 
 **Examples:**
 
-**Relative path (relative to repository root):**
+**In global preferences (`~/.config/phantom/phantom.json`):**
+
+Relative path (relative to repository root):
 ```json
 {
   "worktreesDirectory": "../phantom-worktrees"
 }
 ```
-This creates worktrees directly in `../phantom-worktrees/` (e.g., `../phantom-worktrees/feature-1`)
 
-**Absolute path:**
+Absolute path:
 ```json
 {
   "worktreesDirectory": "/tmp/my-phantom-worktrees"
 }
 ```
-This creates worktrees directly in `/tmp/my-phantom-worktrees/` (e.g., `/tmp/my-phantom-worktrees/feature-1`)
 
 **Directory Structure:**
 With `worktreesDirectory` set to `../phantom-worktrees`, your directory structure will look like:
@@ -144,3 +186,20 @@ An array of commands to execute after creating a new worktree.
 - Commands run in the new worktree's directory
 - Output is displayed in real-time
 
+## Configuration Priority
+
+Phantom uses the following priority order when determining configuration values:
+
+1. **Global Preferences** (`~/.config/phantom/phantom.json`) - Highest priority
+2. **Project Configuration** (`phantom.config.json`) - Lower priority
+3. **Default Values** - Lowest priority
+
+This means that user-specific settings in the global preferences file will override project-specific settings, allowing users to customize their workflow without modifying shared project files.
+
+### Example
+
+If both files contain `worktreesDirectory`:
+- Global preferences: `"worktreesDirectory": "/home/user/all-worktrees"`
+- Project config: `"worktreesDirectory": "../project-worktrees"`
+
+Phantom will use `/home/user/all-worktrees` from the global preferences.

@@ -2,6 +2,8 @@ export * from "./context.ts";
 export * from "./paths.ts";
 export * from "./config/loader.ts";
 export * from "./config/validate.ts";
+export * from "./preferences/loader.ts";
+export * from "./preferences/validate.ts";
 export * from "./worktree/errors.ts";
 export * from "./worktree/create.ts";
 export * from "./worktree/delete.ts";
