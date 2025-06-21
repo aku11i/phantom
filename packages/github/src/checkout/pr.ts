@@ -20,8 +20,8 @@ export async function checkoutPullRequest(
 ): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
-  const worktreeName = `pr-${pullRequest.number}`;
-  const localBranch = `pr-${pullRequest.number}`;
+  const worktreeName = `pulls/${pullRequest.number}`;
+  const localBranch = `pulls/${pullRequest.number}`;
 
   // Determine the upstream branch for tracking
   const upstream = pullRequest.isFromFork

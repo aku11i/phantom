@@ -287,8 +287,8 @@ phantom gh checkout 123
 - Must be authenticated with `gh auth login`
 
 **Behavior:**
-- For PRs: Creates worktree named `pr-{number}` with the PR's branch
-- For Issues: Creates worktree named `issue-{number}` with a new branch
+- For PRs: Creates worktree named `pulls/{number}` with the PR's branch
+- For Issues: Creates worktree named `issues/{number}` with a new branch
 
 For detailed information, see the [GitHub Integration Guide](./github.md).
 

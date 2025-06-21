@@ -23,8 +23,8 @@ export async function checkoutIssue(
 
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
-  const worktreeName = `issue-${issue.number}`;
-  const branchName = `issue-${issue.number}`;
+  const worktreeName = `issues/${issue.number}`;
+  const branchName = `issues/${issue.number}`;
 
   const result = await createWorktreeCore(
     context.gitRoot,

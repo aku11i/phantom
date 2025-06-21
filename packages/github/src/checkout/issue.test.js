@@ -106,8 +106,9 @@ describe("checkoutIssue", () => {
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
       value: {
-        message: "Created worktree issue-456 and checked out branch issue-456",
-        path: "/path/to/repo/.git/phantom/worktrees/issue-456",
+        message:
+          "Created worktree issues/456 and checked out branch issues/456",
+        path: "/path/to/repo/.git/phantom/worktrees/issues/456",
       },
     }));
 
@@ -116,7 +117,7 @@ describe("checkoutIssue", () => {
     ok(result.value);
     equal(
       result.value.message,
-      "Created worktree issue-456 and checked out branch issue-456",
+      "Created worktree issues/456 and checked out branch issues/456",
     );
     equal(result.value.alreadyExists, undefined);
 
@@ -131,9 +132,9 @@ describe("checkoutIssue", () => {
       createWorktreeCoreMock.mock.calls[0].arguments;
     equal(gitRoot, mockGitRoot);
     equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
-    equal(worktreeName, "issue-456");
+    equal(worktreeName, "issues/456");
     deepEqual(options, {
-      branch: "issue-456",
+      branch: "issues/456",
       base: undefined,
     });
   });
@@ -155,19 +156,19 @@ describe("checkoutIssue", () => {
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
       value: {
-        message: "Created worktree issue-789 from develop",
-        path: "/path/to/repo/.git/phantom/worktrees/issue-789",
+        message: "Created worktree issues/789 from develop",
+        path: "/path/to/repo/.git/phantom/worktrees/issues/789",
       },
     }));
 
     const result = await checkoutIssue(mockIssue, customBase);
 
     ok(result.value);
-    equal(result.value.message, "Created worktree issue-789 from develop");
+    equal(result.value.message, "Created worktree issues/789 from develop");
 
     const [, , , options] = createWorktreeCoreMock.mock.calls[0].arguments;
     deepEqual(options, {
-      branch: "issue-789",
+      branch: "issues/789",
       base: "develop",
     });
   });
@@ -253,7 +254,7 @@ describe("checkoutIssue", () => {
     const [, worktreeDirectory, worktreeName, options] =
       createWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
-    equal(worktreeName, "issue-333");
-    equal(options.branch, "issue-333");
+    equal(worktreeName, "issues/333");
+    equal(options.branch, "issues/333");
   });
 });

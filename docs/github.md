@@ -42,14 +42,14 @@ When you need to review and test a pull request locally:
 phantom github checkout 123
 
 # Open shell in the PR worktree
-phantom shell pr-123
+phantom shell pulls/123
 
 # Review, test, and make changes
 npm test
 ```
 
 **What happens:**
-- Creates a worktree named `pr-123`
+- Creates a worktree named `pulls/123`
 - Checks out the PR's branch
 - You can test the changes without affecting your main working directory
 
@@ -62,14 +62,14 @@ When you want to implement a fix for an issue:
 phantom github checkout 456
 
 # Open shell in the issue worktree
-phantom shell issue-456
+phantom shell issues/456
 
 # Implement your fix
 ```
 
 **What happens:**
-- Creates a worktree named `issue-456`
-- Creates a new branch `issue-456` based on the default branch
+- Creates a worktree named `issues/456`
+- Creates a new branch `issues/456` based on the default branch
 - You can start implementing the fix immediately
 
 ### 3. Issue with Custom Base Branch
@@ -81,7 +81,7 @@ When working on an issue that needs to be based on a specific branch:
 phantom github checkout 789 --base develop
 
 # Open shell in the issue worktree
-phantom shell issue-789
+phantom shell issues/789
 # Your worktree is now based on the 'develop' branch
 ```
 
@@ -102,10 +102,10 @@ When checking out a pull request, Phantom performs the following steps:
 #### 1. Fetch Remote Branch
 ```bash
 # For PRs from forks:
-git fetch origin pull/{number}/head:pr-{number}
+git fetch origin pull/{number}/head:pulls/{number}
 
 # For PRs from the same repository:
-git fetch origin {branch-name}:pr-{number}
+git fetch origin {branch-name}:pulls/{number}
 ```
 
 The command intelligently detects whether the PR comes from a fork or the same repository:
@@ -115,17 +115,17 @@ The command intelligently detects whether the PR comes from a fork or the same r
 #### 2. Set Upstream Tracking
 ```bash
 # For fork PRs:
-git branch --set-upstream-to origin/pull/{number}/head pr-{number}
+git branch --set-upstream-to origin/pull/{number}/head pulls/{number}
 
 # For same-repo PRs:
-git branch --set-upstream-to origin/{branch-name} pr-{number}
+git branch --set-upstream-to origin/{branch-name} pulls/{number}
 ```
 
 This enables easy updates with `git pull` in the worktree.
 
 #### 3. Create Worktree
 ```bash
-git worktree add {worktree-path} pr-{number}
+git worktree add {worktree-path} pulls/{number}
 ```
 
 ### Issue Checkout
@@ -134,7 +134,7 @@ For issues, the process is simpler since it creates a new local branch:
 
 ```bash
 # Create worktree with new branch
-git worktree add {worktree-path} -b issue-{number} {base}
+git worktree add {worktree-path} -b issues/{number} {base}
 ```
 
 Where `{base}` is:
@@ -152,8 +152,8 @@ The command determines if a PR is from a fork by checking if the PR's head repos
 - The command validates that the GitHub CLI (`gh`) is available before proceeding
 
 #### Naming Conventions
-- Pull request worktrees: `pr-{number}`
-- Issue worktrees: `issue-{number}`
+- Pull request worktrees: `pulls/{number}`
+- Issue worktrees: `issues/{number}`
 - Local branch names match the worktree names
 
 This design ensures consistent behavior across different PR types and provides a seamless experience for working with GitHub repositories.
