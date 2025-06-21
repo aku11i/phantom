@@ -25,10 +25,23 @@ export class PreferencesParseError extends Error {
   }
 }
 
-function getPreferencesPath(): string {
-  const configHome =
-    process.env.XDG_CONFIG_HOME || path.join(homedir(), ".config");
-  return path.join(configHome, "phantom", "phantom.json");
+function getPreferencesPath(): string | null {
+  // XDG_CONFIG_HOME is preferred over HOME
+  if (process.env.XDG_CONFIG_HOME) {
+    return path.join(process.env.XDG_CONFIG_HOME, "phantom", "phantom.json");
+  }
+
+  // Fall back to HOME directory only if XDG_CONFIG_HOME is not set
+  try {
+    const home = homedir();
+    if (!home) {
+      return null;
+    }
+    return path.join(home, ".config", "phantom", "phantom.json");
+  } catch {
+    // homedir() may throw if HOME is not set
+    return null;
+  }
 }
 
 export async function loadPreferences(): Promise<
@@ -40,6 +53,10 @@ export async function loadPreferences(): Promise<
   >
 > {
   const preferencesPath = getPreferencesPath();
+
+  if (!preferencesPath) {
+    return err(new PreferencesNotFoundError());
+  }
 
   try {
     const content = await fs.readFile(preferencesPath, "utf-8");

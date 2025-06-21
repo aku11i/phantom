@@ -197,4 +197,59 @@ describe("loadPreferences", () => {
       }
     });
   });
+
+  describe("HOME environment variable handling", () => {
+    test("should return PreferencesNotFoundError when HOME is not set and XDG_CONFIG_HOME is not set", async () => {
+      // biome-ignore lint/performance/noDelete: Need to actually delete env var
+      delete process.env.HOME;
+      // biome-ignore lint/performance/noDelete: Need to actually delete env var
+      delete process.env.XDG_CONFIG_HOME;
+
+      const result = await loadPreferences();
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof PreferencesNotFoundError);
+      }
+    });
+
+    test("should load preferences when HOME is not set but XDG_CONFIG_HOME is set", async () => {
+      // biome-ignore lint/performance/noDelete: Need to actually delete env var
+      delete process.env.HOME;
+
+      const customConfigDir = path.join(tempDir, "custom-xdg-config");
+      process.env.XDG_CONFIG_HOME = customConfigDir;
+
+      const preferences = {
+        worktreesDirectory: "/xdg-only/worktrees",
+      };
+
+      const configPath = path.join(customConfigDir, "phantom");
+      await mkdir(configPath, { recursive: true });
+      await writeFile(
+        path.join(configPath, "phantom.json"),
+        JSON.stringify(preferences),
+      );
+
+      const result = await loadPreferences();
+
+      assert.strictEqual(isOk(result), true);
+      if (isOk(result)) {
+        assert.deepStrictEqual(result.value, preferences);
+      }
+    });
+
+    test("should handle empty HOME environment variable", async () => {
+      process.env.HOME = "";
+      // biome-ignore lint/performance/noDelete: Need to actually delete env var
+      delete process.env.XDG_CONFIG_HOME;
+
+      const result = await loadPreferences();
+
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof PreferencesNotFoundError);
+      }
+    });
+  });
 });
