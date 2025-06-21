@@ -6,6 +6,7 @@ const createWorktreeCoreMock = mock.fn();
 const isPullRequestMock = mock.fn();
 const createContextMock = mock.fn();
 const getWorktreePathFromDirectoryMock = mock.fn();
+const validateWorktreeExistsMock = mock.fn();
 
 // Mock the WorktreeAlreadyExistsError class
 class MockWorktreeAlreadyExistsError extends Error {
@@ -27,6 +28,7 @@ mock.module("@aku11i/phantom-core", {
     WorktreeAlreadyExistsError: MockWorktreeAlreadyExistsError,
     createContext: createContextMock,
     getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
+    validateWorktreeExists: validateWorktreeExistsMock,
   },
 });
 
@@ -43,6 +45,7 @@ describe("checkoutIssue", () => {
     getGitRootMock.mock.resetCalls();
     createWorktreeCoreMock.mock.resetCalls();
     isPullRequestMock.mock.resetCalls();
+    validateWorktreeExistsMock.mock.resetCalls();
   };
 
   it("should export checkoutIssue function", () => {
@@ -103,6 +106,11 @@ describe("checkoutIssue", () => {
       gitRoot: mockGitRoot,
       worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
     }));
+    // Mock that worktree doesn't exist
+    validateWorktreeExistsMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: new Error("Worktree not found"),
+    }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
       value: {
@@ -153,6 +161,11 @@ describe("checkoutIssue", () => {
       gitRoot: mockGitRoot,
       worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
     }));
+    // Mock that worktree doesn't exist
+    validateWorktreeExistsMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: new Error("Worktree not found"),
+    }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
       value: {
@@ -186,22 +199,24 @@ describe("checkoutIssue", () => {
       gitRoot: mockGitRoot,
       worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
     }));
-    createWorktreeCoreMock.mock.mockImplementation(async () => ({
-      ok: false,
-      error: new MockWorktreeAlreadyExistsError("Worktree already exists"),
+    // Mock that worktree already exists
+    validateWorktreeExistsMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: { path: `${mockGitRoot}/.git/phantom/worktrees/issues/111` },
     }));
-    getWorktreePathFromDirectoryMock.mock.mockImplementation(
-      (dir, name) => `${dir}/${name}`,
-    );
 
     const result = await checkoutIssue(mockIssue);
 
     ok(result.value);
     equal(
       result.value.message,
-      "Worktree for issue #111 is already checked out",
+      "Issue #111 is already checked out",
     );
     equal(result.value.alreadyExists, true);
+    equal(result.value.path, `${mockGitRoot}/.git/phantom/worktrees/issues/111`);
+
+    // Verify that createWorktreeCore was not called
+    equal(createWorktreeCoreMock.mock.calls.length, 0);
   });
 
   it("should pass through other errors", async () => {
@@ -216,6 +231,11 @@ describe("checkoutIssue", () => {
     createContextMock.mock.mockImplementation(async () => ({
       gitRoot: mockGitRoot,
       worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
+    }));
+    // Mock that worktree doesn't exist
+    validateWorktreeExistsMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: new Error("Worktree not found"),
     }));
     const expectedError = new Error("Permission denied");
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
@@ -241,6 +261,11 @@ describe("checkoutIssue", () => {
     createContextMock.mock.mockImplementation(async () => ({
       gitRoot: mockGitRoot,
       worktreesDirectory: `${mockGitRoot}/.git/phantom/worktrees`,
+    }));
+    // Mock that worktree doesn't exist
+    validateWorktreeExistsMock.mock.mockImplementation(async () => ({
+      ok: false,
+      error: new Error("Worktree not found"),
     }));
     createWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
