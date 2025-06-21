@@ -1,9 +1,16 @@
-import { spawn } from "node:child_process";
-import { platform } from "node:os";
 import { parseArgs } from "node:util";
-import { type WorktreeInfo, listWorktrees } from "@aku11i/phantom-core";
+import {
+  type WorktreeInfo,
+  createContext,
+  listWorktrees,
+} from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { spawnFzf } from "@aku11i/phantom-process";
+import {
+  getClipboardCommand,
+  getFileManagerCommand,
+  spawnFzf,
+  spawnPhantomCommand,
+} from "@aku11i/phantom-process";
 import { isOk } from "@aku11i/phantom-shared";
 import { exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
@@ -25,34 +32,6 @@ Navigation:
   esc      Cancel search or exit
 `;
 
-function getClipboardCommand(): string {
-  const os = platform();
-  switch (os) {
-    case "darwin":
-      return "pbcopy";
-    case "linux":
-      return "xclip -selection clipboard";
-    case "win32":
-      return "clip";
-    default:
-      return "pbcopy"; // fallback
-  }
-}
-
-function getFileManagerCommand(): string {
-  const os = platform();
-  switch (os) {
-    case "darwin":
-      return "open";
-    case "linux":
-      return "xdg-open";
-    case "win32":
-      return "explorer";
-    default:
-      return "open"; // fallback
-  }
-}
-
 export async function fzfHandler(args: string[]): Promise<void> {
   const { values } = parseArgs({
     args,
@@ -71,14 +50,18 @@ export async function fzfHandler(args: string[]): Promise<void> {
   }
 
   const gitRoot = await getGitRoot();
+  const context = await createContext(gitRoot);
 
-  const listResult = await listWorktrees(gitRoot);
-  
+  const listResult = await listWorktrees(
+    context.gitRoot,
+    context.worktreesDirectory,
+  );
+
   if (!isOk(listResult)) {
     // This should never happen since listWorktrees returns Result<T, never>
     return;
   }
-  
+
   const { worktrees } = listResult.value;
   if (worktrees.length === 0) {
     output.log("No worktrees found.");
@@ -106,8 +89,14 @@ export async function fzfHandler(args: string[]): Promise<void> {
       { key: "enter", action: "accept" },
       { key: "ctrl-d", action: "execute(phantom delete {1} < /dev/tty)+abort" },
       { key: "ctrl-w", action: "execute-silent(phantom where {1})+abort" },
-      { key: "ctrl-o", action: `execute-silent(${fileManagerCmd} $(phantom where {1}))+abort` },
-      { key: "ctrl-y", action: `execute-silent(phantom where {1} | ${clipboardCmd})+abort` },
+      {
+        key: "ctrl-o",
+        action: `execute-silent(${fileManagerCmd} $(phantom where {1}))+abort`,
+      },
+      {
+        key: "ctrl-y",
+        action: `execute-silent(phantom where {1} | ${clipboardCmd})+abort`,
+      },
       { key: "alt-?", action: "toggle-preview" },
     ],
     previewWindow: "hidden",
@@ -136,9 +125,7 @@ export async function fzfHandler(args: string[]): Promise<void> {
       // Extract worktree name from the selected line
       const selectedName = result.trim().split(" ")[0];
       // Open shell in the selected worktree
-      spawn("phantom", ["shell", selectedName], {
-        stdio: "inherit",
-      });
+      spawnPhantomCommand(["shell", selectedName]);
     }
     // Exit silently if user cancels (code 1 or 130)
   });
