@@ -3,6 +3,7 @@ import {
   attachWorktreeCore,
   createContext,
   getWorktreePathFromDirectory,
+  validateWorktreeExists,
 } from "@aku11i/phantom-core";
 import { fetch, getGitRoot, setUpstreamBranch } from "@aku11i/phantom-git";
 import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
@@ -22,6 +23,23 @@ export async function checkoutPullRequest(
   const context = await createContext(gitRoot);
   const worktreeName = `pulls/${pullRequest.number}`;
   const localBranch = `pulls/${pullRequest.number}`;
+
+  // Check if worktree already exists before attempting to fetch
+  const existsResult = await validateWorktreeExists(
+    context.gitRoot,
+    context.worktreesDirectory,
+    worktreeName,
+  );
+
+  if (!isErr(existsResult)) {
+    // Worktree already exists, return its path
+    return ok({
+      message: `PR #${pullRequest.number} is already checked out`,
+      worktree: worktreeName,
+      path: existsResult.value.path,
+      alreadyExists: true,
+    });
+  }
 
   // Determine the upstream branch for tracking
   const upstream = pullRequest.isFromFork
@@ -67,19 +85,6 @@ export async function checkoutPullRequest(
   );
 
   if (isErr(attachResult)) {
-    if (attachResult.error instanceof WorktreeAlreadyExistsError) {
-      // For already exists case, we need to construct the path
-      const worktreePath = getWorktreePathFromDirectory(
-        context.worktreesDirectory,
-        worktreeName,
-      );
-      return ok({
-        message: `Worktree for PR #${pullRequest.number} is already checked out`,
-        worktree: worktreeName,
-        path: worktreePath,
-        alreadyExists: true,
-      });
-    }
     return err(attachResult.error);
   }
 
