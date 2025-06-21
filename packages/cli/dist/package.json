@@ -31,5 +31,8 @@
     "README.md",
     "LICENSE"
   ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {}
 }
