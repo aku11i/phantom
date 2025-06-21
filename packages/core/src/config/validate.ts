@@ -9,7 +9,7 @@ export class ConfigValidationError extends Error {
   }
 }
 
-const phantomConfigSchema = z
+export const phantomConfigSchema = z
   .object({
     postCreate: z
       .object({

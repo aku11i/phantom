@@ -1,18 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { type Result, err, ok } from "@aku11i/phantom-shared";
-import { type ConfigValidationError, validateConfig } from "./validate.ts";
+import type { z } from "zod";
+import {
+  type ConfigValidationError,
+  type phantomConfigSchema,
+  validateConfig,
+} from "./validate.ts";
 
-export interface PhantomConfig {
-  postCreate?: {
-    copyFiles?: string[];
-    commands?: string[];
-  };
-  preDelete?: {
-    commands?: string[];
-  };
-  worktreesDirectory?: string;
-}
+export type PhantomConfig = z.infer<typeof phantomConfigSchema>;
 
 export class ConfigNotFoundError extends Error {
   constructor() {
