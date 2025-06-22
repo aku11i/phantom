@@ -208,12 +208,12 @@ describe("checkoutIssue", () => {
     const result = await checkoutIssue(mockIssue);
 
     ok(result.value);
-    equal(
-      result.value.message,
-      "Issue #111 is already checked out",
-    );
+    equal(result.value.message, "Issue #111 is already checked out");
     equal(result.value.alreadyExists, true);
-    equal(result.value.path, `${mockGitRoot}/.git/phantom/worktrees/issues/111`);
+    equal(
+      result.value.path,
+      `${mockGitRoot}/.git/phantom/worktrees/issues/111`,
+    );
 
     // Verify that createWorktreeCore was not called
     equal(createWorktreeCoreMock.mock.calls.length, 0);
