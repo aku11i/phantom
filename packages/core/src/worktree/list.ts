@@ -10,6 +10,7 @@ export interface WorktreeInfo {
   path: string;
   branch: string;
   isClean: boolean;
+  type: "phantom" | "native";
 }
 
 export interface ListWorktreesSuccess {
@@ -61,6 +62,7 @@ export async function getWorktreeInfo(
     path: worktreePath,
     branch,
     isClean,
+    type: "phantom",
   };
 }
 
@@ -75,14 +77,20 @@ export async function listWorktrees(
       worktree.path.startsWith(worktreeDirectory),
     );
 
-    if (phantomWorktrees.length === 0) {
+    const nativeWorktrees = gitWorktrees.filter(
+      (worktree) =>
+        !worktree.path.startsWith(worktreeDirectory) &&
+        worktree.path !== gitRoot,
+    );
+
+    if (phantomWorktrees.length === 0 && nativeWorktrees.length === 0) {
       return ok({
         worktrees: [],
         message: "No worktrees found",
       });
     }
 
-    const worktrees = await Promise.all(
+    const phantomWorktreeInfos = await Promise.all(
       phantomWorktrees.map(async (gitWorktree) => {
         const name = gitWorktree.path.substring(worktreeDirectory.length + 1);
         const isClean = await getWorktreeStatus(gitWorktree.path);
@@ -92,9 +100,27 @@ export async function listWorktrees(
           path: gitWorktree.path,
           branch: gitWorktree.branch || "(detached HEAD)",
           isClean,
+          type: "phantom" as const,
         };
       }),
     );
+
+    const nativeWorktreeInfos = await Promise.all(
+      nativeWorktrees.map(async (gitWorktree) => {
+        const name = gitWorktree.path.split("/").pop() || gitWorktree.path;
+        const isClean = await getWorktreeStatus(gitWorktree.path);
+
+        return {
+          name,
+          path: gitWorktree.path,
+          branch: gitWorktree.branch || "(detached HEAD)",
+          isClean,
+          type: "native" as const,
+        };
+      }),
+    );
+
+    const worktrees = [...phantomWorktreeInfos, ...nativeWorktreeInfos];
 
     return ok({
       worktrees,

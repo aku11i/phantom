@@ -68,14 +68,20 @@ export async function listHandler(args: string[] = []): Promise<void> {
       } else {
         const maxNameLength = Math.max(
           ...worktrees.map((wt) => wt.name.length),
+          4,
         );
+        const maxTypeLength = 7;
+
+        output.log(`${"Name".padEnd(maxNameLength + 2)} ${"Type".padEnd(maxTypeLength)} Branch`);
+        output.log("─".repeat(maxNameLength + maxTypeLength + 20));
 
         for (const worktree of worktrees) {
           const paddedName = worktree.name.padEnd(maxNameLength + 2);
-          const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
+          const paddedType = worktree.type.padEnd(maxTypeLength);
+          const branchInfo = worktree.branch || "(detached HEAD)";
           const status = !worktree.isClean ? " [dirty]" : "";
 
-          output.log(`${paddedName} ${branchInfo}${status}`);
+          output.log(`${paddedName} ${paddedType} ${branchInfo}${status}`);
         }
       }
     }

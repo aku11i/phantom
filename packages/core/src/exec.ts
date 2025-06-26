@@ -6,7 +6,7 @@ import {
 } from "@aku11i/phantom-process";
 import { type Result, err, isErr } from "@aku11i/phantom-shared";
 import type { WorktreeNotFoundError } from "./worktree/errors.ts";
-import { validateWorktreeExists } from "./worktree/validate.ts";
+import { resolveWorktreeNameOrBranch } from "./worktree/resolve.ts";
 
 export type ExecInWorktreeSuccess = SpawnSuccess;
 
@@ -23,16 +23,16 @@ export async function execInWorktree(
 ): Promise<
   Result<ExecInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
 > {
-  const validation = await validateWorktreeExists(
+  const resolution = await resolveWorktreeNameOrBranch(
     gitRoot,
     worktreeDirectory,
     worktreeName,
   );
-  if (isErr(validation)) {
-    return err(validation.error);
+  if (isErr(resolution)) {
+    return err(resolution.error);
   }
 
-  const worktreePath = validation.value.path;
+  const worktreePath = resolution.value.path;
   const [cmd, ...args] = command;
 
   const stdio: StdioOptions = options?.interactive

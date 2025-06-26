@@ -9,6 +9,7 @@ export * from "./worktree/list.ts";
 export * from "./worktree/attach.ts";
 export * from "./worktree/where.ts";
 export * from "./worktree/validate.ts";
+export * from "./worktree/resolve.ts";
 export * from "./worktree/select.ts";
 export * from "./worktree/file-copier.ts";
 export * from "./worktree/post-create.ts";
