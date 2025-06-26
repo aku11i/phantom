@@ -78,7 +78,7 @@ export async function shellHandler(args: string[]): Promise<void> {
     );
   }
 
-  let worktreeName: string;
+  let nameOrBranch: string;
 
   try {
     const gitRoot = await getGitRoot();
@@ -102,16 +102,16 @@ export async function shellHandler(args: string[]): Promise<void> {
       if (!selectResult.value) {
         exitWithSuccess();
       }
-      worktreeName = selectResult.value.name;
+      nameOrBranch = selectResult.value.name;
     } else {
-      worktreeName = positionals[0];
+      nameOrBranch = positionals[0];
     }
 
     // Get worktree path for display
     const validation = await validateWorktreeExists(
       context.gitRoot,
       context.worktreesDirectory,
-      worktreeName,
+      nameOrBranch,
     );
     if (isErr(validation)) {
       exitWithError(validation.error.message, exitCodes.generalError);
@@ -119,7 +119,7 @@ export async function shellHandler(args: string[]): Promise<void> {
 
     if (tmuxDirection) {
       output.log(
-        `Opening worktree '${worktreeName}' in tmux ${
+        `Opening worktree '${nameOrBranch}' in tmux ${
           tmuxDirection === "new" ? "window" : "pane"
         }...`,
       );
@@ -130,8 +130,8 @@ export async function shellHandler(args: string[]): Promise<void> {
         direction: tmuxDirection,
         command: shell,
         cwd: validation.value.path,
-        env: getPhantomEnv(worktreeName, validation.value.path),
-        windowName: tmuxDirection === "new" ? worktreeName : undefined,
+        env: getPhantomEnv(nameOrBranch, validation.value.path),
+        windowName: tmuxDirection === "new" ? nameOrBranch : undefined,
       });
 
       if (isErr(tmuxResult)) {
@@ -147,14 +147,14 @@ export async function shellHandler(args: string[]): Promise<void> {
     }
 
     output.log(
-      `Entering worktree '${worktreeName}' at ${validation.value.path}`,
+      `Entering worktree '${nameOrBranch}' at ${validation.value.path}`,
     );
     output.log("Type 'exit' to return to your original directory\n");
 
     const result = await shellInWorktreeCore(
       context.gitRoot,
       context.worktreesDirectory,
-      worktreeName,
+      nameOrBranch,
     );
 
     if (isErr(result)) {

@@ -68,14 +68,32 @@ export async function listHandler(args: string[] = []): Promise<void> {
       } else {
         const maxNameLength = Math.max(
           ...worktrees.map((wt) => wt.name.length),
+          4, // "Name"
+        );
+        const maxBranchLength = Math.max(
+          ...worktrees.map((wt) => wt.branch.length),
+          6, // "Branch"
         );
 
-        for (const worktree of worktrees) {
-          const paddedName = worktree.name.padEnd(maxNameLength + 2);
-          const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
-          const status = !worktree.isClean ? " [dirty]" : "";
+        // Header
+        const header = `${"Name".padEnd(maxNameLength)}  ${"Type".padEnd(
+          9,
+        )}  ${"Branch".padEnd(maxBranchLength)}  Status`;
+        const separator = `${'-'.repeat(maxNameLength)}  ${'-'.repeat(
+          9,
+        )}  ${'-'.repeat(maxBranchLength)}  ${'-'.repeat(6)}`;
+        output.log(header);
+        output.log(separator);
 
-          output.log(`${paddedName} ${branchInfo}${status}`);
+        for (const worktree of worktrees) {
+          const paddedName = worktree.name.padEnd(maxNameLength);
+          const paddedType = worktree.type.padEnd(9);
+          const paddedBranch = worktree.branch.padEnd(maxBranchLength);
+          const status = worktree.isClean ? "clean" : "modified";
+
+          output.log(
+            `${paddedName}  ${paddedType}  ${paddedBranch}  ${status}`,
+          );
         }
       }
     }

@@ -1,12 +1,8 @@
 import { selectWithFzf } from "@aku11i/phantom-process";
 import { type Result, isErr } from "@aku11i/phantom-shared";
-import { listWorktrees } from "./list.ts";
+import { type WorktreeInfo, listWorktrees } from "./list.ts";
 
-export interface SelectWorktreeResult {
-  name: string;
-  branch: string | null;
-  isClean: boolean;
-}
+export type SelectWorktreeResult = WorktreeInfo;
 
 export async function selectWorktreeWithFzf(
   gitRoot: string,
@@ -27,16 +23,16 @@ export async function selectWorktreeWithFzf(
     };
   }
 
-  const list = worktrees.map((wt) => {
-    const branchInfo = wt.branch ? `(${wt.branch})` : "";
-    const status = !wt.isClean ? " [dirty]" : "";
-    return `${wt.name} ${branchInfo}${status}`;
-  });
-
-  const fzfResult = await selectWithFzf(list, {
-    prompt: "Select worktree> ",
-    header: "Git Worktrees",
-  });
+  const fzfResult = await selectWithFzf(
+    worktrees.map(
+      (wt) =>
+        `${wt.name} (${wt.type}) ${wt.branch} ${wt.isClean ? "" : "[dirty]"}`,
+    ),
+    {
+      prompt: "Select worktree> ",
+      header: "Git Worktrees",
+    },
+  );
 
   if (isErr(fzfResult)) {
     return fzfResult;
@@ -61,10 +57,6 @@ export async function selectWorktreeWithFzf(
 
   return {
     ok: true,
-    value: {
-      name: selectedWorktree.name,
-      branch: selectedWorktree.branch,
-      isClean: selectedWorktree.isClean,
-    },
+    value: selectedWorktree,
   };
 }

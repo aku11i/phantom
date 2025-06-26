@@ -13,14 +13,14 @@ export type ShellInWorktreeSuccess = SpawnSuccess;
 export async function shellInWorktree(
   gitRoot: string,
   worktreeDirectory: string,
-  worktreeName: string,
+  nameOrBranch: string,
 ): Promise<
   Result<ShellInWorktreeSuccess, WorktreeNotFoundError | ProcessError>
 > {
   const validation = await validateWorktreeExists(
     gitRoot,
     worktreeDirectory,
-    worktreeName,
+    nameOrBranch,
   );
   if (isErr(validation)) {
     return err(validation.error);
@@ -36,7 +36,7 @@ export async function shellInWorktree(
       cwd: worktreePath,
       env: {
         ...process.env,
-        ...getPhantomEnv(worktreeName, worktreePath),
+        ...getPhantomEnv(nameOrBranch, worktreePath),
       },
     },
   });

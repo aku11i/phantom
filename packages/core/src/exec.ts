@@ -17,7 +17,7 @@ export interface ExecInWorktreeOptions {
 export async function execInWorktree(
   gitRoot: string,
   worktreeDirectory: string,
-  worktreeName: string,
+  nameOrBranch: string,
   command: string[],
   options?: ExecInWorktreeOptions,
 ): Promise<
@@ -26,7 +26,7 @@ export async function execInWorktree(
   const validation = await validateWorktreeExists(
     gitRoot,
     worktreeDirectory,
-    worktreeName,
+    nameOrBranch,
   );
   if (isErr(validation)) {
     return err(validation.error);

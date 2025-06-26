@@ -3,10 +3,12 @@ import {
   listWorktrees as gitListWorktrees,
 } from "@aku11i/phantom-git";
 import { type Result, ok } from "@aku11i/phantom-shared";
+import path from "node:path";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 
 export interface WorktreeInfo {
   name: string;
+  type: "phantom" | "native";
   path: string;
   branch: string;
   isClean: boolean;
@@ -58,6 +60,7 @@ export async function getWorktreeInfo(
 
   return {
     name,
+    type: "phantom",
     path: worktreePath,
     branch,
     isClean,
@@ -71,11 +74,7 @@ export async function listWorktrees(
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
 
-    const phantomWorktrees = gitWorktrees.filter((worktree) =>
-      worktree.path.startsWith(worktreeDirectory),
-    );
-
-    if (phantomWorktrees.length === 0) {
+    if (gitWorktrees.length === 0) {
       return ok({
         worktrees: [],
         message: "No worktrees found",
@@ -83,14 +82,21 @@ export async function listWorktrees(
     }
 
     const worktrees = await Promise.all(
-      phantomWorktrees.map(async (gitWorktree) => {
-        const name = gitWorktree.path.substring(worktreeDirectory.length + 1);
+      gitWorktrees.map(async (gitWorktree) => {
+        const isPhantom = gitWorktree.path.startsWith(worktreeDirectory);
         const isClean = await getWorktreeStatus(gitWorktree.path);
+        const branch = gitWorktree.branch || "(detached HEAD)";
+        const name = isPhantom
+          ? gitWorktree.path.substring(worktreeDirectory.length + 1)
+          : branch !== "(detached HEAD)"
+            ? branch
+            : path.basename(gitWorktree.path);
 
         return {
           name,
+          type: isPhantom ? "phantom" : "native",
           path: gitWorktree.path,
-          branch: gitWorktree.branch || "(detached HEAD)",
+          branch,
           isClean,
         };
       }),
