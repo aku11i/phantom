@@ -2,7 +2,7 @@ import type { CommandHelp } from "../help.ts";
 
 export const reviewHelp: CommandHelp = {
   name: "review",
-  description: "Review changes in a worktree with a local PR review interface",
+  description: "Review changes in a worktree with a local PR review interface (experimental)",
   usage: "phantom review [options] <worktree-name>",
   options: [
     {
@@ -40,9 +40,11 @@ export const reviewHelp: CommandHelp = {
     },
   ],
   notes: [
+    "⚠️  This is an experimental feature and may change in future versions",
     "Uses reviewit to provide a GitHub-like PR review interface locally",
     "Default base is origin/<defaultBranch> where defaultBranch is from config or 'main'",
     "The --base value is passed directly to reviewit as the comparison reference",
+    "Requires reviewit to be installed separately (e.g., npm install -g reviewit)",
     "powered by yoshiko-pg/reviewit (https://github.com/yoshiko-pg/reviewit)",
   ],
 };

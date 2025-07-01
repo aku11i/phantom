@@ -76,7 +76,7 @@ const commands: Command[] = [
   {
     name: "review",
     description:
-      "Review changes in a worktree with a local PR review interface",
+      "Review changes in a worktree with a local PR review interface (experimental)",
     handler: reviewHandler,
     help: reviewHelp,
   },
