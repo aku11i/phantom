@@ -109,7 +109,7 @@ describe("reviewHandler", () => {
     strictEqual(execCall.arguments[0], "/repo");
     strictEqual(execCall.arguments[1], "/repo/.git/phantom/worktrees");
     strictEqual(execCall.arguments[2], "feature");
-    strictEqual(execCall.arguments[3].join(" "), "reviewit HEAD origin/main");
+    strictEqual(execCall.arguments[3].join(" "), "reviewit . origin/main");
     strictEqual(execCall.arguments[4].interactive, true);
   });
 
@@ -134,7 +134,7 @@ describe("reviewHandler", () => {
     const execCall = execInWorktreeMock.mock.calls[0];
     strictEqual(
       execCall.arguments[3].join(" "),
-      "reviewit HEAD origin/develop",
+      "reviewit . origin/develop",
     );
   });
 
@@ -157,7 +157,7 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(execCall.arguments[3].join(" "), "reviewit HEAD main");
+    strictEqual(execCall.arguments[3].join(" "), "reviewit . main");
   });
 
   it("should use defaultBranch from config when available", async () => {
@@ -205,7 +205,7 @@ describe("reviewHandler", () => {
     const execCall = execInWorktreeMock.mock.calls[0];
     strictEqual(
       execCall.arguments[3].join(" "),
-      "reviewit HEAD origin/develop",
+      "reviewit . origin/develop",
     );
   });
 
