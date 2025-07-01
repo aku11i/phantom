@@ -132,10 +132,7 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(
-      execCall.arguments[3].join(" "),
-      "reviewit . origin/develop",
-    );
+    strictEqual(execCall.arguments[3].join(" "), "reviewit . origin/develop");
   });
 
   it("should execute reviewit with local branch as base", async () => {
@@ -203,10 +200,7 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(
-      execCall.arguments[3].join(" "),
-      "reviewit . origin/develop",
-    );
+    strictEqual(execCall.arguments[3].join(" "), "reviewit . origin/develop");
   });
 
   it("should select worktree with fzf when --fzf is used", async () => {
