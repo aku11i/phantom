@@ -109,7 +109,7 @@ describe("reviewHandler", () => {
     strictEqual(execCall.arguments[0], "/repo");
     strictEqual(execCall.arguments[1], "/repo/.git/phantom/worktrees");
     strictEqual(execCall.arguments[2], "feature");
-    strictEqual(execCall.arguments[3].join(" "), "reviewit . origin/main");
+    strictEqual(execCall.arguments[3].join(" "), "reviewit HEAD origin/main");
     strictEqual(execCall.arguments[4].interactive, true);
   });
 
@@ -132,7 +132,10 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(execCall.arguments[3].join(" "), "reviewit . origin/develop");
+    strictEqual(
+      execCall.arguments[3].join(" "),
+      "reviewit HEAD origin/develop",
+    );
   });
 
   it("should execute reviewit with local branch as base", async () => {
@@ -154,7 +157,7 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(execCall.arguments[3].join(" "), "reviewit . main");
+    strictEqual(execCall.arguments[3].join(" "), "reviewit HEAD main");
   });
 
   it("should use defaultBranch from config when available", async () => {
@@ -200,7 +203,10 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(execCall.arguments[3].join(" "), "reviewit . origin/develop");
+    strictEqual(
+      execCall.arguments[3].join(" "),
+      "reviewit HEAD origin/develop",
+    );
   });
 
   it("should select worktree with fzf when --fzf is used", async () => {
