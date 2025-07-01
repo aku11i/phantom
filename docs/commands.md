@@ -291,7 +291,7 @@ phantom review --fzf --base origin/staging
 
 **Requirements:**
 - [reviewit](https://github.com/yoshiko-pg/reviewit) must be installed separately (`npm install -g reviewit`)
-- Command executes `reviewit . <base-ref>` in the specified worktree
+- Command executes `reviewit HEAD <base-ref>` in the specified worktree
 
 **Notes:**
 - This is an experimental feature subject to change
