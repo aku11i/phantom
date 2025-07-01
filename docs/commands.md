@@ -258,7 +258,7 @@ phantom exec --fzf --tmux npm run dev
 
 **⚠️ Experimental Feature**
 
-Launch a GitHub-like PR review interface locally using reviewit.
+Launch a GitHub-like PR review interface locally using [reviewit](https://github.com/yoshiko-pg/reviewit).
 
 ```bash
 phantom review <name> [options]
@@ -290,7 +290,7 @@ phantom review --fzf --base origin/staging
 ```
 
 **Requirements:**
-- reviewit must be installed separately (`npm install -g reviewit`)
+- [reviewit](https://github.com/yoshiko-pg/reviewit) must be installed separately (`npm install -g reviewit`)
 - Command executes `reviewit HEAD <base-ref>` in the specified worktree
 
 **Notes:**
