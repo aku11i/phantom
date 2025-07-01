@@ -10,6 +10,7 @@ import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
 import { githubHandler } from "../handlers/github.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
+import { reviewHandler } from "../handlers/review.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
 import { whereHandler } from "../handlers/where.ts";
@@ -22,6 +23,7 @@ import { execHelp } from "../help/exec.ts";
 import { githubCheckoutHelp, githubHelp } from "../help/github.ts";
 import { listHelp } from "../help/list.ts";
 import { mcpHelp } from "../help/mcp.ts";
+import { reviewHelp } from "../help/review.ts";
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
@@ -70,6 +72,13 @@ const commands: Command[] = [
     description: "Execute a command in a worktree directory",
     handler: execHandler,
     help: execHelp,
+  },
+  {
+    name: "review",
+    description:
+      "Review changes in a worktree with a local PR review interface",
+    handler: reviewHandler,
+    help: reviewHelp,
   },
   {
     name: "shell",

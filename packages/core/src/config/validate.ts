@@ -25,6 +25,7 @@ export const phantomConfigSchema = z
       .passthrough()
       .optional(),
     worktreesDirectory: z.string().optional(),
+    defaultBranch: z.string().optional(),
   })
   .passthrough();
 
