@@ -37,6 +37,7 @@ complete -c phantom -n "__phantom_using_command" -a "list" -d "List all Git work
 complete -c phantom -n "__phantom_using_command" -a "where" -d "Output the filesystem path of a specific worktree"
 complete -c phantom -n "__phantom_using_command" -a "delete" -d "Delete a Git worktree (phantom)"
 complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command in a worktree directory"
+complete -c phantom -n "__phantom_using_command" -a "review" -d "Review changes in a worktree with a local PR review interface (experimental)"
 complete -c phantom -n "__phantom_using_command" -a "shell" -d "Open an interactive shell in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "github" -d "GitHub integration commands"
 complete -c phantom -n "__phantom_using_command" -a "gh" -d "GitHub integration commands (alias)"
@@ -82,6 +83,11 @@ complete -c phantom -n "__phantom_using_command exec" -l tmux-vertical -d "Execu
 complete -c phantom -n "__phantom_using_command exec" -l tmux-horizontal -d "Execute command in horizontal split pane"
 complete -c phantom -n "__phantom_using_command exec" -a "(__phantom_list_worktrees)"
 
+# review command options
+complete -c phantom -n "__phantom_using_command review" -l fzf -d "Use fzf for interactive selection"
+complete -c phantom -n "__phantom_using_command review" -l base -d "Base reference for comparison" -x
+complete -c phantom -n "__phantom_using_command review" -a "(__phantom_list_worktrees)"
+
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"
 complete -c phantom -n "__phantom_using_command shell" -l tmux -d "Open shell in new tmux window (-t)"
@@ -117,6 +123,7 @@ _phantom() {
         'where:Output the filesystem path of a specific worktree'
         'delete:Delete a Git worktree (phantom)'
         'exec:Execute a command in a worktree directory'
+        'review:Review changes in a worktree with a local PR review interface (experimental)'
         'shell:Open an interactive shell in a worktree directory'
         'github:GitHub integration commands'
         'gh:GitHub integration commands (alias)'
@@ -159,12 +166,17 @@ _phantom() {
                         '--fzf[Use fzf for interactive selection]' \\
                         '--names[Output only phantom names (for scripts and completion)]'
                     ;;
-                where|delete|shell)
+                where|delete|review|shell)
                     local worktrees
                     worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
                     if [[ \${line[1]} == "where" ]]; then
                         _arguments \\
                             '--fzf[Use fzf for interactive selection]' \\
+                            '1:worktree:(\${(q)worktrees[@]})'
+                    elif [[ \${line[1]} == "review" ]]; then
+                        _arguments \\
+                            '--fzf[Use fzf for interactive selection]' \\
+                            '--base[Base reference for comparison]:reference:' \\
                             '1:worktree:(\${(q)worktrees[@]})'
                     elif [[ \${line[1]} == "shell" ]]; then
                         _arguments \\
@@ -232,7 +244,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec shell github gh version completion mcp"
+    local commands="create attach list where delete exec review shell github gh version completion mcp"
     local global_opts="--help --version"
 
     if [[ \${cword} -eq 1 ]]; then
@@ -329,6 +341,24 @@ _phantom_completion() {
                         # After worktree name, complete commands
                         compopt -o default
                         COMPREPLY=()
+                    fi
+                    return 0
+                    ;;
+            esac
+            ;;
+        review)
+            case "\${prev}" in
+                --base)
+                    # Don't complete anything specific for base reference
+                    return 0
+                    ;;
+                *)
+                    if [[ "\${cur}" == -* ]]; then
+                        local opts="--fzf --base"
+                        COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                    else
+                        local worktrees=\$(_phantom_list_worktrees)
+                        COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
                     fi
                     return 0
                     ;;

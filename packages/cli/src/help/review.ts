@@ -2,7 +2,8 @@ import type { CommandHelp } from "../help.ts";
 
 export const reviewHelp: CommandHelp = {
   name: "review",
-  description: "Review changes in a worktree with a local PR review interface (experimental)",
+  description:
+    "Review changes in a worktree with a local PR review interface (experimental)",
   usage: "phantom review [options] <worktree-name>",
   options: [
     {
