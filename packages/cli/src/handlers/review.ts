@@ -88,7 +88,7 @@ export async function reviewHandler(args: string[]): Promise<void> {
     );
 
     // Execute reviewit command
-    const command = ["npx", "reviewit@1.x", "HEAD", baseRef];
+    const command = ["reviewit", "HEAD", baseRef];
     const result = await execInWorktree(
       context.gitRoot,
       context.worktreesDirectory,

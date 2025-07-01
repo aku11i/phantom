@@ -24,7 +24,7 @@ export const reviewHelp: CommandHelp = {
     },
     {
       description: "Review changes against specific remote branch",
-      command: "phantom review feature-auth --base origin/develop",
+      command: "phantom review feature-login --base origin/feature-auth",
     },
     {
       description: "Review changes against local branch",
