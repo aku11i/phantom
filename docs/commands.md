@@ -13,6 +13,7 @@ This document provides a comprehensive reference for all Phantom commands and th
 - [Working with Worktrees](#working-with-worktrees)
   - [shell](#shell)
   - [exec](#exec)
+  - [review](#review)
 - [GitHub Integration](#github-integration)
   - [github checkout](#github-checkout)
 - [Other Commands](#other-commands)
@@ -252,6 +253,50 @@ phantom exec --fzf --tmux npm run dev
 
 **Notes:**
 - tmux options require being inside a tmux session
+
+### review
+
+**⚠️ Experimental Feature**
+
+Launch a GitHub-like PR review interface locally using reviewit.
+
+```bash
+phantom review <name> [options]
+```
+
+**Options:**
+- `--base <ref>` - Compare against specific base reference (branch, commit, or remote)
+- `--fzf` - Select worktree with fzf and review
+
+**Examples:**
+```bash
+# Review against default branch
+phantom review feature-auth
+
+# Review against specific local branch
+phantom review feature-auth --base main
+
+# Review against remote branch
+phantom review feature-auth --base origin/develop
+
+# Review against specific commit
+phantom review feature-auth --base a1b2c3d
+
+# Interactive worktree selection
+phantom review --fzf
+
+# Interactive selection with custom base
+phantom review --fzf --base origin/staging
+```
+
+**Requirements:**
+- reviewit must be installed separately (`npm install -g reviewit`)
+- Command executes `reviewit HEAD <base-ref>` in the specified worktree
+
+**Notes:**
+- This is an experimental feature subject to change
+- Credits to [yoshiko-pg/reviewit](https://github.com/yoshiko-pg/reviewit) for the review interface
+- Uses `defaultBranch` configuration option when `--base` is not specified
 
 ## GitHub Integration
 

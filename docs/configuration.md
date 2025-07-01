@@ -4,6 +4,7 @@
 
 - [Configuration File](#configuration-file)
 - [Configuration Options](#configuration-options)
+  - [defaultBranch](#defaultbranch)
   - [worktreesDirectory](#worktreebasedirectory)
   - [postCreate.copyFiles](#postcreatecopyfiles)
   - [postCreate.commands](#postcreatecommands)
@@ -16,6 +17,7 @@ Create a `phantom.config.json` file in your repository root:
 
 ```json
 {
+  "defaultBranch": "main",
   "worktreesDirectory": "../phantom-worktrees",
   "postCreate": {
     "copyFiles": [
@@ -32,6 +34,29 @@ Create a `phantom.config.json` file in your repository root:
 ```
 
 ## Configuration Options
+
+### defaultBranch
+
+The default base branch to use for the `phantom review` command when no `--base` option is specified.
+
+**Default:** `"main"`
+
+**Example:**
+```json
+{
+  "defaultBranch": "develop"
+}
+```
+
+**Use Cases:**
+- Projects that use `develop` as the main development branch
+- Projects with custom main branch names (e.g., `master`, `trunk`, `stable`)
+- Different environments requiring different base branches
+
+**Notes:**
+- Used by the `phantom review` command when `--base` is not specified
+- Falls back to `"main"` if not configured
+- Must be a valid branch reference
 
 ### worktreesDirectory
 
