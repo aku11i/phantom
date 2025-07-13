@@ -76,7 +76,7 @@ mock.module("../errors.ts", {
 const { reviewHandler } = await import("./review.ts");
 
 describe("reviewHandler", () => {
-  it("should execute reviewit with default base branch", async () => {
+  it("should execute difit with default base branch", async () => {
     exitMock.mock.resetCalls();
     consoleLogMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
@@ -101,7 +101,7 @@ describe("reviewHandler", () => {
     );
     strictEqual(
       consoleLogMock.mock.calls[1].arguments[0],
-      "powered by yoshiko-pg/reviewit (https://github.com/yoshiko-pg/reviewit)",
+      "powered by yoshiko-pg/difit (https://github.com/yoshiko-pg/difit)",
     );
 
     strictEqual(execInWorktreeMock.mock.calls.length, 1);
@@ -109,11 +109,11 @@ describe("reviewHandler", () => {
     strictEqual(execCall.arguments[0], "/repo");
     strictEqual(execCall.arguments[1], "/repo/.git/phantom/worktrees");
     strictEqual(execCall.arguments[2], "feature");
-    strictEqual(execCall.arguments[3].join(" "), "reviewit HEAD origin/main");
+    strictEqual(execCall.arguments[3].join(" "), "difit HEAD origin/main");
     strictEqual(execCall.arguments[4].interactive, true);
   });
 
-  it("should execute reviewit with custom base branch", async () => {
+  it("should execute difit with custom base branch", async () => {
     exitMock.mock.resetCalls();
     consoleLogMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
@@ -132,13 +132,10 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(
-      execCall.arguments[3].join(" "),
-      "reviewit HEAD origin/develop",
-    );
+    strictEqual(execCall.arguments[3].join(" "), "difit HEAD origin/develop");
   });
 
-  it("should execute reviewit with local branch as base", async () => {
+  it("should execute difit with local branch as base", async () => {
     exitMock.mock.resetCalls();
     consoleLogMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
@@ -157,7 +154,7 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(execCall.arguments[3].join(" "), "reviewit HEAD main");
+    strictEqual(execCall.arguments[3].join(" "), "difit HEAD main");
   });
 
   it("should use defaultBranch from config when available", async () => {
@@ -203,10 +200,7 @@ describe("reviewHandler", () => {
     );
 
     const execCall = execInWorktreeMock.mock.calls[0];
-    strictEqual(
-      execCall.arguments[3].join(" "),
-      "reviewit HEAD origin/develop",
-    );
+    strictEqual(execCall.arguments[3].join(" "), "difit HEAD origin/develop");
   });
 
   it("should select worktree with fzf when --fzf is used", async () => {

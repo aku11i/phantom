@@ -84,11 +84,11 @@ export async function reviewHandler(args: string[]): Promise<void> {
 
     output.log(`Opening review for worktree '${worktreeName}'...`);
     output.log(
-      "powered by yoshiko-pg/reviewit (https://github.com/yoshiko-pg/reviewit)",
+      "powered by yoshiko-pg/difit (https://github.com/yoshiko-pg/difit)",
     );
 
-    // Execute reviewit command
-    const command = ["reviewit", "HEAD", baseRef];
+    // Execute difit command
+    const command = ["difit", "HEAD", baseRef];
     const result = await execInWorktree(
       context.gitRoot,
       context.worktreesDirectory,

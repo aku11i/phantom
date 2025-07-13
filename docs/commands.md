@@ -258,7 +258,7 @@ phantom exec --fzf --tmux npm run dev
 
 **⚠️ Experimental Feature**
 
-Launch a GitHub-like PR review interface locally using [reviewit](https://github.com/yoshiko-pg/reviewit).
+Launch a GitHub-like PR review interface locally using [difit](https://github.com/yoshiko-pg/difit).
 
 ```bash
 phantom review <name> [options]
@@ -290,12 +290,12 @@ phantom review --fzf --base origin/staging
 ```
 
 **Requirements:**
-- [reviewit](https://github.com/yoshiko-pg/reviewit) must be installed separately (`npm install -g reviewit`)
-- Command executes `reviewit HEAD <base-ref>` in the specified worktree
+- [difit](https://github.com/yoshiko-pg/difit) must be installed separately (`npm install -g difit`)
+- Command executes `difit HEAD <base-ref>` in the specified worktree
 
 **Notes:**
 - This is an experimental feature subject to change
-- Credits to [yoshiko-pg/reviewit](https://github.com/yoshiko-pg/reviewit) for the review interface
+- Credits to [yoshiko-pg/difit](https://github.com/yoshiko-pg/difit) for the review interface
 - Uses `defaultBranch` configuration option when `--base` is not specified
 
 ## GitHub Integration

@@ -29,7 +29,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
 - 🐙 **GitHub Integration** - Create worktrees directly from GitHub PRs and issues
 - 🤖 **MCP Integration** - AI autonomously manages worktrees for parallel development
-- 🔍 **PR Review Interface** - Review worktree differences locally using [reviewit](https://github.com/yoshiko-pg/reviewit) (experimental)
+- 🔍 **PR Review Interface** - Review worktree differences locally using [difit](https://github.com/yoshiko-pg/difit) (experimental)
 - ⚡ **Fast and lightweight** - Minimal external dependencies
 
 ## 🚀 Installation

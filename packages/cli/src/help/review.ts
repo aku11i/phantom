@@ -42,10 +42,10 @@ export const reviewHelp: CommandHelp = {
   ],
   notes: [
     "⚠️  This is an experimental feature and may change in future versions",
-    "Uses reviewit to provide a GitHub-like PR review interface locally",
+    "Uses difit to provide a GitHub-like PR review interface locally",
     "Default base is origin/<defaultBranch> where defaultBranch is from config or 'main'",
-    "The --base value is passed directly to reviewit as the comparison reference",
-    "Requires reviewit to be installed separately (e.g., npm install -g reviewit)",
-    "powered by yoshiko-pg/reviewit (https://github.com/yoshiko-pg/reviewit)",
+    "The --base value is passed directly to difit as the comparison reference",
+    "Requires difit to be installed separately (e.g., npm install -g difit)",
+    "powered by yoshiko-pg/difit (https://github.com/yoshiko-pg/difit)",
   ],
 };
