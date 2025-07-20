@@ -1,6 +1,6 @@
 {
   "name": "@aku11i/phantom",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A powerful CLI tool for managing Git worktrees for parallel development",
   "keywords": [
     "git",
