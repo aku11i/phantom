@@ -10,13 +10,18 @@ export const githubHelp: CommandHelp = {
       description: "Create a worktree for PR or issue #123",
     },
     {
+      command: "phantom github open 123",
+      description: "Open PR or issue #123 in browser",
+    },
+    {
       command: "phantom gh checkout 456",
-      description: "Same as above, using the gh alias",
+      description: "Same as checkout above, using the gh alias",
     },
   ],
   notes: [
     "Subcommands:",
     "  checkout    Create a worktree for a GitHub PR or issue",
+    "  open        Open GitHub page in browser",
     "",
     "Alias: 'gh' can be used instead of 'github'",
     "",

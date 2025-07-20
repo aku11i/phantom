@@ -7,6 +7,7 @@ import { createHandler } from "../handlers/create.ts";
 import { deleteHandler } from "../handlers/delete.ts";
 import { execHandler } from "../handlers/exec.ts";
 import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
+import { gitHubOpenHandler } from "../handlers/github-open.ts";
 import { githubHandler } from "../handlers/github.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
@@ -20,6 +21,7 @@ import { completionHelp } from "../help/completion.ts";
 import { createHelp } from "../help/create.ts";
 import { deleteHelp } from "../help/delete.ts";
 import { execHelp } from "../help/exec.ts";
+import { gitHubOpenHelp } from "../help/github-open.ts";
 import { githubCheckoutHelp, githubHelp } from "../help/github.ts";
 import { listHelp } from "../help/list.ts";
 import { mcpHelp } from "../help/mcp.ts";
@@ -116,6 +118,12 @@ const commands: Command[] = [
         handler: githubCheckoutHandler,
         help: githubCheckoutHelp,
       },
+      {
+        name: "open",
+        description: "Open GitHub page in browser",
+        handler: gitHubOpenHandler,
+        help: gitHubOpenHelp,
+      },
     ],
   },
   {
@@ -129,6 +137,12 @@ const commands: Command[] = [
         description: "Create a worktree for a GitHub PR or issue",
         handler: githubCheckoutHandler,
         help: githubCheckoutHelp,
+      },
+      {
+        name: "open",
+        description: "Open GitHub page in browser",
+        handler: gitHubOpenHandler,
+        help: gitHubOpenHelp,
       },
     ],
   },
