@@ -1,7 +1,6 @@
 import { parseArgs } from "node:util";
 import { createContext, getWorktreeInfo } from "@aku11i/phantom-core";
 import { getCurrentWorktree, getGitRoot } from "@aku11i/phantom-git";
-import { getGitHubRepoInfo } from "@aku11i/phantom-github";
 import { spawnProcess } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
@@ -14,7 +13,6 @@ export const gitHubOpenHandler = async (args: string[]) => {
     allowPositionals: true,
   });
 
-  const { owner, repo } = await getGitHubRepoInfo();
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
 
@@ -38,7 +36,7 @@ export const gitHubOpenHandler = async (args: string[]) => {
         exitWithError(result.error.message, exitCodes.generalError);
       }
 
-      output.log(`Opening repository ${owner}/${repo} in browser...`);
+      output.log("Opening repository in browser...");
       return;
     }
 
@@ -82,6 +80,6 @@ export const gitHubOpenHandler = async (args: string[]) => {
       exitWithError(result.error.message, exitCodes.generalError);
     }
 
-    output.log(`Opening repository ${owner}/${repo} in browser...`);
+    output.log("Opening repository in browser...");
   }
 };
