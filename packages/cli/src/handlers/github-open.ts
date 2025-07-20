@@ -1,4 +1,5 @@
 import { parseArgs } from "node:util";
+import { createContext, getWorktreeInfo } from "@aku11i/phantom-core";
 import { getCurrentWorktree, getGitRoot } from "@aku11i/phantom-git";
 import { getGitHubRepoInfo } from "@aku11i/phantom-github";
 import { spawnProcess } from "@aku11i/phantom-process";
@@ -36,12 +37,21 @@ export const gitHubOpenHandler = async (args: string[]) => {
       const currentWorktree = await getCurrentWorktree(gitRoot);
 
       if (currentWorktree) {
-        // We're in a worktree, try to extract PR/issue number from worktree name
-        const name = currentWorktree;
+        // We're in a worktree, get the full worktree info
+        const context = await createContext(gitRoot);
+        const worktreeInfo = await getWorktreeInfo(
+          gitRoot,
+          context.worktreesDirectory,
+          currentWorktree,
+        );
+
+        // Extract worktree name from path (last segment)
+        const pathSegments = worktreeInfo.path.split("/");
+        const worktreeName = pathSegments[pathSegments.length - 1];
 
         // Try to extract number from worktree name patterns like "pulls/123" or "issues/456"
-        const pullMatch = name.match(/^pulls\/(\d+)$/);
-        const issueMatch = name.match(/^issues\/(\d+)$/);
+        const pullMatch = worktreeName.match(/^pulls\/(\d+)$/);
+        const issueMatch = worktreeName.match(/^issues\/(\d+)$/);
 
         if (pullMatch) {
           const prNumber = pullMatch[1];
@@ -54,7 +64,9 @@ export const gitHubOpenHandler = async (args: string[]) => {
             exitWithError(result.error.message, exitCodes.generalError);
           }
 
-          output.log(`Opening PR #${prNumber} in browser...`);
+          output.log(
+            `Opening PR #${prNumber} (from worktree: ${worktreeName}) in browser...`,
+          );
           return;
         }
         if (issueMatch) {
@@ -68,7 +80,9 @@ export const gitHubOpenHandler = async (args: string[]) => {
             exitWithError(result.error.message, exitCodes.generalError);
           }
 
-          output.log(`Opening issue #${issueNumber} in browser...`);
+          output.log(
+            `Opening issue #${issueNumber} (from worktree: ${worktreeName}) in browser...`,
+          );
           return;
         }
       }
