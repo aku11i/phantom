@@ -30,6 +30,9 @@ phantom gh checkout <number> [options]
 
 **Options:**
 - `--base <branch>`: Base branch for new issue branches (issues only, default: repository default branch)
+- `--tmux` / `-t`: Open the worktree in a new tmux window (requires tmux)
+- `--tmux-vertical` / `--tmux-v`: Open the worktree in a vertical tmux split
+- `--tmux-horizontal` / `--tmux-h`: Open the worktree in a horizontal tmux split
 
 ## Use Cases
 
@@ -84,6 +87,23 @@ phantom github checkout 789 --base develop
 phantom shell issues/789
 # Your worktree is now based on the 'develop' branch
 ```
+
+### 4. Opening in tmux
+
+When using tmux, you can open the worktree directly after checkout:
+
+```bash
+# Create and open PR #321 in a new tmux window
+phantom github checkout 321 --tmux
+
+# Create and open issue #654 in a vertical split
+phantom github checkout 654 --tmux-v
+
+# Create and open in a horizontal split
+phantom github checkout 987 --tmux-h
+```
+
+**Note:** The `--tmux` options require you to be inside a tmux session.
 
 ## Internal Behavior
 

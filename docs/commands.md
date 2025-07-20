@@ -311,6 +311,9 @@ phantom gh checkout <number> [options]  # alias
 
 **Options:**
 - `--base <branch>` - Base branch for new issue branches (issues only, default: repository default branch)
+- `--tmux` / `-t` - Open the worktree in a new tmux window after checkout
+- `--tmux-vertical` / `--tmux-v` - Open the worktree in a vertical tmux split
+- `--tmux-horizontal` / `--tmux-h` - Open the worktree in a horizontal tmux split
 
 **Examples:**
 ```bash
@@ -323,6 +326,12 @@ phantom github checkout 456
 # Create worktree for issue #789 based on develop branch
 phantom github checkout 789 --base develop
 
+# Create and open PR #321 in a new tmux window
+phantom github checkout 321 --tmux
+
+# Create and open issue #654 in a vertical split
+phantom github checkout 654 --tmux-v
+
 # Using the alias
 phantom gh checkout 123
 ```
@@ -330,6 +339,7 @@ phantom gh checkout 123
 **Requirements:**
 - GitHub CLI (gh) must be installed
 - Must be authenticated with `gh auth login`
+- tmux options require being inside a tmux session
 
 **Behavior:**
 - For PRs: Creates worktree named `pulls/{number}` with the PR's branch
