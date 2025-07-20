@@ -1,7 +1,11 @@
 import { parseArgs } from "node:util";
 import { createContext, getWorktreeInfo } from "@aku11i/phantom-core";
 import { getCurrentWorktree, getGitRoot } from "@aku11i/phantom-git";
-import { getGitHubRepoInfo } from "@aku11i/phantom-github";
+import {
+  fetchIssue,
+  getGitHubRepoInfo,
+  isPullRequest,
+} from "@aku11i/phantom-github";
 import { spawnProcess } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
@@ -14,19 +18,7 @@ export const gitHubOpenHandler = async (args: string[]) => {
     allowPositionals: true,
   });
 
-  let owner: string;
-  let repo: string;
-
-  try {
-    const repoInfo = await getGitHubRepoInfo();
-    owner = repoInfo.owner;
-    repo = repoInfo.repo;
-  } catch (error) {
-    exitWithError(
-      error instanceof Error ? error.message : "Failed to get repository info",
-      exitCodes.generalError,
-    );
-  }
+  const { owner, repo } = await getGitHubRepoInfo();
 
   const specifiedNumber = positionals[0];
 
@@ -102,31 +94,39 @@ export const gitHubOpenHandler = async (args: string[]) => {
 
     output.log(`Opening repository ${owner}/${repo} in browser...`);
   } else {
-    // A number was specified, determine if it's a PR or issue
-    // First try as PR, if that fails, try as issue
-    const prResult = await spawnProcess({
-      command: "gh",
-      args: ["pr", "view", specifiedNumber, "--web"],
-    });
+    // A number was specified, fetch from /issues/:number endpoint first
+    const issue = await fetchIssue(owner, repo, specifiedNumber);
 
-    if (!isErr(prResult)) {
-      output.log(`Opening PR #${specifiedNumber} in browser...`);
-      return;
-    }
-
-    // Try as issue
-    const issueResult = await spawnProcess({
-      command: "gh",
-      args: ["issue", "view", specifiedNumber, "--web"],
-    });
-
-    if (isErr(issueResult)) {
+    if (!issue) {
       exitWithError(
-        `Failed to open #${specifiedNumber}: Not found as PR or issue`,
+        `GitHub issue or pull request #${specifiedNumber} not found or you don't have permission to access it.`,
         exitCodes.generalError,
       );
     }
 
-    output.log(`Opening issue #${specifiedNumber} in browser...`);
+    // Check if it's a pull request
+    if (isPullRequest(issue)) {
+      const result = await spawnProcess({
+        command: "gh",
+        args: ["pr", "view", specifiedNumber, "--web"],
+      });
+
+      if (isErr(result)) {
+        exitWithError(result.error.message, exitCodes.generalError);
+      }
+
+      output.log(`Opening PR #${specifiedNumber} in browser...`);
+    } else {
+      const result = await spawnProcess({
+        command: "gh",
+        args: ["issue", "view", specifiedNumber, "--web"],
+      });
+
+      if (isErr(result)) {
+        exitWithError(result.error.message, exitCodes.generalError);
+      }
+
+      output.log(`Opening issue #${specifiedNumber} in browser...`);
+    }
   }
 };
