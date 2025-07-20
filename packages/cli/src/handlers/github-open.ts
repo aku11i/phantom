@@ -7,14 +7,9 @@ import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 
 export const gitHubOpenHandler = async (args: string[]) => {
-  const { positionals, values } = parseArgs({
+  const { positionals } = parseArgs({
     args,
-    options: {
-      repo: {
-        type: "boolean",
-        default: false,
-      },
-    },
+    options: {},
     allowPositionals: true,
   });
 
@@ -32,16 +27,15 @@ export const gitHubOpenHandler = async (args: string[]) => {
     );
   }
 
-  const forceRepo = values.repo as boolean;
   const specifiedNumber = positionals[0];
 
-  if (forceRepo || specifiedNumber === undefined) {
-    // If --repo flag is set or we're not in a worktree, open the repo page
+  if (specifiedNumber === undefined) {
+    // If no number specified, try to detect from worktree or open repo page
     try {
       const gitRoot = await getGitRoot();
       const currentWorktree = await getCurrentWorktree(gitRoot);
 
-      if (!forceRepo && currentWorktree) {
+      if (currentWorktree) {
         // We're in a worktree, try to extract PR/issue number from worktree name
         const name = currentWorktree;
 

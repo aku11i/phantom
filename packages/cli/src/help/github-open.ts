@@ -2,15 +2,9 @@ import type { CommandHelp } from "../help.ts";
 
 export const gitHubOpenHelp: CommandHelp = {
   name: "open",
-  usage: "phantom github open [<number>] [options]",
+  usage: "phantom github open [<number>]",
   description: "Open GitHub page in browser",
-  options: [
-    {
-      name: "--repo",
-      type: "boolean",
-      description: "Always open the repository page",
-    },
-  ],
+  options: [],
   examples: [
     {
       command: "phantom github open",
@@ -20,10 +14,6 @@ export const gitHubOpenHelp: CommandHelp = {
     {
       command: "phantom github open 123",
       description: "Open PR #123 or issue #123",
-    },
-    {
-      command: "phantom github open --repo",
-      description: "Open the repository page",
     },
   ],
   notes: [
