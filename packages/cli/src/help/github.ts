@@ -37,6 +37,21 @@ export const githubCheckoutHelp: CommandHelp = {
       description:
         "Base branch for new issue branches (issues only, default: repository HEAD)",
     },
+    {
+      name: "--tmux, -t",
+      type: "boolean",
+      description: "Open the worktree in a new tmux window",
+    },
+    {
+      name: "--tmux-vertical, --tmux-v",
+      type: "boolean",
+      description: "Open the worktree in a vertical tmux pane",
+    },
+    {
+      name: "--tmux-horizontal, --tmux-h",
+      type: "boolean",
+      description: "Open the worktree in a horizontal tmux pane",
+    },
   ],
   examples: [
     {
@@ -50,6 +65,18 @@ export const githubCheckoutHelp: CommandHelp = {
     {
       command: "phantom github checkout 789 --base develop",
       description: "Create a worktree for issue #789 based on develop branch",
+    },
+    {
+      command: "phantom gh checkout 123 --tmux",
+      description: "Create a worktree and open it in a new tmux window",
+    },
+    {
+      command: "phantom gh checkout 123 --tmux-v",
+      description: "Create a worktree and open it in a vertical tmux pane",
+    },
+    {
+      command: "phantom gh checkout 123 --tmux-h",
+      description: "Create a worktree and open it in a horizontal tmux pane",
     },
   ],
   notes: [
