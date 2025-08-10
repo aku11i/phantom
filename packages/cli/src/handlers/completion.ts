@@ -104,7 +104,13 @@ complete -c phantom -n "__phantom_using_command gh" -a "checkout" -d "Create a w
 
 # github checkout command options
 complete -c phantom -n "__phantom_using_command github checkout" -l base -d "Base branch for new issue branches (issues only)" -x
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux -d "Open the worktree in a new tmux window (-t)"
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
 complete -c phantom -n "__phantom_using_command gh checkout" -l base -d "Base branch for new issue branches (issues only)" -x
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux -d "Open the worktree in a new tmux window (-t)"
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
 
 # mcp command options
 complete -c phantom -n "__phantom_using_command mcp" -a "serve" -d "Start MCP server"`;
@@ -215,6 +221,9 @@ _phantom() {
                     elif [[ \${line[2]} == "checkout" ]]; then
                         _arguments \\
                             '--base[Base branch for new issue branches (issues only)]:branch:' \\
+                            '--tmux[Open the worktree in a new tmux window (-t)]' \\
+                            '--tmux-vertical[Open the worktree in a vertical tmux pane]' \\
+                            '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \\
                             '1:number:'
                     fi
                     ;;
@@ -398,15 +407,18 @@ _phantom_completion() {
             elif [[ \${words[2]} == "checkout" ]]; then
                 case "\${prev}" in
                     --base)
-                        # Don't complete anything specific for base (branch name)
+                        return 0
+                        ;;
+                    --tmux|-t|--tmux-vertical|--tmux-horizontal)
+                        # After tmux options, expect the PR/issue number or finish options
                         return 0
                         ;;
                     *)
                         if [[ \${cword} -eq 3 ]]; then
-                            # First argument after checkout should be number
+                            # Expect PR/issue number here
                             return 0
                         else
-                            local opts="--base"
+                            local opts="--base --tmux --tmux-vertical --tmux-horizontal"
                             COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
                             return 0
                         fi
