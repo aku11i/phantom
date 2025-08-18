@@ -358,7 +358,11 @@ _phantom_completion() {
 }
 
 # Register the completion function
-complete -F _phantom_completion phantom`;
+if [[ "\${BASH_VERSINFO[0]}" -eq 4 && "\${BASH_VERSINFO[1]}" -ge 4 || "\${BASH_VERSINFO[0]}" -gt 4 ]]; then
+    complete -F _phantom_completion -o nosort -o bashdefault -o default phantom
+else
+    complete -F _phantom_completion -o bashdefault -o default phantom
+fi`;
 
 export function completionHandler(args: string[]): void {
   const shell = args[0];
