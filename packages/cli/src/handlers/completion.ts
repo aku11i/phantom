@@ -194,9 +194,9 @@ _phantom() {
     esac
 }
 
-# Register the completion function if loading dynamically
-if [[ -n \${ZSH_VERSION} ]]; then
-    autoload -Uz compinit && compinit -C
+if [ "$funcstack[1]" = "_phantom" ]; then
+    _phantom "$@"
+else
     compdef _phantom phantom
 fi`;
 
