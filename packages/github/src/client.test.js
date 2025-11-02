@@ -140,6 +140,50 @@ describe("createGitHubClient", () => {
     equal(execFileAsyncMock.mock.calls.length, 1);
   });
 
+  it("should use default github.com when GH_HOST is not set", async () => {
+    resetMocks();
+    delete process.env.GH_HOST;
+    const mockToken = "ghp_test789token";
+
+    execFileAsyncMock.mock.mockImplementation(async () => ({
+      stdout: mockToken,
+      stderr: "",
+    }));
+
+    OctokitMockImplementation = (options) => {
+      equal(options.auth, mockToken);
+      equal(options.baseUrl, undefined);
+      return { auth: mockToken };
+    };
+
+    await createGitHubClient();
+    equal(execFileAsyncMock.mock.calls.length, 1);
+  });
+
+  it("should use custom baseUrl when GH_HOST is set", async () => {
+    resetMocks();
+    const gheHost = "github.company.com";
+    process.env.GH_HOST = gheHost;
+    const mockToken = "ghp_enterprise123";
+
+    execFileAsyncMock.mock.mockImplementation(async () => ({
+      stdout: mockToken,
+      stderr: "",
+    }));
+
+    OctokitMockImplementation = (options) => {
+      equal(options.auth, mockToken);
+      equal(options.baseUrl, `https://${gheHost}/api/v3`);
+      return { auth: mockToken, baseUrl: options.baseUrl };
+    };
+
+    const client = await createGitHubClient();
+    equal(client.baseUrl, `https://${gheHost}/api/v3`);
+    equal(execFileAsyncMock.mock.calls.length, 1);
+
+    delete process.env.GH_HOST;
+  });
+
   it("should propagate errors from getGitHubToken", async () => {
     resetMocks();
     const errorMessage = "Authentication failed";
