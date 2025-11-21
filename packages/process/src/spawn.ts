@@ -28,7 +28,7 @@ export async function spawnProcess(
     const { command, args = [], options = {} } = config;
 
     const childProcess: ChildProcess = nodeSpawn(command, args, {
-      stdio: "inherit",
+      stdio: "inherit", shell: true,
       ...options,
     });
 
