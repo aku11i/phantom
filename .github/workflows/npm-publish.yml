@@ -30,6 +30,7 @@ jobs:
         with:
           node-version-file: .node-version
           registry-url: https://registry.npmjs.org
+          cache: pnpm
 
       - name: Determine npm dist-tag
         id: dist_tag
