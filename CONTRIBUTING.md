@@ -131,89 +131,25 @@ When contributing documentation:
 
 To release a new version of Phantom:
 
-1. **Ensure you're on main branch and up to date**
+1. **Bump version**
    ```bash
-   git checkout main
-   git pull
+   # Trigger the automated version bump workflow via GitHub CLI
+   # release_type: patch | minor | major
+   # preid: "" for stable, "rc" for prerelease
+   gh workflow run version-bump.yml -f release_type=patch -f preid=""
+
+   # Example: start an rc prerelease minor bump
+   gh workflow run version-bump.yml -f release_type=minor -f preid=rc
+
+   # Wait for the workflow to finish and create the PR for you
+   gh run watch --exit-status --workflow=version-bump.yml
    ```
 
-2. **Run all checks**
-   ```bash
-   pnpm ready
-   ```
+2. **Review the version bump PR created by the workflow**
+   - Confirm version numbers and changelog/doc updates if any
+   - Merge the PR once checks pass
 
-3. **Build the project**
-   ```bash
-   pnpm build
-   ```
-
-4. **Bump version**
-   ```bash
-   # For patch releases (bug fixes)
-   pnpm version:patch
-
-   # For minor releases (new features)
-   pnpm version:minor
-
-   # For major releases (breaking changes)
-   pnpm version:major
-   ```
-
-5. **Create a release branch**
-   ```bash
-   git checkout -b release/v<version>
-   ```
-
-6. **Commit and push the version changes**
-   ```bash
-   git add -A
-   git commit -m "chore: bump version to <version>"
-   git push -u origin release/v<version>
-   ```
-
-7. **Create a Pull Request**
-   ```bash
-   gh pr create --title "Release v<version>" --body "$(cat <<'EOF'
-   ## Summary
-   - Bump version from <old-version> to <new-version>
-   - This release includes <brief summary of changes>
-   
-   ## Changes Included
-   - Feature/Fix description (#PR-number)
-   
-   ## Release Plan
-   After this PR is merged:
-   1. Create git tag v<version>
-   2. Build the project
-   3. Publish to npm
-   4. Create GitHub release with detailed notes
-   EOF
-   )"
-   ```
-
-8. **After PR is merged, switch back to main**
-   ```bash
-   git checkout main
-   git pull
-   ```
-
-9. **Create and push tag**
-   ```bash
-   git tag v<version>
-   git push --tags
-   ```
-
-10. **Build the project before publishing**
-    ```bash
-    pnpm build
-    ```
-
-11. **Publish to npm**
-    ```bash
-    pnpm publish --recursive
-    ```
-
-12. **Create GitHub release**
+3. **Create GitHub release (publishes to npm)**
     ```bash
     # Create a release with automatically generated notes
     gh release create v<version> \
@@ -228,7 +164,9 @@ To release a new version of Phantom:
       --target main
     ```
 
-13. **Update release notes for clarity**
+    Publishing to npm is handled by `.github/workflows/npm-publish.yml` when the release is published. Monitor the workflow run in GitHub Actions to ensure it completes successfully.
+
+4. **Update release notes for clarity**
    - Review the auto-generated release notes using `gh release view v<version>`
    - Check PR descriptions for important details using `gh pr view <number>`
    - Update the release notes to be more user-friendly:
@@ -288,4 +226,3 @@ Your contributions make Phantom better for everyone. If you have questions, feel
 - Open an issue for bugs or feature requests
 - Start a discussion for general questions
 - Ask in pull request comments
-
