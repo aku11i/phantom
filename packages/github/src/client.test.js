@@ -1,5 +1,5 @@
 import { deepEqual, equal, ok } from "node:assert/strict";
-import { describe, it, mock } from "node:test";
+import { afterEach, describe, it, mock } from "node:test";
 
 const execFileAsyncMock = mock.fn();
 let OctokitMockImplementation;
@@ -105,10 +105,14 @@ describe("getGitHubToken", () => {
 });
 
 describe("createGitHubClient", () => {
+  const originalGhHost = process.env.GH_HOST;
   const resetMocks = () => {
     execFileAsyncMock.mock.resetCalls();
     OctokitMockImplementation = undefined;
+    process.env.GH_HOST = originalGhHost ?? "";
   };
+
+  afterEach(resetMocks);
 
   it("should export createGitHubClient function", () => {
     equal(typeof createGitHubClient, "function");
@@ -142,7 +146,7 @@ describe("createGitHubClient", () => {
 
   it("should use default github.com when GH_HOST is not set", async () => {
     resetMocks();
-    delete process.env.GH_HOST;
+    process.env.GH_HOST = "";
     const mockToken = "ghp_test789token";
 
     execFileAsyncMock.mock.mockImplementation(async () => ({
@@ -180,8 +184,6 @@ describe("createGitHubClient", () => {
     const client = await createGitHubClient();
     equal(client.baseUrl, `https://${gheHost}/api/v3`);
     equal(execFileAsyncMock.mock.calls.length, 1);
-
-    delete process.env.GH_HOST;
   });
 
   it("should propagate errors from getGitHubToken", async () => {
