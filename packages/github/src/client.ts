@@ -21,9 +21,8 @@ export async function getGitHubToken(): Promise<string> {
 export async function createGitHubClient(): Promise<Octokit> {
   const token = await getGitHubToken();
   const options: OctokitOptions = { auth: token };
-  const baseUrl = process.env.GH_HOST || undefined;
-  if (baseUrl) {
-    options.baseUrl = `https://${baseUrl}/api/v3`;
+  if (process.env.GH_HOST) {
+    options.baseUrl = `https://${process.env.GH_HOST}/api/v3`;
   }
 
   return new Octokit(options);
