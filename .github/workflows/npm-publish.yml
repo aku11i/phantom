@@ -32,6 +32,9 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
+      - name: Install latest npm
+        run: npm install -g npm@latest
+
       - name: Determine npm dist-tag
         id: dist_tag
         run: |
