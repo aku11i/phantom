@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   tag:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'chore(version): ')
+    if: "github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'chore(version): ')"
     runs-on: ubuntu-latest
     steps:
       - name: Extract version from PR title
