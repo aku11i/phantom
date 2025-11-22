@@ -1,6 +1,6 @@
 {
   "name": "@aku11i/phantom-cli",
-  "version": "2.2.3-rc.0",
+  "version": "2.2.3",
   "private": true,
   "type": "module",
   "scripts": {
