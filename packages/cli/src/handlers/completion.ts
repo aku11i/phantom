@@ -4,7 +4,7 @@ import {
   BASH_COMPLETION_SCRIPT,
   FISH_COMPLETION_SCRIPT,
   ZSH_COMPLETION_SCRIPT,
-} from "./completions/index.ts";
+} from "../completions/index.ts";
 
 export function completionHandler(args: string[]): void {
   const shell = args[0];
