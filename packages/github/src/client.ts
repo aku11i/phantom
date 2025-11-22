@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import type { OctokitOptions } from "@octokit/core";
 import { Octokit } from "@octokit/rest";
 
 const execFileAsync = promisify(execFile);
@@ -18,10 +19,10 @@ export async function getGitHubToken(): Promise<string> {
 
 export async function createGitHubClient(): Promise<Octokit> {
   const token = await getGitHubToken();
-  const options: any = { auth: token };
+  const options: OctokitOptions = { auth: token };
 
   if (process.env.GH_HOST) {
-    options.baseUrl = `https://${(process.env.GH_HOST)}/api/v3`
+    options.baseUrl = `https://${process.env.GH_HOST}/api/v3`;
   }
 
   return new Octokit(options);

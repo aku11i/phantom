@@ -142,7 +142,7 @@ describe("createGitHubClient", () => {
 
   it("should use default github.com when GH_HOST is not set", async () => {
     resetMocks();
-    delete process.env.GH_HOST;
+    process.env.GH_HOST = undefined;
     const mockToken = "ghp_test789token";
 
     execFileAsyncMock.mock.mockImplementation(async () => ({
@@ -181,7 +181,7 @@ describe("createGitHubClient", () => {
     equal(client.baseUrl, `https://${gheHost}/api/v3`);
     equal(execFileAsyncMock.mock.calls.length, 1);
 
-    delete process.env.GH_HOST;
+    process.env.GH_HOST = undefined;
   });
 
   it("should propagate errors from getGitHubToken", async () => {
