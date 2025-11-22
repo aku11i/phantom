@@ -8,6 +8,7 @@
   - [worktreesDirectory](#worktreebasedirectory)
   - [postCreate.copyFiles](#postcreatecopyfiles)
   - [postCreate.commands](#postcreatecommands)
+  - [preDelete.commands](#predeletecommands)
 
 Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied and commands to be executed when creating new worktrees.
 
@@ -28,6 +29,11 @@ Create a `phantom.config.json` file in your repository root:
     "commands": [
       "pnpm install",
       "pnpm build"
+    ]
+  },
+  "preDelete": {
+    "commands": [
+      "docker compose down"
     ]
   }
 }
@@ -167,5 +173,31 @@ An array of commands to execute after creating a new worktree.
 - Commands are executed in order
 - Execution stops on the first failed command
 - Commands run in the new worktree's directory
+- Output is displayed in real-time
+
+### preDelete.commands
+
+An array of commands to execute in a worktree **before** it is deleted. Use this to gracefully shut down resources or clean up artifacts that were created in the worktree.
+
+**Use Cases:**
+- Stop background services started from the worktree (e.g., `docker compose down`)
+- Remove generated assets or caches before deletion
+- Run custom teardown scripts
+
+**Example:**
+```json
+{
+  "preDelete": {
+    "commands": [
+      "docker compose down"
+    ]
+  }
+}
+```
+
+**Notes:**
+- Commands run in the worktree being deleted
+- Commands are executed in order and halt on the first failure
+- If a command fails, the worktree is **not** removed
 - Output is displayed in real-time
 
