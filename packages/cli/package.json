@@ -8,6 +8,8 @@
     "prebuild": "git clean -fdx dist",
     "build": "node build.ts",
     "typecheck": "tsc --noEmit",
+    "test:shell": "pnpm run test:shell:bash",
+    "test:shell:bash": "node --test --experimental-strip-types --experimental-test-module-mocks src/completions/phantom.bash.test.js",
     "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
     "prepublishOnly": "pnpm build"
   },
