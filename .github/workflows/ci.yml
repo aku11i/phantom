@@ -51,3 +51,15 @@ jobs:
         run: pnpm install
       - name: Run tests
         run: pnpm test
+
+  test-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: "pnpm"
+      - name: Run shell tests
+        run: pnpm test:shell
