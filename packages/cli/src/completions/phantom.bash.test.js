@@ -1,6 +1,6 @@
 import { ok, strictEqual } from "node:assert";
-import { describe, it } from "node:test";
 import { dirname, join } from "node:path";
+import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { runBashCompletion } from "../test-utils/run-bash-completion.ts";
 
