@@ -81,3 +81,19 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y zsh
       - name: Run shell tests
         run: pnpm test:shell:zsh
+
+  test-shell-fish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
+      - name: Install fish
+        run: sudo apt-get update && sudo apt-get install -y fish
+      - name: Run shell tests
+        run: pnpm test:shell:fish

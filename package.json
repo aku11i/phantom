@@ -9,6 +9,7 @@
     "test": "pnpm -r test",
     "test:shell": "pnpm --filter @aku11i/phantom-cli run test:shell",
     "test:shell:bash": "pnpm --filter @aku11i/phantom-cli run test:shell:bash",
+    "test:shell:fish": "pnpm --filter @aku11i/phantom-cli run test:shell:fish",
     "test:shell:zsh": "pnpm --filter @aku11i/phantom-cli run test:shell:zsh",
     "lint": "biome check .",
     "fix": "biome check --write .",
