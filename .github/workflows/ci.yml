@@ -64,7 +64,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Run shell tests
-        run: pnpm test:shell
+        run: pnpm test:shell:bash
 
   test-shell-zsh:
     runs-on: ubuntu-latest
@@ -80,4 +80,4 @@ jobs:
       - name: Install zsh
         run: sudo apt-get update && sudo apt-get install -y zsh
       - name: Run shell tests
-        run: pnpm test:shell
+        run: pnpm test:shell:zsh
