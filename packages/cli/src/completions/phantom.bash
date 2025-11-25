@@ -49,12 +49,17 @@ _phantom_completion() {
                     # Don't complete anything specific for exec commands
                     return 0
                     ;;
+                --copy-file)
+                    # Complete files
+                    _filedir
+                    return 0
+                    ;;
                 *)
                     if [[ ${cword} -eq 2 ]]; then
                         # First argument: branch name (not completing - user needs to provide)
                         return 0
                     else
-                        local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal"
+                        local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file"
                         COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                         return 0
                     fi

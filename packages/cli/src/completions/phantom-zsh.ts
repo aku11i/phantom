@@ -50,6 +50,7 @@ _phantom() {
                         '--tmux[Open the worktree in a new tmux window (-t)]' \
                         '--tmux-vertical[Open the worktree in a vertical tmux pane]' \
                         '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \
+                        '*--copy-file[Copy specified files from the current worktree]:file:_files' \
                         '1:branch-name:'
                     ;;
                 list)

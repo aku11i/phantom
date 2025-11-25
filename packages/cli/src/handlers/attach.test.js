@@ -343,6 +343,45 @@ describe("attachHandler", () => {
     deepStrictEqual(postCreateCommands, ["npm install", "npm run build"]);
   });
 
+  it("should merge copy-file options with config values", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    outputErrorMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
+    attachWorktreeCoreMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: {
+          postCreate: {
+            copyFiles: [".env"],
+            commands: ["echo test"],
+          },
+        },
+      }),
+    );
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+
+    await attachHandler([
+      "feature",
+      "--copy-file",
+      ".env",
+      "--copy-file",
+      "config.json",
+    ]);
+
+    deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
+    const [, , , postCreateCopyFiles, postCreateCommands] =
+      attachWorktreeCoreMock.mock.calls[0].arguments;
+    deepStrictEqual(postCreateCopyFiles, [".env", "config.json"]);
+    deepStrictEqual(postCreateCommands, ["echo test"]);
+  });
+
   it("should handle config not found gracefully", async () => {
     exitWithErrorMock.mock.resetCalls();
     outputLogMock.mock.resetCalls();
@@ -371,6 +410,34 @@ describe("attachHandler", () => {
     deepStrictEqual(postCreateCopyFiles, undefined);
     deepStrictEqual(postCreateCommands, undefined);
     deepStrictEqual(outputErrorMock.mock.calls.length, 0);
+  });
+
+  it("should forward copy-file options when config is missing", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    outputErrorMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
+    attachWorktreeCoreMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
+    );
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+
+    await attachHandler(["feature", "--copy-file", "README.md"]);
+
+    deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 1);
+    const [, , , postCreateCopyFiles, postCreateCommands] =
+      attachWorktreeCoreMock.mock.calls[0].arguments;
+    deepStrictEqual(postCreateCopyFiles, ["README.md"]);
+    deepStrictEqual(postCreateCommands, undefined);
   });
 
   it("should pass config with postCreate to attachWorktreeCore", async () => {
