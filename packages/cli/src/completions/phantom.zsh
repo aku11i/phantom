@@ -12,7 +12,6 @@ _phantom() {
         'where:Output the filesystem path of a specific worktree'
         'delete:Delete a Git worktree (phantom)'
         'exec:Execute a command in a worktree directory'
-        'review:Review changes in a worktree with a local PR review interface (experimental)'
         'shell:Open an interactive shell in a worktree directory'
         'github:GitHub integration commands'
         'gh:GitHub integration commands (alias)'
@@ -55,17 +54,12 @@ _phantom() {
                         '--fzf[Use fzf for interactive selection]' \
                         '--names[Output only phantom names (for scripts and completion)]'
                     ;;
-                where|delete|review|shell)
+                where|delete|shell)
                     local worktrees
                     worktrees=(${(f)"$(phantom list --names 2>/dev/null)"})
                     if [[ ${line[1]} == "where" ]]; then
                         _arguments \
                             '--fzf[Use fzf for interactive selection]' \
-                            '1:worktree:(${(q)worktrees[@]})'
-                    elif [[ ${line[1]} == "review" ]]; then
-                        _arguments \
-                            '--fzf[Use fzf for interactive selection]' \
-                            '--base[Base reference for comparison]:reference:' \
                             '1:worktree:(${(q)worktrees[@]})'
                     elif [[ ${line[1]} == "shell" ]]; then
                         _arguments \

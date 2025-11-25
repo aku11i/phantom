@@ -9,7 +9,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec review shell github gh version completion mcp"
+    local commands="create attach list where delete exec shell github gh version completion mcp"
     local global_opts="--help --version"
 
     if [[ \${cword} -eq 1 ]]; then
@@ -106,24 +106,6 @@ _phantom_completion() {
                         # After worktree name, complete commands
                         compopt -o default
                         COMPREPLY=()
-                    fi
-                    return 0
-                    ;;
-            esac
-            ;;
-        review)
-            case "\${prev}" in
-                --base)
-                    # Don't complete anything specific for base reference
-                    return 0
-                    ;;
-                *)
-                    if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --base"
-                        COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
-                    else
-                        local worktrees=\$(_phantom_list_worktrees)
-                        COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
                     fi
                     return 0
                     ;;
