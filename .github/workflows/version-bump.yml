@@ -12,6 +12,9 @@ on:
           - patch
           - minor
           - major
+          - prepatch
+          - preminor
+          - premajor
           - prerelease
 
 permissions:

@@ -38,7 +38,11 @@ jobs:
       - name: Determine npm dist-tag
         id: dist_tag
         run: |
-          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+          release_tag="${{ github.event.release.tag_name }}"
+          release_tag="${release_tag:-${GITHUB_REF##*/}}"
+          version="${release_tag#v}"
+
+          if [[ "${{ github.event.release.prerelease }}" == "true" || "$version" == *"-"* ]]; then
             echo "npm_tag=next" >>"$GITHUB_OUTPUT"
           else
             echo "npm_tag=latest" >>"$GITHUB_OUTPUT"
