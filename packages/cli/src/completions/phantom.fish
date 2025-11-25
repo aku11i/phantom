@@ -34,7 +34,6 @@ complete -c phantom -n "__phantom_using_command" -a "list" -d "List all Git work
 complete -c phantom -n "__phantom_using_command" -a "where" -d "Output the filesystem path of a specific worktree"
 complete -c phantom -n "__phantom_using_command" -a "delete" -d "Delete a Git worktree (phantom)"
 complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command in a worktree directory"
-complete -c phantom -n "__phantom_using_command" -a "review" -d "Review changes in a worktree with a local PR review interface (experimental)"
 complete -c phantom -n "__phantom_using_command" -a "shell" -d "Open an interactive shell in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "github" -d "GitHub integration commands"
 complete -c phantom -n "__phantom_using_command" -a "gh" -d "GitHub integration commands (alias)"
@@ -79,11 +78,6 @@ complete -c phantom -n "__phantom_using_command exec" -l tmux -d "Execute comman
 complete -c phantom -n "__phantom_using_command exec" -l tmux-vertical -d "Execute command in vertical split pane"
 complete -c phantom -n "__phantom_using_command exec" -l tmux-horizontal -d "Execute command in horizontal split pane"
 complete -c phantom -n "__phantom_using_command exec" -a "(__phantom_list_worktrees)"
-
-# review command options
-complete -c phantom -n "__phantom_using_command review" -l fzf -d "Use fzf for interactive selection"
-complete -c phantom -n "__phantom_using_command review" -l base -d "Base reference for comparison" -x
-complete -c phantom -n "__phantom_using_command review" -a "(__phantom_list_worktrees)"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"

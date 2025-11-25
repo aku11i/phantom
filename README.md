@@ -29,7 +29,6 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
 - 🐙 **GitHub Integration** - Create worktrees directly from GitHub PRs and issues
 - 🤖 **MCP Integration** - AI autonomously manages worktrees for parallel development
-- 🔍 **PR Review Interface** - Review worktree differences locally using [difit](https://github.com/yoshiko-pg/difit) (experimental)
 - ⚡ **Fast and lightweight** - Minimal external dependencies
 
 ## 🚀 Installation
@@ -185,19 +184,6 @@ exit
 ```bash
 phantom exec feature-awesome {command to run}
 # Example: phantom exec feature-awesome npm run build
-```
-
-### Review code with GitHub-like interface
-
-```bash
-# Review worktree against default branch
-phantom review feature-awesome
-
-# Review against specific branch
-phantom review feature-awesome --base main
-
-# Interactive worktree selection
-phantom review --fzf
 ```
 
 ### Clean up when done

@@ -29,7 +29,6 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 - 🎮 **シェル補完** - Fish,Zsh,Bashの完全な自動補完サポート
 - 🐙 **GitHub統合** - GitHubのPRやイシューから直接ワークツリーを作成
 - 🤖 **MCP統合** - AIが自律的にワークツリーを管理し、並行開発を実現
-- 🔍 **PRレビューインターフェース** - [difit](https://github.com/yoshiko-pg/difit)を使用してワークツリーの差分をローカルでレビュー（実験的機能）
 - ⚡ **高速で軽量** - 最小限の外部依存関係
 
 ## 🚀 インストール
@@ -186,19 +185,6 @@ exit
 ```bash
 phantom exec feature-awesome {実行したいコマンド}
 # 例: phantom exec feature-awesome npm run build
-```
-
-### GitHub風インターフェースでコードをレビュー
-
-```bash
-# デフォルトブランチに対してworktreeをレビュー
-phantom review feature-awesome
-
-# 特定のブランチに対してレビュー
-phantom review feature-awesome --base main
-
-# インタラクティブなworktree選択
-phantom review --fzf
 ```
 
 ### 完了したらクリーンアップ
