@@ -16,9 +16,7 @@
     "typecheck": "pnpm -r typecheck",
     "ready": "pnpm fix && pnpm typecheck && pnpm test",
     "ready:check": "pnpm lint && pnpm typecheck && pnpm test",
-    "phantom": "pnpm --filter @aku11i/phantom-cli run phantom",
-    "version:bump": "pnpm -r exec npm version \"$VERSION\" --no-git-tag-version && npm version \"$VERSION\" --no-git-tag-version",
-    "version:bump:prerelease": "pnpm -r exec npm version \"pre$VERSION\" --no-git-tag-version --preid \"$PREID\" && npm version \"pre$VERSION\" --no-git-tag-version --preid \"$PREID\""
+    "phantom": "pnpm --filter @aku11i/phantom-cli run phantom"
   },
   "engines": {
     "node": ">=22.0.0"
