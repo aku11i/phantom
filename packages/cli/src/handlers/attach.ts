@@ -8,6 +8,11 @@ import {
   shellInWorktree,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
+import {
+  executeTmuxCommand,
+  getPhantomEnv,
+  isInsideTmux,
+} from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
@@ -26,6 +31,22 @@ export async function attachHandler(args: string[]): Promise<void> {
         type: "string",
         short: "x",
       },
+      tmux: {
+        type: "boolean",
+        short: "t",
+      },
+      "tmux-vertical": {
+        type: "boolean",
+      },
+      "tmux-v": {
+        type: "boolean",
+      },
+      "tmux-horizontal": {
+        type: "boolean",
+      },
+      "tmux-h": {
+        type: "boolean",
+      },
     },
   });
 
@@ -38,15 +59,38 @@ export async function attachHandler(args: string[]): Promise<void> {
 
   const [branchName] = positionals;
 
-  if (values.shell && values.exec) {
+  const tmuxOption =
+    values.tmux ||
+    values["tmux-vertical"] ||
+    values["tmux-v"] ||
+    values["tmux-horizontal"] ||
+    values["tmux-h"];
+
+  const tmuxDirection: "new" | "vertical" | "horizontal" | undefined =
+    values.tmux
+      ? "new"
+      : values["tmux-vertical"] || values["tmux-v"]
+        ? "vertical"
+        : values["tmux-horizontal"] || values["tmux-h"]
+          ? "horizontal"
+          : undefined;
+
+  if ([values.shell, values.exec, tmuxOption].filter(Boolean).length > 1) {
     exitWithError(
-      "Cannot use both --shell and --exec options",
+      "Cannot use --shell, --exec, and --tmux options together",
       exitCodes.validationError,
     );
   }
 
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
+
+  if (tmuxOption && !(await isInsideTmux())) {
+    exitWithError(
+      "The --tmux option can only be used inside a tmux session",
+      exitCodes.validationError,
+    );
+  }
 
   const result = await attachWorktreeCore(
     context.gitRoot,
@@ -69,6 +113,8 @@ export async function attachHandler(args: string[]): Promise<void> {
 
   output.log(`Attached phantom: ${branchName}`);
 
+  const worktreePath = result.value;
+
   if (values.shell) {
     const shellResult = await shellInWorktree(
       context.gitRoot,
@@ -89,6 +135,26 @@ export async function attachHandler(args: string[]): Promise<void> {
     );
     if (isErr(execResult)) {
       exitWithError(execResult.error.message, exitCodes.generalError);
+    }
+  } else if (tmuxDirection) {
+    output.log(
+      `Opening worktree '${branchName}' in tmux ${
+        tmuxDirection === "new" ? "window" : "pane"
+      }...`,
+    );
+
+    const shell = process.env.SHELL || "/bin/sh";
+
+    const tmuxResult = await executeTmuxCommand({
+      direction: tmuxDirection,
+      command: shell,
+      cwd: worktreePath,
+      env: getPhantomEnv(branchName, worktreePath),
+      windowName: tmuxDirection === "new" ? branchName : undefined,
+    });
+
+    if (isErr(tmuxResult)) {
+      exitWithError(tmuxResult.error.message, exitCodes.generalError);
     }
   }
 }

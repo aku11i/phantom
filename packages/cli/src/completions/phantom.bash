@@ -54,7 +54,7 @@ _phantom_completion() {
                         # First argument: branch name (not completing - user needs to provide)
                         return 0
                     else
-                        local opts="--shell --exec"
+                        local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal"
                         COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                         return 0
                     fi

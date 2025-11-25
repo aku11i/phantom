@@ -17,6 +17,9 @@ const attachWorktreeCoreMock = mock.fn();
 const shellInWorktreeMock = mock.fn();
 const execInWorktreeMock = mock.fn();
 const createContextMock = mock.fn();
+const isInsideTmuxMock = mock.fn();
+const executeTmuxCommandMock = mock.fn();
+const getPhantomEnvMock = mock.fn();
 
 mock.module("../errors.ts", {
   namedExports: {
@@ -53,6 +56,14 @@ mock.module("@aku11i/phantom-core", {
     getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
       return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
     }),
+  },
+});
+
+mock.module("@aku11i/phantom-process", {
+  namedExports: {
+    executeTmuxCommand: executeTmuxCommandMock,
+    getPhantomEnv: getPhantomEnvMock,
+    isInsideTmux: isInsideTmuxMock,
   },
 });
 
@@ -118,7 +129,7 @@ describe("attachHandler", () => {
     );
 
     deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
-      "Cannot use both --shell and --exec options",
+      "Cannot use --shell, --exec, and --tmux options together",
       3,
     ]);
     deepStrictEqual(getGitRootMock.mock.calls.length, 0);
@@ -214,6 +225,80 @@ describe("attachHandler", () => {
     deepStrictEqual(execArgs[0], "/bin/bash");
     deepStrictEqual(execArgs[1], "-c");
     deepStrictEqual(execArgs[2], "echo hello");
+  });
+
+  it("should error when tmux option is used outside a tmux session", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
+    attachWorktreeCoreMock.mock.resetCalls();
+    isInsideTmuxMock.mock.resetCalls();
+
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
+    );
+    isInsideTmuxMock.mock.mockImplementation(() => Promise.resolve(false));
+
+    await rejects(
+      async () => await attachHandler(["feature", "--tmux"]),
+      /Exit with code 3/,
+    );
+
+    deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
+      "The --tmux option can only be used inside a tmux session",
+      3,
+    ]);
+    deepStrictEqual(attachWorktreeCoreMock.mock.calls.length, 0);
+  });
+
+  it("should attach and open worktree in a tmux window", async () => {
+    exitWithErrorMock.mock.resetCalls();
+    outputLogMock.mock.resetCalls();
+    createContextMock.mock.resetCalls();
+    attachWorktreeCoreMock.mock.resetCalls();
+    executeTmuxCommandMock.mock.resetCalls();
+    isInsideTmuxMock.mock.resetCalls();
+    getPhantomEnvMock.mock.resetCalls();
+
+    process.env.SHELL = "/bin/bash";
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
+    );
+    attachWorktreeCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(ok("/repo/.git/phantom/worktrees/feature")),
+    );
+    isInsideTmuxMock.mock.mockImplementation(() => Promise.resolve(true));
+    getPhantomEnvMock.mock.mockImplementation((name, path) => ({
+      PHANTOM_NAME: name,
+      PHANTOM_PATH: path,
+    }));
+    executeTmuxCommandMock.mock.mockImplementation(() =>
+      Promise.resolve(ok({ exitCode: 0 })),
+    );
+
+    await attachHandler(["feature", "--tmux"]);
+
+    deepStrictEqual(executeTmuxCommandMock.mock.calls.length, 1);
+    const tmuxCall = executeTmuxCommandMock.mock.calls[0].arguments[0];
+    deepStrictEqual(tmuxCall.direction, "new");
+    deepStrictEqual(tmuxCall.command, "/bin/bash");
+    deepStrictEqual(tmuxCall.cwd, "/repo/.git/phantom/worktrees/feature");
+    deepStrictEqual(tmuxCall.windowName, "feature");
+    deepStrictEqual(tmuxCall.env.PHANTOM_NAME, "feature");
+    deepStrictEqual(
+      tmuxCall.env.PHANTOM_PATH,
+      "/repo/.git/phantom/worktrees/feature",
+    );
   });
 
   it("should pass postCreate config to attachWorktreeCore", async () => {

@@ -18,6 +18,33 @@ export const attachHelp: CommandHelp = {
       description: "Execute a command in the worktree after attaching",
       example: "--exec 'git pull'",
     },
+    {
+      name: "tmux",
+      short: "t",
+      type: "boolean",
+      description: "Open the worktree in a new tmux window after attaching",
+    },
+    {
+      name: "tmux-vertical",
+      type: "boolean",
+      description: "Open the worktree in a vertical tmux pane after attaching",
+    },
+    {
+      name: "tmux-v",
+      type: "boolean",
+      description: "Alias for --tmux-vertical",
+    },
+    {
+      name: "tmux-horizontal",
+      type: "boolean",
+      description:
+        "Open the worktree in a horizontal tmux pane after attaching",
+    },
+    {
+      name: "tmux-h",
+      type: "boolean",
+      description: "Alias for --tmux-horizontal",
+    },
   ],
   examples: [
     {
@@ -32,10 +59,15 @@ export const attachHelp: CommandHelp = {
       description: "Attach to a branch and pull latest changes",
       command: "phantom attach develop --exec 'git pull'",
     },
+    {
+      description: "Attach and open the worktree in a tmux window",
+      command: "phantom attach feature-branch --tmux",
+    },
   ],
   notes: [
     "The branch must already exist locally",
     "To work with remote branches, first checkout the branch with git",
-    "Only one of --shell or --exec options can be used at a time",
+    "Only one of --shell, --exec, or tmux options can be used at a time",
+    "The tmux options require running phantom inside an active tmux session",
   ],
 };

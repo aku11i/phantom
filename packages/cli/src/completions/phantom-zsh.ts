@@ -47,6 +47,9 @@ _phantom() {
                     _arguments \
                         '--shell[Open an interactive shell in the worktree after attaching (-s)]' \
                         '--exec[Execute a command in the worktree after attaching (-x)]:command:' \
+                        '--tmux[Open the worktree in a new tmux window (-t)]' \
+                        '--tmux-vertical[Open the worktree in a vertical tmux pane]' \
+                        '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \
                         '1:branch-name:'
                     ;;
                 list)

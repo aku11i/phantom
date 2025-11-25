@@ -70,6 +70,9 @@ phantom attach <branch-name> [options]
 **Options:**
 - `--shell` - Attach and enter interactive shell
 - `--exec <command>` - Attach and execute command
+- `--tmux` / `-t` - Attach and open in new tmux window
+- `--tmux-vertical` / `--tmux-v` - Attach and split tmux pane vertically
+- `--tmux-horizontal` / `--tmux-h` - Attach and split tmux pane horizontally
 
 **Examples:**
 ```bash
@@ -81,6 +84,9 @@ phantom attach feature/existing-branch --shell
 
 # Attach and run command
 phantom attach feature/existing-branch --exec "npm install"
+
+# Attach and open in tmux window
+phantom attach feature/existing-branch --tmux
 ```
 
 ### list
