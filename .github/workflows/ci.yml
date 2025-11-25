@@ -52,7 +52,7 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-  test-shell:
+  test-shell-bash:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,5 +61,23 @@ jobs:
         with:
           node-version-file: .node-version
           cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
       - name: Run shell tests
-        run: pnpm test:shell
+        run: pnpm test:shell:bash
+
+  test-shell-zsh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
+      - name: Install zsh
+        run: sudo apt-get update && sudo apt-get install -y zsh
+      - name: Run shell tests
+        run: pnpm test:shell:zsh
