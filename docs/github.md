@@ -44,15 +44,15 @@ When you need to review and test a pull request locally:
 # Create a worktree for PR #123
 phantom github checkout 123
 
-# Open shell in the PR worktree
-phantom shell pulls/123
+# Open shell in the PR worktree using the PR branch name
+phantom shell feature/add-logging
 
 # Review, test, and make changes
 npm test
 ```
 
 **What happens:**
-- Creates a worktree named `pulls/123`
+- Creates a worktree named after the PR branch (e.g., `feature/add-logging`)
 - Checks out the PR's branch
 - You can test the changes without affecting your main working directory
 
@@ -122,10 +122,10 @@ When checking out a pull request, Phantom performs the following steps:
 #### 1. Fetch Remote Branch
 ```bash
 # For PRs from forks:
-git fetch origin pull/{number}/head:pulls/{number}
+git fetch origin pull/{number}/head:{branch-name}
 
 # For PRs from the same repository:
-git fetch origin {branch-name}:pulls/{number}
+git fetch origin {branch-name}:{branch-name}
 ```
 
 The command intelligently detects whether the PR comes from a fork or the same repository:
@@ -135,17 +135,17 @@ The command intelligently detects whether the PR comes from a fork or the same r
 #### 2. Set Upstream Tracking
 ```bash
 # For fork PRs:
-git branch --set-upstream-to origin/pull/{number}/head pulls/{number}
+git branch --set-upstream-to origin/pull/{number}/head {branch-name}
 
 # For same-repo PRs:
-git branch --set-upstream-to origin/{branch-name} pulls/{number}
+git branch --set-upstream-to origin/{branch-name} {branch-name}
 ```
 
 This enables easy updates with `git pull` in the worktree.
 
 #### 3. Create Worktree
 ```bash
-git worktree add {worktree-path} pulls/{number}
+git worktree add {worktree-path} {branch-name}
 ```
 
 ### Issue Checkout
@@ -172,7 +172,7 @@ The command determines if a PR is from a fork by checking if the PR's head repos
 - The command validates that the GitHub CLI (`gh`) is available before proceeding
 
 #### Naming Conventions
-- Pull request worktrees: `pulls/{number}`
+- Pull request worktrees: `{branch-name}` (PR head ref)
 - Issue worktrees: `issues/{number}`
 - Local branch names match the worktree names
 
