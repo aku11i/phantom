@@ -295,7 +295,10 @@ describe("attachHandler", () => {
     deepStrictEqual(tmuxCall.cwd, "/repo/.git/phantom/worktrees/feature");
     deepStrictEqual(tmuxCall.windowName, "feature");
     deepStrictEqual(tmuxCall.env.PHANTOM_NAME, "feature");
-    deepStrictEqual(tmuxCall.env.PHANTOM_PATH, "/repo/.git/phantom/worktrees/feature");
+    deepStrictEqual(
+      tmuxCall.env.PHANTOM_PATH,
+      "/repo/.git/phantom/worktrees/feature",
+    );
   });
 
   it("should pass postCreate config to attachWorktreeCore", async () => {

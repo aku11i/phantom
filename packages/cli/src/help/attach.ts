@@ -37,7 +37,8 @@ export const attachHelp: CommandHelp = {
     {
       name: "tmux-horizontal",
       type: "boolean",
-      description: "Open the worktree in a horizontal tmux pane after attaching",
+      description:
+        "Open the worktree in a horizontal tmux pane after attaching",
     },
     {
       name: "tmux-h",
