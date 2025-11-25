@@ -8,8 +8,9 @@
     "prebuild": "git clean -fdx dist",
     "build": "node build.ts",
     "typecheck": "tsc --noEmit",
-    "test:shell": "pnpm run test:shell:bash && pnpm run test:shell:zsh",
+    "test:shell": "pnpm run test:shell:bash && pnpm run test:shell:zsh && pnpm run test:shell:fish",
     "test:shell:bash": "node --test --experimental-strip-types --experimental-test-module-mocks src/completions/phantom.bash.test.shell.js",
+    "test:shell:fish": "node --test --experimental-strip-types --experimental-test-module-mocks src/completions/phantom.fish.test.shell.js",
     "test:shell:zsh": "node --test --experimental-strip-types --experimental-test-module-mocks src/completions/phantom.zsh.test.shell.js",
     "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\"",
     "prepublishOnly": "pnpm build"
