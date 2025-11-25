@@ -48,7 +48,10 @@ export const attachHelp: CommandHelp = {
     {
       name: "copy-file",
       type: "string",
-      description: "Copy specified files from the current worktree before attaching",
+      multiple: true,
+      description:
+        "Copy specified files from the current worktree before attaching. Can be used multiple times",
+      example: "--copy-file .env --copy-file .npmrc",
     },
   ],
   examples: [
@@ -70,7 +73,8 @@ export const attachHelp: CommandHelp = {
     },
     {
       description: "Attach and copy shared environment files",
-      command: "phantom attach feature-branch --copy-file .env --copy-file .npmrc",
+      command:
+        "phantom attach feature-branch --copy-file .env --copy-file .npmrc",
     },
   ],
   notes: [
