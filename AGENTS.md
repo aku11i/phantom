@@ -13,6 +13,7 @@
 - Lint/format: `pnpm lint` (check) or `pnpm fix` (apply Biome fixes).
 - Tests: `pnpm test` (native `node --test` across packages).
 - Pre-flight: `pnpm ready` (fix + typecheck + test) or `pnpm ready:check` (lint + typecheck + test).
+- After finishing an implementation, run `pnpm ready` to execute lint, typecheck, and tests before shipping changes.
 - Scope work: `pnpm --filter <pkg> <cmd>` (e.g., `pnpm --filter @aku11i/phantom-github test`).
 
 ## Coding Style & Naming Conventions
