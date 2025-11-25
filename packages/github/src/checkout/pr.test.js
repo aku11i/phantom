@@ -90,7 +90,7 @@ describe("checkoutPullRequest", () => {
     }));
     attachWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: "/path/to/repo/.git/phantom/worktrees/pulls/123",
+      value: "/path/to/repo/.git/phantom/worktrees/feature-branch",
     }));
     setUpstreamBranchMock.mock.mockImplementation(async () => ({
       ok: true,
@@ -114,12 +114,12 @@ describe("checkoutPullRequest", () => {
 
     // Verify fetch was called with correct refspec (same-repo PR)
     const fetchOptions = fetchMock.mock.calls[0].arguments[0];
-    equal(fetchOptions.refspec, "feature-branch:pulls/123");
+    equal(fetchOptions.refspec, "feature-branch:feature-branch");
 
     // Verify upstream was set correctly for same-repo PR
     const upstreamArgs = setUpstreamBranchMock.mock.calls[0].arguments;
     equal(upstreamArgs[0], mockGitRoot);
-    equal(upstreamArgs[1], "pulls/123");
+    equal(upstreamArgs[1], "feature-branch");
     equal(upstreamArgs[2], "origin/feature-branch");
 
     // Verify attach was called with correct parameters
@@ -127,7 +127,7 @@ describe("checkoutPullRequest", () => {
       attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(gitRoot, mockGitRoot);
     equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
-    equal(worktreeName, "pulls/123");
+    equal(worktreeName, "feature-branch");
   });
 
   it("should handle when worktree already exists", async () => {
@@ -157,7 +157,7 @@ describe("checkoutPullRequest", () => {
     // Mock that worktree already exists
     validateWorktreeExistsMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: { path: `${mockGitRoot}/.git/phantom/worktrees/pulls/456` },
+      value: { path: `${mockGitRoot}/.git/phantom/worktrees/existing-branch` },
     }));
 
     const result = await checkoutPullRequest(mockPullRequest);
@@ -165,7 +165,10 @@ describe("checkoutPullRequest", () => {
     ok(result.value);
     equal(result.value.message, "PR #456 is already checked out");
     equal(result.value.alreadyExists, true);
-    equal(result.value.path, `${mockGitRoot}/.git/phantom/worktrees/pulls/456`);
+    equal(
+      result.value.path,
+      `${mockGitRoot}/.git/phantom/worktrees/existing-branch`,
+    );
 
     // Verify that fetch was not called when worktree already exists
     equal(fetchMock.mock.calls.length, 0);
@@ -263,7 +266,7 @@ describe("checkoutPullRequest", () => {
     }));
     attachWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: "/path/to/repo/.git/phantom/worktrees/pulls/999",
+      value: "/path/to/repo/.git/phantom/worktrees/test-branch",
     }));
     setUpstreamBranchMock.mock.mockImplementation(async () => ({
       ok: true,
@@ -275,7 +278,7 @@ describe("checkoutPullRequest", () => {
     const [, worktreeDirectory, worktreeName] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
-    equal(worktreeName, "pulls/999");
+    equal(worktreeName, "test-branch");
   });
 
   it("should handle forked pull requests", async () => {
@@ -313,7 +316,7 @@ describe("checkoutPullRequest", () => {
     }));
     attachWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: "/path/to/repo/.git/phantom/worktrees/pulls/1234",
+      value: "/path/to/repo/.git/phantom/worktrees/fork-feature",
     }));
     setUpstreamBranchMock.mock.mockImplementation(async () => ({
       ok: true,
@@ -330,17 +333,17 @@ describe("checkoutPullRequest", () => {
 
     // Verify it uses the same refspec for forked PRs
     const fetchOptions = fetchMock.mock.calls[0].arguments[0];
-    equal(fetchOptions.refspec, "pull/1234/head:pulls/1234");
+    equal(fetchOptions.refspec, "pull/1234/head:fork-feature");
 
     const [, worktreeDirectory, worktreeName] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
-    equal(worktreeName, "pulls/1234");
+    equal(worktreeName, "fork-feature");
 
     // Verify upstream was set correctly for forked PR
     const upstreamArgs = setUpstreamBranchMock.mock.calls[0].arguments;
     equal(upstreamArgs[0], mockGitRoot);
-    equal(upstreamArgs[1], "pulls/1234");
+    equal(upstreamArgs[1], "fork-feature");
     equal(upstreamArgs[2], "origin/pull/1234/head");
   });
 

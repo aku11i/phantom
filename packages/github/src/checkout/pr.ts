@@ -21,8 +21,8 @@ export async function checkoutPullRequest(
 ): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
-  const worktreeName = `pulls/${pullRequest.number}`;
-  const localBranch = `pulls/${pullRequest.number}`;
+  const worktreeName = pullRequest.head.ref;
+  const localBranch = pullRequest.head.ref;
 
   // Check if worktree already exists before attempting to fetch
   const existsResult = await validateWorktreeExists(
