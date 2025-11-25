@@ -18,7 +18,9 @@ if (!allowedReleaseTypes.has(releaseType)) {
   );
 }
 
-const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const packageJson = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+);
 const currentVersion = (packageJson?.version as string | undefined)?.trim();
 
 if (!currentVersion) {
@@ -28,7 +30,9 @@ if (!currentVersion) {
 const isPrereleaseVersion = currentVersion.includes("-");
 
 if (releaseType === "prerelease" && !isPrereleaseVersion) {
-  throw new Error("Cannot bump prerelease: current version is not a prerelease");
+  throw new Error(
+    "Cannot bump prerelease: current version is not a prerelease",
+  );
 }
 
 const bumpArgument = releaseType;
