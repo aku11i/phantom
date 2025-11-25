@@ -144,6 +144,9 @@ phantom shell my-feature
 # Create worktree from a remote branch
 phantom attach pr-branch --shell
 
+# Or open it directly in tmux
+phantom attach pr-branch --tmux
+
 # Review code, run tests
 npm test
 

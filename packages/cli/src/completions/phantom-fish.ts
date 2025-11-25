@@ -58,6 +58,9 @@ complete -c phantom -n "__phantom_using_command create" -l base -d "Branch or co
 # attach command options
 complete -c phantom -n "__phantom_using_command attach" -l shell -d "Open an interactive shell in the worktree after attaching (-s)"
 complete -c phantom -n "__phantom_using_command attach" -l exec -d "Execute a command in the worktree after attaching (-x)" -x
+complete -c phantom -n "__phantom_using_command attach" -l tmux -d "Open the worktree in a new tmux window (-t)"
+complete -c phantom -n "__phantom_using_command attach" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
+complete -c phantom -n "__phantom_using_command attach" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
 
 # list command options
 complete -c phantom -n "__phantom_using_command list" -l fzf -d "Use fzf for interactive selection"
