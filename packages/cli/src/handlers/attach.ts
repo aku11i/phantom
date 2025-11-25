@@ -47,6 +47,10 @@ export async function attachHandler(args: string[]): Promise<void> {
       "tmux-h": {
         type: "boolean",
       },
+      "copy-file": {
+        type: "string",
+        multiple: true,
+      },
     },
   });
 
@@ -65,6 +69,8 @@ export async function attachHandler(args: string[]): Promise<void> {
     values["tmux-v"] ||
     values["tmux-horizontal"] ||
     values["tmux-h"];
+
+  const copyFileOptions = values["copy-file"];
 
   const tmuxDirection: "new" | "vertical" | "horizontal" | undefined =
     values.tmux
@@ -85,6 +91,17 @@ export async function attachHandler(args: string[]): Promise<void> {
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
 
+  let copyFiles = context.config?.postCreate?.copyFiles ?? [];
+
+  if (copyFileOptions && copyFileOptions.length > 0) {
+    const cliCopyFiles = Array.isArray(copyFileOptions)
+      ? copyFileOptions
+      : [copyFileOptions];
+    copyFiles = [...new Set([...copyFiles, ...cliCopyFiles])];
+  }
+
+  const postCreateCopyFiles = copyFiles.length > 0 ? copyFiles : undefined;
+
   if (tmuxOption && !(await isInsideTmux())) {
     exitWithError(
       "The --tmux option can only be used inside a tmux session",
@@ -96,7 +113,7 @@ export async function attachHandler(args: string[]): Promise<void> {
     context.gitRoot,
     context.worktreesDirectory,
     branchName,
-    context.config?.postCreate?.copyFiles,
+    postCreateCopyFiles,
     context.config?.postCreate?.commands,
   );
 

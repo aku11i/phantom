@@ -60,6 +60,7 @@ complete -c phantom -n "__phantom_using_command attach" -l exec -d "Execute a co
 complete -c phantom -n "__phantom_using_command attach" -l tmux -d "Open the worktree in a new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command attach" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
 complete -c phantom -n "__phantom_using_command attach" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
+complete -c phantom -n "__phantom_using_command attach" -l copy-file -d "Copy specified files from the current worktree" -r
 
 # list command options
 complete -c phantom -n "__phantom_using_command list" -l fzf -d "Use fzf for interactive selection"

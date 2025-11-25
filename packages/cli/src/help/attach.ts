@@ -45,6 +45,14 @@ export const attachHelp: CommandHelp = {
       type: "boolean",
       description: "Alias for --tmux-horizontal",
     },
+    {
+      name: "copy-file",
+      type: "string",
+      multiple: true,
+      description:
+        "Copy specified files from the current worktree before attaching. Can be used multiple times",
+      example: "--copy-file .env --copy-file .npmrc",
+    },
   ],
   examples: [
     {
@@ -62,6 +70,11 @@ export const attachHelp: CommandHelp = {
     {
       description: "Attach and open the worktree in a tmux window",
       command: "phantom attach feature-branch --tmux",
+    },
+    {
+      description: "Attach and copy shared environment files",
+      command:
+        "phantom attach feature-branch --copy-file .env --copy-file .npmrc",
     },
   ],
   notes: [
