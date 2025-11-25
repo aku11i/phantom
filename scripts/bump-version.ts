@@ -10,7 +10,15 @@ const { values } = parseArgs({
 });
 
 const releaseType = values["release-type"]?.trim() ?? "patch";
-const allowedReleaseTypes = new Set(["patch", "minor", "major", "prerelease"]);
+const allowedReleaseTypes = new Set([
+  "patch",
+  "minor",
+  "major",
+  "prepatch",
+  "preminor",
+  "premajor",
+  "prerelease",
+]);
 
 if (!allowedReleaseTypes.has(releaseType)) {
   throw new Error(

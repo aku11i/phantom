@@ -134,12 +134,11 @@ To release a new version of Phantom:
 1. **Bump version**
    ```bash
    # Trigger the automated version bump workflow via GitHub CLI
-   # release_type: patch | minor | major
-   # preid: "" for stable, "rc" for prerelease
-   gh workflow run version-bump.yml -f release_type=patch -f preid=""
+   # release_type: patch | minor | major | prepatch | preminor | premajor | prerelease
+   gh workflow run version-bump.yml -f release_type=patch
 
-   # Example: start an rc prerelease minor bump
-   gh workflow run version-bump.yml -f release_type=minor -f preid=rc
+   # Example: start a prerelease minor bump
+   gh workflow run version-bump.yml -f release_type=preminor
 
    # Wait for the workflow to finish and create the PR for you
    gh run watch --exit-status --workflow=version-bump.yml
@@ -164,7 +163,7 @@ To release a new version of Phantom:
       --target main
     ```
 
-    Publishing to npm is handled by `.github/workflows/npm-publish.yml` when the release is published. Monitor the workflow run in GitHub Actions to ensure it completes successfully.
+   Publishing to npm is handled by `.github/workflows/npm-publish.yml` when the release is published. Releases from `pre*` bumps are published with the `next` dist-tag; all other releases use `latest`. Monitor the workflow run in GitHub Actions to ensure it completes successfully.
 
 4. **Update release notes for clarity**
    - Review the auto-generated release notes using `gh release view v<version>`
