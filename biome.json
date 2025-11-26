@@ -1,11 +1,12 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.1/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
     "useIgnoreFile": false
   },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 },
+  "assists": { "enabled": true },
   "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
@@ -20,11 +21,11 @@
   "files": {
     "include": ["packages/**/*", "*.ts", "*.js", "*.json"],
     "ignore": [
-      "node_modules/**/*",
-      ".git/**/*",
-      "**/dist/**/*",
+      "node_modules/**",
+      ".git/**",
+      "**/dist/**",
       "package.json",
-      ".claude/**/*"
+      ".claude/**"
     ]
   }
 }
