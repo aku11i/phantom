@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/node": "^22.15.29",
+    "@types/node": "^24.9.1",
     "@typescript/native-preview": "7.0.0-dev.20250602.1",
     "esbuild": "^0.25.5",
     "typescript": "^5.8.3"
