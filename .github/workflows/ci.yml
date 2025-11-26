@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
-      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
         with:
           node-version-file: .node-version
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
-      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
         with:
           node-version-file: .node-version
@@ -42,7 +42,7 @@ jobs:
         node-version: ['22', '24']
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
-      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
         with:
           node-version: ${{ matrix.node-version }}
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
-      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
         with:
           node-version-file: .node-version
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
-      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
         with:
           node-version-file: .node-version
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
-      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
         with:
           node-version-file: .node-version
