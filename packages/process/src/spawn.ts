@@ -1,9 +1,6 @@
-import {
-  type ChildProcess,
-  type SpawnOptions,
-  spawn as nodeSpawn,
-} from "node:child_process";
+import type { ChildProcess, SpawnOptions } from "node:child_process";
 import { type Result, err, ok } from "@aku11i/phantom-shared";
+import spawn from "cross-spawn";
 import {
   type ProcessError,
   ProcessExecutionError,
@@ -27,7 +24,7 @@ export async function spawnProcess(
   return new Promise((resolve) => {
     const { command, args = [], options = {} } = config;
 
-    const childProcess: ChildProcess = nodeSpawn(command, args, {
+    const childProcess: ChildProcess = spawn(command, args, {
       stdio: "inherit",
       ...options,
     });
