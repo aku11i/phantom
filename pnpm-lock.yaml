@@ -121,8 +121,8 @@ importers:
         version: 3.25.64
     devDependencies:
       '@modelcontextprotocol/inspector':
-        specifier: ^0.16.6
-        version: 0.16.6(@types/node@24.9.1)(typescript@5.8.3)
+        specifier: ^0.17.2
+        version: 0.17.2(@types/node@24.9.1)(typescript@5.8.3)
 
   packages/process:
     dependencies:
@@ -366,20 +366,20 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@modelcontextprotocol/inspector-cli@0.16.8':
-    resolution: {integrity: sha512-u8x8Dbb8Dos34M7N8p4e4AF++Bi1D+lq+dkRCvLi5Qub/dI75Z7YTIXBezA4LbIISly+Ecn05fdofzZwqyOvpg==}
+  '@modelcontextprotocol/inspector-cli@0.17.2':
+    resolution: {integrity: sha512-xXaqZYWJz77xvmfAVlYbvz2/xw9OaalFHq0n5A8PlmZvmhi6akQocIE7ZYaoEBpLbWRSwIZWfsidnfoKb6dO2A==}
     hasBin: true
 
-  '@modelcontextprotocol/inspector-client@0.16.8':
-    resolution: {integrity: sha512-4sTk/jUnQ1lDv9kbx1nN45SsoApDxW8hjKLKcHnHh9nfRVEN9SW+ylUjNvVCDP74xSNpD8v5p6NJyVWtZYfPWA==}
+  '@modelcontextprotocol/inspector-client@0.17.2':
+    resolution: {integrity: sha512-llC96yU8iMjG7ny2gpjhm+ARQqBRZWeKBCxW+nBErAE43jBqd5DhGuI2abrt499Gd3ByNOImz+Z5mb8YWjRiJA==}
     hasBin: true
 
-  '@modelcontextprotocol/inspector-server@0.16.8':
-    resolution: {integrity: sha512-plv0SiPgQAT0/LjC0MmGsoo/sdpS6V4TpOUAxO4J3DnvnLLaInnNh9hiU1SlGgCjsRv0nN9TvX9pWRqVnZH9kw==}
+  '@modelcontextprotocol/inspector-server@0.17.2':
+    resolution: {integrity: sha512-+logjB5XXK+8aE+eDl8cLnwY0UhOUh19vo6tg5rFVmLXNQPtxTFyWybcQfgP/cHp76+r5+EMxIpydDYEoasTvg==}
     hasBin: true
 
-  '@modelcontextprotocol/inspector@0.16.6':
-    resolution: {integrity: sha512-6x6dzTf8MV6z/XIdzr/4EMK4elMn1XUzTJHxczsBePLg1G5VNAM/4g5abNFIB9bzuxJ/1VH8016Vv6S7sj/24Q==}
+  '@modelcontextprotocol/inspector@0.17.2':
+    resolution: {integrity: sha512-ADWwZtbvecKCbLCR7L0Uaa2mPKFDJcTrc9xcE9pdN8gL/jFfzOMrgdNsKt+qBknzMeSQ6mJT+UguJbnQs8n13Q==}
     engines: {node: '>=22.7.5'}
     hasBin: true
 
@@ -1066,6 +1066,10 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
+  data-uri-to-buffer@4.0.1:
+    resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
+    engines: {node: '>= 12'}
+
   debug@4.4.1:
     resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
     engines: {node: '>=6.0'}
@@ -1189,9 +1193,17 @@ packages:
   fast-uri@3.1.0:
     resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
 
+  fetch-blob@3.2.0:
+    resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
+    engines: {node: ^12.20 || >= 14.13}
+
   finalhandler@2.1.0:
     resolution: {integrity: sha512-/t88Ty3d5JWQbWYgaOGCCYfXRwV1+be02WqYYlL6h0lEiUAMPM8o8qKGO01YIkOHzka2up08wvgYD0mDiI+q3Q==}
     engines: {node: '>= 0.8'}
+
+  formdata-polyfill@4.0.10:
+    resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
+    engines: {node: '>=12.20.0'}
 
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -1341,6 +1353,15 @@ packages:
   negotiator@1.0.0:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
+
+  node-domexception@1.0.0:
+    resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
+    engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
+
+  node-fetch@3.3.2:
+    resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
@@ -1642,6 +1663,10 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
+  web-streams-polyfill@3.3.3:
+    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
+    engines: {node: '>= 8'}
+
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
@@ -1844,7 +1869,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@modelcontextprotocol/inspector-cli@0.16.8(zod@3.25.76)':
+  '@modelcontextprotocol/inspector-cli@0.17.2(zod@3.25.76)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.23.0(zod@3.25.76)
       commander: 13.1.0
@@ -1854,7 +1879,7 @@ snapshots:
       - supports-color
       - zod
 
-  '@modelcontextprotocol/inspector-client@0.16.8':
+  '@modelcontextprotocol/inspector-client@0.17.2':
     dependencies:
       '@modelcontextprotocol/sdk': 1.23.0(zod@3.25.76)
       '@radix-ui/react-checkbox': 1.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1887,7 +1912,7 @@ snapshots:
       - '@types/react-dom'
       - supports-color
 
-  '@modelcontextprotocol/inspector-server@0.16.8':
+  '@modelcontextprotocol/inspector-server@0.17.2':
     dependencies:
       '@modelcontextprotocol/sdk': 1.23.0(zod@3.25.76)
       cors: 2.8.5
@@ -1902,13 +1927,14 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@modelcontextprotocol/inspector@0.16.6(@types/node@24.9.1)(typescript@5.8.3)':
+  '@modelcontextprotocol/inspector@0.17.2(@types/node@24.9.1)(typescript@5.8.3)':
     dependencies:
-      '@modelcontextprotocol/inspector-cli': 0.16.8(zod@3.25.76)
-      '@modelcontextprotocol/inspector-client': 0.16.8
-      '@modelcontextprotocol/inspector-server': 0.16.8
+      '@modelcontextprotocol/inspector-cli': 0.17.2(zod@3.25.76)
+      '@modelcontextprotocol/inspector-client': 0.17.2
+      '@modelcontextprotocol/inspector-server': 0.17.2
       '@modelcontextprotocol/sdk': 1.23.0(zod@3.25.76)
       concurrently: 9.2.1
+      node-fetch: 3.3.2
       open: 10.2.0
       shell-quote: 1.8.3
       spawn-rx: 5.1.2
@@ -2536,6 +2562,8 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  data-uri-to-buffer@4.0.1: {}
+
   debug@4.4.1:
     dependencies:
       ms: 2.1.3
@@ -2669,6 +2697,11 @@ snapshots:
 
   fast-uri@3.1.0: {}
 
+  fetch-blob@3.2.0:
+    dependencies:
+      node-domexception: 1.0.0
+      web-streams-polyfill: 3.3.3
+
   finalhandler@2.1.0:
     dependencies:
       debug: 4.4.3
@@ -2679,6 +2712,10 @@ snapshots:
       statuses: 2.0.2
     transitivePeerDependencies:
       - supports-color
+
+  formdata-polyfill@4.0.10:
+    dependencies:
+      fetch-blob: 3.2.0
 
   forwarded@0.2.0: {}
 
@@ -2803,6 +2840,14 @@ snapshots:
   ms@2.1.3: {}
 
   negotiator@1.0.0: {}
+
+  node-domexception@1.0.0: {}
+
+  node-fetch@3.3.2:
+    dependencies:
+      data-uri-to-buffer: 4.0.1
+      fetch-blob: 3.2.0
+      formdata-polyfill: 4.0.10
 
   object-assign@4.1.1: {}
 
@@ -3094,6 +3139,8 @@ snapshots:
   v8-compile-cache-lib@3.0.1: {}
 
   vary@1.1.2: {}
+
+  web-streams-polyfill@3.3.3: {}
 
   which@2.0.2:
     dependencies:
