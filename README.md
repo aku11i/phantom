@@ -216,4 +216,4 @@ MIT License - see [LICENSE](LICENSE)
 
 ## 🙏 Acknowledgments
 
-Built with 👻 by [@aku11i](https://github.com/aku11i) and [Claude](https://claude.ai)
+Built with 👻 by [@aku11i](https://github.com/aku11i), [@codex](https://github.com/codex), and [Claude](https://claude.ai)
