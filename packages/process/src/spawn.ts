@@ -1,8 +1,4 @@
-import {
-  type ChildProcess,
-  spawn as nodeSpawn,
-  type SpawnOptions,
-} from "node:child_process";
+import { type ChildProcess, spawn as nodeSpawn, type SpawnOptions } from "node:child_process";
 import { err, ok, type Result } from "@aku11i/phantom-shared";
 import {
   type ProcessError,
@@ -10,6 +6,7 @@ import {
   ProcessSignalError,
   ProcessSpawnError,
 } from "./errors.ts";
+import { resolveWindowsCommandPath } from "./resolve-windows-command-path.ts";
 
 export interface SpawnSuccess {
   exitCode: number;
@@ -26,14 +23,16 @@ export async function spawnProcess(
 ): Promise<Result<SpawnSuccess, ProcessError>> {
   return new Promise((resolve) => {
     const { command, args = [], options = {} } = config;
+    const file =
+      process.platform === "win32" ? resolveWindowsCommandPath(command) : command;
 
-    const childProcess: ChildProcess = nodeSpawn(command, args, {
+    const childProcess: ChildProcess = nodeSpawn(file, args, {
       stdio: "inherit",
       ...options,
     });
 
     childProcess.on("error", (error) => {
-      resolve(err(new ProcessSpawnError(command, error.message)));
+      resolve(err(new ProcessSpawnError(file, error.message)));
     });
 
     childProcess.on("exit", (code, signal) => {
@@ -44,7 +43,7 @@ export async function spawnProcess(
         if (exitCode === 0) {
           resolve(ok({ exitCode }));
         } else {
-          resolve(err(new ProcessExecutionError(command, exitCode)));
+          resolve(err(new ProcessExecutionError(file, exitCode)));
         }
       }
     });
