@@ -5,16 +5,20 @@ import { getWorktreesDirectory } from "./paths.ts";
 
 describe("paths", () => {
   describe("getWorktreesDirectory", () => {
+    const assertNormalizedPath = (actual, expected) => {
+      strictEqual(normalize(actual), normalize(expected));
+    };
+
     it("should return correct phantom directory path", () => {
       const gitRoot = "/test/repo";
       const result = getWorktreesDirectory(gitRoot);
-      strictEqual(result, normalize("/test/repo/.git/phantom/worktrees"));
+      assertNormalizedPath(result, "/test/repo/.git/phantom/worktrees");
     });
 
     it("should handle git root with trailing slash", () => {
       const gitRoot = "/test/repo/";
       const result = getWorktreesDirectory(gitRoot);
-      strictEqual(result, normalize("/test/repo/.git/phantom/worktrees"));
+      assertNormalizedPath(result, "/test/repo/.git/phantom/worktrees");
     });
 
     it("should handle Windows-style paths", () => {
@@ -30,38 +34,38 @@ describe("paths", () => {
       it("should return default path when worktreesDirectory is undefined", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreesDirectory(gitRoot, undefined);
-        strictEqual(result, normalize("/test/repo/.git/phantom/worktrees"));
+        assertNormalizedPath(result, "/test/repo/.git/phantom/worktrees");
       });
 
       it("should handle relative worktreesDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreesDirectory(gitRoot, "../phantom-external");
-        strictEqual(result, normalize("/test/phantom-external"));
+        assertNormalizedPath(result, "/test/phantom-external");
       });
 
       it("should handle absolute worktreesDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreesDirectory(gitRoot, "/tmp/phantom-worktrees");
-        strictEqual(result, normalize("/tmp/phantom-worktrees"));
+        assertNormalizedPath(result, "/tmp/phantom-worktrees");
       });
 
       it("should handle nested relative worktreesDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreesDirectory(gitRoot, "custom/phantom");
-        strictEqual(result, normalize("/test/repo/custom/phantom"));
+        assertNormalizedPath(result, "/test/repo/custom/phantom");
       });
 
       it("should handle complex relative worktreesDirectory", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreesDirectory(gitRoot, "../../shared/worktrees");
-        strictEqual(result, normalize("/shared/worktrees"));
+        assertNormalizedPath(result, "/shared/worktrees");
       });
 
       it("should handle worktreesDirectory with trailing slash", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreesDirectory(gitRoot, "../phantom-external/");
         // path.join normalizes paths and may add trailing slash
-        strictEqual(result, normalize("/test/phantom-external/"));
+        assertNormalizedPath(result, "/test/phantom-external/");
       });
     });
   });
