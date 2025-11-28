@@ -1,12 +1,10 @@
 import {
-  WorktreeAlreadyExistsError,
   createContext,
   createWorktree as createWorktreeCore,
-  getWorktreePathFromDirectory,
   validateWorktreeExists,
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
 import { type GitHubIssue, isPullRequest } from "../api/index.ts";
 import type { CheckoutResult } from "./pr.ts";
 

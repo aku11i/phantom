@@ -1,6 +1,5 @@
 import { rejects, strictEqual } from "node:assert";
-import { mock } from "node:test";
-import { describe, it } from "node:test";
+import { describe, it, mock } from "node:test";
 import { WorktreeNotFoundError } from "@aku11i/phantom-core";
 import { err, ok } from "@aku11i/phantom-shared";
 

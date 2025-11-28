@@ -1,10 +1,10 @@
 import {
+  getPhantomEnv,
   type ProcessError,
   type SpawnSuccess,
-  getPhantomEnv,
   spawnProcess,
 } from "@aku11i/phantom-process";
-import { type Result, err, isErr } from "@aku11i/phantom-shared";
+import { err, isErr, type Result } from "@aku11i/phantom-shared";
 import type { WorktreeNotFoundError } from "./worktree/errors.ts";
 import { validateWorktreeExists } from "./worktree/validate.ts";
 

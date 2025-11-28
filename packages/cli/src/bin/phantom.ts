@@ -6,14 +6,13 @@ import { completionHandler } from "../handlers/completion.ts";
 import { createHandler } from "../handlers/create.ts";
 import { deleteHandler } from "../handlers/delete.ts";
 import { execHandler } from "../handlers/exec.ts";
-import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
 import { githubHandler } from "../handlers/github.ts";
+import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
 import { whereHandler } from "../handlers/where.ts";
-import { type CommandHelp, helpFormatter } from "../help.ts";
 import { attachHelp } from "../help/attach.ts";
 import { completionHelp } from "../help/completion.ts";
 import { createHelp } from "../help/create.ts";
@@ -25,6 +24,7 @@ import { mcpHelp } from "../help/mcp.ts";
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
+import { type CommandHelp, helpFormatter } from "../help.ts";
 
 interface Command {
   name: string;

@@ -1,9 +1,9 @@
 import {
   type ChildProcess,
-  type SpawnOptions,
   spawn as nodeSpawn,
+  type SpawnOptions,
 } from "node:child_process";
-import { type Result, err, ok } from "@aku11i/phantom-shared";
+import { err, ok, type Result } from "@aku11i/phantom-shared";
 import {
   type ProcessError,
   ProcessExecutionError,

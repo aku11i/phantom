@@ -1,4 +1,4 @@
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
 import type { WorktreeNotFoundError } from "./errors.ts";
 import { validateWorktreeExists } from "./validate.ts";
 

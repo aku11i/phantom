@@ -1,4 +1,4 @@
-import { deepEqual, equal, ok } from "node:assert/strict";
+import { equal, ok } from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 
 const getGitRootMock = mock.fn();

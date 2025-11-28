@@ -2,7 +2,6 @@ import { deepStrictEqual, rejects } from "node:assert";
 import { describe, it, mock } from "node:test";
 import {
   BranchNotFoundError,
-  ConfigNotFoundError,
   WorktreeAlreadyExistsError,
 } from "@aku11i/phantom-core";
 import { err, ok } from "@aku11i/phantom-shared";
