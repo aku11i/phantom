@@ -10,6 +10,7 @@
     "test": "node --test --experimental-strip-types --experimental-test-module-mocks \"src/**/*.test.js\""
   },
   "dependencies": {
-    "@aku11i/phantom-shared": "workspace:*"
+    "@aku11i/phantom-shared": "workspace:*",
+    "cross-spawn": "^7.0.6"
   }
 }

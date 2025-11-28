@@ -1,5 +1,4 @@
 import { deepStrictEqual, strictEqual } from "node:assert";
-// import type { ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { describe, it, mock } from "node:test";
 import { isErr, isOk } from "@aku11i/phantom-shared";
@@ -11,10 +10,8 @@ import {
 
 const spawnMock = mock.fn();
 
-mock.module("node:child_process", {
-  namedExports: {
-    spawn: spawnMock,
-  },
+mock.module("cross-spawn", {
+  defaultExport: spawnMock,
 });
 
 const { spawnProcess } = await import("./spawn.ts");
