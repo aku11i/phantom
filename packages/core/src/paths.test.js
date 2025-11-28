@@ -8,13 +8,19 @@ describe("paths", () => {
     it("should return correct phantom directory path", () => {
       const gitRoot = "/test/repo";
       const result = getWorktreesDirectory(gitRoot);
-      strictEqual(normalize(result), normalize("/test/repo/.git/phantom/worktrees"));
+      strictEqual(
+        normalize(result),
+        normalize("/test/repo/.git/phantom/worktrees"),
+      );
     });
 
     it("should handle git root with trailing slash", () => {
       const gitRoot = "/test/repo/";
       const result = getWorktreesDirectory(gitRoot);
-      strictEqual(normalize(result), normalize("/test/repo/.git/phantom/worktrees"));
+      strictEqual(
+        normalize(result),
+        normalize("/test/repo/.git/phantom/worktrees"),
+      );
     });
 
     it("should handle Windows-style paths", () => {
@@ -30,7 +36,10 @@ describe("paths", () => {
       it("should return default path when worktreesDirectory is undefined", () => {
         const gitRoot = "/test/repo";
         const result = getWorktreesDirectory(gitRoot, undefined);
-        strictEqual(normalize(result), normalize("/test/repo/.git/phantom/worktrees"));
+        strictEqual(
+          normalize(result),
+          normalize("/test/repo/.git/phantom/worktrees"),
+        );
       });
 
       it("should handle relative worktreesDirectory", () => {
