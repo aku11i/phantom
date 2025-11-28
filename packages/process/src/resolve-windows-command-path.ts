@@ -16,7 +16,11 @@ export function resolveWindowsCommandPath(commandOrPath: string): string {
       stdio: ["ignore", "pipe", "pipe"],
     });
 
-    const executablePath = stdout.toString().trim();
+    const executablePath = stdout
+      .toString()
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .find(Boolean);
 
     if (executablePath) {
       return executablePath;
