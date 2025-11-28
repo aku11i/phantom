@@ -16,6 +16,7 @@ This document provides a comprehensive reference for all Phantom commands and th
 - [GitHub Integration](#github-integration)
   - [github checkout](#github-checkout)
 - [Other Commands](#other-commands)
+  - [mcp](#mcp)
   - [version](#version)
   - [completion](#completion)
 
@@ -309,6 +310,26 @@ phantom gh checkout 123
 For detailed information, see the [GitHub Integration Guide](./github.md).
 
 ## Other Commands
+
+### mcp
+
+Start and manage the Phantom MCP server for AI assistant integrations. See the [MCP Integration Guide](./mcp.md) for full setup instructions.
+
+```bash
+phantom mcp <subcommand> [options]
+```
+
+**Subcommands:**
+- `serve` - Start the MCP server (stdio transport)
+
+**Examples:**
+```bash
+# Start the MCP server with stdio transport
+phantom mcp serve
+
+# Show MCP help
+phantom mcp --help
+```
 
 ### version
 
