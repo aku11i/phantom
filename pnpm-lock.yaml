@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       zod:
-        specifier: ^3.25.64
-        version: 3.25.64
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.1
@@ -63,8 +63,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       zod:
-        specifier: ^3.25.64
-        version: 3.25.64
+        specifier: ^4.1.13
+        version: 4.1.13
 
   packages/git:
     dependencies:
@@ -93,8 +93,8 @@ importers:
         specifier: ^22.0.1
         version: 22.0.1
       zod:
-        specifier: ^3.25.64
-        version: 3.25.64
+        specifier: ^4.1.13
+        version: 4.1.13
 
   packages/mcp:
     dependencies:
@@ -115,10 +115,10 @@ importers:
         version: link:../shared
       '@modelcontextprotocol/sdk':
         specifier: ^1.23.0
-        version: 1.23.0(zod@3.25.64)
+        version: 1.23.0(zod@4.1.13)
       zod:
-        specifier: ^3.25.64
-        version: 3.25.64
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@modelcontextprotocol/inspector':
         specifier: ^0.17.2
@@ -1667,11 +1667,11 @@ packages:
     peerDependencies:
       zod: ^3.25 || ^4
 
-  zod@3.25.64:
-    resolution: {integrity: sha512-hbP9FpSZf7pkS7hRVUrOjhwKJNyampPgtXKc3AN6DsWtoHsg2Sb4SQaS4Tcay380zSwd2VPo9G9180emBACp5g==}
-
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
+  zod@4.1.13:
+    resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
 
 snapshots:
 
@@ -1901,24 +1901,6 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@modelcontextprotocol/sdk@1.23.0(zod@3.25.64)':
-    dependencies:
-      ajv: 8.17.1
-      ajv-formats: 3.0.1(ajv@8.17.1)
-      content-type: 1.0.5
-      cors: 2.8.5
-      cross-spawn: 7.0.6
-      eventsource: 3.0.7
-      eventsource-parser: 3.0.6
-      express: 5.1.0
-      express-rate-limit: 7.5.1(express@5.1.0)
-      pkce-challenge: 5.0.1
-      raw-body: 3.0.2
-      zod: 3.25.64
-      zod-to-json-schema: 3.25.0(zod@3.25.64)
-    transitivePeerDependencies:
-      - supports-color
-
   '@modelcontextprotocol/sdk@1.23.0(zod@3.25.76)':
     dependencies:
       ajv: 8.17.1
@@ -1934,6 +1916,24 @@ snapshots:
       raw-body: 3.0.2
       zod: 3.25.76
       zod-to-json-schema: 3.25.0(zod@3.25.76)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@modelcontextprotocol/sdk@1.23.0(zod@4.1.13)':
+    dependencies:
+      ajv: 8.17.1
+      ajv-formats: 3.0.1(ajv@8.17.1)
+      content-type: 1.0.5
+      cors: 2.8.5
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.0.6
+      express: 5.1.0
+      express-rate-limit: 7.5.1(express@5.1.0)
+      pkce-challenge: 5.0.1
+      raw-body: 3.0.2
+      zod: 4.1.13
+      zod-to-json-schema: 3.25.0(zod@4.1.13)
     transitivePeerDependencies:
       - supports-color
 
@@ -3091,14 +3091,14 @@ snapshots:
 
   yn@3.1.1: {}
 
-  zod-to-json-schema@3.25.0(zod@3.25.64):
-    dependencies:
-      zod: 3.25.64
-
   zod-to-json-schema@3.25.0(zod@3.25.76):
     dependencies:
       zod: 3.25.76
 
-  zod@3.25.64: {}
+  zod-to-json-schema@3.25.0(zod@4.1.13):
+    dependencies:
+      zod: 4.1.13
 
   zod@3.25.76: {}
+
+  zod@4.1.13: {}

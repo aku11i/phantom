@@ -37,7 +37,7 @@ export function validateConfig(
     const error = result.error;
 
     // Get the first error message from Zod's formatted output
-    const firstError = error.errors[0];
+    const firstError = error.issues[0];
     const path = firstError.path.join(".");
     const message = path
       ? `${path}: ${firstError.message}`
