@@ -62,6 +62,39 @@ describe("resolveWindowsCommandPath", () => {
     }
   });
 
+  it("should return the first resolved path when where.exe finds multiple matches", () => {
+    const originalPlatformDescriptor =
+      Object.getOwnPropertyDescriptor(process, "platform");
+    execFileSyncMock.mock.resetCalls();
+
+    execFileSyncMock.mock.mockImplementation(() =>
+      Buffer.from(
+        [
+          "C:/Program Files/nodejs/npm",
+          "C:/Program Files/nodejs/npm.cmd",
+        ].join("\r\n"),
+      ),
+    );
+
+    Object.defineProperty(process, "platform", {
+      value: "win32",
+      configurable: true,
+    });
+
+    try {
+      const resolved = resolveWindowsCommandPath("npm");
+      strictEqual(
+        path.normalize(resolved),
+        path.normalize("C:/Program Files/nodejs/npm"),
+      );
+      strictEqual(execFileSyncMock.mock.calls.length > 0, true);
+    } finally {
+      if (originalPlatformDescriptor) {
+        Object.defineProperty(process, "platform", originalPlatformDescriptor);
+      }
+    }
+  });
+
   it("should bypass resolution when a directory is provided", () => {
     const originalPlatformDescriptor =
       Object.getOwnPropertyDescriptor(process, "platform");
