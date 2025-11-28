@@ -11,13 +11,15 @@ mock.module("node:child_process", {
 });
 
 const { resolveWindowsCommandPath } = await import(
-  "./resolve-windows-command-path.ts",
+  "./resolve-windows-command-path.ts"
 );
 
 describe("resolveWindowsCommandPath", () => {
   it("should throw when called on non-Windows platforms", () => {
-    const originalPlatformDescriptor =
-      Object.getOwnPropertyDescriptor(process, "platform");
+    const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(
+      process,
+      "platform",
+    );
 
     Object.defineProperty(process, "platform", {
       value: "darwin",
@@ -35,8 +37,10 @@ describe("resolveWindowsCommandPath", () => {
   });
 
   it("should resolve extensionless commands on Windows using where.exe", () => {
-    const originalPlatformDescriptor =
-      Object.getOwnPropertyDescriptor(process, "platform");
+    const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(
+      process,
+      "platform",
+    );
     execFileSyncMock.mock.resetCalls();
 
     execFileSyncMock.mock.mockImplementation(() =>
@@ -63,16 +67,17 @@ describe("resolveWindowsCommandPath", () => {
   });
 
   it("should return the first resolved path when where.exe finds multiple matches", () => {
-    const originalPlatformDescriptor =
-      Object.getOwnPropertyDescriptor(process, "platform");
+    const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(
+      process,
+      "platform",
+    );
     execFileSyncMock.mock.resetCalls();
 
     execFileSyncMock.mock.mockImplementation(() =>
       Buffer.from(
-        [
-          "C:/Program Files/nodejs/npm",
-          "C:/Program Files/nodejs/npm.cmd",
-        ].join("\r\n"),
+        ["C:/Program Files/nodejs/npm", "C:/Program Files/nodejs/npm.cmd"].join(
+          "\r\n",
+        ),
       ),
     );
 
@@ -96,8 +101,10 @@ describe("resolveWindowsCommandPath", () => {
   });
 
   it("should bypass resolution when a directory is provided", () => {
-    const originalPlatformDescriptor =
-      Object.getOwnPropertyDescriptor(process, "platform");
+    const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(
+      process,
+      "platform",
+    );
     execFileSyncMock.mock.resetCalls();
 
     Object.defineProperty(process, "platform", {

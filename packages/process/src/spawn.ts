@@ -1,4 +1,8 @@
-import { type ChildProcess, spawn as nodeSpawn, type SpawnOptions } from "node:child_process";
+import {
+  type ChildProcess,
+  spawn as nodeSpawn,
+  type SpawnOptions,
+} from "node:child_process";
 import { err, ok, type Result } from "@aku11i/phantom-shared";
 import {
   type ProcessError,
@@ -24,7 +28,9 @@ export async function spawnProcess(
   return new Promise((resolve) => {
     const { command, args = [], options = {} } = config;
     const file =
-      process.platform === "win32" ? resolveWindowsCommandPath(command) : command;
+      process.platform === "win32"
+        ? resolveWindowsCommandPath(command)
+        : command;
 
     const childProcess: ChildProcess = nodeSpawn(file, args, {
       stdio: "inherit",

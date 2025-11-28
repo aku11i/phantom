@@ -264,8 +264,10 @@ describe("spawnProcess", () => {
 
   it("should resolve extensionless commands on Windows using where.exe", async () => {
     const mockChildProcess = new EventEmitter();
-    const originalPlatformDescriptor =
-      Object.getOwnPropertyDescriptor(process, "platform");
+    const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(
+      process,
+      "platform",
+    );
     spawnMock.mock.resetCalls();
     resolveWindowsCommandPathMock.mock.resetCalls();
     resolveWindowsCommandPathMock.mock.mockImplementation(() =>
@@ -308,8 +310,10 @@ describe("spawnProcess", () => {
 
   it("should resolve commands with extensions on Windows", async () => {
     const mockChildProcess = new EventEmitter();
-    const originalPlatformDescriptor =
-      Object.getOwnPropertyDescriptor(process, "platform");
+    const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(
+      process,
+      "platform",
+    );
     spawnMock.mock.resetCalls();
     resolveWindowsCommandPathMock.mock.resetCalls();
     resolveWindowsCommandPathMock.mock.mockImplementation((command) => command);
