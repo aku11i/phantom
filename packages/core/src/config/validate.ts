@@ -1,4 +1,4 @@
-import { type Result, err, ok } from "@aku11i/phantom-shared";
+import { err, ok, type Result } from "@aku11i/phantom-shared";
 import { z } from "zod";
 import type { PhantomConfig } from "./loader.ts";
 

@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { type Result, err, ok } from "@aku11i/phantom-shared";
+import { err, ok, type Result } from "@aku11i/phantom-shared";
 import type { z } from "zod";
 import {
   type ConfigValidationError,

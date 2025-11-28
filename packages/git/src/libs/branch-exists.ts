@@ -1,4 +1,4 @@
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import { err, ok, type Result } from "@aku11i/phantom-shared";
 import { executeGitCommand } from "../executor.ts";
 
 export async function branchExists(

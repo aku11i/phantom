@@ -14,7 +14,7 @@ _phantom_completion() {
 
     if [[ \${cword} -eq 1 ]]; then
         # Completing first argument (command)
-        COMPREPLY=( \$(compgen -W "\${commands}" -- "\${cur}") )
+        COMPREPLY=( $(compgen -W "\${commands}" -- "\${cur}") )
         return 0
     fi
 
@@ -38,7 +38,7 @@ _phantom_completion() {
                     ;;
                 *)
                     local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file --base"
-                    COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                    COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     return 0
                     ;;
             esac
@@ -60,7 +60,7 @@ _phantom_completion() {
                         return 0
                     else
                         local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file"
-                        COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                        COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                         return 0
                     fi
                     ;;
@@ -68,26 +68,26 @@ _phantom_completion() {
             ;;
         list)
             local opts="--fzf --names"
-            COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+            COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
             return 0
             ;;
         where)
             if [[ "\${cur}" == -* ]]; then
                 local opts="--fzf"
-                COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
             else
-                local worktrees=\$(_phantom_list_worktrees)
-                COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
+                local worktrees=$(_phantom_list_worktrees)
+                COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
             fi
             return 0
             ;;
         delete)
             if [[ "\${cur}" == -* ]]; then
                 local opts="--force --current --fzf"
-                COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
             else
-                local worktrees=\$(_phantom_list_worktrees)
-                COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
+                local worktrees=$(_phantom_list_worktrees)
+                COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
             fi
             return 0
             ;;
@@ -95,18 +95,18 @@ _phantom_completion() {
             case "\${prev}" in
                 --tmux|-t|--tmux-vertical|--tmux-horizontal)
                     # After tmux options, expect worktree name
-                    local worktrees=\$(_phantom_list_worktrees)
-                    COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
+                    local worktrees=$(_phantom_list_worktrees)
+                    COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
                     return 0
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
                         local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
-                        COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                        COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     elif [[ \${cword} -eq 2 ]] || [[ " \${words[@]} " =~ " --fzf " && \${cword} -eq 3 ]]; then
                         # First non-option argument should be worktree name
-                        local worktrees=\$(_phantom_list_worktrees)
-                        COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
+                        local worktrees=$(_phantom_list_worktrees)
+                        COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
                     else
                         # After worktree name, complete commands
                         compopt -o default
@@ -120,17 +120,17 @@ _phantom_completion() {
             case "\${prev}" in
                 --tmux|-t|--tmux-vertical|--tmux-horizontal)
                     # After tmux options, expect worktree name
-                    local worktrees=\$(_phantom_list_worktrees)
-                    COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
+                    local worktrees=$(_phantom_list_worktrees)
+                    COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
                     return 0
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
                         local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
-                        COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                        COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     else
-                        local worktrees=\$(_phantom_list_worktrees)
-                        COMPREPLY=( \$(compgen -W "\${worktrees}" -- "\${cur}") )
+                        local worktrees=$(_phantom_list_worktrees)
+                        COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
                     fi
                     return 0
                     ;;
@@ -138,14 +138,14 @@ _phantom_completion() {
             ;;
         completion)
             local shells="fish zsh bash"
-            COMPREPLY=( \$(compgen -W "\${shells}" -- "\${cur}") )
+            COMPREPLY=( $(compgen -W "\${shells}" -- "\${cur}") )
             return 0
             ;;
         github|gh)
             if [[ \${cword} -eq 2 ]]; then
                 # First argument after github/gh should be subcommand
                 local subcommands="checkout"
-                COMPREPLY=( \$(compgen -W "\${subcommands}" -- "\${cur}") )
+                COMPREPLY=( $(compgen -W "\${subcommands}" -- "\${cur}") )
                 return 0
             elif [[ \${words[2]} == "checkout" ]]; then
                 case "\${prev}" in
@@ -159,7 +159,7 @@ _phantom_completion() {
                             return 0
                         else
                             local opts="--base"
-                            COMPREPLY=( \$(compgen -W "\${opts}" -- "\${cur}") )
+                            COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                             return 0
                         fi
                         ;;
@@ -173,7 +173,7 @@ _phantom_completion() {
             ;;
         mcp)
             local actions="serve"
-            COMPREPLY=( \$(compgen -W "\${actions}" -- "\${cur}") )
+            COMPREPLY=( $(compgen -W "\${actions}" -- "\${cur}") )
             return 0
             ;;
         *)

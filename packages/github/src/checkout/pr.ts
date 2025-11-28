@@ -1,12 +1,10 @@
 import {
-  WorktreeAlreadyExistsError,
   attachWorktreeCore,
   createContext,
-  getWorktreePathFromDirectory,
   validateWorktreeExists,
 } from "@aku11i/phantom-core";
 import { fetch, getGitRoot, setUpstreamBranch } from "@aku11i/phantom-git";
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
 import type { GitHubPullRequest } from "../api/index.ts";
 
 export interface CheckoutResult {

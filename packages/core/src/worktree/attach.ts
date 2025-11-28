@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { attachWorktree, branchExists } from "@aku11i/phantom-git";
-import { type Result, err, isErr, ok } from "@aku11i/phantom-shared";
+import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import {
   BranchNotFoundError,
