@@ -1,5 +1,5 @@
-export * from "./executor.ts";
 export * from "./errors.ts";
+export * from "./executor.ts";
 export * from "./libs/add-worktree.ts";
 export * from "./libs/attach-worktree.ts";
 export * from "./libs/branch-exists.ts";

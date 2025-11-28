@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { addWorktree } from "@aku11i/phantom-git";
-import { type Result, err, isErr, isOk, ok } from "@aku11i/phantom-shared";
+import { err, isErr, isOk, ok, type Result } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import { type WorktreeAlreadyExistsError, WorktreeError } from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";

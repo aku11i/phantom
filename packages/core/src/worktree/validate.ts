@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { type Result, err, ok } from "@aku11i/phantom-shared";
+import { err, ok, type Result } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import { WorktreeAlreadyExistsError, WorktreeNotFoundError } from "./errors.ts";
 
@@ -58,7 +58,7 @@ export function validateWorktreeName(name: string): Result<void, Error> {
   }
 
   // Only allow alphanumeric, hyphen, underscore, dot, and slash
-  const validNamePattern = /^[a-zA-Z0-9\-_.\/]+$/;
+  const validNamePattern = /^[a-zA-Z0-9\-_./]+$/;
   if (!validNamePattern.test(name)) {
     return err(
       new Error(

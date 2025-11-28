@@ -1,5 +1,5 @@
-import { helpFormatter } from "../help.ts";
 import { githubHelp } from "../help/github.ts";
+import { helpFormatter } from "../help.ts";
 
 export async function githubHandler(args: string[]): Promise<void> {
   if (args.length === 0) {

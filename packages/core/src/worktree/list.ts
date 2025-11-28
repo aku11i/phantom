@@ -2,7 +2,7 @@ import {
   executeGitCommandInDirectory,
   listWorktrees as gitListWorktrees,
 } from "@aku11i/phantom-git";
-import { type Result, ok } from "@aku11i/phantom-shared";
+import { ok, type Result } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 
 export interface WorktreeInfo {

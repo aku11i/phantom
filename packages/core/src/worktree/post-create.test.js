@@ -1,4 +1,4 @@
-import { deepStrictEqual, rejects } from "node:assert";
+import { deepStrictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 import { err, ok } from "@aku11i/phantom-shared";
 
