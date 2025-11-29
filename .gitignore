@@ -10,3 +10,5 @@ packages/cli/dist/phantom
 packages/cli/dist/phantom.exe
 packages/cli/dist/phantom.js
 packages/cli/dist/phantom.js.map
+packages/cli/output/*
+!packages/cli/output/.keep

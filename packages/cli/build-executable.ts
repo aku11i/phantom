@@ -1,50 +1,112 @@
 import { spawn } from "node:child_process";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 
 const entryPoint = join("src", "bin", "phantom.ts");
-const outputPath = join("dist", "phantom");
+const distDir = "dist";
+const outputDir = "output";
+const binaryName = "phantom";
 const bunExecutable = "bun";
+const targets: {
+  bunTarget: string;
+  os: "linux" | "darwin" | "windows";
+  arch: "x64" | "arm64";
+}[] = [
+  { bunTarget: "bun-linux-x64", os: "linux", arch: "x64" },
+  { bunTarget: "bun-linux-arm64", os: "linux", arch: "arm64" },
+  { bunTarget: "bun-darwin-arm64", os: "darwin", arch: "arm64" },
+  { bunTarget: "bun-darwin-x64", os: "darwin", arch: "x64" },
+  { bunTarget: "bun-windows-x64", os: "windows", arch: "x64" },
+];
+const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
+  version?: string;
+};
+const version = packageJson.version ?? "dev";
 
-await mkdir("dist", { recursive: true });
+await mkdir(distDir, { recursive: true });
+await mkdir(outputDir, { recursive: true });
+const outputEntries = await readdir(outputDir);
+for (const entry of outputEntries) {
+  if (entry === ".keep") {
+    continue;
+  }
+  await rm(join(outputDir, entry), { recursive: true, force: true });
+}
 
-console.log(`Building phantom single executable with ${bunExecutable}...`);
+for (const target of targets) {
+  console.log(
+    `Building phantom single executable with ${bunExecutable} (${target.bunTarget})...`,
+  );
+  const binaryFileName =
+    target.os === "windows" ? `${binaryName}.exe` : binaryName;
+  const binaryPath = join(distDir, binaryFileName);
+  await runCommand(
+    bunExecutable,
+    [
+      "build",
+      entryPoint,
+      "--compile",
+      `--target=${target.bunTarget}`,
+      "--minify",
+      "--outfile",
+      binaryPath,
+    ],
+    `bun build for ${target.bunTarget}`,
+  );
+  console.log(
+    `Executable built at ${binaryPath} for ${target.os}/${target.arch}`,
+  );
 
-await new Promise<void>((resolve, reject) => {
-  const args = [
-    "build",
-    entryPoint,
-    "--compile",
-    "--target",
-    "bun",
-    "--minify",
-    "--outfile",
-    outputPath,
-  ];
-
-  const child = spawn(bunExecutable, args, { stdio: "inherit" });
-
-  child.on("error", (error) => {
-    reject(
-      new Error(
-        `Failed to start Bun. Ensure Bun is installed and on your PATH (${error.message}).`,
-      ),
+  const archiveExtension = target.os === "windows" ? "zip" : "tar.gz";
+  const archiveName = `phantom-${target.os}-${target.arch}-${version}.${archiveExtension}`;
+  const archivePath = join(outputDir, archiveName);
+  console.log(`Packing ${archiveName}...`);
+  if (target.os === "windows") {
+    await runCommand(
+      "zip",
+      ["-j", archivePath, join(distDir, binaryFileName)],
+      `zip packaging for ${target.bunTarget}`,
     );
+  } else {
+    await runCommand(
+      "tar",
+      ["-czf", archivePath, "-C", distDir, binaryFileName],
+      `tar packaging for ${target.bunTarget}`,
+    );
+  }
+  console.log(`Packaged ${archivePath}`);
+}
+
+async function runCommand(
+  command: string,
+  args: string[],
+  description: string,
+): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(command, args, { stdio: "inherit" });
+
+    child.on("error", (error) => {
+      reject(
+        new Error(
+          `Failed to start ${command} for ${description} (${error.message}).`,
+        ),
+      );
+    });
+
+    child.on("exit", (code, signal) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      if (code === null) {
+        reject(
+          new Error(`${description} terminated by signal ${signal ?? "unknown"}`),
+        );
+        return;
+      }
+
+      reject(new Error(`${description} exited with code ${code}`));
+    });
   });
-
-  child.on("exit", (code, signal) => {
-    if (code === 0) {
-      resolve();
-      return;
-    }
-
-    if (code === null) {
-      reject(new Error(`bun build terminated by signal ${signal ?? "unknown"}`));
-      return;
-    }
-
-    reject(new Error(`bun build exited with code ${code}`));
-  });
-});
-
-console.log(`Executable built at ${outputPath}`);
+}
