@@ -68,7 +68,7 @@ describe("validateWorktreeExists", () => {
         worktrees: [
           {
             name: "my-feature-branch",
-            directoryName: "my-feature",
+            relativePath: "my-feature",
             path: "/test/repo/.git/phantom/worktrees/my-feature",
           },
         ],
@@ -173,7 +173,7 @@ describe("validateWorktreeDoesNotExist", () => {
         worktrees: [
           {
             name: "existing-feature",
-            directoryName: "existing-feature",
+            relativePath: "existing-feature",
             path: "/test/repo/.git/phantom/worktrees/existing-feature",
           },
         ],

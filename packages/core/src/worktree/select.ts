@@ -28,7 +28,7 @@ export async function selectWorktreeWithFzf(
   }
 
   const list = worktrees.map((wt) => {
-    const directoryInfo = wt.directoryName ? `[${wt.directoryName}]` : "";
+    const directoryInfo = wt.relativePath ? `[${wt.relativePath}]` : "";
     const status = !wt.isClean ? " [dirty]" : "";
     return `${wt.name} ${directoryInfo}${status}`.trim();
   });

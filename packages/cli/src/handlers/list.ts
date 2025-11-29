@@ -68,12 +68,12 @@ export async function listHandler(args: string[] = []): Promise<void> {
       } else {
         const maxNameLength = Math.max(...worktrees.map((wt) => wt.name.length));
         const maxDirectoryLength = Math.max(
-          ...worktrees.map((wt) => wt.directoryName.length),
+          ...worktrees.map((wt) => wt.relativePath.length),
         );
 
         for (const worktree of worktrees) {
           const paddedName = worktree.name.padEnd(maxNameLength);
-          const paddedDirectory = worktree.directoryName.padEnd(
+          const paddedDirectory = worktree.relativePath.padEnd(
             maxDirectoryLength,
           );
           const directoryInfo = paddedDirectory ? `[${paddedDirectory}]` : "";

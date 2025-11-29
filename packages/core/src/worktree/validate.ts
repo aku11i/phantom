@@ -20,7 +20,7 @@ export async function validateWorktreeExists(
   try {
     const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
     const matchedWorktree = worktreesResult.value.worktrees.find(
-      (wt) => wt.name === name || wt.directoryName === name,
+      (wt) => wt.name === name || wt.relativePath === name,
     );
 
     if (matchedWorktree) {
@@ -50,7 +50,7 @@ export async function validateWorktreeDoesNotExist(
   try {
     const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
     const matchedWorktree = worktreesResult.value.worktrees.find(
-      (wt) => wt.name === name || wt.directoryName === name,
+      (wt) => wt.name === name || wt.relativePath === name,
     );
 
     if (matchedWorktree) {

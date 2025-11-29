@@ -8,7 +8,7 @@ import { getWorktreePathFromDirectory } from "../paths.ts";
 
 export interface WorktreeInfo {
   name: string;
-  directoryName: string;
+  relativePath: string;
   path: string;
   branch: string;
   isClean: boolean;
@@ -52,7 +52,7 @@ export async function getWorktreeInfo(
   name: string,
 ): Promise<WorktreeInfo> {
   const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
-  const directoryName = path.relative(process.cwd(), worktreePath) || ".";
+  const relativePath = path.relative(process.cwd(), worktreePath) || ".";
 
   const [branch, isClean] = await Promise.all([
     getWorktreeBranch(worktreePath),
@@ -61,7 +61,7 @@ export async function getWorktreeInfo(
 
   return {
     name: branch,
-    directoryName,
+    relativePath,
     path: worktreePath,
     branch,
     isClean,
@@ -88,14 +88,14 @@ export async function listWorktrees(
 
     const worktrees = await Promise.all(
       phantomWorktrees.map(async (gitWorktree) => {
-        const directoryName =
+        const relativePath =
           path.relative(process.cwd(), gitWorktree.path) || ".";
         const branch = gitWorktree.branch || "(detached HEAD)";
         const isClean = await getWorktreeStatus(gitWorktree.path);
 
         return {
           name: branch,
-          directoryName,
+          relativePath,
           path: gitWorktree.path,
           branch,
           isClean,
