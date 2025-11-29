@@ -9,13 +9,15 @@ const distDir = "dist";
 const outputDir = "output";
 const binaryName = "phantom";
 const bunExecutable = "bun";
-const targets: {
+type Target = {
   bunTarget: string;
   os: "linux" | "darwin" | "windows";
   arch: "x64" | "arm64";
   binaryFileName: string;
   archiveExtension: "tar.gz" | "zip";
-}[] = [
+};
+
+const targets: Target[] = [
   {
     bunTarget: "bun-linux-x64",
     os: "linux",
@@ -68,6 +70,19 @@ for (const entry of outputEntries) {
 }
 
 for (const target of targets) {
+  const binaryPath = await compile(target);
+  const archiveName = `phantom-${target.os}-${target.arch}-${version}.${target.archiveExtension}`;
+  const archivePath = join(outputDir, archiveName);
+  console.log(`Packing ${archiveName}...`);
+  if (target.archiveExtension === "zip") {
+    await zip(archivePath, join(distDir, target.binaryFileName));
+  } else {
+    await tarGz(archivePath, distDir, target.binaryFileName);
+  }
+  console.log(`Packaged ${archivePath}`);
+}
+
+async function compile(target: Target): Promise<string> {
   console.log(
     `Building phantom single executable with ${bunExecutable} (${target.bunTarget})...`,
   );
@@ -88,22 +103,23 @@ for (const target of targets) {
   console.log(
     `Executable built at ${binaryPath} for ${target.os}/${target.arch}`,
   );
+  return binaryPath;
+}
 
-  const archiveName = `phantom-${target.os}-${target.arch}-${version}.${target.archiveExtension}`;
-  const archivePath = join(outputDir, archiveName);
-  console.log(`Packing ${archiveName}...`);
-  if (target.archiveExtension === "zip") {
-    await execFileAsync(
-      "zip",
-      ["-j", archivePath, join(distDir, target.binaryFileName)],
-      { stdio: "inherit" },
-    );
-  } else {
-    await execFileAsync(
-      "tar",
-      ["-czf", archivePath, "-C", distDir, target.binaryFileName],
-      { stdio: "inherit" },
-    );
-  }
-  console.log(`Packaged ${archivePath}`);
+async function tarGz(
+  archivePath: string,
+  sourceDir: string,
+  fileName: string,
+): Promise<void> {
+  await execFileAsync(
+    "tar",
+    ["-czf", archivePath, "-C", sourceDir, fileName],
+    { stdio: "inherit" },
+  );
+}
+
+async function zip(archivePath: string, filePath: string): Promise<void> {
+  await execFileAsync("zip", ["-j", archivePath, filePath], {
+    stdio: "inherit",
+  });
 }
