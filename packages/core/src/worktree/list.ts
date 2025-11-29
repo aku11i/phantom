@@ -1,3 +1,4 @@
+import path from "node:path";
 import {
   executeGitCommandInDirectory,
   listWorktrees as gitListWorktrees,
@@ -51,6 +52,7 @@ export async function getWorktreeInfo(
   name: string,
 ): Promise<WorktreeInfo> {
   const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
+  const directoryName = path.relative(process.cwd(), worktreePath) || ".";
 
   const [branch, isClean] = await Promise.all([
     getWorktreeBranch(worktreePath),
@@ -59,7 +61,7 @@ export async function getWorktreeInfo(
 
   return {
     name: branch,
-    directoryName: name,
+    directoryName,
     path: worktreePath,
     branch,
     isClean,
@@ -86,9 +88,8 @@ export async function listWorktrees(
 
     const worktrees = await Promise.all(
       phantomWorktrees.map(async (gitWorktree) => {
-        const directoryName = gitWorktree.path.substring(
-          worktreeDirectory.length + 1,
-        );
+        const directoryName =
+          path.relative(process.cwd(), gitWorktree.path) || ".";
         const branch = gitWorktree.branch || "(detached HEAD)";
         const isClean = await getWorktreeStatus(gitWorktree.path);
 

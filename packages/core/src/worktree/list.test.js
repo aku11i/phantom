@@ -38,6 +38,7 @@ const { listWorktrees } = await import("./list.ts");
 
 describe("listWorktrees", () => {
   it("should return empty array when no phantom worktrees exist", async () => {
+    const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -60,10 +61,12 @@ describe("listWorktrees", () => {
       deepStrictEqual(result.value.message, "No worktrees found");
     }
 
+    cwdMock.mock.restore();
     execFileMock.mock.resetCalls();
   });
 
   it("should list worktrees with clean status", async () => {
+    const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -97,14 +100,14 @@ branch refs/heads/feature-2
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          directoryName: "feature-1",
+          directoryName: ".git/phantom/worktrees/feature-1",
           name: "feature-1",
           path: "/test/repo/.git/phantom/worktrees/feature-1",
           branch: "feature-1",
           isClean: true,
         },
         {
-          directoryName: "feature-2",
+          directoryName: ".git/phantom/worktrees/feature-2",
           name: "feature-2",
           path: "/test/repo/.git/phantom/worktrees/feature-2",
           branch: "feature-2",
@@ -113,10 +116,12 @@ branch refs/heads/feature-2
       ]);
     }
 
+    cwdMock.mock.restore();
     execFileMock.mock.resetCalls();
   });
 
   it("should handle worktrees with dirty status", async () => {
+    const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -146,7 +151,7 @@ branch refs/heads/dirty-feature
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          directoryName: "dirty-feature",
+          directoryName: ".git/phantom/worktrees/dirty-feature",
           name: "dirty-feature",
           path: "/test/repo/.git/phantom/worktrees/dirty-feature",
           branch: "dirty-feature",
@@ -155,10 +160,12 @@ branch refs/heads/dirty-feature
       ]);
     }
 
+    cwdMock.mock.restore();
     execFileMock.mock.resetCalls();
   });
 
   it("should handle detached HEAD state", async () => {
+    const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -189,7 +196,7 @@ detached
       deepStrictEqual(result.value.worktrees, [
         {
           name: "(detached HEAD)",
-          directoryName: "detached",
+          directoryName: ".git/phantom/worktrees/detached",
           path: "/test/repo/.git/phantom/worktrees/detached",
           branch: "(detached HEAD)",
           isClean: true,
@@ -197,10 +204,12 @@ detached
       ]);
     }
 
+    cwdMock.mock.restore();
     execFileMock.mock.resetCalls();
   });
 
   it("should filter out non-phantom worktrees", async () => {
+    const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -234,7 +243,7 @@ branch refs/heads/other-feature
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          directoryName: "phantom-feature",
+          directoryName: ".git/phantom/worktrees/phantom-feature",
           name: "phantom-feature",
           path: "/test/repo/.git/phantom/worktrees/phantom-feature",
           branch: "phantom-feature",
@@ -243,6 +252,7 @@ branch refs/heads/other-feature
       ]);
     }
 
+    cwdMock.mock.restore();
     execFileMock.mock.resetCalls();
   });
 });

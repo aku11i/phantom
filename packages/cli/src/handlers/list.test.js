@@ -90,14 +90,14 @@ describe("listHandler", () => {
           worktrees: [
             {
               name: "feature-1",
-              directoryName: "feature-1",
+              directoryName: ".git/phantom/worktrees/feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
-              directoryName: "feature-2",
+              directoryName: ".git/phantom/worktrees/feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
@@ -119,11 +119,11 @@ describe("listHandler", () => {
     strictEqual(consoleLogMock.mock.calls.length, 2);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
-      "feature-1  [feature-1]",
+      "feature-1  [.git/phantom/worktrees/feature-1]",
     );
     strictEqual(
       consoleLogMock.mock.calls[1].arguments[0],
-      "feature-2  [feature-2] [dirty]",
+      "feature-2  [.git/phantom/worktrees/feature-2] [dirty]",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
@@ -137,21 +137,21 @@ describe("listHandler", () => {
           worktrees: [
             {
               name: "feature-1",
-              directoryName: "feature-1",
+              directoryName: ".git/phantom/worktrees/feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
-              directoryName: "feature-2",
+              directoryName: ".git/phantom/worktrees/feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
             },
             {
               name: "bugfix-3",
-              directoryName: "bugfix-3",
+              directoryName: ".git/phantom/worktrees/bugfix-3",
               path: "/test/repo/.git/phantom/worktrees/bugfix-3",
               branch: "bugfix-3",
               isClean: true,
