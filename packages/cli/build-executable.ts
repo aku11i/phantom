@@ -11,12 +11,44 @@ const targets: {
   bunTarget: string;
   os: "linux" | "darwin" | "windows";
   arch: "x64" | "arm64";
+  binaryFileName: string;
+  archiveExtension: "tar.gz" | "zip";
 }[] = [
-  { bunTarget: "bun-linux-x64", os: "linux", arch: "x64" },
-  { bunTarget: "bun-linux-arm64", os: "linux", arch: "arm64" },
-  { bunTarget: "bun-darwin-arm64", os: "darwin", arch: "arm64" },
-  { bunTarget: "bun-darwin-x64", os: "darwin", arch: "x64" },
-  { bunTarget: "bun-windows-x64", os: "windows", arch: "x64" },
+  {
+    bunTarget: "bun-linux-x64",
+    os: "linux",
+    arch: "x64",
+    binaryFileName: binaryName,
+    archiveExtension: "tar.gz",
+  },
+  {
+    bunTarget: "bun-linux-arm64",
+    os: "linux",
+    arch: "arm64",
+    binaryFileName: binaryName,
+    archiveExtension: "tar.gz",
+  },
+  {
+    bunTarget: "bun-darwin-arm64",
+    os: "darwin",
+    arch: "arm64",
+    binaryFileName: binaryName,
+    archiveExtension: "tar.gz",
+  },
+  {
+    bunTarget: "bun-darwin-x64",
+    os: "darwin",
+    arch: "x64",
+    binaryFileName: binaryName,
+    archiveExtension: "tar.gz",
+  },
+  {
+    bunTarget: "bun-windows-x64",
+    os: "windows",
+    arch: "x64",
+    binaryFileName: `${binaryName}.exe`,
+    archiveExtension: "zip",
+  },
 ];
 const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
   version?: string;
@@ -37,9 +69,7 @@ for (const target of targets) {
   console.log(
     `Building phantom single executable with ${bunExecutable} (${target.bunTarget})...`,
   );
-  const binaryFileName =
-    target.os === "windows" ? `${binaryName}.exe` : binaryName;
-  const binaryPath = join(distDir, binaryFileName);
+  const binaryPath = join(distDir, target.binaryFileName);
   await runCommand(
     bunExecutable,
     [
@@ -57,20 +87,19 @@ for (const target of targets) {
     `Executable built at ${binaryPath} for ${target.os}/${target.arch}`,
   );
 
-  const archiveExtension = target.os === "windows" ? "zip" : "tar.gz";
-  const archiveName = `phantom-${target.os}-${target.arch}-${version}.${archiveExtension}`;
+  const archiveName = `phantom-${target.os}-${target.arch}-${version}.${target.archiveExtension}`;
   const archivePath = join(outputDir, archiveName);
   console.log(`Packing ${archiveName}...`);
-  if (target.os === "windows") {
+  if (target.archiveExtension === "zip") {
     await runCommand(
       "zip",
-      ["-j", archivePath, join(distDir, binaryFileName)],
+      ["-j", archivePath, join(distDir, target.binaryFileName)],
       `zip packaging for ${target.bunTarget}`,
     );
   } else {
     await runCommand(
       "tar",
-      ["-czf", archivePath, "-C", distDir, binaryFileName],
+      ["-czf", archivePath, "-C", distDir, target.binaryFileName],
       `tar packaging for ${target.bunTarget}`,
     );
   }
