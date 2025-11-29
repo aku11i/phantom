@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, readdir, rm } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
 
@@ -61,13 +61,6 @@ const version = packageJson.version ?? "dev";
 
 await mkdir(distDir, { recursive: true });
 await mkdir(outputDir, { recursive: true });
-const outputEntries = await readdir(outputDir);
-for (const entry of outputEntries) {
-  if (entry === ".keep") {
-    continue;
-  }
-  await rm(join(outputDir, entry), { recursive: true, force: true });
-}
 
 for (const target of targets) {
   const binaryPath = await compile(target);
