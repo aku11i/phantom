@@ -1,3 +1,4 @@
+import path from "node:path";
 import { parseArgs } from "node:util";
 import {
   createContext,
@@ -66,12 +67,19 @@ export async function listHandler(args: string[] = []): Promise<void> {
           output.log(worktree.name);
         }
       } else {
-        const maxNameLength = Math.max(...worktrees.map((wt) => wt.name.length));
+        const worktreesWithRelativePaths = worktrees.map((worktree) => ({
+          ...worktree,
+          relativePath: path.relative(process.cwd(), worktree.path) || ".",
+        }));
+
+        const maxNameLength = Math.max(
+          ...worktreesWithRelativePaths.map((wt) => wt.name.length),
+        );
         const maxDirectoryLength = Math.max(
-          ...worktrees.map((wt) => wt.relativePath.length),
+          ...worktreesWithRelativePaths.map((wt) => wt.relativePath.length),
         );
 
-        for (const worktree of worktrees) {
+        for (const worktree of worktreesWithRelativePaths) {
           const paddedName = worktree.name.padEnd(maxNameLength);
           const paddedDirectory = worktree.relativePath.padEnd(
             maxDirectoryLength,

@@ -37,7 +37,7 @@ mock.module("../paths.ts", {
 const { listWorktrees } = await import("./list.ts");
 
 describe("listWorktrees", () => {
-  it("should return empty array when no phantom worktrees exist", async () => {
+  it("should list all git worktrees", async () => {
     const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
@@ -57,8 +57,15 @@ describe("listWorktrees", () => {
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, []);
-      deepStrictEqual(result.value.message, "No worktrees found");
+      deepStrictEqual(result.value.worktrees, [
+        {
+          name: "main",
+          path: "/test/repo",
+          branch: "main",
+          isClean: true,
+        },
+      ]);
+      deepStrictEqual(result.value.message, undefined);
     }
 
     cwdMock.mock.restore();
@@ -100,14 +107,18 @@ branch refs/heads/feature-2
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          relativePath: ".git/phantom/worktrees/feature-1",
+          name: "main",
+          path: "/test/repo",
+          branch: "main",
+          isClean: true,
+        },
+        {
           name: "feature-1",
           path: "/test/repo/.git/phantom/worktrees/feature-1",
           branch: "feature-1",
           isClean: true,
         },
         {
-          relativePath: ".git/phantom/worktrees/feature-2",
           name: "feature-2",
           path: "/test/repo/.git/phantom/worktrees/feature-2",
           branch: "feature-2",
@@ -122,6 +133,7 @@ branch refs/heads/feature-2
 
   it("should handle worktrees with dirty status", async () => {
     const cwdMock = mock.method(process, "cwd", () => "/test/repo");
+    let statusCallCount = 0;
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -137,6 +149,11 @@ branch refs/heads/dirty-feature
         });
       }
       if (_args.includes("status") && _args.includes("--porcelain")) {
+        statusCallCount += 1;
+        if (statusCallCount === 1) {
+          return Promise.resolve({ stdout: "", stderr: "" });
+        }
+
         return Promise.resolve({ stdout: "M file.txt\n", stderr: "" });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
@@ -151,7 +168,12 @@ branch refs/heads/dirty-feature
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          relativePath: ".git/phantom/worktrees/dirty-feature",
+          name: "main",
+          path: "/test/repo",
+          branch: "main",
+          isClean: true,
+        },
+        {
           name: "dirty-feature",
           path: "/test/repo/.git/phantom/worktrees/dirty-feature",
           branch: "dirty-feature",
@@ -195,8 +217,13 @@ detached
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
+          name: "main",
+          path: "/test/repo",
+          branch: "main",
+          isClean: true,
+        },
+        {
           name: "(detached HEAD)",
-          relativePath: ".git/phantom/worktrees/detached",
           path: "/test/repo/.git/phantom/worktrees/detached",
           branch: "(detached HEAD)",
           isClean: true,
@@ -208,7 +235,7 @@ detached
     execFileMock.mock.resetCalls();
   });
 
-  it("should filter out non-phantom worktrees", async () => {
+  it("should include all git worktrees", async () => {
     const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
@@ -243,10 +270,21 @@ branch refs/heads/other-feature
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          relativePath: ".git/phantom/worktrees/phantom-feature",
+          name: "main",
+          path: "/test/repo",
+          branch: "main",
+          isClean: true,
+        },
+        {
           name: "phantom-feature",
           path: "/test/repo/.git/phantom/worktrees/phantom-feature",
           branch: "phantom-feature",
+          isClean: true,
+        },
+        {
+          name: "other-feature",
+          path: "/test/repo/other-worktree",
+          branch: "other-feature",
           isClean: true,
         },
       ]);

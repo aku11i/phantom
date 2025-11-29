@@ -1,14 +1,11 @@
-import path from "node:path";
 import {
   executeGitCommandInDirectory,
   listWorktrees as gitListWorktrees,
 } from "@aku11i/phantom-git";
 import { ok, type Result } from "@aku11i/phantom-shared";
-import { getWorktreePathFromDirectory } from "../paths.ts";
 
 export interface WorktreeInfo {
   name: string;
-  relativePath: string;
   path: string;
   branch: string;
   isClean: boolean;
@@ -51,8 +48,7 @@ export async function getWorktreeInfo(
   worktreeDirectory: string,
   name: string,
 ): Promise<WorktreeInfo> {
-  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
-  const relativePath = path.relative(process.cwd(), worktreePath) || ".";
+  const worktreePath = `${worktreeDirectory}/${name}`;
 
   const [branch, isClean] = await Promise.all([
     getWorktreeBranch(worktreePath),
@@ -61,7 +57,6 @@ export async function getWorktreeInfo(
 
   return {
     name: branch,
-    relativePath,
     path: worktreePath,
     branch,
     isClean,
@@ -75,11 +70,7 @@ export async function listWorktrees(
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
 
-    const phantomWorktrees = gitWorktrees.filter((worktree) =>
-      worktree.path.startsWith(worktreeDirectory),
-    );
-
-    if (phantomWorktrees.length === 0) {
+    if (gitWorktrees.length === 0) {
       return ok({
         worktrees: [],
         message: "No worktrees found",
@@ -87,15 +78,12 @@ export async function listWorktrees(
     }
 
     const worktrees = await Promise.all(
-      phantomWorktrees.map(async (gitWorktree) => {
-        const relativePath =
-          path.relative(process.cwd(), gitWorktree.path) || ".";
+      gitWorktrees.map(async (gitWorktree) => {
         const branch = gitWorktree.branch || "(detached HEAD)";
         const isClean = await getWorktreeStatus(gitWorktree.path);
 
         return {
           name: branch,
-          relativePath,
           path: gitWorktree.path,
           branch,
           isClean,

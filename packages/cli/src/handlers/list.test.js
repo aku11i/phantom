@@ -80,6 +80,7 @@ describe("listHandler", () => {
 
   it("should list worktrees in default format", async () => {
     resetMocks();
+    const cwdMock = mock.method(process, "cwd", () => "/test/repo");
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
     loadConfigMock.mock.mockImplementation(() =>
       Promise.resolve(err(new Error("Config not found"))),
@@ -90,14 +91,12 @@ describe("listHandler", () => {
           worktrees: [
             {
               name: "feature-1",
-              relativePath: ".git/phantom/worktrees/feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
-              relativePath: ".git/phantom/worktrees/feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
@@ -126,6 +125,7 @@ describe("listHandler", () => {
       "feature-2  [.git/phantom/worktrees/feature-2] [dirty]",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+    cwdMock.mock.restore();
   });
 
   it("should list only worktree names with --names option", async () => {
@@ -137,21 +137,18 @@ describe("listHandler", () => {
           worktrees: [
             {
               name: "feature-1",
-              relativePath: ".git/phantom/worktrees/feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
-              relativePath: ".git/phantom/worktrees/feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
             },
             {
               name: "bugfix-3",
-              relativePath: ".git/phantom/worktrees/bugfix-3",
               path: "/test/repo/.git/phantom/worktrees/bugfix-3",
               branch: "bugfix-3",
               isClean: true,

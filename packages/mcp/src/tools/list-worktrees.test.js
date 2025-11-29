@@ -61,7 +61,6 @@ describe("listWorktreesTool", () => {
     const mockWorktrees = [
       {
         name: "main",
-        relativePath: ".",
         path: "/path/to/repo",
         branch: "main",
         isClean: true,
@@ -69,7 +68,6 @@ describe("listWorktreesTool", () => {
       },
       {
         name: "feature-1",
-        relativePath: ".git/phantom/worktrees/feature-1",
         path: "/path/to/repo/.git/phantom/worktrees/feature-1",
         branch: "feature-1",
         isClean: false,
@@ -77,7 +75,6 @@ describe("listWorktreesTool", () => {
       },
       {
         name: "hotfix-1",
-        relativePath: ".git/phantom/worktrees/hotfix-1",
         path: "/path/to/repo/.git/phantom/worktrees/hotfix-1",
         branch: "hotfix-1",
         isClean: true,

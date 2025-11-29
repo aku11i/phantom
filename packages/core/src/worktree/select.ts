@@ -1,3 +1,4 @@
+import path from "node:path";
 import { selectWithFzf } from "@aku11i/phantom-process";
 import { isErr, type Result } from "@aku11i/phantom-shared";
 import { listWorktrees } from "./list.ts";
@@ -28,7 +29,8 @@ export async function selectWorktreeWithFzf(
   }
 
   const list = worktrees.map((wt) => {
-    const directoryInfo = wt.relativePath ? `[${wt.relativePath}]` : "";
+    const relativePath = path.relative(process.cwd(), wt.path) || ".";
+    const directoryInfo = relativePath ? `[${relativePath}]` : "";
     const status = !wt.isClean ? " [dirty]" : "";
     return `${wt.name} ${directoryInfo}${status}`.trim();
   });

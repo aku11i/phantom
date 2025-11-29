@@ -1,3 +1,4 @@
+import path from "node:path";
 import fs from "node:fs/promises";
 import { err, ok, type Result } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
@@ -20,7 +21,7 @@ export async function validateWorktreeExists(
   try {
     const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
     const matchedWorktree = worktreesResult.value.worktrees.find(
-      (wt) => wt.name === name || wt.relativePath === name,
+      (wt) => matchesWorktreeName(wt.path, wt.name, worktreeDirectory, name),
     );
 
     if (matchedWorktree) {
@@ -50,7 +51,7 @@ export async function validateWorktreeDoesNotExist(
   try {
     const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
     const matchedWorktree = worktreesResult.value.worktrees.find(
-      (wt) => wt.name === name || wt.relativePath === name,
+      (wt) => matchesWorktreeName(wt.path, wt.name, worktreeDirectory, name),
     );
 
     if (matchedWorktree) {
@@ -101,4 +102,23 @@ export function validateWorktreeName(name: string): Result<void, Error> {
   }
 
   return ok(undefined);
+}
+
+function matchesWorktreeName(
+  worktreePath: string,
+  branchName: string,
+  worktreeDirectory: string,
+  inputName: string,
+): boolean {
+  if (branchName === inputName) {
+    return true;
+  }
+
+  const relativeToDirectory = path.relative(worktreeDirectory, worktreePath);
+  if (relativeToDirectory === inputName && !relativeToDirectory.startsWith("..")) {
+    return true;
+  }
+
+  const relativeToCwd = path.relative(process.cwd(), worktreePath) || ".";
+  return relativeToCwd === inputName;
 }
