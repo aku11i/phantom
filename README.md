@@ -47,6 +47,19 @@ brew install aku11i/tap/phantom
 npm install -g @aku11i/phantom
 ```
 
+### Single-file executable (Bun)
+
+You can bundle Phantom into a standalone binary with [Bun's executable bundler](https://bun.sh/docs/bundler/executables).
+
+```bash
+# Requires Bun installed locally
+pnpm install
+pnpm build:executable
+./packages/cli/dist/phantom --help
+```
+
+The script compiles `src/bin/phantom.ts` with `bun build --compile --target bun`, embedding the Bun runtime so the resulting `packages/cli/dist/phantom` binary runs without a Node.js installation. You can cross-compile for other OS/architecture targets via Bun's `--target` flag (e.g., `bun build --compile --target bun-windows-x64`).
+
 ## 🤔 Why Phantom?
 
 Git worktrees are powerful but require manual management of paths and branches. Also, navigating between multiple worktrees is cumbersome. Phantom eliminates these problems:
