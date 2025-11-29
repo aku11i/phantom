@@ -54,7 +54,7 @@ You can bundle Phantom into a standalone binary with [Bun's executable bundler](
 ```bash
 # Requires Bun installed locally
 pnpm install
-pnpm build:executable
+pnpm compile
 ./packages/cli/dist/phantom --help
 ```
 
