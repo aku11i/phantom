@@ -1,7 +1,9 @@
-import { spawn } from "node:child_process";
+import { execFile } from "node:child_process";
 import { mkdir, readFile, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
+import { promisify } from "node:util";
 
+const execFileAsync = promisify(execFile);
 const entryPoint = join("src", "bin", "phantom.ts");
 const distDir = "dist";
 const outputDir = "output";
@@ -70,7 +72,7 @@ for (const target of targets) {
     `Building phantom single executable with ${bunExecutable} (${target.bunTarget})...`,
   );
   const binaryPath = join(distDir, target.binaryFileName);
-  await runCommand(
+  await execFileAsync(
     bunExecutable,
     [
       "build",
@@ -81,7 +83,7 @@ for (const target of targets) {
       "--outfile",
       binaryPath,
     ],
-    `bun build for ${target.bunTarget}`,
+    { stdio: "inherit" },
   );
   console.log(
     `Executable built at ${binaryPath} for ${target.os}/${target.arch}`,
@@ -91,51 +93,17 @@ for (const target of targets) {
   const archivePath = join(outputDir, archiveName);
   console.log(`Packing ${archiveName}...`);
   if (target.archiveExtension === "zip") {
-    await runCommand(
+    await execFileAsync(
       "zip",
       ["-j", archivePath, join(distDir, target.binaryFileName)],
-      `zip packaging for ${target.bunTarget}`,
+      { stdio: "inherit" },
     );
   } else {
-    await runCommand(
+    await execFileAsync(
       "tar",
       ["-czf", archivePath, "-C", distDir, target.binaryFileName],
-      `tar packaging for ${target.bunTarget}`,
+      { stdio: "inherit" },
     );
   }
   console.log(`Packaged ${archivePath}`);
-}
-
-async function runCommand(
-  command: string,
-  args: string[],
-  description: string,
-): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    const child = spawn(command, args, { stdio: "inherit" });
-
-    child.on("error", (error) => {
-      reject(
-        new Error(
-          `Failed to start ${command} for ${description} (${error.message}).`,
-        ),
-      );
-    });
-
-    child.on("exit", (code, signal) => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      if (code === null) {
-        reject(
-          new Error(`${description} terminated by signal ${signal ?? "unknown"}`),
-        );
-        return;
-      }
-
-      reject(new Error(`${description} exited with code ${code}`));
-    });
-  });
 }
