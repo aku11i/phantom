@@ -3,3 +3,5 @@ dist/*
 !dist/package.json
 !dist/README.md
 !dist/LICENSE
+output/*
+!output/.gitkeep
