@@ -24,6 +24,7 @@ const getWorktreePathMock = mock.fn((gitRoot, name, worktreesDirectory) => {
 const getWorktreePathFromDirectoryMock = mock.fn((worktreeDirectory, name) => {
   return `${worktreeDirectory}/${name}`;
 });
+const listWorktreesMock = mock.fn();
 
 mock.module("node:fs/promises", {
   namedExports: {
@@ -39,6 +40,12 @@ mock.module("../paths.ts", {
   },
 });
 
+mock.module("./list.ts", {
+  namedExports: {
+    listWorktrees: listWorktreesMock,
+  },
+});
+
 const { validateWorktreeExists, validateWorktreeDoesNotExist } = await import(
   "./validate.ts"
 );
@@ -50,16 +57,28 @@ describe("validateWorktreeExists", () => {
     getWorktreesDirectoryMock.mock.resetCalls();
     getWorktreePathMock.mock.resetCalls();
     getWorktreePathFromDirectoryMock.mock.resetCalls();
+    listWorktreesMock.mock.resetCalls();
   };
 
   it("should return ok when worktree directory exists", async () => {
     resetMocks();
-    accessMock.mock.mockImplementation(() => Promise.resolve());
+    listWorktreesMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        worktrees: [
+          {
+            name: "my-feature-branch",
+            directoryName: "my-feature",
+            path: "/test/repo/.git/phantom/worktrees/my-feature",
+          },
+        ],
+      },
+    }));
 
     const result = await validateWorktreeExists(
       "/test/repo",
       "/test/repo/.git/phantom/worktrees",
-      "my-feature",
+      "my-feature-branch",
     );
 
     deepStrictEqual(isOk(result), true);
@@ -70,6 +89,12 @@ describe("validateWorktreeExists", () => {
 
   it("should return err when worktree directory does not exist", async () => {
     resetMocks();
+    listWorktreesMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        worktrees: [],
+      },
+    }));
     accessMock.mock.mockImplementation(() =>
       Promise.reject(new Error("ENOENT")),
     );
@@ -86,6 +111,12 @@ describe("validateWorktreeExists", () => {
 
   it("should return err when phantom directory does not exist", async () => {
     resetMocks();
+    listWorktreesMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        worktrees: [],
+      },
+    }));
     accessMock.mock.mockImplementation(() =>
       Promise.reject(new Error("ENOENT")),
     );
@@ -107,10 +138,17 @@ describe("validateWorktreeDoesNotExist", () => {
     getWorktreesDirectoryMock.mock.resetCalls();
     getWorktreePathMock.mock.resetCalls();
     getWorktreePathFromDirectoryMock.mock.resetCalls();
+    listWorktreesMock.mock.resetCalls();
   };
 
   it("should return ok when worktree does not exist", async () => {
     resetMocks();
+    listWorktreesMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        worktrees: [],
+      },
+    }));
     accessMock.mock.mockImplementation(() =>
       Promise.reject(new Error("ENOENT")),
     );
@@ -129,7 +167,18 @@ describe("validateWorktreeDoesNotExist", () => {
 
   it("should return err when worktree already exists", async () => {
     resetMocks();
-    accessMock.mock.mockImplementation(() => Promise.resolve());
+    listWorktreesMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        worktrees: [
+          {
+            name: "existing-feature",
+            directoryName: "existing-feature",
+            path: "/test/repo/.git/phantom/worktrees/existing-feature",
+          },
+        ],
+      },
+    }));
 
     const result = await validateWorktreeDoesNotExist(
       "/test/repo",
@@ -146,6 +195,12 @@ describe("validateWorktreeDoesNotExist", () => {
 
   it("should handle phantom directory not existing", async () => {
     resetMocks();
+    listWorktreesMock.mock.mockImplementation(async () => ({
+      ok: true,
+      value: {
+        worktrees: [],
+      },
+    }));
     accessMock.mock.mockImplementation(() =>
       Promise.reject(new Error("ENOENT")),
     );

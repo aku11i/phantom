@@ -28,9 +28,9 @@ export async function selectWorktreeWithFzf(
   }
 
   const list = worktrees.map((wt) => {
-    const branchInfo = wt.branch ? `(${wt.branch})` : "";
+    const directoryInfo = wt.directoryName ? `[${wt.directoryName}]` : "";
     const status = !wt.isClean ? " [dirty]" : "";
-    return `${wt.name} ${branchInfo}${status}`;
+    return `${wt.name} ${directoryInfo}${status}`.trim();
   });
 
   const fzfResult = await selectWithFzf(list, {

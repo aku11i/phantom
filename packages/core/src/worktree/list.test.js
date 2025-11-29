@@ -97,12 +97,14 @@ branch refs/heads/feature-2
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
+          directoryName: "feature-1",
           name: "feature-1",
           path: "/test/repo/.git/phantom/worktrees/feature-1",
           branch: "feature-1",
           isClean: true,
         },
         {
+          directoryName: "feature-2",
           name: "feature-2",
           path: "/test/repo/.git/phantom/worktrees/feature-2",
           branch: "feature-2",
@@ -144,6 +146,7 @@ branch refs/heads/dirty-feature
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
+          directoryName: "dirty-feature",
           name: "dirty-feature",
           path: "/test/repo/.git/phantom/worktrees/dirty-feature",
           branch: "dirty-feature",
@@ -185,7 +188,8 @@ detached
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          name: "detached",
+          name: "(detached HEAD)",
+          directoryName: "detached",
           path: "/test/repo/.git/phantom/worktrees/detached",
           branch: "(detached HEAD)",
           isClean: true,
@@ -230,6 +234,7 @@ branch refs/heads/other-feature
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
+          directoryName: "phantom-feature",
           name: "phantom-feature",
           path: "/test/repo/.git/phantom/worktrees/phantom-feature",
           branch: "phantom-feature",
