@@ -80,18 +80,15 @@ async function compile(target: Target): Promise<string> {
     `Building phantom single executable with ${bunExecutable} (${target.bunTarget})...`,
   );
   const binaryPath = join(distDir, target.binaryFileName);
-  await execFileAsync(
-    bunExecutable,
-    [
-      "build",
-      entryPoint,
-      "--compile",
-      `--target=${target.bunTarget}`,
-      "--minify",
-      "--outfile",
-      binaryPath,
-    ],
-  );
+  await execFileAsync(bunExecutable, [
+    "build",
+    entryPoint,
+    "--compile",
+    `--target=${target.bunTarget}`,
+    "--minify",
+    "--outfile",
+    binaryPath,
+  ]);
   console.log(
     `Executable built at ${binaryPath} for ${target.os}/${target.arch}`,
   );
