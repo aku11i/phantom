@@ -83,6 +83,9 @@ describe("getGitHubRepoInfo", () => {
       }),
     );
 
-    await rejects(getGitHubRepoInfo(), /Expected string/);
+    await rejects(
+      getGitHubRepoInfo(),
+      /Invalid input: expected string, received number/,
+    );
   });
 });

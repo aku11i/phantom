@@ -104,7 +104,7 @@ describe("loadConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received string",
+          "Invalid phantom.config.json: Invalid input: expected object, received string",
         );
       }
     });
@@ -119,7 +119,7 @@ describe("loadConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received null",
+          "Invalid phantom.config.json: Invalid input: expected object, received null",
         );
       }
     });
@@ -137,7 +137,7 @@ describe("loadConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate: Expected object, received string",
+          "Invalid phantom.config.json: postCreate: Invalid input: expected object, received string",
         );
       }
     });
@@ -155,7 +155,7 @@ describe("loadConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate: Expected object, received null",
+          "Invalid phantom.config.json: postCreate: Invalid input: expected object, received null",
         );
       }
     });
@@ -173,7 +173,7 @@ describe("loadConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles: Expected array, received string",
+          "Invalid phantom.config.json: postCreate.copyFiles: Invalid input: expected array, received string",
         );
       }
     });
@@ -191,7 +191,7 @@ describe("loadConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles.0: Expected string, received number",
+          "Invalid phantom.config.json: postCreate.copyFiles.0: Invalid input: expected string, received number",
         );
       }
     });
@@ -223,7 +223,7 @@ describe("loadConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received array",
+          "Invalid phantom.config.json: Invalid input: expected object, received array",
         );
       }
     });

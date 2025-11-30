@@ -34,10 +34,7 @@ export function validateConfig(
   const result = phantomConfigSchema.safeParse(config);
 
   if (!result.success) {
-    const error = result.error;
-
-    // Get the first error message from Zod's formatted output
-    const firstError = error.errors[0];
+    const firstError = result.error.issues[0];
     const path = firstError.path.join(".");
     const message = path
       ? `${path}: ${firstError.message}`
