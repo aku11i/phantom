@@ -1,0 +1,59 @@
+name: Upload release assets
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+        with:
+          version: 10.8.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Compile
+        run: pnpm compile
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          shopt -s nullglob
+          mapfile -d '' files < <(find packages/cli/output -type f -print0)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No artifacts found in packages/cli/output" >&2
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            echo "Uploading ${file}"
+            gh release upload "${RELEASE_TAG}" "${file}" --clobber
+          done
