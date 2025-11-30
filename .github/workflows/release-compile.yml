@@ -46,7 +46,7 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           shopt -s nullglob
-          mapfile -d '' files < <(find packages/cli/output -type f -print0)
+          mapfile -d '' files < <(find packages/cli/output -type f ! -name '.keep' -print0)
 
           if [ ${#files[@]} -eq 0 ]; then
             echo "No artifacts found in packages/cli/output" >&2
