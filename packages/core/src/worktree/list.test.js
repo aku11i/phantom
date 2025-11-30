@@ -7,6 +7,8 @@ const getWorktreePathFromDirectoryMock = mock.fn((worktreeDirectory, name) => {
   return `${worktreeDirectory}/${name}`;
 });
 
+const mockCwd = () => mock.method(process, "cwd", () => "/test/repo");
+
 mock.module("node:child_process", {
   namedExports: {
     execFile: (cmd, args, options, callback) => {
@@ -38,6 +40,7 @@ const { listWorktrees } = await import("./list.ts");
 
 describe("listWorktrees", () => {
   it("should return empty array when no phantom worktrees exist", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -61,9 +64,11 @@ describe("listWorktrees", () => {
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
   it("should list worktrees with clean status", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -99,12 +104,14 @@ branch refs/heads/feature-2
         {
           name: "feature-1",
           path: "/test/repo/.git/phantom/worktrees/feature-1",
+          pathToDisplay: ".git/phantom/worktrees/feature-1",
           branch: "feature-1",
           isClean: true,
         },
         {
           name: "feature-2",
           path: "/test/repo/.git/phantom/worktrees/feature-2",
+          pathToDisplay: ".git/phantom/worktrees/feature-2",
           branch: "feature-2",
           isClean: true,
         },
@@ -112,9 +119,11 @@ branch refs/heads/feature-2
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
   it("should handle worktrees with dirty status", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -146,6 +155,7 @@ branch refs/heads/dirty-feature
         {
           name: "dirty-feature",
           path: "/test/repo/.git/phantom/worktrees/dirty-feature",
+          pathToDisplay: ".git/phantom/worktrees/dirty-feature",
           branch: "dirty-feature",
           isClean: false,
         },
@@ -153,9 +163,11 @@ branch refs/heads/dirty-feature
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
   it("should handle detached HEAD state", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -187,6 +199,7 @@ detached
         {
           name: "def456",
           path: "/test/repo/.git/phantom/worktrees/detached",
+          pathToDisplay: ".git/phantom/worktrees/detached",
           branch: "def456",
           isClean: true,
         },
@@ -194,9 +207,11 @@ detached
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
   it("should filter out non-phantom worktrees", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -232,6 +247,7 @@ branch refs/heads/other-feature
         {
           name: "phantom-feature",
           path: "/test/repo/.git/phantom/worktrees/phantom-feature",
+          pathToDisplay: ".git/phantom/worktrees/phantom-feature",
           branch: "phantom-feature",
           isClean: true,
         },
@@ -239,5 +255,6 @@ branch refs/heads/other-feature
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 });

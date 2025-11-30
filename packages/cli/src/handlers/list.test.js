@@ -94,12 +94,14 @@ describe("listHandler", () => {
             {
               name: "feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
+              pathToDisplay: ".git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
+              pathToDisplay: ".git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
             },
@@ -140,18 +142,21 @@ describe("listHandler", () => {
             {
               name: "feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
+              pathToDisplay: ".git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
+              pathToDisplay: ".git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
             },
             {
               name: "bugfix-3",
               path: "/test/repo/.git/phantom/worktrees/bugfix-3",
+              pathToDisplay: ".git/phantom/worktrees/bugfix-3",
               branch: "bugfix-3",
               isClean: true,
             },

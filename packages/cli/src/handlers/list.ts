@@ -1,4 +1,3 @@
-import { relative } from "node:path";
 import { parseArgs } from "node:util";
 import {
   createContext,
@@ -68,11 +67,9 @@ export async function listHandler(args: string[] = []): Promise<void> {
         }
       } else {
         for (const worktree of worktrees) {
-          const worktreeRelativePath =
-            relative(process.cwd(), worktree.path) || ".";
           const status = !worktree.isClean ? " [dirty]" : "";
 
-          output.log(`${worktree.name} (${worktreeRelativePath})${status}`);
+          output.log(`${worktree.name} (${worktree.pathToDisplay})${status}`);
         }
       }
     }

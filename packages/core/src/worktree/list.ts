@@ -1,3 +1,4 @@
+import { relative } from "node:path";
 import {
   executeGitCommandInDirectory,
   listWorktrees as gitListWorktrees,
@@ -8,6 +9,7 @@ import { getWorktreePathFromDirectory } from "../paths.ts";
 export interface WorktreeInfo {
   name: string;
   path: string;
+  pathToDisplay: string;
   branch: string;
   isClean: boolean;
 }
@@ -59,6 +61,7 @@ export async function getWorktreeInfo(
   return {
     name,
     path: worktreePath,
+    pathToDisplay: relative(process.cwd(), worktreePath) || ".",
     branch,
     isClean,
   };
@@ -90,10 +93,13 @@ export async function listWorktrees(
             ? gitWorktree.branch
             : shortHead;
         const isClean = await getWorktreeStatus(gitWorktree.path);
+        const pathToDisplay =
+          relative(process.cwd(), gitWorktree.path) || ".";
 
         return {
           name: branchName,
           path: gitWorktree.path,
+          pathToDisplay,
           branch: branchName,
           isClean,
         };

@@ -29,7 +29,7 @@ export async function selectWorktreeWithFzf(
 
   const list = worktrees.map((wt) => {
     const status = !wt.isClean ? " [dirty]" : "";
-    return `${wt.name} (${wt.path})${status}`;
+    return `${wt.name} (${wt.pathToDisplay})${status}`;
   });
 
   const fzfResult = await selectWithFzf(list, {
