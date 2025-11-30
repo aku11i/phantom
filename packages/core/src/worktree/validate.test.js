@@ -3,19 +3,10 @@ import { describe, it, mock } from "node:test";
 import { err, ok } from "@aku11i/phantom-shared";
 
 const listWorktreesMock = mock.fn();
-const getWorktreePathFromDirectoryMock = mock.fn((worktreeDirectory, name) => {
-  return `${worktreeDirectory}/${name}`;
-});
 
 mock.module("./list.ts", {
   namedExports: {
     listWorktrees: listWorktreesMock,
-  },
-});
-
-mock.module("../paths.ts", {
-  namedExports: {
-    getWorktreePathFromDirectory: getWorktreePathFromDirectoryMock,
   },
 });
 
@@ -27,7 +18,6 @@ const { isOk, isErr } = await import("@aku11i/phantom-shared");
 describe("validateWorktreeExists", () => {
   const resetMocks = () => {
     listWorktreesMock.mock.resetCalls();
-    getWorktreePathFromDirectoryMock.mock.resetCalls();
   };
 
   it("should return ok when worktree is registered", async () => {
@@ -95,7 +85,6 @@ describe("validateWorktreeExists", () => {
 describe("validateWorktreeDoesNotExist", () => {
   const resetMocks = () => {
     listWorktreesMock.mock.resetCalls();
-    getWorktreePathFromDirectoryMock.mock.resetCalls();
   };
 
   it("should return ok when worktree is not registered", async () => {
@@ -111,9 +100,7 @@ describe("validateWorktreeDoesNotExist", () => {
     );
 
     deepStrictEqual(isOk(result), true);
-    deepStrictEqual(result.value, {
-      path: "/test/repo/.git/phantom/worktrees/new-feature",
-    });
+    deepStrictEqual(result.value, undefined);
   });
 
   it("should return err when worktree is already registered", async () => {
@@ -146,7 +133,7 @@ describe("validateWorktreeDoesNotExist", () => {
     );
   });
 
-  it("should still return ok when listing fails", async () => {
+  it("should return err when listing fails", async () => {
     resetMocks();
     listWorktreesMock.mock.mockImplementation(() =>
       Promise.resolve(err(new Error("list failed"))),
@@ -158,9 +145,10 @@ describe("validateWorktreeDoesNotExist", () => {
       "new-feature",
     );
 
-    deepStrictEqual(isOk(result), true);
-    deepStrictEqual(result.value, {
-      path: "/test/repo/.git/phantom/worktrees/new-feature",
-    });
+    deepStrictEqual(isErr(result), true);
+    deepStrictEqual(
+      result.error.message,
+      "Worktree 'new-feature' already exists",
+    );
   });
 });

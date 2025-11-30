@@ -1,14 +1,9 @@
 import fs from "node:fs/promises";
 import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
-import { getWorktreePathFromDirectory } from "../paths.ts";
 import { listWorktrees } from "./list.ts";
 import { WorktreeAlreadyExistsError, WorktreeNotFoundError } from "./errors.ts";
 
 export interface WorktreeExistsSuccess {
-  path: string;
-}
-
-export interface WorktreeDoesNotExistSuccess {
   path: string;
 }
 
@@ -38,13 +33,11 @@ export async function validateWorktreeDoesNotExist(
   gitRoot: string,
   worktreeDirectory: string,
   name: string,
-): Promise<Result<WorktreeDoesNotExistSuccess, WorktreeAlreadyExistsError>> {
+): Promise<Result<void, WorktreeAlreadyExistsError>> {
   const worktreesResult = await listWorktrees(gitRoot, worktreeDirectory);
 
   if (isErr(worktreesResult)) {
-    return ok({
-      path: getWorktreePathFromDirectory(worktreeDirectory, name),
-    });
+    return err(new WorktreeAlreadyExistsError(name));
   }
 
   const worktree = worktreesResult.value.worktrees.find(
@@ -55,9 +48,7 @@ export async function validateWorktreeDoesNotExist(
     return err(new WorktreeAlreadyExistsError(name));
   }
 
-  return ok({
-    path: getWorktreePathFromDirectory(worktreeDirectory, name),
-  });
+  return ok(undefined);
 }
 
 export async function validateWorktreeDirectoryExists(
