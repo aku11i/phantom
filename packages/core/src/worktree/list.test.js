@@ -1,4 +1,5 @@
 import { deepStrictEqual, ok } from "node:assert";
+import { normalize } from "node:path";
 import { describe, it, mock } from "node:test";
 
 const execFileMock = mock.fn();
@@ -37,6 +38,13 @@ mock.module("../paths.ts", {
 });
 
 const { listWorktrees } = await import("./list.ts");
+
+const normalizeWorktrees = (worktrees) =>
+  worktrees.map((worktree) => ({
+    ...worktree,
+    path: normalize(worktree.path),
+    pathToDisplay: normalize(worktree.pathToDisplay),
+  }));
 
 describe("listWorktrees", () => {
   it("should return empty array when only root-level worktree exists", async () => {
@@ -97,22 +105,25 @@ branch refs/heads/feature-2
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "feature-1",
-          path: "/test/repo/.git/phantom/worktrees/feature-1",
-          pathToDisplay: ".git/phantom/worktrees/feature-1",
-          branch: "feature-1",
-          isClean: true,
-        },
-        {
-          name: "feature-2",
-          path: "/test/repo/.git/phantom/worktrees/feature-2",
-          pathToDisplay: ".git/phantom/worktrees/feature-2",
-          branch: "feature-2",
-          isClean: true,
-        },
-      ]);
+      deepStrictEqual(
+        result.value.worktrees,
+        normalizeWorktrees([
+          {
+            name: "feature-1",
+            path: "/test/repo/.git/phantom/worktrees/feature-1",
+            pathToDisplay: ".git/phantom/worktrees/feature-1",
+            branch: "feature-1",
+            isClean: true,
+          },
+          {
+            name: "feature-2",
+            path: "/test/repo/.git/phantom/worktrees/feature-2",
+            pathToDisplay: ".git/phantom/worktrees/feature-2",
+            branch: "feature-2",
+            isClean: true,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
@@ -151,15 +162,18 @@ branch refs/heads/dirty-feature
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "dirty-feature",
-          path: "/test/repo/.git/phantom/worktrees/dirty-feature",
-          pathToDisplay: ".git/phantom/worktrees/dirty-feature",
-          branch: "dirty-feature",
-          isClean: false,
-        },
-      ]);
+      deepStrictEqual(
+        result.value.worktrees,
+        normalizeWorktrees([
+          {
+            name: "dirty-feature",
+            path: "/test/repo/.git/phantom/worktrees/dirty-feature",
+            pathToDisplay: ".git/phantom/worktrees/dirty-feature",
+            branch: "dirty-feature",
+            isClean: false,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
@@ -192,15 +206,18 @@ detached
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "def456",
-          path: "/test/repo/.git/phantom/worktrees/detached",
-          pathToDisplay: ".git/phantom/worktrees/detached",
-          branch: "def456",
-          isClean: true,
-        },
-      ]);
+      deepStrictEqual(
+        result.value.worktrees,
+        normalizeWorktrees([
+          {
+            name: "def456",
+            path: "/test/repo/.git/phantom/worktrees/detached",
+            pathToDisplay: ".git/phantom/worktrees/detached",
+            branch: "def456",
+            isClean: true,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
@@ -241,29 +258,32 @@ branch refs/heads/sibling-feature
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "phantom-feature",
-          path: "/test/repo/.git/phantom/worktrees/phantom-feature",
-          pathToDisplay: ".git/phantom/worktrees/phantom-feature",
-          branch: "phantom-feature",
-          isClean: true,
-        },
-        {
-          name: "other-feature",
-          path: "/test/repo/other-worktree",
-          pathToDisplay: "other-worktree",
-          branch: "other-feature",
-          isClean: true,
-        },
-        {
-          name: "sibling-feature",
-          path: "/test/other-worktree-sibling",
-          pathToDisplay: "../other-worktree-sibling",
-          branch: "sibling-feature",
-          isClean: true,
-        },
-      ]);
+      deepStrictEqual(
+        result.value.worktrees,
+        normalizeWorktrees([
+          {
+            name: "phantom-feature",
+            path: "/test/repo/.git/phantom/worktrees/phantom-feature",
+            pathToDisplay: ".git/phantom/worktrees/phantom-feature",
+            branch: "phantom-feature",
+            isClean: true,
+          },
+          {
+            name: "other-feature",
+            path: "/test/repo/other-worktree",
+            pathToDisplay: "other-worktree",
+            branch: "other-feature",
+            isClean: true,
+          },
+          {
+            name: "sibling-feature",
+            path: "/test/other-worktree-sibling",
+            pathToDisplay: "../other-worktree-sibling",
+            branch: "sibling-feature",
+            isClean: true,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
