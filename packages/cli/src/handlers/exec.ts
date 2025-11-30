@@ -98,10 +98,7 @@ export async function execHandler(args: string[]): Promise<void> {
     let worktreeName: string;
 
     if (useFzf) {
-      const selectResult = await selectWorktreeWithFzf(
-        context.gitRoot,
-        context.worktreesDirectory,
-      );
+      const selectResult = await selectWorktreeWithFzf(context.gitRoot);
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
       }

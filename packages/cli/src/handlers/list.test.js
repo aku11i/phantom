@@ -64,6 +64,8 @@ mock.module("../errors.ts", {
   },
 });
 
+const mockCwd = () => mock.method(process, "cwd", () => "/test/repo");
+
 const { listHandler } = await import("./list.ts");
 
 describe("listHandler", () => {
@@ -80,6 +82,7 @@ describe("listHandler", () => {
 
   it("should list worktrees in default format", async () => {
     resetMocks();
+    const cwdMock = mockCwd();
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
     loadConfigMock.mock.mockImplementation(() =>
       Promise.resolve(err(new Error("Config not found"))),
@@ -91,12 +94,14 @@ describe("listHandler", () => {
             {
               name: "feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
+              pathToDisplay: ".git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
+              pathToDisplay: ".git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
             },
@@ -110,20 +115,17 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(consoleLogMock.mock.calls.length, 2);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
-      "feature-1  (feature-1)",
+      "feature-1 (.git/phantom/worktrees/feature-1)",
     );
     strictEqual(
       consoleLogMock.mock.calls[1].arguments[0],
-      "feature-2  (feature-2) [dirty]",
+      "feature-2 (.git/phantom/worktrees/feature-2) [dirty]",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+    cwdMock.mock.restore();
   });
 
   it("should list only worktree names with --names option", async () => {
@@ -136,18 +138,21 @@ describe("listHandler", () => {
             {
               name: "feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
+              pathToDisplay: ".git/phantom/worktrees/feature-1",
               branch: "feature-1",
               isClean: true,
             },
             {
               name: "feature-2",
               path: "/test/repo/.git/phantom/worktrees/feature-2",
+              pathToDisplay: ".git/phantom/worktrees/feature-2",
               branch: "feature-2",
               isClean: false,
             },
             {
               name: "bugfix-3",
               path: "/test/repo/.git/phantom/worktrees/bugfix-3",
+              pathToDisplay: ".git/phantom/worktrees/bugfix-3",
               branch: "bugfix-3",
               isClean: true,
             },
@@ -164,10 +169,6 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(consoleLogMock.mock.calls.length, 3);
     strictEqual(consoleLogMock.mock.calls[0].arguments[0], "feature-1");
     strictEqual(consoleLogMock.mock.calls[1].arguments[0], "feature-2");
@@ -191,10 +192,6 @@ describe("listHandler", () => {
 
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
@@ -222,10 +219,6 @@ describe("listHandler", () => {
 
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(consoleLogMock.mock.calls.length, 0);
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
@@ -291,10 +284,6 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(
-      listWorktreesCoreMock.mock.calls[0].arguments[1],
-      "/test/repo/.git/phantom/worktrees",
-    );
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],

@@ -1,3 +1,4 @@
+import { relative } from "node:path";
 import {
   executeGitCommandInDirectory,
   listWorktrees as gitListWorktrees,
@@ -8,6 +9,7 @@ import { getWorktreePathFromDirectory } from "../paths.ts";
 export interface WorktreeInfo {
   name: string;
   path: string;
+  pathToDisplay: string;
   branch: string;
   isClean: boolean;
 }
@@ -59,6 +61,7 @@ export async function getWorktreeInfo(
   return {
     name,
     path: worktreePath,
+    pathToDisplay: relative(process.cwd(), worktreePath) || ".",
     branch,
     isClean,
   };
@@ -66,16 +69,14 @@ export async function getWorktreeInfo(
 
 export async function listWorktrees(
   gitRoot: string,
-  worktreeDirectory: string,
 ): Promise<Result<ListWorktreesSuccess, never>> {
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
-
-    const phantomWorktrees = gitWorktrees.filter((worktree) =>
-      worktree.path.startsWith(worktreeDirectory),
+    const filteredWorktrees = gitWorktrees.filter((worktree) =>
+      Boolean(relative(gitRoot, worktree.path)),
     );
 
-    if (phantomWorktrees.length === 0) {
+    if (filteredWorktrees.length === 0) {
       return ok({
         worktrees: [],
         message: "No worktrees found",
@@ -83,14 +84,20 @@ export async function listWorktrees(
     }
 
     const worktrees = await Promise.all(
-      phantomWorktrees.map(async (gitWorktree) => {
-        const name = gitWorktree.path.substring(worktreeDirectory.length + 1);
+      filteredWorktrees.map(async (gitWorktree) => {
+        const shortHead = gitWorktree.head?.slice(0, 7) ?? "HEAD";
+        const branchName =
+          gitWorktree.branch && gitWorktree.branch !== "(detached HEAD)"
+            ? gitWorktree.branch
+            : shortHead;
         const isClean = await getWorktreeStatus(gitWorktree.path);
+        const pathToDisplay = relative(process.cwd(), gitWorktree.path) || ".";
 
         return {
-          name,
+          name: branchName,
           path: gitWorktree.path,
-          branch: gitWorktree.branch || "(detached HEAD)",
+          pathToDisplay,
+          branch: branchName,
           isClean,
         };
       }),

@@ -1,4 +1,5 @@
 import { deepStrictEqual, ok } from "node:assert";
+import { normalize } from "node:path";
 import { describe, it, mock } from "node:test";
 
 const execFileMock = mock.fn();
@@ -6,6 +7,8 @@ const execFileMock = mock.fn();
 const getWorktreePathFromDirectoryMock = mock.fn((worktreeDirectory, name) => {
   return `${worktreeDirectory}/${name}`;
 });
+
+const mockCwd = () => mock.method(process, "cwd", () => "/test/repo");
 
 mock.module("node:child_process", {
   namedExports: {
@@ -36,8 +39,16 @@ mock.module("../paths.ts", {
 
 const { listWorktrees } = await import("./list.ts");
 
+const normalizeWorktrees = (worktrees) =>
+  worktrees.map((worktree) => ({
+    ...worktree,
+    path: normalize(worktree.path),
+    pathToDisplay: normalize(worktree.pathToDisplay),
+  }));
+
 describe("listWorktrees", () => {
-  it("should return empty array when no phantom worktrees exist", async () => {
+  it("should return empty array when only root-level worktree exists", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -46,13 +57,13 @@ describe("listWorktrees", () => {
           stderr: "",
         });
       }
+      if (_args.includes("status") && _args.includes("--porcelain")) {
+        return Promise.resolve({ stdout: "", stderr: "" });
+      }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees(
-      "/test/repo",
-      "/test/repo/.git/phantom/worktrees",
-    );
+    const result = await listWorktrees("/test/repo");
 
     ok(result.ok);
     if (result.ok) {
@@ -61,9 +72,11 @@ describe("listWorktrees", () => {
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
   it("should list worktrees with clean status", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -88,33 +101,37 @@ branch refs/heads/feature-2
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees(
-      "/test/repo",
-      "/test/repo/.git/phantom/worktrees",
-    );
+    const result = await listWorktrees("/test/repo");
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "feature-1",
-          path: "/test/repo/.git/phantom/worktrees/feature-1",
-          branch: "feature-1",
-          isClean: true,
-        },
-        {
-          name: "feature-2",
-          path: "/test/repo/.git/phantom/worktrees/feature-2",
-          branch: "feature-2",
-          isClean: true,
-        },
-      ]);
+      deepStrictEqual(
+        normalizeWorktrees(result.value.worktrees),
+        normalizeWorktrees([
+          {
+            name: "feature-1",
+            path: "/test/repo/.git/phantom/worktrees/feature-1",
+            pathToDisplay: ".git/phantom/worktrees/feature-1",
+            branch: "feature-1",
+            isClean: true,
+          },
+          {
+            name: "feature-2",
+            path: "/test/repo/.git/phantom/worktrees/feature-2",
+            pathToDisplay: ".git/phantom/worktrees/feature-2",
+            branch: "feature-2",
+            isClean: true,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
   it("should handle worktrees with dirty status", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -130,32 +147,41 @@ branch refs/heads/dirty-feature
         });
       }
       if (_args.includes("status") && _args.includes("--porcelain")) {
-        return Promise.resolve({ stdout: "M file.txt\n", stderr: "" });
+        const isDirtyFeature = _args.includes(
+          "/test/repo/.git/phantom/worktrees/dirty-feature",
+        );
+        return Promise.resolve({
+          stdout: isDirtyFeature ? "M file.txt\n" : "",
+          stderr: "",
+        });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees(
-      "/test/repo",
-      "/test/repo/.git/phantom/worktrees",
-    );
+    const result = await listWorktrees("/test/repo");
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "dirty-feature",
-          path: "/test/repo/.git/phantom/worktrees/dirty-feature",
-          branch: "dirty-feature",
-          isClean: false,
-        },
-      ]);
+      deepStrictEqual(
+        normalizeWorktrees(result.value.worktrees),
+        normalizeWorktrees([
+          {
+            name: "dirty-feature",
+            path: "/test/repo/.git/phantom/worktrees/dirty-feature",
+            pathToDisplay: ".git/phantom/worktrees/dirty-feature",
+            branch: "dirty-feature",
+            isClean: false,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
   it("should handle detached HEAD state", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -176,27 +202,30 @@ detached
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees(
-      "/test/repo",
-      "/test/repo/.git/phantom/worktrees",
-    );
+    const result = await listWorktrees("/test/repo");
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "detached",
-          path: "/test/repo/.git/phantom/worktrees/detached",
-          branch: "(detached HEAD)",
-          isClean: true,
-        },
-      ]);
+      deepStrictEqual(
+        normalizeWorktrees(result.value.worktrees),
+        normalizeWorktrees([
+          {
+            name: "def456",
+            path: "/test/repo/.git/phantom/worktrees/detached",
+            pathToDisplay: ".git/phantom/worktrees/detached",
+            branch: "def456",
+            isClean: true,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 
-  it("should filter out non-phantom worktrees", async () => {
+  it("should include non-phantom worktrees including root siblings", async () => {
+    const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
         return Promise.resolve({
@@ -211,6 +240,10 @@ branch refs/heads/phantom-feature
 worktree /test/repo/other-worktree
 HEAD ghi789
 branch refs/heads/other-feature
+
+worktree /test/other-worktree-sibling
+HEAD jkl012
+branch refs/heads/sibling-feature
 `,
           stderr: "",
         });
@@ -221,23 +254,63 @@ branch refs/heads/other-feature
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const result = await listWorktrees(
-      "/test/repo",
-      "/test/repo/.git/phantom/worktrees",
-    );
+    const result = await listWorktrees("/test/repo");
 
     ok(result.ok);
     if (result.ok) {
-      deepStrictEqual(result.value.worktrees, [
-        {
-          name: "phantom-feature",
-          path: "/test/repo/.git/phantom/worktrees/phantom-feature",
-          branch: "phantom-feature",
-          isClean: true,
-        },
-      ]);
+      deepStrictEqual(
+        normalizeWorktrees(result.value.worktrees),
+        normalizeWorktrees([
+          {
+            name: "phantom-feature",
+            path: "/test/repo/.git/phantom/worktrees/phantom-feature",
+            pathToDisplay: ".git/phantom/worktrees/phantom-feature",
+            branch: "phantom-feature",
+            isClean: true,
+          },
+          {
+            name: "other-feature",
+            path: "/test/repo/other-worktree",
+            pathToDisplay: "other-worktree",
+            branch: "other-feature",
+            isClean: true,
+          },
+          {
+            name: "sibling-feature",
+            path: "/test/other-worktree-sibling",
+            pathToDisplay: "../other-worktree-sibling",
+            branch: "sibling-feature",
+            isClean: true,
+          },
+        ]),
+      );
     }
 
     execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
+  });
+
+  it("should return message when no worktrees are returned", async () => {
+    const cwdMock = mockCwd();
+    execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
+      if (_args.includes("worktree") && _args.includes("list")) {
+        return Promise.resolve({
+          stdout: "",
+          stderr: "",
+        });
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+
+    const result = await listWorktrees("/test/repo");
+
+    ok(result.ok);
+    if (result.ok) {
+      deepStrictEqual(result.value.worktrees, []);
+      deepStrictEqual(result.value.message, "No worktrees found");
+    }
+
+    execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
   });
 });

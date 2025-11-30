@@ -10,9 +10,8 @@ export interface SelectWorktreeResult {
 
 export async function selectWorktreeWithFzf(
   gitRoot: string,
-  worktreeDirectory: string,
 ): Promise<Result<SelectWorktreeResult | null, Error>> {
-  const listResult = await listWorktrees(gitRoot, worktreeDirectory);
+  const listResult = await listWorktrees(gitRoot);
 
   if (isErr(listResult)) {
     return listResult;
@@ -28,9 +27,8 @@ export async function selectWorktreeWithFzf(
   }
 
   const list = worktrees.map((wt) => {
-    const branchInfo = wt.branch ? `(${wt.branch})` : "";
     const status = !wt.isClean ? " [dirty]" : "";
-    return `${wt.name} ${branchInfo}${status}`;
+    return `${wt.name} (${wt.pathToDisplay})${status}`;
   });
 
   const fzfResult = await selectWithFzf(list, {

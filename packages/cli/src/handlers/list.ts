@@ -1,6 +1,5 @@
 import { parseArgs } from "node:util";
 import {
-  createContext,
   listWorktrees as listWorktreesCore,
   selectWorktreeWithFzf,
 } from "@aku11i/phantom-core";
@@ -27,13 +26,9 @@ export async function listHandler(args: string[] = []): Promise<void> {
   });
   try {
     const gitRoot = await getGitRoot();
-    const context = await createContext(gitRoot);
 
     if (values.fzf) {
-      const selectResult = await selectWorktreeWithFzf(
-        context.gitRoot,
-        context.worktreesDirectory,
-      );
+      const selectResult = await selectWorktreeWithFzf(gitRoot);
 
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
@@ -43,10 +38,7 @@ export async function listHandler(args: string[] = []): Promise<void> {
         output.log(selectResult.value.name);
       }
     } else {
-      const result = await listWorktreesCore(
-        context.gitRoot,
-        context.worktreesDirectory,
-      );
+      const result = await listWorktreesCore(gitRoot);
 
       if (isErr(result)) {
         exitWithError("Failed to list worktrees", exitCodes.generalError);
@@ -66,16 +58,10 @@ export async function listHandler(args: string[] = []): Promise<void> {
           output.log(worktree.name);
         }
       } else {
-        const maxNameLength = Math.max(
-          ...worktrees.map((wt) => wt.name.length),
-        );
-
         for (const worktree of worktrees) {
-          const paddedName = worktree.name.padEnd(maxNameLength + 2);
-          const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
           const status = !worktree.isClean ? " [dirty]" : "";
 
-          output.log(`${paddedName} ${branchInfo}${status}`);
+          output.log(`${worktree.name} (${worktree.pathToDisplay})${status}`);
         }
       }
     }

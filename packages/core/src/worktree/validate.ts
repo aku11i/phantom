@@ -1,44 +1,54 @@
 import fs from "node:fs/promises";
-import { err, ok, type Result } from "@aku11i/phantom-shared";
-import { getWorktreePathFromDirectory } from "../paths.ts";
+import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
 import { WorktreeAlreadyExistsError, WorktreeNotFoundError } from "./errors.ts";
+import { listWorktrees } from "./list.ts";
 
 export interface WorktreeExistsSuccess {
   path: string;
 }
 
-export interface WorktreeDoesNotExistSuccess {
-  path: string;
-}
-
 export async function validateWorktreeExists(
-  _gitRoot: string,
-  worktreeDirectory: string,
+  gitRoot: string,
+  _worktreeDirectory: string,
   name: string,
 ): Promise<Result<WorktreeExistsSuccess, WorktreeNotFoundError>> {
-  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
+  const worktreesResult = await listWorktrees(gitRoot);
 
-  try {
-    await fs.access(worktreePath);
-    return ok({ path: worktreePath });
-  } catch {
+  if (isErr(worktreesResult)) {
     return err(new WorktreeNotFoundError(name));
   }
+
+  const worktree = worktreesResult.value.worktrees.find(
+    (wt) => wt.name === name,
+  );
+
+  if (!worktree) {
+    return err(new WorktreeNotFoundError(name));
+  }
+
+  return ok({ path: worktree.path });
 }
 
 export async function validateWorktreeDoesNotExist(
-  _gitRoot: string,
-  worktreeDirectory: string,
+  gitRoot: string,
+  _worktreeDirectory: string,
   name: string,
-): Promise<Result<WorktreeDoesNotExistSuccess, WorktreeAlreadyExistsError>> {
-  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
+): Promise<Result<void, WorktreeAlreadyExistsError>> {
+  const worktreesResult = await listWorktrees(gitRoot);
 
-  try {
-    await fs.access(worktreePath);
+  if (isErr(worktreesResult)) {
     return err(new WorktreeAlreadyExistsError(name));
-  } catch {
-    return ok({ path: worktreePath });
   }
+
+  const worktree = worktreesResult.value.worktrees.find(
+    (wt) => wt.name === name,
+  );
+
+  if (worktree) {
+    return err(new WorktreeAlreadyExistsError(name));
+  }
+
+  return ok(undefined);
 }
 
 export async function validateWorktreeDirectoryExists(
