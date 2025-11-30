@@ -218,7 +218,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received string",
+          "Invalid phantom.config.json: Invalid input: expected object, received string",
         );
       }
     });
@@ -231,7 +231,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received number",
+          "Invalid phantom.config.json: Invalid input: expected object, received number",
         );
       }
     });
@@ -244,7 +244,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received boolean",
+          "Invalid phantom.config.json: Invalid input: expected object, received boolean",
         );
       }
     });
@@ -257,23 +257,23 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received null",
+          "Invalid phantom.config.json: Invalid input: expected object, received null",
         );
       }
     });
 
     test("should reject undefined config", () => {
-      const result = validateConfig(undefined);
+    const result = validateConfig(undefined);
 
-      assert.strictEqual(isErr(result), true);
-      if (isErr(result)) {
-        assert.ok(result.error instanceof ConfigValidationError);
-        assert.strictEqual(
-          result.error.message,
-          "Invalid phantom.config.json: Required",
-        );
-      }
-    });
+    assert.strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      assert.ok(result.error instanceof ConfigValidationError);
+      assert.strictEqual(
+        result.error.message,
+        "Invalid phantom.config.json: Invalid input: expected object, received undefined",
+      );
+    }
+  });
 
     test("should reject array config", () => {
       const result = validateConfig([]);
@@ -283,7 +283,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: Expected object, received array",
+          "Invalid phantom.config.json: Invalid input: expected object, received array",
         );
       }
     });
@@ -296,7 +296,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate: Expected object, received string",
+          "Invalid phantom.config.json: postCreate: Invalid input: expected object, received string",
         );
       }
     });
@@ -309,7 +309,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate: Expected object, received number",
+          "Invalid phantom.config.json: postCreate: Invalid input: expected object, received number",
         );
       }
     });
@@ -322,7 +322,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate: Expected object, received array",
+          "Invalid phantom.config.json: postCreate: Invalid input: expected object, received array",
         );
       }
     });
@@ -335,7 +335,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate: Expected object, received null",
+          "Invalid phantom.config.json: postCreate: Invalid input: expected object, received null",
         );
       }
     });
@@ -348,7 +348,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles: Expected array, received string",
+          "Invalid phantom.config.json: postCreate.copyFiles: Invalid input: expected array, received string",
         );
       }
     });
@@ -361,7 +361,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles: Expected array, received number",
+          "Invalid phantom.config.json: postCreate.copyFiles: Invalid input: expected array, received number",
         );
       }
     });
@@ -374,7 +374,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles: Expected array, received object",
+          "Invalid phantom.config.json: postCreate.copyFiles: Invalid input: expected array, received object",
         );
       }
     });
@@ -389,7 +389,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles.1: Expected string, received number",
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Invalid input: expected string, received number",
         );
       }
     });
@@ -404,7 +404,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles.1: Expected string, received null",
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Invalid input: expected string, received null",
         );
       }
     });
@@ -414,15 +414,15 @@ describe("validateConfig", () => {
         postCreate: { copyFiles: ["file1", undefined] },
       });
 
-      assert.strictEqual(isErr(result), true);
-      if (isErr(result)) {
-        assert.ok(result.error instanceof ConfigValidationError);
-        assert.strictEqual(
-          result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles.1: Required",
-        );
-      }
-    });
+    assert.strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      assert.ok(result.error instanceof ConfigValidationError);
+      assert.strictEqual(
+        result.error.message,
+        "Invalid phantom.config.json: postCreate.copyFiles.1: Invalid input: expected string, received undefined",
+      );
+    }
+  });
 
     test("should reject when copyFiles contains objects", () => {
       const result = validateConfig({
@@ -434,7 +434,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles.1: Expected string, received object",
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Invalid input: expected string, received object",
         );
       }
     });
@@ -449,7 +449,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.copyFiles.0: Expected string, received array",
+          "Invalid phantom.config.json: postCreate.copyFiles.0: Invalid input: expected string, received array",
         );
       }
     });
@@ -462,7 +462,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands: Expected array, received string",
+          "Invalid phantom.config.json: postCreate.commands: Invalid input: expected array, received string",
         );
       }
     });
@@ -475,7 +475,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands: Expected array, received number",
+          "Invalid phantom.config.json: postCreate.commands: Invalid input: expected array, received number",
         );
       }
     });
@@ -488,7 +488,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands: Expected array, received object",
+          "Invalid phantom.config.json: postCreate.commands: Invalid input: expected array, received object",
         );
       }
     });
@@ -503,7 +503,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands.1: Expected string, received number",
+          "Invalid phantom.config.json: postCreate.commands.1: Invalid input: expected string, received number",
         );
       }
     });
@@ -518,7 +518,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands.1: Expected string, received null",
+          "Invalid phantom.config.json: postCreate.commands.1: Invalid input: expected string, received null",
         );
       }
     });
@@ -533,7 +533,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: postCreate.commands.1: Expected string, received object",
+          "Invalid phantom.config.json: postCreate.commands.1: Invalid input: expected string, received object",
         );
       }
     });
@@ -546,7 +546,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete: Expected object, received string",
+          "Invalid phantom.config.json: preDelete: Invalid input: expected object, received string",
         );
       }
     });
@@ -559,7 +559,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete: Expected object, received number",
+          "Invalid phantom.config.json: preDelete: Invalid input: expected object, received number",
         );
       }
     });
@@ -572,7 +572,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete: Expected object, received array",
+          "Invalid phantom.config.json: preDelete: Invalid input: expected object, received array",
         );
       }
     });
@@ -585,7 +585,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete: Expected object, received null",
+          "Invalid phantom.config.json: preDelete: Invalid input: expected object, received null",
         );
       }
     });
@@ -598,7 +598,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete.commands: Expected array, received string",
+          "Invalid phantom.config.json: preDelete.commands: Invalid input: expected array, received string",
         );
       }
     });
@@ -611,7 +611,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete.commands: Expected array, received number",
+          "Invalid phantom.config.json: preDelete.commands: Invalid input: expected array, received number",
         );
       }
     });
@@ -624,7 +624,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete.commands: Expected array, received object",
+          "Invalid phantom.config.json: preDelete.commands: Invalid input: expected array, received object",
         );
       }
     });
@@ -639,7 +639,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete.commands.1: Expected string, received number",
+          "Invalid phantom.config.json: preDelete.commands.1: Invalid input: expected string, received number",
         );
       }
     });
@@ -654,7 +654,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete.commands.1: Expected string, received null",
+          "Invalid phantom.config.json: preDelete.commands.1: Invalid input: expected string, received null",
         );
       }
     });
@@ -669,7 +669,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: preDelete.commands.1: Expected string, received object",
+          "Invalid phantom.config.json: preDelete.commands.1: Invalid input: expected string, received object",
         );
       }
     });
@@ -682,7 +682,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreesDirectory: Expected string, received number",
+          "Invalid phantom.config.json: worktreesDirectory: Invalid input: expected string, received number",
         );
       }
     });
@@ -695,7 +695,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreesDirectory: Expected string, received object",
+          "Invalid phantom.config.json: worktreesDirectory: Invalid input: expected string, received object",
         );
       }
     });
@@ -708,7 +708,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreesDirectory: Expected string, received array",
+          "Invalid phantom.config.json: worktreesDirectory: Invalid input: expected string, received array",
         );
       }
     });
@@ -721,7 +721,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreesDirectory: Expected string, received null",
+          "Invalid phantom.config.json: worktreesDirectory: Invalid input: expected string, received null",
         );
       }
     });
@@ -734,7 +734,7 @@ describe("validateConfig", () => {
         assert.ok(result.error instanceof ConfigValidationError);
         assert.strictEqual(
           result.error.message,
-          "Invalid phantom.config.json: worktreesDirectory: Expected string, received boolean",
+          "Invalid phantom.config.json: worktreesDirectory: Invalid input: expected string, received boolean",
         );
       }
     });
