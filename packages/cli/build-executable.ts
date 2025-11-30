@@ -63,7 +63,7 @@ await mkdir(distDir, { recursive: true });
 await mkdir(outputDir, { recursive: true });
 
 for (const target of targets) {
-  const binaryPath = await compile(target);
+  await compile(target);
   const archiveName = `phantom-${target.os}-${target.arch}-${version}.${target.archiveExtension}`;
   const archivePath = join(outputDir, archiveName);
   console.log(`Packing ${archiveName}...`);
@@ -91,7 +91,6 @@ async function compile(target: Target): Promise<string> {
       "--outfile",
       binaryPath,
     ],
-    { stdio: "inherit" },
   );
   console.log(
     `Executable built at ${binaryPath} for ${target.os}/${target.arch}`,
@@ -104,15 +103,9 @@ async function tarGz(
   sourceDir: string,
   fileName: string,
 ): Promise<void> {
-  await execFileAsync(
-    "tar",
-    ["-czf", archivePath, "-C", sourceDir, fileName],
-    { stdio: "inherit" },
-  );
+  await execFileAsync("tar", ["-czf", archivePath, "-C", sourceDir, fileName]);
 }
 
 async function zip(archivePath: string, filePath: string): Promise<void> {
-  await execFileAsync("zip", ["-j", archivePath, filePath], {
-    stdio: "inherit",
-  });
+  await execFileAsync("zip", ["-j", archivePath, filePath]);
 }
