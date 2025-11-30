@@ -84,13 +84,17 @@ export async function listWorktrees(
 
     const worktrees = await Promise.all(
       phantomWorktrees.map(async (gitWorktree) => {
-        const name = gitWorktree.path.substring(worktreeDirectory.length + 1);
+        const shortHead = gitWorktree.head?.slice(0, 7) ?? "HEAD";
+        const branchName =
+          gitWorktree.branch && gitWorktree.branch !== "(detached HEAD)"
+            ? gitWorktree.branch
+            : shortHead;
         const isClean = await getWorktreeStatus(gitWorktree.path);
 
         return {
-          name,
+          name: branchName,
           path: gitWorktree.path,
-          branch: gitWorktree.branch || "(detached HEAD)",
+          branch: branchName,
           isClean,
         };
       }),

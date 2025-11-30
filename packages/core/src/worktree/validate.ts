@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
-import { err, ok, type Result } from "@aku11i/phantom-shared";
+import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
+import { listWorktrees } from "./list.ts";
 import { WorktreeAlreadyExistsError, WorktreeNotFoundError } from "./errors.ts";
 
 export interface WorktreeExistsSuccess {
@@ -16,14 +17,21 @@ export async function validateWorktreeExists(
   worktreeDirectory: string,
   name: string,
 ): Promise<Result<WorktreeExistsSuccess, WorktreeNotFoundError>> {
-  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
+  const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
 
-  try {
-    await fs.access(worktreePath);
-    return ok({ path: worktreePath });
-  } catch {
+  if (isErr(worktreesResult)) {
     return err(new WorktreeNotFoundError(name));
   }
+
+  const worktree = worktreesResult.value.worktrees.find(
+    (wt) => wt.name === name,
+  );
+
+  if (!worktree) {
+    return err(new WorktreeNotFoundError(name));
+  }
+
+  return ok({ path: worktree.path });
 }
 
 export async function validateWorktreeDoesNotExist(
@@ -31,14 +39,25 @@ export async function validateWorktreeDoesNotExist(
   worktreeDirectory: string,
   name: string,
 ): Promise<Result<WorktreeDoesNotExistSuccess, WorktreeAlreadyExistsError>> {
-  const worktreePath = getWorktreePathFromDirectory(worktreeDirectory, name);
+  const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
 
-  try {
-    await fs.access(worktreePath);
-    return err(new WorktreeAlreadyExistsError(name));
-  } catch {
-    return ok({ path: worktreePath });
+  if (isErr(worktreesResult)) {
+    return ok({
+      path: getWorktreePathFromDirectory(worktreeDirectory, name),
+    });
   }
+
+  const worktree = worktreesResult.value.worktrees.find(
+    (wt) => wt.name === name,
+  );
+
+  if (worktree) {
+    return err(new WorktreeAlreadyExistsError(name));
+  }
+
+  return ok({
+    path: getWorktreePathFromDirectory(worktreeDirectory, name),
+  });
 }
 
 export async function validateWorktreeDirectoryExists(

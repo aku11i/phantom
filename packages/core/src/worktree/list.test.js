@@ -185,9 +185,9 @@ detached
     if (result.ok) {
       deepStrictEqual(result.value.worktrees, [
         {
-          name: "detached",
+          name: "def456",
           path: "/test/repo/.git/phantom/worktrees/detached",
-          branch: "(detached HEAD)",
+          branch: "def456",
           isClean: true,
         },
       ]);

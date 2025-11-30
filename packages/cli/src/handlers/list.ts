@@ -1,3 +1,4 @@
+import { relative } from "node:path";
 import { parseArgs } from "node:util";
 import {
   createContext,
@@ -66,16 +67,12 @@ export async function listHandler(args: string[] = []): Promise<void> {
           output.log(worktree.name);
         }
       } else {
-        const maxNameLength = Math.max(
-          ...worktrees.map((wt) => wt.name.length),
-        );
-
         for (const worktree of worktrees) {
-          const paddedName = worktree.name.padEnd(maxNameLength + 2);
-          const branchInfo = worktree.branch ? `(${worktree.branch})` : "";
+          const worktreeRelativePath =
+            relative(process.cwd(), worktree.path) || ".";
           const status = !worktree.isClean ? " [dirty]" : "";
 
-          output.log(`${paddedName} ${branchInfo}${status}`);
+          output.log(`${worktree.name} (${worktreeRelativePath})${status}`);
         }
       }
     }
