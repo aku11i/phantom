@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { err, isErr, ok, type Result } from "@aku11i/phantom-shared";
-import { listWorktrees } from "./list.ts";
 import { WorktreeAlreadyExistsError, WorktreeNotFoundError } from "./errors.ts";
+import { listWorktrees } from "./list.ts";
 
 export interface WorktreeExistsSuccess {
   path: string;

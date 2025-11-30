@@ -91,8 +91,7 @@ export async function listWorktrees(
             ? gitWorktree.branch
             : shortHead;
         const isClean = await getWorktreeStatus(gitWorktree.path);
-        const pathToDisplay =
-          relative(process.cwd(), gitWorktree.path) || ".";
+        const pathToDisplay = relative(process.cwd(), gitWorktree.path) || ".";
 
         return {
           name: branchName,
