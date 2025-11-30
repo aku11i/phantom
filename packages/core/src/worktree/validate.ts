@@ -13,11 +13,11 @@ export interface WorktreeDoesNotExistSuccess {
 }
 
 export async function validateWorktreeExists(
-  _gitRoot: string,
+  gitRoot: string,
   worktreeDirectory: string,
   name: string,
 ): Promise<Result<WorktreeExistsSuccess, WorktreeNotFoundError>> {
-  const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
+  const worktreesResult = await listWorktrees(gitRoot, worktreeDirectory);
 
   if (isErr(worktreesResult)) {
     return err(new WorktreeNotFoundError(name));
@@ -35,11 +35,11 @@ export async function validateWorktreeExists(
 }
 
 export async function validateWorktreeDoesNotExist(
-  _gitRoot: string,
+  gitRoot: string,
   worktreeDirectory: string,
   name: string,
 ): Promise<Result<WorktreeDoesNotExistSuccess, WorktreeAlreadyExistsError>> {
-  const worktreesResult = await listWorktrees(_gitRoot, worktreeDirectory);
+  const worktreesResult = await listWorktrees(gitRoot, worktreeDirectory);
 
   if (isErr(worktreesResult)) {
     return ok({
