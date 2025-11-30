@@ -54,10 +54,7 @@ export async function whereHandler(args: string[]): Promise<void> {
   const context = await createContext(gitRoot);
 
   if (useFzf) {
-    const selectResult = await selectWorktreeWithFzf(
-      context.gitRoot,
-      context.worktreesDirectory,
-    );
+    const selectResult = await selectWorktreeWithFzf(context.gitRoot);
     if (isErr(selectResult)) {
       exitWithError(selectResult.error.message, exitCodes.generalError);
     }

@@ -92,10 +92,7 @@ export async function shellHandler(args: string[]): Promise<void> {
     }
 
     if (useFzf) {
-      const selectResult = await selectWorktreeWithFzf(
-        context.gitRoot,
-        context.worktreesDirectory,
-      );
+      const selectResult = await selectWorktreeWithFzf(context.gitRoot);
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
       }

@@ -69,16 +69,14 @@ export async function getWorktreeInfo(
 
 export async function listWorktrees(
   gitRoot: string,
-  worktreeDirectory: string,
 ): Promise<Result<ListWorktreesSuccess, never>> {
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
-
-    const phantomWorktrees = gitWorktrees.filter((worktree) =>
-      worktree.path.startsWith(worktreeDirectory),
+    const filteredWorktrees = gitWorktrees.filter((worktree) =>
+      Boolean(relative(gitRoot, worktree.path)),
     );
 
-    if (phantomWorktrees.length === 0) {
+    if (filteredWorktrees.length === 0) {
       return ok({
         worktrees: [],
         message: "No worktrees found",
@@ -86,7 +84,7 @@ export async function listWorktrees(
     }
 
     const worktrees = await Promise.all(
-      phantomWorktrees.map(async (gitWorktree) => {
+      filteredWorktrees.map(async (gitWorktree) => {
         const shortHead = gitWorktree.head?.slice(0, 7) ?? "HEAD";
         const branchName =
           gitWorktree.branch && gitWorktree.branch !== "(detached HEAD)"
