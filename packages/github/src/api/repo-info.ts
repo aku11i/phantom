@@ -26,7 +26,27 @@ export async function getGitHubRepoInfo(): Promise<{
       repo: data.name,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorMessage =
+      error instanceof z.ZodError
+        ? JSON.stringify(
+            error.issues.map((issue) => {
+              const normalizedMessage = issue.message.replace(
+                /^Invalid input: /,
+                "",
+              );
+              return {
+                ...issue,
+                message:
+                  normalizedMessage.charAt(0).toUpperCase() +
+                  normalizedMessage.slice(1),
+              };
+            }),
+            null,
+            2,
+          )
+        : error instanceof Error
+          ? error.message
+          : String(error);
     throw new Error(`Failed to get repository info: ${errorMessage}`);
   }
 }

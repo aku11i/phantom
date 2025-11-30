@@ -37,11 +37,20 @@ export function validateConfig(
     const error = result.error;
 
     // Get the first error message from Zod's formatted output
-    const firstError = error.errors[0];
+    const firstError = error.issues[0];
+    const normalizedMessage = firstError.message.replace(
+      /^Invalid input: /,
+      "",
+    );
+    const adjustedMessage = /expected .*?, received undefined/i.test(
+      normalizedMessage,
+    )
+      ? "Required"
+      : normalizedMessage;
+    const formattedMessage =
+      adjustedMessage.charAt(0).toUpperCase() + adjustedMessage.slice(1);
     const path = firstError.path.join(".");
-    const message = path
-      ? `${path}: ${firstError.message}`
-      : firstError.message;
+    const message = path ? `${path}: ${formattedMessage}` : formattedMessage;
 
     return err(new ConfigValidationError(message));
   }
