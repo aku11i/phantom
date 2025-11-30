@@ -64,7 +64,7 @@ await mkdir(outputDir, { recursive: true });
 
 for (const target of targets) {
   await compile(target);
-  const archiveName = `phantom-${target.os}-${target.arch}-${version}.${target.archiveExtension}`;
+  const archiveName = `phantom-${version}-${target.os}-${target.arch}.${target.archiveExtension}`;
   const archivePath = join(outputDir, archiveName);
   console.log(`Packing ${archiveName}...`);
   if (target.archiveExtension === "zip") {
