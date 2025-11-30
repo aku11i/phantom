@@ -263,17 +263,17 @@ describe("validateConfig", () => {
     });
 
     test("should reject undefined config", () => {
-    const result = validateConfig(undefined);
+      const result = validateConfig(undefined);
 
-    assert.strictEqual(isErr(result), true);
-    if (isErr(result)) {
-      assert.ok(result.error instanceof ConfigValidationError);
-      assert.strictEqual(
-        result.error.message,
-        "Invalid phantom.config.json: Invalid input: expected object, received undefined",
-      );
-    }
-  });
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: Invalid input: expected object, received undefined",
+        );
+      }
+    });
 
     test("should reject array config", () => {
       const result = validateConfig([]);
@@ -414,15 +414,15 @@ describe("validateConfig", () => {
         postCreate: { copyFiles: ["file1", undefined] },
       });
 
-    assert.strictEqual(isErr(result), true);
-    if (isErr(result)) {
-      assert.ok(result.error instanceof ConfigValidationError);
-      assert.strictEqual(
-        result.error.message,
-        "Invalid phantom.config.json: postCreate.copyFiles.1: Invalid input: expected string, received undefined",
-      );
-    }
-  });
+      assert.strictEqual(isErr(result), true);
+      if (isErr(result)) {
+        assert.ok(result.error instanceof ConfigValidationError);
+        assert.strictEqual(
+          result.error.message,
+          "Invalid phantom.config.json: postCreate.copyFiles.1: Invalid input: expected string, received undefined",
+        );
+      }
+    });
 
     test("should reject when copyFiles contains objects", () => {
       const result = validateConfig({

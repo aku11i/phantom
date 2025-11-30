@@ -36,7 +36,9 @@ export function validateConfig(
   if (!result.success) {
     const firstError = result.error.issues[0];
     const path = firstError.path.join(".");
-    const message = path ? `${path}: ${firstError.message}` : firstError.message;
+    const message = path
+      ? `${path}: ${firstError.message}`
+      : firstError.message;
 
     return err(new ConfigValidationError(message));
   }

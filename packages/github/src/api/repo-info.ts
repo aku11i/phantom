@@ -26,8 +26,7 @@ export async function getGitHubRepoInfo(): Promise<{
       repo: data.name,
     });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to get repository info: ${errorMessage}`);
   }
 }
