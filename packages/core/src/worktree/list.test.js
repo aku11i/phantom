@@ -106,7 +106,7 @@ branch refs/heads/feature-2
     ok(result.ok);
     if (result.ok) {
       deepStrictEqual(
-        result.value.worktrees,
+        normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
           {
             name: "feature-1",
@@ -163,7 +163,7 @@ branch refs/heads/dirty-feature
     ok(result.ok);
     if (result.ok) {
       deepStrictEqual(
-        result.value.worktrees,
+        normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
           {
             name: "dirty-feature",
@@ -207,7 +207,7 @@ detached
     ok(result.ok);
     if (result.ok) {
       deepStrictEqual(
-        result.value.worktrees,
+        normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
           {
             name: "def456",
@@ -259,7 +259,7 @@ branch refs/heads/sibling-feature
     ok(result.ok);
     if (result.ok) {
       deepStrictEqual(
-        result.value.worktrees,
+        normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
           {
             name: "phantom-feature",
