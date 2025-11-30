@@ -7,7 +7,7 @@
     "phantom": "node --no-warnings --experimental-strip-types src/bin/phantom.ts",
     "prebuild": "git clean -fdx dist",
     "build": "node build.ts",
-    "precompile": "node --eval \"import { readdir, rm } from 'node:fs/promises'; import { join } from 'node:path'; const dir='output'; (async()=>{for(const f of await readdir(dir)){if(f!=='.keep'){await rm(join(dir,f),{recursive:true,force:true});}}})().catch((err)=>{console.error(err);process.exit(1);});\"",
+    "precompile": "rm -f output/*",
     "compile": "node --no-warnings --experimental-strip-types build-executable.ts",
     "typecheck": "tsc --noEmit",
     "test:shell": "pnpm run test:shell:bash && pnpm run test:shell:zsh && pnpm run test:shell:fish",
