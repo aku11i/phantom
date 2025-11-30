@@ -57,14 +57,18 @@ const targets: Target[] = [
 const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
   version?: string;
 };
-const version = packageJson.version ?? "dev";
+const version = packageJson.version;
+
+if (!version) {
+  throw new Error("Version not found in package.json");
+}
 
 await mkdir(distDir, { recursive: true });
 await mkdir(outputDir, { recursive: true });
 
 for (const target of targets) {
   await compile(target);
-  const archiveName = `phantom-${version}-${target.os}-${target.arch}.${target.archiveExtension}`;
+  const archiveName = `phantom-v${version}-${target.os}-${target.arch}.${target.archiveExtension}`;
   const archivePath = join(outputDir, archiveName);
   console.log(`Packing ${archiveName}...`);
   if (target.archiveExtension === "zip") {
