@@ -13,6 +13,7 @@ import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
 import { preferencesGetHandler } from "../handlers/preferences-get.ts";
 import { preferencesHandler } from "../handlers/preferences.ts";
+import { preferencesRemoveHandler } from "../handlers/preferences-remove.ts";
 import { preferencesSetHandler } from "../handlers/preferences-set.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
@@ -29,6 +30,7 @@ import { mcpHelp } from "../help/mcp.ts";
 import {
   preferencesGetHelp,
   preferencesHelp,
+  preferencesRemoveHelp,
   preferencesSetHelp,
 } from "../help/preferences.ts";
 import { shellHelp } from "../help/shell.ts";
@@ -110,6 +112,12 @@ const commands: Command[] = [
         description: "Set a preference value (git config --global)",
         handler: preferencesSetHandler,
         help: preferencesSetHelp,
+      },
+      {
+        name: "remove",
+        description: "Remove a preference value (git config --global --unset)",
+        handler: preferencesRemoveHandler,
+        help: preferencesRemoveHelp,
       },
     ],
   },

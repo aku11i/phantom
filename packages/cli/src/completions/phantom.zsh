@@ -103,11 +103,14 @@ _phantom() {
                 preferences)
                     if [[ ${#line} -eq 1 ]]; then
                         _arguments \
-                            '1:subcommand:(get set)'
+                            '1:subcommand:(get set remove)'
                     elif [[ ${line[2]} == "get" ]]; then
                         _arguments \
                             '1:key:(editor)'
                     elif [[ ${line[2]} == "set" ]]; then
+                        _arguments \
+                            '1:key:(editor)'
+                    elif [[ ${line[2]} == "remove" ]]; then
                         _arguments \
                             '1:key:(editor)'
                     fi

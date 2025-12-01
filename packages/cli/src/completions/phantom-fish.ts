@@ -150,9 +150,10 @@ complete -c phantom -n "__phantom_using_command edit" -a "(__phantom_list_worktr
 complete -c phantom -n "__phantom_using_command edit; and __fish_seen_subcommand_from edit; and test (count (commandline -opc)) -ge 3" -f -a "(__fish_complete_path)"
 
 # preferences command
-complete -c phantom -n "__phantom_using_command preferences" -a "get set" -d "Manage preferences"
+complete -c phantom -n "__phantom_using_command preferences" -a "get set remove" -d "Manage preferences"
 complete -c phantom -n "__phantom_using_command preferences get" -a "editor" -d "Preference key"
 complete -c phantom -n "__phantom_using_command preferences set" -a "editor" -d "Preference key"
+complete -c phantom -n "__phantom_using_command preferences remove" -a "editor" -d "Preference key"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"
