@@ -31,6 +31,7 @@ export const preferencesHelp: CommandHelp = {
     "  remove <key> Remove a preference value",
     "",
     "Preferences are saved in git config with the 'phantom.' prefix (global scope).",
+    "Supported keys: editor (used by 'phantom edit', preferred over $EDITOR) and ai (used by 'phantom ai').",
   ],
 };
 

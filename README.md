@@ -27,6 +27,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🪟 **Built-in tmux integration** - Open worktrees in new panes or windows
 - 🔍 **Interactive selection with fzf** - Use built-in fzf option for worktree selection
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
+- 🧭 **Configurable defaults** - Set editor and AI commands once via `phantom preferences` (stored in global git config)
 - 🐙 **GitHub Integration** - Create worktrees directly from GitHub PRs and issues
 - 🤖 **MCP Integration** - AI autonomously manages worktrees for parallel development
 - ⚡ **Fast and lightweight** - Minimal external dependencies
@@ -119,10 +120,13 @@ phantom shell feature-y --tmux-v
 
 #### Editor Integration
 
-Phantom works seamlessly with editors like VS Code and Cursor. You can use `phantom edit` to open worktrees with your configured editor.
+Phantom works seamlessly with editors like VS Code and Cursor. Configure your preferred editor once with `phantom preferences set editor <command>` (stored as `phantom.editor`), and `phantom edit` will use it before falling back to `$EDITOR`.
 
 ```bash
-# Open with your default editor ($EDITOR)
+# Set your preferred editor once (stored in git config --global)
+phantom preferences set editor "code --reuse-window"
+
+# Open with your preferred editor (falls back to $EDITOR)
 phantom edit feature
 
 # Open a specific file
@@ -146,8 +150,30 @@ Configure your preferred AI coding tool once and launch it directly in any workt
 phantom preferences set ai claude
 phantom preferences set ai "codex --full-auto"
 
+# Inspect or clear the preference
+phantom preferences get ai
+phantom preferences remove ai
+
 # Start the assistant in a worktree
 phantom ai feature-auth
+```
+
+#### Preferences
+
+Store your defaults in global git config and manage them with `phantom preferences`.
+
+```bash
+# Inspect current defaults
+phantom preferences get editor
+phantom preferences get ai
+
+# Update them
+phantom preferences set editor "code --reuse-window"
+phantom preferences set ai claude
+
+# Remove to fall back to $EDITOR or reconfigure AI
+phantom preferences remove editor
+phantom preferences remove ai
 ```
 
 #### fzf Integration
@@ -207,6 +233,14 @@ phantom exec feature-awesome {command to run}
 phantom edit feature-awesome
 phantom edit feature-awesome README.md
 ```
+Uses the `phantom.editor` preference when set (falls back to `$EDITOR`).
+
+### Launch your AI assistant in the worktree
+
+```bash
+phantom ai feature-awesome
+```
+Configure it first with `phantom preferences set ai <command>`.
 
 ### Clean up when done
 

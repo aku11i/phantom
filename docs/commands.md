@@ -15,6 +15,10 @@ This document provides a comprehensive reference for all Phantom commands and th
   - [exec](#exec)
   - [edit](#edit)
   - [ai](#ai)
+- [Preferences](#preferences)
+  - [preferences get](#preferences-get)
+  - [preferences set](#preferences-set)
+  - [preferences remove](#preferences-remove)
 - [GitHub Integration](#github-integration)
   - [github checkout](#github-checkout)
 - [Other Commands](#other-commands)
@@ -272,7 +276,7 @@ phantom edit <name> [path]
 
 **Examples:**
 ```bash
-# Open the worktree root with $EDITOR
+# Open the worktree root with your configured editor
 phantom edit feature-auth
 
 # Open a specific file
@@ -280,7 +284,7 @@ phantom edit feature-auth README.md
 ```
 
 **Notes:**
-- $EDITOR must be set
+- Set a default editor with `phantom preferences set editor <command>`; phantom.editor takes priority over `$EDITOR`
 - The editor starts in the worktree directory so relative paths resolve there
 
 ### ai
@@ -298,8 +302,49 @@ phantom ai feature-auth
 ```
 
 **Notes:**
-- Configure the assistant first with `phantom preferences set ai <command>` (e.g., `claude` or `codex --full-auto`)
-- The assistant runs in the worktree directory with Phantom environment variables set
+- Configure the assistant with `phantom preferences set ai <command>` (e.g., `claude` or `codex --full-auto`) stored as `phantom.ai` in global git config
+
+## Preferences
+
+Configure defaults for Phantom commands using global git config. Preferences are stored under the `phantom.<key>` namespace and currently support:
+- `editor` - preferred editor command for `phantom edit`
+- `ai` - assistant command for `phantom ai`
+
+Set them once to avoid exporting environment variables each time.
+
+### preferences get
+
+Show a preference value.
+
+```bash
+phantom preferences get editor
+phantom preferences get ai
+```
+
+### preferences set
+
+Set or change a preference value.
+
+```bash
+# Use VS Code (reuse the current window)
+phantom preferences set editor "code --reuse-window"
+
+# Configure your AI assistant command
+phantom preferences set ai "codex --full-auto"
+```
+
+### preferences remove
+
+Remove a preference value.
+
+```bash
+phantom preferences remove editor
+phantom preferences remove ai
+```
+
+**Notes:**
+- `phantom edit` prefers `phantom.editor` and falls back to `$EDITOR` if unset
+- `phantom ai` requires `phantom.ai` to be configured
 
 ## GitHub Integration
 
