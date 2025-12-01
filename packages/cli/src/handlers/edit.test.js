@@ -84,13 +84,13 @@ describe("editHandler", () => {
 
     await rejects(
       async () => await editHandler([]),
-      /Exit with code 3: Usage: phantom edit \[--visual\] <worktree-name> \[path\]/,
+      /Exit with code 3: Usage: phantom edit <worktree-name> \[path\]/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Usage: phantom edit [--visual] <worktree-name> [path]",
+      "Error: Usage: phantom edit <worktree-name> [path]",
     );
   });
 
@@ -108,24 +108,6 @@ describe("editHandler", () => {
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],
       "Error: EDITOR environment variable is not set",
-    );
-    strictEqual(getGitRootMock.mock.calls.length, 0);
-  });
-
-  it("should error when VISUAL is not set with --visual", async () => {
-    exitMock.mock.resetCalls();
-    consoleErrorMock.mock.resetCalls();
-    processEnvMock.VISUAL = undefined;
-
-    await rejects(
-      async () => await editHandler(["--visual", "feature"]),
-      /Exit with code 3: VISUAL environment variable is not set/,
-    );
-
-    strictEqual(exitMock.mock.calls[0].arguments[0], 3);
-    strictEqual(
-      consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: VISUAL environment variable is not set",
     );
     strictEqual(getGitRootMock.mock.calls.length, 0);
   });
@@ -210,14 +192,14 @@ describe("editHandler", () => {
     );
   });
 
-  it("should honor --visual and open the provided path", async () => {
+  it("should open EDITOR with the provided path", async () => {
     exitMock.mock.resetCalls();
     consoleLogMock.mock.resetCalls();
     getGitRootMock.mock.resetCalls();
     validateWorktreeExistsMock.mock.resetCalls();
     getPhantomEnvMock.mock.resetCalls();
     spawnMock.mock.resetCalls();
-    processEnvMock.VISUAL = "code";
+    processEnvMock.EDITOR = "vim";
 
     getGitRootMock.mock.mockImplementation(() => "/repo");
     createContextMock.mock.mockImplementation((gitRoot) =>
@@ -241,17 +223,17 @@ describe("editHandler", () => {
     }));
 
     await rejects(
-      async () => await editHandler(["--visual", "docs", "README.md"]),
+      async () => await editHandler(["docs", "README.md"]),
       /Process exit with code 0/,
     );
 
     const spawnCall = spawnMock.mock.calls[0].arguments;
-    strictEqual(spawnCall[0], "code");
+    strictEqual(spawnCall[0], "vim");
     strictEqual(spawnCall[1][0], "README.md");
     strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/docs");
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
-      "Opening $VISUAL in worktree 'docs'...",
+      "Opening $EDITOR in worktree 'docs'...",
     );
   });
 });

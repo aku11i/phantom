@@ -96,7 +96,6 @@ _phantom() {
                     local worktrees
                     worktrees=(${(f)"$(phantom list --names 2>/dev/null)"})
                     _arguments \
-                        '--visual[Use $VISUAL instead of $EDITOR]' \
                         '1:worktree:(${(q)worktrees[@]})' \
                         '*:path:_files'
                     ;;

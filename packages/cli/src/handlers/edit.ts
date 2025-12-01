@@ -15,7 +15,7 @@ async function openEditor(
 ): Promise<number> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      // shell:true keeps EDITOR/VISUAL entries with flags (e.g., "code --wait") working.
+      // shell:true keeps EDITOR entries with flags (e.g., "code --wait") working.
       cwd,
       env,
       stdio: "inherit",
@@ -38,35 +38,28 @@ async function openEditor(
 }
 
 export async function editHandler(args: string[]): Promise<void> {
-  const { positionals, values } = parseArgs({
+  const { positionals } = parseArgs({
     args,
-    options: {
-      visual: {
-        type: "boolean",
-      },
-    },
+    options: {},
     strict: true,
     allowPositionals: true,
   });
 
   if (positionals.length === 0 || positionals.length > 2) {
     exitWithError(
-      "Usage: phantom edit [--visual] <worktree-name> [path]",
+      "Usage: phantom edit <worktree-name> [path]",
       exitCodes.validationError,
     );
   }
 
   const worktreeName = positionals[0];
   const target = positionals[1] ?? ".";
-  const useVisual = values.visual ?? false;
 
-  const editor = useVisual ? process.env.VISUAL : process.env.EDITOR;
+  const editor = process.env.EDITOR;
 
   if (!editor) {
     exitWithError(
-      useVisual
-        ? "VISUAL environment variable is not set"
-        : "EDITOR environment variable is not set",
+      "EDITOR environment variable is not set",
       exitCodes.validationError,
     );
   }
@@ -85,9 +78,7 @@ export async function editHandler(args: string[]): Promise<void> {
       exitWithError(validation.error.message, exitCodes.notFound);
     }
 
-    output.log(
-      `Opening ${useVisual ? "$VISUAL" : "$EDITOR"} in worktree '${worktreeName}'...`,
-    );
+    output.log(`Opening $EDITOR in worktree '${worktreeName}'...`);
 
     const exitCode = await openEditor(editor, [target], validation.value.path, {
       ...process.env,

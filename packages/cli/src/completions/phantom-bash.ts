@@ -117,21 +117,7 @@ _phantom_completion() {
             esac
             ;;
         edit)
-            case "\${prev}" in
-                --visual)
-                    local worktrees=$(_phantom_list_worktrees)
-                    COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
-                    return 0
-                    ;;
-            esac
-
-            if [[ "\${cur}" == -* ]]; then
-                local opts="--visual"
-                COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
-                return 0
-            fi
-
-            if [[ \${cword} -eq 2 ]] || [[ " \${words[@]} " =~ " --visual " && \${cword} -eq 3 ]]; then
+            if [[ \${cword} -eq 2 ]]; then
                 local worktrees=$(_phantom_list_worktrees)
                 COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
                 return 0

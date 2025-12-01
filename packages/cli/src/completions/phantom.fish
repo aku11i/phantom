@@ -85,7 +85,6 @@ complete -c phantom -n "__phantom_using_command exec" -l tmux-horizontal -d "Exe
 complete -c phantom -n "__phantom_using_command exec" -a "(__phantom_list_worktrees)"
 
 # edit command options
-complete -c phantom -n "__phantom_using_command edit" -l visual -d "Use $VISUAL instead of $EDITOR"
 complete -c phantom -n "__phantom_using_command edit" -a "(__phantom_list_worktrees)"
 
 # shell command options

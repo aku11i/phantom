@@ -266,11 +266,8 @@ phantom exec --fzf --tmux npm run dev
 Open your configured editor inside a worktree.
 
 ```bash
-phantom edit [--visual] <name> [path]
+phantom edit <name> [path]
 ```
-
-**Options:**
-- `--visual` - Use $VISUAL instead of $EDITOR
 
 **Examples:**
 ```bash
@@ -279,13 +276,10 @@ phantom edit feature-auth
 
 # Open a specific file
 phantom edit feature-auth README.md
-
-# Use the visual editor
-phantom edit --visual feature-auth
 ```
 
 **Notes:**
-- $EDITOR must be set (or $VISUAL when using --visual)
+- $EDITOR must be set
 - The editor starts in the worktree directory so relative paths resolve there
 
 ## GitHub Integration
