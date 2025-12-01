@@ -62,7 +62,7 @@ export async function editHandler(args: string[]): Promise<void> {
 
     if (!editor) {
       exitWithError(
-        "Editor is not configured. Set phantom.editor or the EDITOR env var.",
+        "Editor is not configured. Run 'phantom preferences set editor <command>' or set the EDITOR env var.",
         exitCodes.validationError,
       );
     }
