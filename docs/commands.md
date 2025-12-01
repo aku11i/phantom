@@ -303,7 +303,6 @@ phantom ai feature-auth
 
 **Notes:**
 - Configure the assistant with `phantom preferences set ai <command>` (e.g., `claude` or `codex --full-auto`) stored as `phantom.ai` in global git config
-- The assistant runs in the worktree directory with Phantom environment variables set (PHANTOM, PHANTOM_NAME, PHANTOM_PATH)
 
 ## Preferences
 
