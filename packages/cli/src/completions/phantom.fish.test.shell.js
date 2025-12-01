@@ -22,4 +22,23 @@ describe("phantom.fish completion", () => {
       `Expected version to be offered, got: ${completions.join(", ")}`,
     );
   });
+
+  it("passes exec completions through to the invoked command", () => {
+    const setupScript = `
+complete -c dummycmd -l from-dummy -d "Dummy option"
+`;
+
+    const { completions, result } = runFishCompletion(
+      completionScriptPath,
+      ["phantom", "exec", "demo-worktree", "dummycmd", "--from"],
+      { setupScript },
+    );
+
+    strictEqual(result.status, 0, result.stderr);
+
+    ok(
+      completions.includes("--from-dummy"),
+      `Expected dummycmd completion to be forwarded, got: ${completions.join(", ")}`,
+    );
+  });
 });

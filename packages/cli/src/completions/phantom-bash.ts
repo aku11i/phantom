@@ -5,6 +5,65 @@ _phantom_list_worktrees() {
     phantom list --names 2>/dev/null || true
 }
 
+_phantom_complete_exec_command() {
+    local command_index=$1
+
+    if (( command_index < 0 )); then
+        return 1
+    fi
+
+    local command_name="\${words[command_index]}"
+    local -a saved_comp_words=("\${COMP_WORDS[@]}")
+    local saved_comp_cword=\${COMP_CWORD}
+    local saved_comp_line=\${COMP_LINE-}
+    local saved_comp_point=\${COMP_POINT-0}
+    local saved_cur=\${cur-}
+    local saved_prev=\${prev-}
+
+    COMP_WORDS=("\${words[@]:command_index}")
+    COMP_CWORD=$((cword - command_index))
+    COMP_LINE="\${COMP_WORDS[*]}"
+    COMP_POINT=\${#COMP_LINE}
+    cur=\${COMP_WORDS[COMP_CWORD]}
+    prev=\${COMP_WORDS[COMP_CWORD-1]}
+
+    if [[ -z "\${command_name}" ]]; then
+        COMPREPLY=( $(compgen -c -- "\${cur}") )
+        compopt -o default -o bashdefault 2>/dev/null
+    else
+        if type _completion_loader &>/dev/null; then
+            _completion_loader "\${command_name}"
+        fi
+
+        local completion_func completion_command completion_spec
+        if completion_spec=$(complete -p "\${command_name}" 2>/dev/null); then
+        completion_func=$(sed -E -n 's/.*-F[[:space:]]+([^ ]*).*/\\1/p' <<< "\${completion_spec}")
+        completion_command=$(sed -E -n 's/.*-C[[:space:]]+([^ ]*).*/\\1/p' <<< "\${completion_spec}")
+        else
+            completion_func=""
+            completion_command=""
+        fi
+
+        if [[ -n "\${completion_func}" ]]; then
+            "\${completion_func}"
+        elif [[ -n "\${completion_command}" ]]; then
+            COMPREPLY=( $(\${completion_command} "\${COMP_WORDS[@]}" 2>/dev/null) )
+        else
+            COMPREPLY=()
+            compopt -o default -o bashdefault 2>/dev/null
+        fi
+    fi
+
+    COMP_WORDS=("\${saved_comp_words[@]}")
+    COMP_CWORD=\${saved_comp_cword}
+    COMP_LINE=\${saved_comp_line-}
+    COMP_POINT=\${saved_comp_point}
+    cur=\${saved_cur-}
+    prev=\${saved_prev-}
+
+    return 0
+}
+
 _phantom_completion() {
     local cur prev words cword
     _init_completion || return
@@ -37,7 +96,7 @@ _phantom_completion() {
                     return 0
                     ;;
                 *)
-                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file --base"
+                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --copy-file --base"
                     COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     return 0
                     ;;
@@ -59,7 +118,7 @@ _phantom_completion() {
                         # First argument: branch name (not completing - user needs to provide)
                         return 0
                     else
-                        local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --copy-file"
+                        local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --copy-file"
                         COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                         return 0
                     fi
@@ -92,33 +151,79 @@ _phantom_completion() {
             return 0
             ;;
         exec)
+            local use_fzf=false
+            local worktree_index=-1
+            local command_index=-1
+            local i
+
+            for ((i=2; i<\${#words[@]}; i++)); do
+                local word=\${words[i]}
+                if [[ "\${word}" == "--" ]]; then
+                    command_index=$((i + 1))
+                    break
+                fi
+
+                case "\${word}" in
+                    --fzf)
+                        use_fzf=true
+                        continue
+                        ;;
+                    --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h)
+                        continue
+                        ;;
+                esac
+
+                if [[ "\${word}" == -* ]]; then
+                    continue
+                fi
+
+                if \${use_fzf}; then
+                    command_index=\${i}
+                else
+                    worktree_index=\${i}
+                    command_index=$((i + 1))
+                fi
+                break
+            done
+
+            if \${use_fzf} && (( command_index == -1 )); then
+                command_index=\${cword}
+            elif ! \${use_fzf} && (( worktree_index == -1 )); then
+                worktree_index=\${cword}
+                command_index=$((worktree_index + 1))
+            fi
+
+            if (( command_index != -1 )) && (( cword >= command_index )); then
+                _phantom_complete_exec_command "\${command_index}"
+                return 0
+            fi
+
             case "\${prev}" in
-                --tmux|-t|--tmux-vertical|--tmux-horizontal)
-                    # After tmux options, expect worktree name
+                --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h)
                     local worktrees=$(_phantom_list_worktrees)
                     COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
-                    return 0
-                    ;;
-                *)
-                    if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
-                        COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
-                    elif [[ \${cword} -eq 2 ]] || [[ " \${words[@]} " =~ " --fzf " && \${cword} -eq 3 ]]; then
-                        # First non-option argument should be worktree name
-                        local worktrees=$(_phantom_list_worktrees)
-                        COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
-                    else
-                        # After worktree name, complete commands
-                        compopt -o default
-                        COMPREPLY=()
-                    fi
                     return 0
                     ;;
             esac
+
+            if [[ "\${cur}" == -* ]]; then
+                local opts="--fzf --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h"
+                COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
+                return 0
+            fi
+
+            if ! \${use_fzf} && (( cword == worktree_index )); then
+                local worktrees=$(_phantom_list_worktrees)
+                COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
+                return 0
+            fi
+
+            COMPREPLY=()
+            return 0
             ;;
         shell)
             case "\${prev}" in
-                --tmux|-t|--tmux-vertical|--tmux-horizontal)
+                --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h)
                     # After tmux options, expect worktree name
                     local worktrees=$(_phantom_list_worktrees)
                     COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
@@ -126,7 +231,7 @@ _phantom_completion() {
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal"
+                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h"
                         COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     else
                         local worktrees=$(_phantom_list_worktrees)
@@ -188,4 +293,5 @@ if [[ "\${BASH_VERSINFO[0]}" -eq 4 && "\${BASH_VERSINFO[1]}" -ge 4 || "\${BASH_V
     complete -F _phantom_completion -o nosort -o bashdefault -o default phantom
 else
     complete -F _phantom_completion -o bashdefault -o default phantom
-fi`;
+fi
+`;

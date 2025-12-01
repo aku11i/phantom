@@ -22,4 +22,26 @@ describe("phantom.bash completion", () => {
       `Expected version to be offered, got: ${completions.join(", ")}`,
     );
   });
+
+  it("completes exec command arguments with the target command's completion", () => {
+    const setupScript = `
+_dummy_complete() {
+  COMPREPLY=(--from-dummy)
+}
+complete -F _dummy_complete dummycmd
+`;
+
+    const { completions, result } = runBashCompletion(
+      completionScriptPath,
+      ["phantom", "exec", "demo-worktree", "dummycmd", "--from"],
+      { setupScript },
+    );
+
+    strictEqual(result.status, 0, result.stderr);
+
+    ok(
+      completions.includes("--from-dummy"),
+      `Expected exec to reuse dummycmd completion, got: ${completions.join(", ")}`,
+    );
+  });
 });
