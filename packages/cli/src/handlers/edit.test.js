@@ -17,7 +17,7 @@ const exitWithErrorMock = mock.fn((message, code) => {
   throw new Error(`Exit with code ${code}: ${message}`);
 });
 
-const originalEditor = process.env.EDITOR;
+const _originalEditor = process.env.EDITOR;
 
 mock.module("node:child_process", {
   namedExports: {
