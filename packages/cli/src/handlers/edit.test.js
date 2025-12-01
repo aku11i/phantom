@@ -17,14 +17,7 @@ const exitWithErrorMock = mock.fn((message, code) => {
   throw new Error(`Exit with code ${code}: ${message}`);
 });
 
-const processEnvMock = {};
-
-mock.module("node:process", {
-  namedExports: {
-    exit: exitMock,
-    env: processEnvMock,
-  },
-});
+const originalEditor = process.env.EDITOR;
 
 mock.module("node:child_process", {
   namedExports: {
@@ -94,7 +87,7 @@ describe(
   () => {
     it("should error when no worktree name is provided", async () => {
       resetMocks();
-      processEnvMock.EDITOR = "vim";
+      process.env.EDITOR = "vim";
       await rejects(
         async () => await editHandler([]),
         /Exit with code 3: Usage: phantom edit <worktree-name> \[path\]/,
@@ -109,7 +102,7 @@ describe(
 
     it("should error when EDITOR is not set", async () => {
       resetMocks();
-      processEnvMock.EDITOR = undefined;
+      process.env.EDITOR = undefined;
 
       await rejects(
         async () => await editHandler(["feature"]),
@@ -126,7 +119,7 @@ describe(
 
     it("should exit with not found when worktree does not exist", async () => {
       resetMocks();
-      processEnvMock.EDITOR = "vim";
+      process.env.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
       createContextMock.mock.mockImplementation((gitRoot) =>
         Promise.resolve({
@@ -152,7 +145,7 @@ describe(
 
     it("should open the configured EDITOR in the worktree root", async () => {
       resetMocks();
-      processEnvMock.EDITOR = "vim";
+      process.env.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
       createContextMock.mock.mockImplementation((gitRoot) =>
         Promise.resolve({
@@ -196,7 +189,7 @@ describe(
 
     it("should open EDITOR with the provided path", async () => {
       resetMocks();
-      processEnvMock.EDITOR = "vim";
+      process.env.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
       createContextMock.mock.mockImplementation((gitRoot) =>
         Promise.resolve({
