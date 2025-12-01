@@ -3,9 +3,7 @@ import { describe, it, mock } from "node:test";
 import { WorktreeNotFoundError } from "@aku11i/phantom-core";
 import { err, ok } from "@aku11i/phantom-shared";
 
-const exitMock = mock.fn((code) => {
-  throw new Error(`Process exit with code ${code}`);
-});
+const exitMock = mock.fn();
 const consoleLogMock = mock.fn();
 const consoleErrorMock = mock.fn();
 const getGitRootMock = mock.fn();
