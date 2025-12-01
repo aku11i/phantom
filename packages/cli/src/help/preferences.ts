@@ -10,7 +10,7 @@ export const preferencesHelp: CommandHelp = {
       description: "Show the configured editor preference",
     },
     {
-      command: "phantom preferences set editor code --wait",
+      command: "phantom preferences set editor code",
       description: "Set the editor preference (stored as phantom.editor in git config --global)",
     },
   ],
@@ -43,8 +43,8 @@ export const preferencesSetHelp: CommandHelp = {
   description: "Set a preference value (writes git config --global phantom.<key>)",
   examples: [
     {
-      command: "phantom preferences set editor code --wait",
-      description: "Set VS Code (wait for close) as the editor",
+      command: "phantom preferences set editor code",
+      description: "Set VS Code as the editor",
     },
   ],
   notes: ["Supported keys: editor"],
