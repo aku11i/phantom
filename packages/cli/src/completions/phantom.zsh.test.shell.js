@@ -22,5 +22,4 @@ describe("phantom.zsh completion", () => {
       `Expected version to be offered, got: ${completions.join(", ")}`,
     );
   });
-
 });

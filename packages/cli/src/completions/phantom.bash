@@ -37,8 +37,8 @@ _phantom_complete_exec_command() {
 
         local completion_func completion_command completion_spec
         if completion_spec=$(complete -p "${command_name}" 2>/dev/null); then
-            completion_func=$(sed -E -n 's/.*-F[[:space:]]+([^ ]*).*/\1/p' <<< "${completion_spec}")
-            completion_command=$(sed -E -n 's/.*-C[[:space:]]+([^ ]*).*/\1/p' <<< "${completion_spec}")
+        completion_func=$(sed -E -n 's/.*-F[[:space:]]+([^ ]*).*/\1/p' <<< "${completion_spec}")
+        completion_command=$(sed -E -n 's/.*-C[[:space:]]+([^ ]*).*/\1/p' <<< "${completion_spec}")
         else
             completion_func=""
             completion_command=""
