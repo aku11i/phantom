@@ -77,7 +77,7 @@ export async function editHandler(args: string[]): Promise<void> {
       exitWithError(validation.error.message, exitCodes.notFound);
     }
 
-    output.log(`Opening $EDITOR in worktree '${worktreeName}'...`);
+    output.log(`Opening editor in worktree '${worktreeName}'...`);
 
     const exitCode = await openEditor(editor, [target], validation.value.path, {
       ...process.env,

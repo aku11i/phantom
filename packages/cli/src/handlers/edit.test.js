@@ -199,7 +199,7 @@ describe(
       strictEqual(spawnCall[2].env.PHANTOM, "1");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
-        "Opening $EDITOR in worktree 'feature'...",
+        "Opening editor in worktree 'feature'...",
       );
     });
 
@@ -239,7 +239,7 @@ describe(
       strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/docs");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
-        "Opening $EDITOR in worktree 'docs'...",
+        "Opening editor in worktree 'docs'...",
       );
     });
 
