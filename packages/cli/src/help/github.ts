@@ -37,6 +37,21 @@ export const githubCheckoutHelp: CommandHelp = {
       description:
         "Base branch for new issue branches (issues only, default: repository HEAD)",
     },
+    {
+      name: "--tmux, -t",
+      type: "boolean",
+      description: "Open worktree in new tmux window",
+    },
+    {
+      name: "--tmux-vertical, --tmux-v",
+      type: "boolean",
+      description: "Open worktree in vertical split pane",
+    },
+    {
+      name: "--tmux-horizontal, --tmux-h",
+      type: "boolean",
+      description: "Open worktree in horizontal split pane",
+    },
   ],
   examples: [
     {
@@ -51,6 +66,10 @@ export const githubCheckoutHelp: CommandHelp = {
       command: "phantom github checkout 789 --base develop",
       description: "Create a worktree for issue #789 based on develop branch",
     },
+    {
+      command: "phantom github checkout 321 --tmux",
+      description: "Create a worktree and open it in a new tmux window",
+    },
   ],
   notes: [
     "For PRs: Creates worktree named 'pulls/{number}' with the PR's branch",
@@ -59,5 +78,7 @@ export const githubCheckoutHelp: CommandHelp = {
     "Requirements:",
     "  - GitHub CLI (gh) must be installed",
     "  - Must be authenticated with 'gh auth login'",
+    "",
+    "Tmux options require being inside a tmux session",
   ],
 };

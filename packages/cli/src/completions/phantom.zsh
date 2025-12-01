@@ -102,6 +102,11 @@ _phantom() {
                     elif [[ ${line[2]} == "checkout" ]]; then
                         _arguments \
                             '--base[Base branch for new issue branches (issues only)]:branch:' \
+                            '--tmux[Open worktree in new tmux window (-t)]' \
+                            '--tmux-vertical[Open worktree in vertical split pane]' \
+                            '--tmux-v[Alias for --tmux-vertical]' \
+                            '--tmux-horizontal[Open worktree in horizontal split pane]' \
+                            '--tmux-h[Alias for --tmux-horizontal]' \
                             '1:number:'
                     fi
                     ;;
