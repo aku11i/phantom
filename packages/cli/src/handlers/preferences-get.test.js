@@ -77,7 +77,7 @@ describe("preferencesGetHandler", () => {
 
     await rejects(
       async () => await preferencesGetHandler(["unknown"]),
-      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor/,
+      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor, ai/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
@@ -98,6 +98,21 @@ describe("preferencesGetHandler", () => {
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
+  it("prints ai preference when set", async () => {
+    resetMocks();
+    loadPreferencesMock.mock.mockImplementation(async () => ({
+      ai: "claude",
+    }));
+
+    await rejects(
+      async () => await preferencesGetHandler(["ai"]),
+      /Process exit with code 0/,
+    );
+
+    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "claude");
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
   it("warns when preference is unset", async () => {
     resetMocks();
     loadPreferencesMock.mock.mockImplementation(async () => ({}));
@@ -110,6 +125,21 @@ describe("preferencesGetHandler", () => {
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "Preference 'editor' is not set (git config --global phantom.editor)",
+    );
+  });
+
+  it("warns when ai preference is unset", async () => {
+    resetMocks();
+    loadPreferencesMock.mock.mockImplementation(async () => ({}));
+
+    await rejects(
+      async () => await preferencesGetHandler(["ai"]),
+      /Process exit with code 0/,
+    );
+
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Preference 'ai' is not set (git config --global phantom.ai)",
     );
   });
 });

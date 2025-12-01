@@ -1,5 +1,5 @@
 import { rejects, strictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { after, describe, it, mock } from "node:test";
 import { WorktreeNotFoundError } from "@aku11i/phantom-core";
 import { err, ok } from "@aku11i/phantom-shared";
 
@@ -15,7 +15,11 @@ const getPhantomEnvMock = mock.fn();
 const spawnMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
-  exitMock(code);
+  try {
+    exitMock(code);
+  } catch (_error) {
+    // Let the formatted exit message surface below.
+  }
   throw new Error(`Exit with code ${code}: ${message}`);
 });
 
@@ -112,12 +116,12 @@ describe(
     it("should error when neither phantom.editor nor EDITOR is set", async () => {
       resetMocks();
       process.env.EDITOR = undefined;
-      getGitRootMock.mock.mockResolvedValue("/repo");
-      createContextMock.mock.mockResolvedValue({
+      getGitRootMock.mock.mockImplementation(async () => "/repo");
+      createContextMock.mock.mockImplementation(async () => ({
         gitRoot: "/repo",
         worktreesDirectory: "/repo/.git/phantom/worktrees",
         preferences: {},
-      });
+      }));
 
       await rejects(
         async () => await editHandler(["feature"]),
@@ -127,7 +131,7 @@ describe(
       strictEqual(exitMock.mock.calls[0].arguments[0], 3);
       strictEqual(
         consoleErrorMock.mock.calls[0].arguments[0],
-        "Error: Editor is not configured. Set phantom.editor or the EDITOR env var.",
+        "Error: Editor is not configured. Run 'phantom preferences set editor <command>' or set the EDITOR env var.",
       );
     });
 
@@ -135,13 +139,11 @@ describe(
       resetMocks();
       process.env.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
-      createContextMock.mock.mockImplementation((gitRoot) =>
-        Promise.resolve({
-          gitRoot,
-          worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-          preferences: {},
-        }),
-      );
+      createContextMock.mock.mockImplementation(async (gitRoot) => ({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        preferences: {},
+      }));
       validateWorktreeExistsMock.mock.mockImplementation(() =>
         err(new WorktreeNotFoundError("missing")),
       );
@@ -207,13 +209,11 @@ describe(
       resetMocks();
       process.env.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
-      createContextMock.mock.mockImplementation((gitRoot) =>
-        Promise.resolve({
-          gitRoot,
-          worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-          preferences: {},
-        }),
-      );
+      createContextMock.mock.mockImplementation(async (gitRoot) => ({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        preferences: {},
+      }));
       validateWorktreeExistsMock.mock.mockImplementation(() =>
         ok({ path: "/repo/.git/phantom/worktrees/docs" }),
       );
@@ -246,12 +246,12 @@ describe(
     it("should prefer phantom.editor over EDITOR env", async () => {
       resetMocks();
       process.env.EDITOR = "env-editor";
-      getGitRootMock.mock.mockResolvedValue("/repo");
-      createContextMock.mock.mockResolvedValue({
+      getGitRootMock.mock.mockImplementation(async () => "/repo");
+      createContextMock.mock.mockImplementation(async () => ({
         gitRoot: "/repo",
         worktreesDirectory: "/repo/.git/phantom/worktrees",
         preferences: { editor: "pref-editor" },
-      });
+      }));
       validateWorktreeExistsMock.mock.mockImplementation(() =>
         ok({ path: "/repo/.git/phantom/worktrees/feature" }),
       );

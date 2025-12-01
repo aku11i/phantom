@@ -73,7 +73,7 @@ describe("preferencesRemoveHandler", () => {
 
     await rejects(
       async () => await preferencesRemoveHandler(["unknown"]),
-      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor/,
+      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor, ai/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
@@ -100,6 +100,29 @@ describe("preferencesRemoveHandler", () => {
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "Removed phantom.editor from global git config",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("unsets ai preference via git config --global", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "",
+      stderr: "",
+    }));
+
+    await rejects(
+      async () => await preferencesRemoveHandler(["ai"]),
+      /Process exit with code 0/,
+    );
+
+    strictEqual(
+      executeGitCommandMock.mock.calls[0].arguments[0][3],
+      "phantom.ai",
+    );
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Removed phantom.ai from global git config",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });

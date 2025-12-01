@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export interface Preferences {
   editor?: string;
+  ai?: string;
 }
 
 export class PreferencesValidationError extends Error {
@@ -15,6 +16,7 @@ export class PreferencesValidationError extends Error {
 const preferencesSchema = z
   .object({
     editor: z.string().optional(),
+    ai: z.string().optional(),
   })
   .passthrough();
 
@@ -48,6 +50,8 @@ function parsePreferences(output: string): Preferences {
 
     if (strippedKey === "editor") {
       preferences.editor = value;
+    } else if (strippedKey === "ai") {
+      preferences.ai = value;
     }
   }
 

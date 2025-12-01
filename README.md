@@ -137,6 +137,19 @@ phantom exec feature cursor .
 
 ![Phantom VS Code integration](./docs/assets/phantom-vscode.gif)
 
+#### AI Assistant Integration
+
+Configure your preferred AI coding tool once and launch it directly in any worktree.
+
+```bash
+# Configure your assistant command (examples)
+phantom preferences set ai claude
+phantom preferences set ai "codex --full-auto"
+
+# Start the assistant in a worktree
+phantom ai feature-auth
+```
+
 #### fzf Integration
 
 Interactive search with fzf allows quick worktree selection.

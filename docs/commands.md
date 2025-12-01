@@ -14,6 +14,7 @@ This document provides a comprehensive reference for all Phantom commands and th
   - [shell](#shell)
   - [exec](#exec)
   - [edit](#edit)
+  - [ai](#ai)
 - [GitHub Integration](#github-integration)
   - [github checkout](#github-checkout)
 - [Other Commands](#other-commands)
@@ -281,6 +282,24 @@ phantom edit feature-auth README.md
 **Notes:**
 - $EDITOR must be set
 - The editor starts in the worktree directory so relative paths resolve there
+
+### ai
+
+Launch your configured AI coding assistant inside a worktree.
+
+```bash
+phantom ai <name>
+```
+
+**Examples:**
+```bash
+# Launch the configured AI assistant in a worktree
+phantom ai feature-auth
+```
+
+**Notes:**
+- Configure the assistant first with `phantom preferences set ai <command>` (e.g., `claude` or `codex --full-auto`)
+- The assistant runs in the worktree directory with Phantom environment variables set
 
 ## GitHub Integration
 
