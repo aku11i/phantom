@@ -12,7 +12,7 @@ const getGitRootMock = mock.fn();
 const validateWorktreeExistsMock = mock.fn();
 const createContextMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
-const openEditorMock = mock.fn();
+const spawnMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
   try {
@@ -29,6 +29,12 @@ mock.module("node:process", {
   namedExports: {
     exit: exitMock,
     env: process.env,
+  },
+});
+
+mock.module("node:child_process", {
+  namedExports: {
+    spawn: spawnMock,
   },
 });
 
@@ -73,12 +79,6 @@ mock.module("../errors.ts", {
   },
 });
 
-mock.module("../utils/open-editor.ts", {
-  namedExports: {
-    openEditor: openEditorMock,
-  },
-});
-
 const { editHandler } = await import("./edit.ts");
 
 function resetMocks() {
@@ -89,7 +89,7 @@ function resetMocks() {
   validateWorktreeExistsMock.mock.resetCalls();
   createContextMock.mock.resetCalls();
   getPhantomEnvMock.mock.resetCalls();
-  openEditorMock.mock.resetCalls();
+  spawnMock.mock.resetCalls();
 }
 
 describe(
@@ -177,7 +177,13 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      openEditorMock.mock.mockImplementation(async () => 0);
+      spawnMock.mock.mockImplementation(() => ({
+        on: (event, handler) => {
+          if (event === "exit") {
+            queueMicrotask(() => handler(0, null));
+          }
+        },
+      }));
 
       await rejects(
         async () => await editHandler(["feature"]),
@@ -186,11 +192,13 @@ describe(
 
       strictEqual(getGitRootMock.mock.calls.length, 1);
       strictEqual(validateWorktreeExistsMock.mock.calls.length, 1);
-      const spawnCall = openEditorMock.mock.calls[0].arguments;
+      const spawnCall = spawnMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "vim");
       strictEqual(spawnCall[1][0], ".");
-      strictEqual(spawnCall[2], "/repo/.git/phantom/worktrees/feature");
-      strictEqual(spawnCall[3].PHANTOM, "1");
+      strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/feature");
+      strictEqual(spawnCall[2].shell, true);
+      strictEqual(spawnCall[2].stdio, "inherit");
+      strictEqual(spawnCall[2].env.PHANTOM, "1");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
         "Opening editor in worktree 'feature'...",
@@ -212,17 +220,23 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      openEditorMock.mock.mockImplementation(async () => 0);
+      spawnMock.mock.mockImplementation(() => ({
+        on: (event, handler) => {
+          if (event === "exit") {
+            queueMicrotask(() => handler(0, null));
+          }
+        },
+      }));
 
       await rejects(
         async () => await editHandler(["docs", "README.md"]),
         /Process exit with code 0/,
       );
 
-      const spawnCall = openEditorMock.mock.calls[0].arguments;
+      const spawnCall = spawnMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "vim");
       strictEqual(spawnCall[1][0], "README.md");
-      strictEqual(spawnCall[2], "/repo/.git/phantom/worktrees/docs");
+      strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/docs");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
         "Opening editor in worktree 'docs'...",
@@ -244,14 +258,20 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      openEditorMock.mock.mockImplementation(async () => 0);
+      spawnMock.mock.mockImplementation(() => ({
+        on: (event, handler) => {
+          if (event === "exit") {
+            queueMicrotask(() => handler(0, null));
+          }
+        },
+      }));
 
       await rejects(
         async () => await editHandler(["feature"]),
         /Process exit with code 0/,
       );
 
-      const spawnCall = openEditorMock.mock.calls[0].arguments;
+      const spawnCall = spawnMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "pref-editor");
     });
   },

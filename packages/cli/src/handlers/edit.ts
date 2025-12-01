@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import { parseArgs } from "node:util";
 import { createContext, validateWorktreeExists } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
@@ -5,7 +6,36 @@ import { getPhantomEnv } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
-import { openEditor } from "../utils/open-editor.ts";
+
+async function openEditor(
+  command: string,
+  args: string[],
+  cwd: string,
+  env: NodeJS.ProcessEnv,
+): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      // shell:true keeps commands with flags (e.g., "code --wait") working.
+      cwd,
+      env,
+      stdio: "inherit",
+      shell: true,
+    });
+
+    child.on("error", (error) => {
+      reject(error);
+    });
+
+    child.on("exit", (code, signal) => {
+      if (signal) {
+        reject(new Error(`Command exited with signal ${signal}`));
+        return;
+      }
+
+      resolve(code ?? 0);
+    });
+  });
+}
 
 export async function editHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({
