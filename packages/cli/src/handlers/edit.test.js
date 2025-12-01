@@ -19,6 +19,13 @@ const exitWithErrorMock = mock.fn((message, code) => {
 
 const _originalEditor = process.env.EDITOR;
 
+mock.module("node:process", {
+  namedExports: {
+    exit: exitMock,
+    env: process.env,
+  },
+});
+
 mock.module("node:child_process", {
   namedExports: {
     spawn: spawnMock,
