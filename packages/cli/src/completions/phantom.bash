@@ -68,7 +68,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec edit shell github gh version completion mcp"
+    local commands="create attach list where delete exec edit shell preferences github gh version completion mcp"
     local global_opts="--help --version"
 
     if [[ ${cword} -eq 1 ]]; then
@@ -254,6 +254,20 @@ _phantom_completion() {
         completion)
             local shells="fish zsh bash"
             COMPREPLY=( $(compgen -W "${shells}" -- "${cur}") )
+            return 0
+            ;;
+        preferences)
+            if [[ ${cword} -eq 2 ]]; then
+                local subcommands="get"
+                COMPREPLY=( $(compgen -W "${subcommands}" -- "${cur}") )
+                return 0
+            elif [[ ${words[2]} == "get" ]]; then
+                if [[ ${cword} -eq 3 ]]; then
+                    local keys="editor phantom.editor"
+                    COMPREPLY=( $(compgen -W "${keys}" -- "${cur}") )
+                    return 0
+                fi
+            fi
             return 0
             ;;
         github|gh)

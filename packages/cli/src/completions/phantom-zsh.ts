@@ -14,6 +14,7 @@ _phantom() {
         'exec:Execute a command in a worktree directory'
         'edit:Open a worktree in your configured editor'
         'shell:Open an interactive shell in a worktree directory'
+        'preferences:Manage phantom user preferences'
         'github:GitHub integration commands'
         'gh:GitHub integration commands (alias)'
         'version:Display phantom version information'
@@ -98,6 +99,15 @@ _phantom() {
                     _arguments \
                         '1:worktree:(\${(q)worktrees[@]})' \
                         '*:path:_files'
+                    ;;
+                preferences)
+                    if [[ \${#line} -eq 1 ]]; then
+                        _arguments \
+                            '1:subcommand:(get)'
+                    elif [[ \${line[2]} == "get" ]]; then
+                        _arguments \
+                            '1:key:(editor phantom.editor)'
+                    fi
                     ;;
                 completion)
                     _arguments \

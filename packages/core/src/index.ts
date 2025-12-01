@@ -3,6 +3,7 @@ export * from "./config/validate.ts";
 export * from "./context.ts";
 export * from "./exec.ts";
 export * from "./paths.ts";
+export * from "./preferences/loader.ts";
 export * from "./shell.ts";
 export * from "./worktree/attach.ts";
 export * from "./worktree/create.ts";
