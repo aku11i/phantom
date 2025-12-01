@@ -1,14 +1,6 @@
 import { spawn } from "node:child_process";
 import { ProcessSignalError, ProcessSpawnError } from "./errors.ts";
 
-function shellEscape(arg: string): string {
-  if (/^[a-zA-Z0-9_@%+=:,./-]*$/.test(arg)) {
-    return arg;
-  }
-
-  return `'${arg.replace(/'/g, `'\\''`)}'`;
-}
-
 export async function spawnShell(
   command: string,
   args: string[],
@@ -16,11 +8,7 @@ export async function spawnShell(
   env: NodeJS.ProcessEnv,
 ): Promise<number> {
   return new Promise((resolve, reject) => {
-    const commandLine = [command, ...args.map((arg) => shellEscape(arg))].join(
-      " ",
-    );
-
-    const child = spawn(commandLine, [], {
+    const child = spawn(command, args, {
       cwd,
       env,
       stdio: "inherit",

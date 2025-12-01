@@ -5,8 +5,8 @@ import { spawnShell } from "./spawn-shell.ts";
 describe("spawnShell", () => {
   it("returns exit code from spawned command", async () => {
     const exitCode = await spawnShell(
-      "node",
-      ["-e", "process.exit(0)"],
+      'node -e "process.exit(0)"',
+      [],
       process.cwd(),
       process.env,
     );
@@ -16,8 +16,8 @@ describe("spawnShell", () => {
 
   it("passes environment variables through", async () => {
     const exitCode = await spawnShell(
-      "node",
-      ["-e", "process.exit(process.env.TEST_SPAWN_SHELL === '1' ? 0 : 1)"],
+      'node -e "process.exit(process.env.TEST_SPAWN_SHELL === \\"1\\" ? 0 : 1)"',
+      [],
       process.cwd(),
       {
         ...process.env,
@@ -30,8 +30,8 @@ describe("spawnShell", () => {
 
   it("propagates non-zero exit codes", async () => {
     const exitCode = await spawnShell(
-      "node",
-      ["-e", "process.exit(5)"],
+      'node -e "process.exit(5)"',
+      [],
       process.cwd(),
       process.env,
     );
