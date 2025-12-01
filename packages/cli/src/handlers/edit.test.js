@@ -1,5 +1,5 @@
 import { rejects, strictEqual } from "node:assert";
-import { describe, it, mock } from "node:test";
+import { after, describe, it, mock } from "node:test";
 import { WorktreeNotFoundError } from "@aku11i/phantom-core";
 import { err, ok } from "@aku11i/phantom-shared";
 
@@ -12,10 +12,14 @@ const getGitRootMock = mock.fn();
 const validateWorktreeExistsMock = mock.fn();
 const createContextMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
-const spawnMock = mock.fn();
+const spawnShellMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
-  exitMock(code);
+  try {
+    exitMock(code);
+  } catch (_error) {
+    // Let the formatted exit message surface below.
+  }
   throw new Error(`Exit with code ${code}: ${message}`);
 });
 
@@ -28,12 +32,6 @@ mock.module("node:process", {
   },
 });
 
-mock.module("node:child_process", {
-  namedExports: {
-    spawn: spawnMock,
-  },
-});
-
 mock.module("@aku11i/phantom-git", {
   namedExports: {
     getGitRoot: getGitRootMock,
@@ -43,6 +41,7 @@ mock.module("@aku11i/phantom-git", {
 mock.module("@aku11i/phantom-process", {
   namedExports: {
     getPhantomEnv: getPhantomEnvMock,
+    spawnShell: spawnShellMock,
   },
 });
 
@@ -85,7 +84,7 @@ function resetMocks() {
   validateWorktreeExistsMock.mock.resetCalls();
   createContextMock.mock.resetCalls();
   getPhantomEnvMock.mock.resetCalls();
-  spawnMock.mock.resetCalls();
+  spawnShellMock.mock.resetCalls();
 }
 
 describe(
@@ -112,12 +111,12 @@ describe(
     it("should error when neither phantom.editor nor EDITOR is set", async () => {
       resetMocks();
       process.env.EDITOR = undefined;
-      getGitRootMock.mock.mockResolvedValue("/repo");
-      createContextMock.mock.mockResolvedValue({
+      getGitRootMock.mock.mockImplementation(async () => "/repo");
+      createContextMock.mock.mockImplementation(async () => ({
         gitRoot: "/repo",
         worktreesDirectory: "/repo/.git/phantom/worktrees",
         preferences: {},
-      });
+      }));
 
       await rejects(
         async () => await editHandler(["feature"]),
@@ -135,13 +134,11 @@ describe(
       resetMocks();
       process.env.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
-      createContextMock.mock.mockImplementation((gitRoot) =>
-        Promise.resolve({
-          gitRoot,
-          worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-          preferences: {},
-        }),
-      );
+      createContextMock.mock.mockImplementation(async (gitRoot) => ({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        preferences: {},
+      }));
       validateWorktreeExistsMock.mock.mockImplementation(() =>
         err(new WorktreeNotFoundError("missing")),
       );
@@ -175,13 +172,7 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      spawnMock.mock.mockImplementation(() => ({
-        on: (event, handler) => {
-          if (event === "exit") {
-            queueMicrotask(() => handler(0, null));
-          }
-        },
-      }));
+      spawnShellMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await editHandler(["feature"]),
@@ -190,13 +181,11 @@ describe(
 
       strictEqual(getGitRootMock.mock.calls.length, 1);
       strictEqual(validateWorktreeExistsMock.mock.calls.length, 1);
-      const spawnCall = spawnMock.mock.calls[0].arguments;
+      const spawnCall = spawnShellMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "vim");
       strictEqual(spawnCall[1][0], ".");
-      strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/feature");
-      strictEqual(spawnCall[2].shell, true);
-      strictEqual(spawnCall[2].stdio, "inherit");
-      strictEqual(spawnCall[2].env.PHANTOM, "1");
+      strictEqual(spawnCall[2], "/repo/.git/phantom/worktrees/feature");
+      strictEqual(spawnCall[3].PHANTOM, "1");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
         "Opening editor in worktree 'feature'...",
@@ -207,36 +196,28 @@ describe(
       resetMocks();
       process.env.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
-      createContextMock.mock.mockImplementation((gitRoot) =>
-        Promise.resolve({
-          gitRoot,
-          worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
-          preferences: {},
-        }),
-      );
+      createContextMock.mock.mockImplementation(async (gitRoot) => ({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        preferences: {},
+      }));
       validateWorktreeExistsMock.mock.mockImplementation(() =>
         ok({ path: "/repo/.git/phantom/worktrees/docs" }),
       );
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      spawnMock.mock.mockImplementation(() => ({
-        on: (event, handler) => {
-          if (event === "exit") {
-            queueMicrotask(() => handler(0, null));
-          }
-        },
-      }));
+      spawnShellMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await editHandler(["docs", "README.md"]),
         /Process exit with code 0/,
       );
 
-      const spawnCall = spawnMock.mock.calls[0].arguments;
+      const spawnCall = spawnShellMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "vim");
       strictEqual(spawnCall[1][0], "README.md");
-      strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/docs");
+      strictEqual(spawnCall[2], "/repo/.git/phantom/worktrees/docs");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
         "Opening editor in worktree 'docs'...",
@@ -246,32 +227,26 @@ describe(
     it("should prefer phantom.editor over EDITOR env", async () => {
       resetMocks();
       process.env.EDITOR = "env-editor";
-      getGitRootMock.mock.mockResolvedValue("/repo");
-      createContextMock.mock.mockResolvedValue({
+      getGitRootMock.mock.mockImplementation(async () => "/repo");
+      createContextMock.mock.mockImplementation(async () => ({
         gitRoot: "/repo",
         worktreesDirectory: "/repo/.git/phantom/worktrees",
         preferences: { editor: "pref-editor" },
-      });
+      }));
       validateWorktreeExistsMock.mock.mockImplementation(() =>
         ok({ path: "/repo/.git/phantom/worktrees/feature" }),
       );
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      spawnMock.mock.mockImplementation(() => ({
-        on: (event, handler) => {
-          if (event === "exit") {
-            queueMicrotask(() => handler(0, null));
-          }
-        },
-      }));
+      spawnShellMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await editHandler(["feature"]),
         /Process exit with code 0/,
       );
 
-      const spawnCall = spawnMock.mock.calls[0].arguments;
+      const spawnCall = spawnShellMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "pref-editor");
     });
   },

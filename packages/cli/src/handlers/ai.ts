@@ -1,11 +1,10 @@
 import { parseArgs } from "node:util";
 import { createContext, validateWorktreeExists } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { getPhantomEnv } from "@aku11i/phantom-process";
+import { getPhantomEnv, spawnShell } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
-import { openEditor } from "../utils/open-tool.ts";
 
 export async function aiHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({
@@ -48,7 +47,7 @@ export async function aiHandler(args: string[]): Promise<void> {
 
     output.log(`Launching AI assistant in worktree '${worktreeName}'...`);
 
-    const exitCode = await openEditor(aiCommand, [], validation.value.path, {
+    const exitCode = await spawnShell(aiCommand, [], validation.value.path, {
       ...process.env,
       ...getPhantomEnv(worktreeName, validation.value.path),
     });

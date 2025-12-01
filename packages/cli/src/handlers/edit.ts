@@ -1,11 +1,10 @@
 import { parseArgs } from "node:util";
 import { createContext, validateWorktreeExists } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
-import { getPhantomEnv } from "@aku11i/phantom-process";
+import { getPhantomEnv, spawnShell } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
-import { openEditor } from "../utils/open-tool.ts";
 
 export async function editHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({
@@ -49,7 +48,7 @@ export async function editHandler(args: string[]): Promise<void> {
 
     output.log(`Opening editor in worktree '${worktreeName}'...`);
 
-    const exitCode = await openEditor(editor, [target], validation.value.path, {
+    const exitCode = await spawnShell(editor, [target], validation.value.path, {
       ...process.env,
       ...getPhantomEnv(worktreeName, validation.value.path),
     });

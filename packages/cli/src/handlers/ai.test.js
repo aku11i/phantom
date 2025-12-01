@@ -12,7 +12,7 @@ const getGitRootMock = mock.fn();
 const validateWorktreeExistsMock = mock.fn();
 const createContextMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
-const openEditorMock = mock.fn();
+const spawnShellMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
   try {
@@ -39,6 +39,7 @@ mock.module("@aku11i/phantom-git", {
 mock.module("@aku11i/phantom-process", {
   namedExports: {
     getPhantomEnv: getPhantomEnvMock,
+    spawnShell: spawnShellMock,
   },
 });
 
@@ -47,12 +48,6 @@ mock.module("@aku11i/phantom-core", {
     validateWorktreeExists: validateWorktreeExistsMock,
     createContext: createContextMock,
     WorktreeNotFoundError,
-  },
-});
-
-mock.module("../utils/open-tool.ts", {
-  namedExports: {
-    openEditor: openEditorMock,
   },
 });
 
@@ -87,7 +82,7 @@ function resetMocks() {
   validateWorktreeExistsMock.mock.resetCalls();
   createContextMock.mock.resetCalls();
   getPhantomEnvMock.mock.resetCalls();
-  openEditorMock.mock.resetCalls();
+  spawnShellMock.mock.resetCalls();
 }
 
 describe(
@@ -158,15 +153,15 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      openEditorMock.mock.mockImplementation(async () => 0);
+      spawnShellMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await aiHandler(["feature"]),
         /Process exit with code 0/,
       );
 
-      strictEqual(openEditorMock.mock.calls.length, 1);
-      const [command, args, cwd, env] = openEditorMock.mock.calls[0].arguments;
+      strictEqual(spawnShellMock.mock.calls.length, 1);
+      const [command, args, cwd, env] = spawnShellMock.mock.calls[0].arguments;
       strictEqual(command, "codex --full-auto");
       strictEqual(args.length, 0);
       strictEqual(cwd, "/repo/.git/phantom/worktrees/feature");
