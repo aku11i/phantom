@@ -84,7 +84,6 @@ function resetMocks() {
   createContextMock.mock.resetCalls();
   getPhantomEnvMock.mock.resetCalls();
   spawnMock.mock.resetCalls();
-  processEnvMock.EDITOR = "vim";
 }
 
 describe(
@@ -95,6 +94,7 @@ describe(
   () => {
     it("should error when no worktree name is provided", async () => {
       resetMocks();
+      processEnvMock.EDITOR = "vim";
       await rejects(
         async () => await editHandler([]),
         /Exit with code 3: Usage: phantom edit <worktree-name> \[path\]/,
@@ -126,6 +126,7 @@ describe(
 
     it("should exit with not found when worktree does not exist", async () => {
       resetMocks();
+      processEnvMock.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
       createContextMock.mock.mockImplementation((gitRoot) =>
         Promise.resolve({
@@ -151,6 +152,7 @@ describe(
 
     it("should open the configured EDITOR in the worktree root", async () => {
       resetMocks();
+      processEnvMock.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
       createContextMock.mock.mockImplementation((gitRoot) =>
         Promise.resolve({
@@ -194,6 +196,7 @@ describe(
 
     it("should open EDITOR with the provided path", async () => {
       resetMocks();
+      processEnvMock.EDITOR = "vim";
       getGitRootMock.mock.mockImplementation(() => "/repo");
       createContextMock.mock.mockImplementation((gitRoot) =>
         Promise.resolve({
