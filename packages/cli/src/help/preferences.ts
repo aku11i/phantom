@@ -11,7 +11,8 @@ export const preferencesHelp: CommandHelp = {
     },
     {
       command: "phantom preferences set editor code",
-      description: "Set the editor preference (stored as phantom.editor in git config --global)",
+      description:
+        "Set the editor preference (stored as phantom.editor in git config --global)",
     },
     {
       command: "phantom preferences remove editor",
@@ -45,7 +46,8 @@ export const preferencesGetHelp: CommandHelp = {
 export const preferencesSetHelp: CommandHelp = {
   name: "preferences set",
   usage: "phantom preferences set <key> <value>",
-  description: "Set a preference value (writes git config --global phantom.<key>)",
+  description:
+    "Set a preference value (writes git config --global phantom.<key>)",
   examples: [
     {
       command: "phantom preferences set editor code",

@@ -108,10 +108,7 @@ describe("preferencesSetHandler", () => {
       executeGitCommandMock.mock.calls[0].arguments[0][2],
       "phantom.editor",
     );
-    strictEqual(
-      executeGitCommandMock.mock.calls[0].arguments[0][3],
-      "code",
-    );
+    strictEqual(executeGitCommandMock.mock.calls[0].arguments[0][3], "code");
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "Set phantom.editor (global) to 'code'",
@@ -127,8 +124,7 @@ describe("preferencesSetHandler", () => {
     }));
 
     await rejects(
-      async () =>
-        await preferencesSetHandler(["editor", "code", "--wait"]),
+      async () => await preferencesSetHandler(["editor", "code", "--wait"]),
       /Process exit with code 0/,
     );
 
