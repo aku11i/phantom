@@ -73,7 +73,7 @@ describe("preferencesSetHandler", () => {
 
     await rejects(
       async () => await preferencesSetHandler(["unknown", "value"]),
-      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor/,
+      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor, ai/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
@@ -132,5 +132,29 @@ describe("preferencesSetHandler", () => {
       executeGitCommandMock.mock.calls[0].arguments[0][3],
       "code --wait",
     );
+  });
+
+  it("sets ai preference via git config --global", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "",
+      stderr: "",
+    }));
+
+    await rejects(
+      async () => await preferencesSetHandler(["ai", "claude"]),
+      /Process exit with code 0/,
+    );
+
+    strictEqual(
+      executeGitCommandMock.mock.calls[0].arguments[0][2],
+      "phantom.ai",
+    );
+    strictEqual(executeGitCommandMock.mock.calls[0].arguments[0][3], "claude");
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Set phantom.ai (global) to 'claude'",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 });

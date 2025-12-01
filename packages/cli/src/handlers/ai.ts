@@ -7,7 +7,7 @@ import { exitCodes, exitWithError } from "../errors.ts";
 import { output } from "../output.ts";
 import { openEditor } from "../utils/open-tool.ts";
 
-export async function editHandler(args: string[]): Promise<void> {
+export async function aiHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({
     args,
     options: {},
@@ -15,24 +15,23 @@ export async function editHandler(args: string[]): Promise<void> {
     allowPositionals: true,
   });
 
-  if (positionals.length === 0 || positionals.length > 2) {
+  if (positionals.length !== 1) {
     exitWithError(
-      "Usage: phantom edit <worktree-name> [path]",
+      "Usage: phantom ai <worktree-name>",
       exitCodes.validationError,
     );
   }
 
   const worktreeName = positionals[0];
-  const target = positionals[1] ?? ".";
 
   try {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
-    const editor = context.preferences.editor ?? process.env.EDITOR;
+    const aiCommand = context.preferences.ai;
 
-    if (!editor) {
+    if (!aiCommand) {
       exitWithError(
-        "Editor is not configured. Run 'phantom preferences set editor <command>' or set the EDITOR env var.",
+        "AI assistant is not configured. Run 'phantom preferences set ai <command>' first.",
         exitCodes.validationError,
       );
     }
@@ -47,9 +46,9 @@ export async function editHandler(args: string[]): Promise<void> {
       exitWithError(validation.error.message, exitCodes.notFound);
     }
 
-    output.log(`Opening editor in worktree '${worktreeName}'...`);
+    output.log(`Launching AI assistant in worktree '${worktreeName}'...`);
 
-    const exitCode = await openEditor(editor, [target], validation.value.path, {
+    const exitCode = await openEditor(aiCommand, [], validation.value.path, {
       ...process.env,
       ...getPhantomEnv(worktreeName, validation.value.path),
     });

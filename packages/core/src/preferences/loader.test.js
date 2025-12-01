@@ -16,16 +16,16 @@ describe("loadPreferences", () => {
     executeGitCommandMock.mock.resetCalls();
   };
 
-  it("returns editor preference from git config", async () => {
+  it("returns editor and ai preferences from git config", async () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
-      stdout: "phantom.editor\ncode\u0000",
+      stdout: "phantom.editor\ncode\u0000phantom.ai\nclaude\u0000",
       stderr: "",
     }));
 
     const preferences = await loadPreferences();
 
-    deepStrictEqual(preferences, { editor: "code" });
+    deepStrictEqual(preferences, { editor: "code", ai: "claude" });
     deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments[0], [
       "config",
       "--global",
@@ -38,13 +38,14 @@ describe("loadPreferences", () => {
   it("ignores unknown keys and keeps known ones", async () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
-      stdout: "phantom.unknown\nvalue\u0000phantom.editor\nvim\u0000",
+      stdout:
+        "phantom.unknown\nvalue\u0000phantom.editor\nvim\u0000phantom.ai\ncodex\u0000",
       stderr: "",
     }));
 
     const preferences = await loadPreferences();
 
-    deepStrictEqual(preferences, { editor: "vim" });
+    deepStrictEqual(preferences, { editor: "vim", ai: "codex" });
   });
 
   it("returns empty preferences when no config entries exist", async () => {
@@ -62,12 +63,14 @@ describe("loadPreferences", () => {
   it("prefers the last occurrence of the same key", async () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
-      stdout: "phantom.editor\nvim\u0000phantom.editor\ncode\u0000",
+      stdout:
+        "phantom.editor\nvim\u0000phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.ai\ncursor\u0000",
       stderr: "",
     }));
 
     const preferences = await loadPreferences();
 
     equal(preferences.editor, "code");
+    equal(preferences.ai, "cursor");
   });
 });

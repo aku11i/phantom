@@ -3,7 +3,7 @@ import { executeGitCommand } from "@aku11i/phantom-git";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
-const supportedKeys = ["editor"] as const;
+const supportedKeys = ["editor", "ai"] as const;
 
 export async function preferencesRemoveHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({

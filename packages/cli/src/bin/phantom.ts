@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { argv, exit } from "node:process";
+import { aiHandler } from "../handlers/ai.ts";
 import { attachHandler } from "../handlers/attach.ts";
 import { completionHandler } from "../handlers/completion.ts";
 import { createHandler } from "../handlers/create.ts";
@@ -18,6 +19,7 @@ import { preferencesSetHandler } from "../handlers/preferences-set.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
 import { whereHandler } from "../handlers/where.ts";
+import { aiHelp } from "../help/ai.ts";
 import { attachHelp } from "../help/attach.ts";
 import { completionHelp } from "../help/completion.ts";
 import { createHelp } from "../help/create.ts";
@@ -88,6 +90,12 @@ const commands: Command[] = [
     description: "Open a worktree in your configured editor",
     handler: editHandler,
     help: editHelp,
+  },
+  {
+    name: "ai",
+    description: "Launch your configured AI coding assistant in a worktree",
+    handler: aiHandler,
+    help: aiHelp,
   },
   {
     name: "shell",

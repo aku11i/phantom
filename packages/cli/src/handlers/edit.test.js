@@ -127,7 +127,7 @@ describe(
       strictEqual(exitMock.mock.calls[0].arguments[0], 3);
       strictEqual(
         consoleErrorMock.mock.calls[0].arguments[0],
-        "Error: Editor is not configured. Set phantom.editor or the EDITOR env var.",
+        "Error: Editor is not configured. Run 'phantom preferences set editor <command>' or set the EDITOR env var.",
       );
     });
 

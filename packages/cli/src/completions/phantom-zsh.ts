@@ -13,6 +13,7 @@ _phantom() {
         'delete:Delete a Git worktree (phantom)'
         'exec:Execute a command in a worktree directory'
         'edit:Open a worktree in your configured editor'
+        'ai:Launch your configured AI coding assistant in a worktree'
         'shell:Open an interactive shell in a worktree directory'
         'preferences:Manage phantom user preferences'
         'github:GitHub integration commands'
@@ -100,10 +101,16 @@ _phantom() {
                         '1:worktree:(\${(q)worktrees[@]})' \
                         '*:path:_files'
                     ;;
+                ai)
+                    local worktrees
+                    worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
+                    _arguments \
+                        '1:worktree:(\${(q)worktrees[@]})'
+                    ;;
                 preferences)
                     _arguments \
                         '1:subcommand:(get set remove)' \
-                        '2:key:(editor)'
+                        '2:key:(editor ai)'
                     ;;
                 completion)
                     _arguments \

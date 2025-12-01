@@ -68,7 +68,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec edit shell preferences github gh version completion mcp"
+    local commands="create attach list where delete exec edit ai shell preferences github gh version completion mcp"
     local global_opts="--help --version"
 
     if [[ ${cword} -eq 1 ]]; then
@@ -231,6 +231,11 @@ _phantom_completion() {
             _filedir
             return 0
             ;;
+        ai)
+            local worktrees=$(_phantom_list_worktrees)
+            COMPREPLY=( $(compgen -W "${worktrees}" -- "${cur}") )
+            return 0
+            ;;
         shell)
             case "${prev}" in
                 --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h)
@@ -263,19 +268,19 @@ _phantom_completion() {
                 return 0
             elif [[ ${words[2]} == "get" ]]; then
                 if [[ ${cword} -eq 3 ]]; then
-                    local keys="editor"
+                    local keys="editor ai"
                     COMPREPLY=( $(compgen -W "${keys}" -- "${cur}") )
                     return 0
                 fi
             elif [[ ${words[2]} == "set" ]]; then
                 if [[ ${cword} -eq 3 ]]; then
-                    local keys="editor"
+                    local keys="editor ai"
                     COMPREPLY=( $(compgen -W "${keys}" -- "${cur}") )
                     return 0
                 fi
             elif [[ ${words[2]} == "remove" ]]; then
                 if [[ ${cword} -eq 3 ]]; then
-                    local keys="editor"
+                    local keys="editor ai"
                     COMPREPLY=( $(compgen -W "${keys}" -- "${cur}") )
                     return 0
                 fi

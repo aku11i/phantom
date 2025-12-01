@@ -15,6 +15,11 @@ export const preferencesHelp: CommandHelp = {
         "Set the editor preference (stored as phantom.editor in git config --global)",
     },
     {
+      command: 'phantom preferences set ai "codex --full-auto"',
+      description:
+        "Set the AI assistant preference (stored as phantom.ai in git config --global)",
+    },
+    {
       command: "phantom preferences remove editor",
       description: "Remove the editor preference (fallback to env/default)",
     },
@@ -39,8 +44,12 @@ export const preferencesGetHelp: CommandHelp = {
       command: "phantom preferences get editor",
       description: "Show the editor preference",
     },
+    {
+      command: "phantom preferences get ai",
+      description: "Show the AI assistant preference",
+    },
   ],
-  notes: ["Supported keys: editor"],
+  notes: ["Supported keys: editor, ai"],
 };
 
 export const preferencesSetHelp: CommandHelp = {
@@ -53,8 +62,12 @@ export const preferencesSetHelp: CommandHelp = {
       command: "phantom preferences set editor code",
       description: "Set VS Code as the editor",
     },
+    {
+      command: "phantom preferences set ai claude",
+      description: "Configure the AI assistant command",
+    },
   ],
-  notes: ["Supported keys: editor"],
+  notes: ["Supported keys: editor, ai"],
 };
 
 export const preferencesRemoveHelp: CommandHelp = {
@@ -67,6 +80,10 @@ export const preferencesRemoveHelp: CommandHelp = {
       command: "phantom preferences remove editor",
       description: "Unset the editor preference",
     },
+    {
+      command: "phantom preferences remove ai",
+      description: "Unset the AI assistant preference",
+    },
   ],
-  notes: ["Supported keys: editor"],
+  notes: ["Supported keys: editor, ai"],
 };

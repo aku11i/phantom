@@ -87,6 +87,7 @@ complete -c phantom -n "__phantom_using_command" -a "where" -d "Output the files
 complete -c phantom -n "__phantom_using_command" -a "delete" -d "Delete a Git worktree (phantom)"
 complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "edit" -d "Open a worktree in your configured editor"
+complete -c phantom -n "__phantom_using_command" -a "ai" -d "Launch your configured AI coding assistant in a worktree"
 complete -c phantom -n "__phantom_using_command" -a "shell" -d "Open an interactive shell in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "preferences" -d "Manage phantom user preferences (git config)"
 complete -c phantom -n "__phantom_using_command" -a "github" -d "GitHub integration commands"
@@ -149,11 +150,14 @@ complete -c phantom -n "__phantom_using_command edit" -a "(__phantom_list_worktr
 # After the worktree argument, enable file/path completion
 complete -c phantom -n "__phantom_using_command edit; and __fish_seen_subcommand_from edit; and test (count (commandline -opc)) -ge 3" -f -a "(__fish_complete_path)"
 
+# ai command options
+complete -c phantom -n "__phantom_using_command ai" -a "(__phantom_list_worktrees)"
+
 # preferences command
 complete -c phantom -n "__phantom_using_command preferences" -a "get set remove" -d "Manage preferences"
-complete -c phantom -n "__phantom_using_command preferences get" -a "editor" -d "Preference key"
-complete -c phantom -n "__phantom_using_command preferences set" -a "editor" -d "Preference key"
-complete -c phantom -n "__phantom_using_command preferences remove" -a "editor" -d "Preference key"
+complete -c phantom -n "__phantom_using_command preferences get" -a "editor ai" -d "Preference key"
+complete -c phantom -n "__phantom_using_command preferences set" -a "editor ai" -d "Preference key"
+complete -c phantom -n "__phantom_using_command preferences remove" -a "editor ai" -d "Preference key"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"
