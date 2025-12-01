@@ -257,6 +257,11 @@ phantom delete feature-awesome
 - **[GitHub Integration](./docs/github.md)** - Work with GitHub pull requests and issues
 - **[MCP Integration](./docs/mcp.md)** - AI-powered parallel development with Model Context Protocol
 
+### Platform support
+
+- Officially supported: Linux and macOS
+- Windows: not yet verified. It should run reliably when used from a Linux environment on WSL, but native Windows behavior is not guaranteed. The maintainers do not regularly test on Windows.
+- Pull requests to improve Windows compatibility are welcome.
 
 ## 🤝 Contributing
 

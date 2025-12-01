@@ -202,6 +202,11 @@ phantom delete feature-awesome
 - **[GitHub統合](./docs/github.md)** - GitHubプルリクエストとイシューの操作
 - **[MCP統合](./docs/mcp.md)** - Model Context ProtocolによるAIを活用した並行開発
 
+### 対応プラットフォーム
+
+- 公式サポート: Linux と macOS
+- Windows: まだ十分に検証していません。WSL 上の Linux 環境からであれば安定して動作するはずですが、Windows ネイティブでの動作は保証できません。メンテナは普段 Windows 環境を持っていないため積極的な検証はできていません。
+- Windows 対応を改善するプルリクエストは歓迎します。
 
 ## 🤝 コントリビュート
 
