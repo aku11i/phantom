@@ -258,10 +258,16 @@ _phantom_completion() {
             ;;
         preferences)
             if [[ ${cword} -eq 2 ]]; then
-                local subcommands="get"
+                local subcommands="get set"
                 COMPREPLY=( $(compgen -W "${subcommands}" -- "${cur}") )
                 return 0
             elif [[ ${words[2]} == "get" ]]; then
+                if [[ ${cword} -eq 3 ]]; then
+                    local keys="editor"
+                    COMPREPLY=( $(compgen -W "${keys}" -- "${cur}") )
+                    return 0
+                fi
+            elif [[ ${words[2]} == "set" ]]; then
                 if [[ ${cword} -eq 3 ]]; then
                     local keys="editor"
                     COMPREPLY=( $(compgen -W "${keys}" -- "${cur}") )
