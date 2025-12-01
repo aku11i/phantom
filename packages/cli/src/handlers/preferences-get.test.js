@@ -98,20 +98,6 @@ describe("preferencesGetHandler", () => {
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
-  it("accepts phantom.* key format", async () => {
-    resetMocks();
-    loadPreferencesMock.mock.mockImplementation(async () => ({
-      editor: "vim",
-    }));
-
-    await rejects(
-      async () => await preferencesGetHandler(["phantom.editor"]),
-      /Process exit with code 0/,
-    );
-
-    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "vim");
-  });
-
   it("warns when preference is unset", async () => {
     resetMocks();
     loadPreferencesMock.mock.mockImplementation(async () => ({}));

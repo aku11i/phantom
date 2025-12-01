@@ -263,7 +263,7 @@ _phantom_completion() {
                 return 0
             elif [[ \${words[2]} == "get" ]]; then
                 if [[ \${cword} -eq 3 ]]; then
-                    local keys="editor phantom.editor"
+                    local keys="editor"
                     COMPREPLY=( $(compgen -W "\${keys}" -- "\${cur}") )
                     return 0
                 fi

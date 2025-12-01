@@ -151,7 +151,7 @@ complete -c phantom -n "__phantom_using_command edit; and __fish_seen_subcommand
 
 # preferences command
 complete -c phantom -n "__phantom_using_command preferences" -a "get" -d "Show a preference value"
-complete -c phantom -n "__phantom_using_command preferences get" -a "editor phantom.editor" -d "Preference key"
+complete -c phantom -n "__phantom_using_command preferences get" -a "editor" -d "Preference key"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"

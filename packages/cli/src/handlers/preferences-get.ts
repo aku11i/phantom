@@ -5,10 +5,6 @@ import { output } from "../output.ts";
 
 const supportedKeys = ["editor"] as const;
 
-function normalizeKey(key: string): string {
-  return key.startsWith("phantom.") ? key.slice("phantom.".length) : key;
-}
-
 export async function preferencesGetHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({
     args,
@@ -25,11 +21,8 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
   }
 
   const inputKey = positionals[0];
-  const normalizedKey = normalizeKey(inputKey);
 
-  if (
-    !supportedKeys.includes(normalizedKey as (typeof supportedKeys)[number])
-  ) {
+  if (!supportedKeys.includes(inputKey as (typeof supportedKeys)[number])) {
     exitWithError(
       `Unknown preference '${inputKey}'. Supported keys: ${supportedKeys.join(", ")}`,
       exitCodes.validationError,
@@ -38,11 +31,11 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
 
   try {
     const preferences = await loadPreferences();
-    const value = normalizedKey === "editor" ? preferences.editor : undefined;
+    const value = inputKey === "editor" ? preferences.editor : undefined;
 
     if (value === undefined) {
       output.log(
-        `Preference '${normalizedKey}' is not set (git config --global phantom.${normalizedKey})`,
+        `Preference '${inputKey}' is not set (git config --global phantom.${inputKey})`,
       );
     } else {
       output.log(value);

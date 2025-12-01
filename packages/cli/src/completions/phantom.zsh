@@ -106,7 +106,7 @@ _phantom() {
                             '1:subcommand:(get)'
                     elif [[ ${line[2]} == "get" ]]; then
                         _arguments \
-                            '1:key:(editor phantom.editor)'
+                            '1:key:(editor)'
                     fi
                     ;;
                 completion)
