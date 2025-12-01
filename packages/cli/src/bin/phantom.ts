@@ -11,6 +11,10 @@ import { githubHandler } from "../handlers/github.ts";
 import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
+import { preferencesHandler } from "../handlers/preferences.ts";
+import { preferencesGetHandler } from "../handlers/preferences-get.ts";
+import { preferencesRemoveHandler } from "../handlers/preferences-remove.ts";
+import { preferencesSetHandler } from "../handlers/preferences-set.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
 import { whereHandler } from "../handlers/where.ts";
@@ -23,6 +27,12 @@ import { execHelp } from "../help/exec.ts";
 import { githubCheckoutHelp, githubHelp } from "../help/github.ts";
 import { listHelp } from "../help/list.ts";
 import { mcpHelp } from "../help/mcp.ts";
+import {
+  preferencesGetHelp,
+  preferencesHelp,
+  preferencesRemoveHelp,
+  preferencesSetHelp,
+} from "../help/preferences.ts";
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
@@ -84,6 +94,32 @@ const commands: Command[] = [
     description: "Open an interactive shell in a worktree directory",
     handler: shellHandler,
     help: shellHelp,
+  },
+  {
+    name: "preferences",
+    description: "Manage phantom user preferences (git config)",
+    handler: preferencesHandler,
+    help: preferencesHelp,
+    subcommands: [
+      {
+        name: "get",
+        description: "Show a preference value",
+        handler: preferencesGetHandler,
+        help: preferencesGetHelp,
+      },
+      {
+        name: "set",
+        description: "Set a preference value (git config --global)",
+        handler: preferencesSetHandler,
+        help: preferencesSetHelp,
+      },
+      {
+        name: "remove",
+        description: "Remove a preference value (git config --global --unset)",
+        handler: preferencesRemoveHandler,
+        help: preferencesRemoveHelp,
+      },
+    ],
   },
   {
     name: "version",

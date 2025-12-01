@@ -55,18 +55,17 @@ export async function editHandler(args: string[]): Promise<void> {
   const worktreeName = positionals[0];
   const target = positionals[1] ?? ".";
 
-  const editor = process.env.EDITOR;
-
-  if (!editor) {
-    exitWithError(
-      "EDITOR environment variable is not set",
-      exitCodes.validationError,
-    );
-  }
-
   try {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
+    const editor = context.preferences.editor ?? process.env.EDITOR;
+
+    if (!editor) {
+      exitWithError(
+        "Editor is not configured. Run 'phantom preferences set editor <command>' or set the EDITOR env var.",
+        exitCodes.validationError,
+      );
+    }
 
     const validation = await validateWorktreeExists(
       context.gitRoot,
@@ -78,7 +77,7 @@ export async function editHandler(args: string[]): Promise<void> {
       exitWithError(validation.error.message, exitCodes.notFound);
     }
 
-    output.log(`Opening $EDITOR in worktree '${worktreeName}'...`);
+    output.log(`Opening editor in worktree '${worktreeName}'...`);
 
     const exitCode = await openEditor(editor, [target], validation.value.path, {
       ...process.env,
