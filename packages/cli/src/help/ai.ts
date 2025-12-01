@@ -11,7 +11,7 @@ export const aiHelp: CommandHelp = {
     },
   ],
   notes: [
-    "Configure the assistant first with 'phantom preferences set ai <command>' (e.g., 'claude' or 'codex --full-auto').",
+    "Configure the assistant first with 'phantom preferences set ai <command>' (stored as phantom.ai in git config --global, e.g., 'claude' or 'codex --full-auto').",
     "The assistant runs inside the worktree so it can access project files and context.",
   ],
 };
