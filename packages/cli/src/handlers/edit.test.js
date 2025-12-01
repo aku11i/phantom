@@ -109,21 +109,26 @@ describe(
       );
     });
 
-    it("should error when EDITOR is not set", async () => {
+    it("should error when neither phantom.editor nor EDITOR is set", async () => {
       resetMocks();
       process.env.EDITOR = undefined;
+      getGitRootMock.mock.mockResolvedValue("/repo");
+      createContextMock.mock.mockResolvedValue({
+        gitRoot: "/repo",
+        worktreesDirectory: "/repo/.git/phantom/worktrees",
+        preferences: {},
+      });
 
       await rejects(
         async () => await editHandler(["feature"]),
-        /Exit with code 3: EDITOR environment variable is not set/,
+        /Exit with code 3: Editor is not configured/,
       );
 
       strictEqual(exitMock.mock.calls[0].arguments[0], 3);
       strictEqual(
         consoleErrorMock.mock.calls[0].arguments[0],
-        "Error: EDITOR environment variable is not set",
+        "Error: Editor is not configured. Set phantom.editor or the EDITOR env var.",
       );
-      strictEqual(getGitRootMock.mock.calls.length, 0);
     });
 
     it("should exit with not found when worktree does not exist", async () => {
@@ -134,6 +139,7 @@ describe(
         Promise.resolve({
           gitRoot,
           worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+          preferences: {},
         }),
       );
       validateWorktreeExistsMock.mock.mockImplementation(() =>
@@ -160,6 +166,7 @@ describe(
         Promise.resolve({
           gitRoot,
           worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+          preferences: {},
         }),
       );
       validateWorktreeExistsMock.mock.mockImplementation(() =>
@@ -204,6 +211,7 @@ describe(
         Promise.resolve({
           gitRoot,
           worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+          preferences: {},
         }),
       );
       validateWorktreeExistsMock.mock.mockImplementation(() =>
@@ -233,6 +241,38 @@ describe(
         consoleLogMock.mock.calls[0].arguments[0],
         "Opening $EDITOR in worktree 'docs'...",
       );
+    });
+
+    it("should prefer phantom.editor over EDITOR env", async () => {
+      resetMocks();
+      process.env.EDITOR = "env-editor";
+      getGitRootMock.mock.mockResolvedValue("/repo");
+      createContextMock.mock.mockResolvedValue({
+        gitRoot: "/repo",
+        worktreesDirectory: "/repo/.git/phantom/worktrees",
+        preferences: { editor: "pref-editor" },
+      });
+      validateWorktreeExistsMock.mock.mockImplementation(() =>
+        ok({ path: "/repo/.git/phantom/worktrees/feature" }),
+      );
+      getPhantomEnvMock.mock.mockImplementation(() => ({
+        PHANTOM: "1",
+      }));
+      spawnMock.mock.mockImplementation(() => ({
+        on: (event, handler) => {
+          if (event === "exit") {
+            queueMicrotask(() => handler(0, null));
+          }
+        },
+      }));
+
+      await rejects(
+        async () => await editHandler(["feature"]),
+        /Process exit with code 0/,
+      );
+
+      const spawnCall = spawnMock.mock.calls[0].arguments;
+      strictEqual(spawnCall[0], "pref-editor");
     });
   },
 );
