@@ -99,7 +99,17 @@ complete -c phantom -n "__phantom_using_command gh" -a "checkout" -d "Create a w
 
 # github checkout command options
 complete -c phantom -n "__phantom_using_command github checkout" -l base -d "Base branch for new issue branches (issues only)" -x
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux -d "Open worktree in new tmux window (-t)"
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux-vertical -d "Open worktree in vertical split pane"
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux-v -d "Alias for --tmux-vertical"
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux-horizontal -d "Open worktree in horizontal split pane"
+complete -c phantom -n "__phantom_using_command github checkout" -l tmux-h -d "Alias for --tmux-horizontal"
 complete -c phantom -n "__phantom_using_command gh checkout" -l base -d "Base branch for new issue branches (issues only)" -x
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux -d "Open worktree in new tmux window (-t)"
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-vertical -d "Open worktree in vertical split pane"
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-v -d "Alias for --tmux-vertical"
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-horizontal -d "Open worktree in horizontal split pane"
+complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-h -d "Alias for --tmux-horizontal"
 
 # mcp command options
 complete -c phantom -n "__phantom_using_command mcp" -a "serve" -d "Start MCP server"`;

@@ -158,7 +158,7 @@ _phantom_completion() {
                             # First argument after checkout should be number
                             return 0
                         else
-                            local opts="--base"
+                            local opts="--base --tmux -t --tmux-vertical --tmux-v --tmux-horizontal --tmux-h"
                             COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                             return 0
                         fi
