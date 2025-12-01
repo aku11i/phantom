@@ -11,7 +11,9 @@ export type BashCompletionResult = {
 export const runBashCompletion = (
   completionScriptPath: string,
   words: string[],
+  options?: { setupScript?: string },
 ): BashCompletionResult => {
+  const setupScript = options?.setupScript ?? "";
   const resolvedCurrentWordIndex = Math.max(words.length - 1, 0);
   const currentWord = words[resolvedCurrentWordIndex] ?? "";
   const previousWord = words[resolvedCurrentWordIndex - 1] ?? "";
@@ -21,6 +23,7 @@ export const runBashCompletion = (
 set -e
 shopt -s progcomp
 source "${completionScriptPath}"
+${setupScript}
 _init_completion() {
   cur=${JSON.stringify(currentWord)}
   prev=${JSON.stringify(previousWord)}

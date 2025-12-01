@@ -24,6 +24,58 @@ function __phantom_using_command
     return 1
 end
 
+function __phantom_exec_before_command
+    set -l tokens (commandline -opc)
+    set -l non_options 0
+
+    for token in $tokens[3..-1]
+        switch $token
+            case '-*'
+                continue
+            case '*'
+                set non_options (math $non_options + 1)
+        end
+    end
+
+    if contains -- --fzf $tokens
+        test $non_options -eq 0
+        return $status
+    end
+
+    test $non_options -eq 0
+end
+
+function __phantom_exec_expect_worktree
+    set -l tokens (commandline -opc)
+
+    if test (count $tokens) -lt 3
+        return 0
+    end
+
+    if contains -- --fzf $tokens
+        return 1
+    end
+
+    for token in $tokens[3..-1]
+        switch $token
+            case '-*'
+                continue
+            case '*'
+                return 1
+        end
+    end
+
+    return 0
+end
+
+function __phantom_exec_command_skip
+    if contains -- --fzf (commandline -opc)
+        echo 2
+    else
+        echo 3
+    end
+end
+
 # Disable file completion for phantom
 complete -c phantom -f
 
@@ -51,6 +103,8 @@ complete -c phantom -n "__phantom_using_command create" -l exec -d "Execute a co
 complete -c phantom -n "__phantom_using_command create" -l tmux -d "Open the worktree in a new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command create" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
 complete -c phantom -n "__phantom_using_command create" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
+complete -c phantom -n "__phantom_using_command create" -l tmux-v -d "Alias for --tmux-vertical"
+complete -c phantom -n "__phantom_using_command create" -l tmux-h -d "Alias for --tmux-horizontal"
 complete -c phantom -n "__phantom_using_command create" -l copy-file -d "Copy specified files from the current worktree" -r
 complete -c phantom -n "__phantom_using_command create" -l base -d "Branch or commit to create the new worktree from (defaults to HEAD)" -x
 
@@ -60,6 +114,8 @@ complete -c phantom -n "__phantom_using_command attach" -l exec -d "Execute a co
 complete -c phantom -n "__phantom_using_command attach" -l tmux -d "Open the worktree in a new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command attach" -l tmux-vertical -d "Open the worktree in a vertical tmux pane"
 complete -c phantom -n "__phantom_using_command attach" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
+complete -c phantom -n "__phantom_using_command attach" -l tmux-v -d "Alias for --tmux-vertical"
+complete -c phantom -n "__phantom_using_command attach" -l tmux-h -d "Alias for --tmux-horizontal"
 complete -c phantom -n "__phantom_using_command attach" -l copy-file -d "Copy specified files from the current worktree" -r
 
 # list command options
@@ -77,17 +133,22 @@ complete -c phantom -n "__phantom_using_command delete" -l fzf -d "Use fzf for i
 complete -c phantom -n "__phantom_using_command delete" -a "(__phantom_list_worktrees)"
 
 # exec command options
-complete -c phantom -n "__phantom_using_command exec" -l fzf -d "Use fzf for interactive selection"
-complete -c phantom -n "__phantom_using_command exec" -l tmux -d "Execute command in new tmux window (-t)"
-complete -c phantom -n "__phantom_using_command exec" -l tmux-vertical -d "Execute command in vertical split pane"
-complete -c phantom -n "__phantom_using_command exec" -l tmux-horizontal -d "Execute command in horizontal split pane"
-complete -c phantom -n "__phantom_using_command exec" -a "(__phantom_list_worktrees)"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l fzf -d "Use fzf for interactive selection"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux -d "Execute command in new tmux window (-t)"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-vertical -d "Execute command in vertical split pane"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-v -d "Alias for --tmux-vertical"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-horizontal -d "Execute command in horizontal split pane"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-h -d "Alias for --tmux-horizontal"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_expect_worktree" -a "(__phantom_list_worktrees)"
+complete -c phantom -n "__phantom_using_command exec; and not __phantom_exec_expect_worktree" -a "(__fish_complete_subcommand --fcs-skip=(__phantom_exec_command_skip))"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"
 complete -c phantom -n "__phantom_using_command shell" -l tmux -d "Open shell in new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command shell" -l tmux-vertical -d "Open shell in vertical split pane"
 complete -c phantom -n "__phantom_using_command shell" -l tmux-horizontal -d "Open shell in horizontal split pane"
+complete -c phantom -n "__phantom_using_command shell" -l tmux-v -d "Alias for --tmux-vertical"
+complete -c phantom -n "__phantom_using_command shell" -l tmux-h -d "Alias for --tmux-horizontal"
 complete -c phantom -n "__phantom_using_command shell" -a "(__phantom_list_worktrees)"
 
 # completion command - shell names

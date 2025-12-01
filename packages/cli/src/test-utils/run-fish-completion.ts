@@ -8,11 +8,14 @@ export type FishCompletionResult = {
 export const runFishCompletion = (
   completionScriptPath: string,
   words: string[],
+  options?: { setupScript?: string },
 ): FishCompletionResult => {
+  const setupScript = options?.setupScript ?? "";
   const buffer = words.join(" ");
 
   const command = `
 source ${JSON.stringify(completionScriptPath)}
+${setupScript}
 complete -C${JSON.stringify(buffer)}
 `;
 
