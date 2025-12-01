@@ -236,3 +236,7 @@ describe(
     });
   },
 );
+
+after(() => {
+  process.env.EDITOR = _originalEditor;
+});
