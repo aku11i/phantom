@@ -1,7 +1,6 @@
 import { spawn } from "node:child_process";
-import { ProcessSignalError, ProcessSpawnError } from "./errors.ts";
 
-export async function spawnShell(
+export async function openEditor(
   command: string,
   args: string[],
   cwd: string,
@@ -9,6 +8,7 @@ export async function spawnShell(
 ): Promise<number> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
+      // shell:true keeps commands with flags (e.g., "code --wait") working.
       cwd,
       env,
       stdio: "inherit",
@@ -16,12 +16,12 @@ export async function spawnShell(
     });
 
     child.on("error", (error) => {
-      reject(new ProcessSpawnError(command, error.message));
+      reject(error);
     });
 
     child.on("exit", (code, signal) => {
       if (signal) {
-        reject(new ProcessSignalError(signal));
+        reject(new Error(`Command exited with signal ${signal}`));
         return;
       }
 

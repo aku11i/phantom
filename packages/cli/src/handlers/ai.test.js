@@ -12,7 +12,7 @@ const getGitRootMock = mock.fn();
 const validateWorktreeExistsMock = mock.fn();
 const createContextMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
-const spawnShellMock = mock.fn();
+const launchAiAssistantMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
   try {
@@ -39,7 +39,6 @@ mock.module("@aku11i/phantom-git", {
 mock.module("@aku11i/phantom-process", {
   namedExports: {
     getPhantomEnv: getPhantomEnvMock,
-    spawnShell: spawnShellMock,
   },
 });
 
@@ -72,6 +71,12 @@ mock.module("../errors.ts", {
   },
 });
 
+mock.module("./ai.ts", {
+  namedExports: {
+    launchAiAssistant: launchAiAssistantMock,
+  },
+});
+
 const { aiHandler } = await import("./ai.ts");
 
 function resetMocks() {
@@ -82,7 +87,7 @@ function resetMocks() {
   validateWorktreeExistsMock.mock.resetCalls();
   createContextMock.mock.resetCalls();
   getPhantomEnvMock.mock.resetCalls();
-  spawnShellMock.mock.resetCalls();
+  launchAiAssistantMock.mock.resetCalls();
 }
 
 describe(
@@ -153,19 +158,19 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      spawnShellMock.mock.mockImplementation(async () => 0);
+      launchAiAssistantMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await aiHandler(["feature"]),
         /Process exit with code 0/,
       );
 
-      strictEqual(spawnShellMock.mock.calls.length, 1);
-      const [command, args, cwd, env] = spawnShellMock.mock.calls[0].arguments;
+      strictEqual(launchAiAssistantMock.mock.calls.length, 1);
+      const [command, name, cwd] =
+        launchAiAssistantMock.mock.calls[0].arguments;
       strictEqual(command, "codex --full-auto");
-      strictEqual(args.length, 0);
+      strictEqual(name, "feature");
       strictEqual(cwd, "/repo/.git/phantom/worktrees/feature");
-      strictEqual(env.PHANTOM, "1");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
         "Launching AI assistant in worktree 'feature'...",

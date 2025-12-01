@@ -12,7 +12,7 @@ const getGitRootMock = mock.fn();
 const validateWorktreeExistsMock = mock.fn();
 const createContextMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
-const spawnShellMock = mock.fn();
+const openEditorMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
   try {
@@ -41,7 +41,6 @@ mock.module("@aku11i/phantom-git", {
 mock.module("@aku11i/phantom-process", {
   namedExports: {
     getPhantomEnv: getPhantomEnvMock,
-    spawnShell: spawnShellMock,
   },
 });
 
@@ -74,6 +73,12 @@ mock.module("../errors.ts", {
   },
 });
 
+mock.module("../utils/open-editor.ts", {
+  namedExports: {
+    openEditor: openEditorMock,
+  },
+});
+
 const { editHandler } = await import("./edit.ts");
 
 function resetMocks() {
@@ -84,7 +89,7 @@ function resetMocks() {
   validateWorktreeExistsMock.mock.resetCalls();
   createContextMock.mock.resetCalls();
   getPhantomEnvMock.mock.resetCalls();
-  spawnShellMock.mock.resetCalls();
+  openEditorMock.mock.resetCalls();
 }
 
 describe(
@@ -172,7 +177,7 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      spawnShellMock.mock.mockImplementation(async () => 0);
+      openEditorMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await editHandler(["feature"]),
@@ -181,7 +186,7 @@ describe(
 
       strictEqual(getGitRootMock.mock.calls.length, 1);
       strictEqual(validateWorktreeExistsMock.mock.calls.length, 1);
-      const spawnCall = spawnShellMock.mock.calls[0].arguments;
+      const spawnCall = openEditorMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "vim");
       strictEqual(spawnCall[1][0], ".");
       strictEqual(spawnCall[2], "/repo/.git/phantom/worktrees/feature");
@@ -207,14 +212,14 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      spawnShellMock.mock.mockImplementation(async () => 0);
+      openEditorMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await editHandler(["docs", "README.md"]),
         /Process exit with code 0/,
       );
 
-      const spawnCall = spawnShellMock.mock.calls[0].arguments;
+      const spawnCall = openEditorMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "vim");
       strictEqual(spawnCall[1][0], "README.md");
       strictEqual(spawnCall[2], "/repo/.git/phantom/worktrees/docs");
@@ -239,14 +244,14 @@ describe(
       getPhantomEnvMock.mock.mockImplementation(() => ({
         PHANTOM: "1",
       }));
-      spawnShellMock.mock.mockImplementation(async () => 0);
+      openEditorMock.mock.mockImplementation(async () => 0);
 
       await rejects(
         async () => await editHandler(["feature"]),
         /Process exit with code 0/,
       );
 
-      const spawnCall = spawnShellMock.mock.calls[0].arguments;
+      const spawnCall = openEditorMock.mock.calls[0].arguments;
       strictEqual(spawnCall[0], "pref-editor");
     });
   },
