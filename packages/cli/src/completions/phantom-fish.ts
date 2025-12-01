@@ -86,6 +86,8 @@ complete -c phantom -n "__phantom_using_command exec" -a "(__phantom_list_worktr
 
 # edit command options
 complete -c phantom -n "__phantom_using_command edit" -a "(__phantom_list_worktrees)"
+# After the worktree argument, enable file/path completion
+complete -c phantom -n "__phantom_using_command edit; and __fish_seen_subcommand_from edit; and test (count (commandline -opc)) -ge 3" -f -a "(__fish_complete_path)"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"
