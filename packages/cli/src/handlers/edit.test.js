@@ -220,15 +220,15 @@ describe(
         },
       }));
 
-    await rejects(
-      async () => await editHandler(["docs", "README.md"]),
-      /Process exit with code 0/,
-    );
+      await rejects(
+        async () => await editHandler(["docs", "README.md"]),
+        /Process exit with code 0/,
+      );
 
-    const spawnCall = spawnMock.mock.calls[0].arguments;
-    strictEqual(spawnCall[0], "vim");
-    strictEqual(spawnCall[1][0], "README.md");
-    strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/docs");
+      const spawnCall = spawnMock.mock.calls[0].arguments;
+      strictEqual(spawnCall[0], "vim");
+      strictEqual(spawnCall[1][0], "README.md");
+      strictEqual(spawnCall[2].cwd, "/repo/.git/phantom/worktrees/docs");
       strictEqual(
         consoleLogMock.mock.calls[0].arguments[0],
         "Opening $EDITOR in worktree 'docs'...",
