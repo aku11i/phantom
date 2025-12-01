@@ -13,6 +13,7 @@ This document provides a comprehensive reference for all Phantom commands and th
 - [Working with Worktrees](#working-with-worktrees)
   - [shell](#shell)
   - [exec](#exec)
+  - [edit](#edit)
 - [GitHub Integration](#github-integration)
   - [github checkout](#github-checkout)
 - [Other Commands](#other-commands)
@@ -259,6 +260,33 @@ phantom exec --fzf --tmux npm run dev
 
 **Notes:**
 - tmux options require being inside a tmux session
+
+### edit
+
+Open your configured editor inside a worktree.
+
+```bash
+phantom edit [--visual] <name> [path]
+```
+
+**Options:**
+- `--visual` - Use $VISUAL instead of $EDITOR
+
+**Examples:**
+```bash
+# Open the worktree root with $EDITOR
+phantom edit feature-auth
+
+# Open a specific file
+phantom edit feature-auth README.md
+
+# Use the visual editor
+phantom edit --visual feature-auth
+```
+
+**Notes:**
+- $EDITOR must be set (or $VISUAL when using --visual)
+- The editor starts in the worktree directory so relative paths resolve there
 
 ## GitHub Integration
 

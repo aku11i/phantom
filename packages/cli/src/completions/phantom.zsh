@@ -12,6 +12,7 @@ _phantom() {
         'where:Output the filesystem path of a specific worktree'
         'delete:Delete a Git worktree (phantom)'
         'exec:Execute a command in a worktree directory'
+        'edit:Open a worktree in your configured editor'
         'shell:Open an interactive shell in a worktree directory'
         'github:GitHub integration commands'
         'gh:GitHub integration commands (alias)'
@@ -90,6 +91,14 @@ _phantom() {
                         '--tmux-horizontal[Execute command in horizontal split pane]' \
                         '1:worktree:(${(q)worktrees[@]})' \
                         '*:command:_command_names'
+                    ;;
+                edit)
+                    local worktrees
+                    worktrees=(${(f)"$(phantom list --names 2>/dev/null)"})
+                    _arguments \
+                        '--visual[Use $VISUAL instead of $EDITOR]' \
+                        '1:worktree:(${(q)worktrees[@]})' \
+                        '*:path:_files'
                     ;;
                 completion)
                     _arguments \
