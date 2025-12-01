@@ -27,7 +27,9 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
   const inputKey = positionals[0];
   const normalizedKey = normalizeKey(inputKey);
 
-  if (!supportedKeys.includes(normalizedKey as (typeof supportedKeys)[number])) {
+  if (
+    !supportedKeys.includes(normalizedKey as (typeof supportedKeys)[number])
+  ) {
     exitWithError(
       `Unknown preference '${inputKey}'. Supported keys: ${supportedKeys.join(", ")}`,
       exitCodes.validationError,
@@ -36,8 +38,7 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
 
   try {
     const preferences = await loadPreferences();
-    const value =
-      normalizedKey === "editor" ? preferences.editor : undefined;
+    const value = normalizedKey === "editor" ? preferences.editor : undefined;
 
     if (value === undefined) {
       output.log(

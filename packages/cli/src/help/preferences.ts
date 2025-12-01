@@ -21,7 +21,8 @@ export const preferencesHelp: CommandHelp = {
 export const preferencesGetHelp: CommandHelp = {
   name: "preferences get",
   usage: "phantom preferences get <key>",
-  description: "Show a preference value (reads git config --global phantom.<key>)",
+  description:
+    "Show a preference value (reads git config --global phantom.<key>)",
   examples: [
     {
       command: "phantom preferences get editor",
