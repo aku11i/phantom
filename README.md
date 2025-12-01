@@ -119,17 +119,19 @@ phantom shell feature-y --tmux-v
 
 #### Editor Integration
 
-Phantom works seamlessly with editors like VS Code and Cursor. You can specify an editor to open worktrees.
+Phantom works seamlessly with editors like VS Code and Cursor. You can use `phantom edit` to open worktrees with your configured editor.
 
 ```bash
-# Open with VS Code
+# Open with your default editor ($EDITOR)
+phantom edit feature
+
+# Open a specific file
+phantom edit feature README.md
+
+# Launch VS Code right after creating
 phantom create feature --exec "code ."
 
-# Or open existing worktree
-phantom exec feature code .
-
-# Open with Cursor
-phantom create feature --exec "cursor ."
+# Use Cursor explicitly
 phantom exec feature cursor .
 ```
 
@@ -184,6 +186,13 @@ exit
 ```bash
 phantom exec feature-awesome {command to run}
 # Example: phantom exec feature-awesome npm run build
+```
+
+### Open your editor in the worktree
+
+```bash
+phantom edit feature-awesome
+phantom edit feature-awesome README.md
 ```
 
 ### Clean up when done

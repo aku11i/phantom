@@ -5,6 +5,7 @@ import { attachHandler } from "../handlers/attach.ts";
 import { completionHandler } from "../handlers/completion.ts";
 import { createHandler } from "../handlers/create.ts";
 import { deleteHandler } from "../handlers/delete.ts";
+import { editHandler } from "../handlers/edit.ts";
 import { execHandler } from "../handlers/exec.ts";
 import { githubHandler } from "../handlers/github.ts";
 import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
@@ -17,6 +18,7 @@ import { attachHelp } from "../help/attach.ts";
 import { completionHelp } from "../help/completion.ts";
 import { createHelp } from "../help/create.ts";
 import { deleteHelp } from "../help/delete.ts";
+import { editHelp } from "../help/edit.ts";
 import { execHelp } from "../help/exec.ts";
 import { githubCheckoutHelp, githubHelp } from "../help/github.ts";
 import { listHelp } from "../help/list.ts";
@@ -70,6 +72,12 @@ const commands: Command[] = [
     description: "Execute a command in a worktree directory",
     handler: execHandler,
     help: execHelp,
+  },
+  {
+    name: "edit",
+    description: "Open a worktree in your configured editor",
+    handler: editHandler,
+    help: editHelp,
   },
   {
     name: "shell",

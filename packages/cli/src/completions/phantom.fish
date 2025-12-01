@@ -86,6 +86,7 @@ complete -c phantom -n "__phantom_using_command" -a "list" -d "List all Git work
 complete -c phantom -n "__phantom_using_command" -a "where" -d "Output the filesystem path of a specific worktree"
 complete -c phantom -n "__phantom_using_command" -a "delete" -d "Delete a Git worktree (phantom)"
 complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command in a worktree directory"
+complete -c phantom -n "__phantom_using_command" -a "edit" -d "Open a worktree in your configured editor"
 complete -c phantom -n "__phantom_using_command" -a "shell" -d "Open an interactive shell in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "github" -d "GitHub integration commands"
 complete -c phantom -n "__phantom_using_command" -a "gh" -d "GitHub integration commands (alias)"
@@ -141,6 +142,11 @@ complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-h -d "Alias for --tmux-horizontal"
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_expect_worktree" -a "(__phantom_list_worktrees)"
 complete -c phantom -n "__phantom_using_command exec; and not __phantom_exec_expect_worktree" -a "(__fish_complete_subcommand --fcs-skip=(__phantom_exec_command_skip))"
+
+# edit command options
+complete -c phantom -n "__phantom_using_command edit" -a "(__phantom_list_worktrees)"
+# After the worktree argument, enable file/path completion
+complete -c phantom -n "__phantom_using_command edit; and __fish_seen_subcommand_from edit; and test (count (commandline -opc)) -ge 3" -f -a "(__fish_complete_path)"
 
 # shell command options
 complete -c phantom -n "__phantom_using_command shell" -l fzf -d "Use fzf for interactive selection"
