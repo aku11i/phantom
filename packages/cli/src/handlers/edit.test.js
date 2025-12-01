@@ -75,7 +75,12 @@ mock.module("../errors.ts", {
 
 const { editHandler } = await import("./edit.ts");
 
-describe("editHandler", () => {
+describe(
+  "editHandler",
+  {
+    concurrency: false,
+  },
+  () => {
   beforeEach(() => {
     exitMock.mock.resetCalls();
     consoleLogMock.mock.resetCalls();
