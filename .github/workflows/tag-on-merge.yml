@@ -31,7 +31,7 @@ jobs:
           fi
 
       - name: Checkout merged commit
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.merge_commit_sha }}
