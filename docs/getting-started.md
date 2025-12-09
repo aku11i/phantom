@@ -14,7 +14,7 @@ This guide will help you get up and running with Phantom quickly.
 
 ```bash
 # Using Homebrew (recommended)
-brew install aku11i/tap/phantom
+brew install phantom
 
 # Using npm
 npm install -g @aku11i/phantom

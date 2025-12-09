@@ -15,11 +15,11 @@ Model Context Protocol (MCP) is a standard protocol that allows AI assistants to
 
 ## Installation and Setup
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > To use Phantom's MCP server, you need to have Phantom installed.
 
 ```bash
-brew install aku11i/tap/phantom
+brew install phantom
 ```
 
 ### For Claude Code

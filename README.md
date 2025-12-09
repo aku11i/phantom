@@ -37,7 +37,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 ### Using Homebrew (recommended)
 
 ```bash
-brew install aku11i/tap/phantom
+brew install phantom
 ```
 
 > **Note:** Shell completions for Fish and Zsh are installed automatically with Homebrew. For Bash completion, see the [Shell Completion](#shell-completion) section below.

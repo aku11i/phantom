@@ -36,7 +36,7 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 ### Homebrewを使用（推奨）
 
 ```bash
-brew install aku11i/tap/phantom
+brew install phantom
 ```
 
 > **注意:** Homebrewでインストールした場合、FishとZshのシェル補完は自動的にインストールされます。Bashの補完については、下記の[シェル補完](#シェル補完)セクションを参照してください。
