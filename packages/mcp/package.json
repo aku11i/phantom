@@ -16,7 +16,7 @@
     "@aku11i/phantom-github": "workspace:*",
     "@aku11i/phantom-process": "workspace:*",
     "@aku11i/phantom-shared": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.24.0",
+    "@modelcontextprotocol/sdk": "^1.24.3",
     "zod": "^4.1.13"
   },
   "devDependencies": {
