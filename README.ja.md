@@ -35,8 +35,6 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 
 ### Homebrewを使用（推奨）
 
-PhantomはHomebrew coreで提供されているため、tapは不要です。
-
 ```bash
 brew install phantom
 ```
