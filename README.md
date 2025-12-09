@@ -36,8 +36,6 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 
 ### Using Homebrew (recommended)
 
-Phantom is available via Homebrew core—no tap required.
-
 ```bash
 brew install phantom
 ```

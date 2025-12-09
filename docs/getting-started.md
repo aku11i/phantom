@@ -12,8 +12,6 @@ This guide will help you get up and running with Phantom quickly.
 
 ## 📥 Installation
 
-Phantom is available via Homebrew core—no tap required:
-
 ```bash
 # Using Homebrew (recommended)
 brew install phantom
