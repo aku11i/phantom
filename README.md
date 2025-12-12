@@ -246,6 +246,7 @@ Configure it first with `phantom preferences set ai <command>`.
 
 ```bash
 phantom delete feature-awesome
+phantom delete feature-a feature-b  # delete multiple at once
 ```
 
 

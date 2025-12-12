@@ -191,6 +191,7 @@ phantom exec feature-awesome {実行したいコマンド}
 
 ```bash
 phantom delete feature-awesome
+phantom delete feature-a feature-b  # 複数のワークツリーをまとめて削除
 ```
 
 

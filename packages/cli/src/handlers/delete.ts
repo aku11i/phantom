@@ -36,7 +36,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
 
   if (positionals.length === 0 && !deleteCurrent && !useFzf) {
     exitWithError(
-      "Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection",
+      "Please provide at least one worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection",
       exitCodes.validationError,
     );
   }
@@ -61,7 +61,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
 
-    let worktreeName: string;
+    const worktreeNames: string[] = [];
     if (deleteCurrent) {
       const currentWorktree = await getCurrentWorktree(gitRoot);
       if (!currentWorktree) {
@@ -70,7 +70,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
           exitCodes.validationError,
         );
       }
-      worktreeName = currentWorktree;
+      worktreeNames.push(currentWorktree);
     } else if (useFzf) {
       const selectResult = await selectWorktreeWithFzf(context.gitRoot);
       if (isErr(selectResult)) {
@@ -79,33 +79,35 @@ export async function deleteHandler(args: string[]): Promise<void> {
       if (!selectResult.value) {
         exitWithSuccess();
       }
-      worktreeName = selectResult.value.name;
+      worktreeNames.push(selectResult.value.name);
     } else {
-      worktreeName = positionals[0];
+      worktreeNames.push(...positionals);
     }
 
-    const result = await deleteWorktreeCore(
-      context.gitRoot,
-      context.worktreesDirectory,
-      worktreeName,
-      {
-        force: forceDelete,
-      },
-      context.config?.preDelete?.commands,
-    );
+    for (const worktreeName of worktreeNames) {
+      const result = await deleteWorktreeCore(
+        context.gitRoot,
+        context.worktreesDirectory,
+        worktreeName,
+        {
+          force: forceDelete,
+        },
+        context.config?.preDelete?.commands,
+      );
 
-    if (isErr(result)) {
-      const exitCode =
-        result.error instanceof WorktreeNotFoundError
-          ? exitCodes.validationError
-          : result.error instanceof WorktreeError &&
-              result.error.message.includes("uncommitted changes")
+      if (isErr(result)) {
+        const exitCode =
+          result.error instanceof WorktreeNotFoundError
             ? exitCodes.validationError
-            : exitCodes.generalError;
-      exitWithError(result.error.message, exitCode);
-    }
+            : result.error instanceof WorktreeError &&
+                result.error.message.includes("uncommitted changes")
+              ? exitCodes.validationError
+              : exitCodes.generalError;
+        exitWithError(result.error.message, exitCode);
+      }
 
-    output.log(result.value.message);
+      output.log(result.value.message);
+    }
     exitWithSuccess();
   } catch (error) {
     exitWithError(

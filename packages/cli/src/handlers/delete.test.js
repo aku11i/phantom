@@ -126,6 +126,46 @@ describe("deleteHandler", () => {
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
+  it("should delete multiple worktrees by name", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    deleteWorktreeMock.mock.mockImplementation((gitRoot, _worktreesDir, name) =>
+      Promise.resolve(
+        ok({
+          message: `Deleted worktree '${name}' and its branch '${name}'`,
+        }),
+      ),
+    );
+
+    await rejects(
+      async () =>
+        await deleteHandler(["feature-a", "feature-b", "feature-c"]),
+      /Exit with code 0: success/,
+    );
+
+    strictEqual(deleteWorktreeMock.mock.calls.length, 3);
+    for (const call of deleteWorktreeMock.mock.calls) {
+      strictEqual(call.arguments[0], "/test/repo");
+      strictEqual(
+        call.arguments[1],
+        "/test/repo/.git/phantom/worktrees",
+      );
+      const deleteOptions = call.arguments[3];
+      strictEqual(deleteOptions.force, false);
+    }
+    strictEqual(
+      deleteWorktreeMock.mock.calls.map((call) => call.arguments[2]).join(","),
+      "feature-a,feature-b,feature-c",
+    );
+
+    strictEqual(consoleLogMock.mock.calls.length, 3);
+    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "Deleted worktree 'feature-a' and its branch 'feature-a'");
+    strictEqual(consoleLogMock.mock.calls[1].arguments[0], "Deleted worktree 'feature-b' and its branch 'feature-b'");
+    strictEqual(consoleLogMock.mock.calls[2].arguments[0], "Deleted worktree 'feature-c' and its branch 'feature-c'");
+
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
   it("should delete current worktree with --current option", async () => {
     resetMocks();
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
@@ -216,13 +256,13 @@ describe("deleteHandler", () => {
 
     await rejects(
       async () => await deleteHandler([]),
-      /Exit with code 3: Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection/,
+      /Exit with code 3: Please provide at least one worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection/,
     );
 
     strictEqual(consoleErrorMock.mock.calls.length, 1);
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Please provide a worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection",
+      "Error: Please provide at least one worktree name to delete, use --current to delete the current worktree, or use --fzf for interactive selection",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 3); // validationError
   });

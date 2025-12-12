@@ -10,7 +10,7 @@ _phantom() {
         'attach:Attach to an existing branch by creating a new worktree'
         'list:List all Git worktrees (phantoms)'
         'where:Output the filesystem path of a specific worktree'
-        'delete:Delete a Git worktree (phantom)'
+        'delete:Delete Git worktrees (phantoms)'
         'exec:Execute a command in a worktree directory'
         'edit:Open a worktree in your configured editor'
         'ai:Launch your configured AI coding assistant in a worktree'
@@ -80,7 +80,7 @@ _phantom() {
                             '--force[Force deletion even if worktree has uncommitted changes (-f)]' \
                             '--current[Delete the current worktree]' \
                             '--fzf[Use fzf for interactive selection]' \
-                            '1:worktree:(${(q)worktrees[@]})'
+                            '*:worktree:(${(q)worktrees[@]})'
                     fi
                     ;;
                 exec)

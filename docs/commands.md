@@ -147,10 +147,10 @@ code $(phantom where feature-auth)
 
 ### delete
 
-Delete a worktree and its branch.
+Delete one or more worktrees and their branches.
 
 ```bash
-phantom delete <name> [options]
+phantom delete <name...> [options]
 ```
 
 **Options:**
@@ -162,6 +162,9 @@ phantom delete <name> [options]
 ```bash
 # Basic delete
 phantom delete feature-auth
+
+# Delete multiple worktrees
+phantom delete feature-auth docs-cleanup spike-login
 
 # Force delete
 phantom delete feature-auth --force

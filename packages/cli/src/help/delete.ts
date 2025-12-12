@@ -2,8 +2,8 @@ import type { CommandHelp } from "../help.ts";
 
 export const deleteHelp: CommandHelp = {
   name: "delete",
-  description: "Delete a Git worktree",
-  usage: "phantom delete <name> [options]",
+  description: "Delete one or more Git worktrees",
+  usage: "phantom delete <name...> [options]",
   options: [
     {
       name: "force",
@@ -29,6 +29,10 @@ export const deleteHelp: CommandHelp = {
       command: "phantom delete feature-auth",
     },
     {
+      description: "Delete multiple worktrees in one command",
+      command: "phantom delete feature-auth docs-cleanup spike-login",
+    },
+    {
       description: "Force delete a worktree with uncommitted changes",
       command: "phantom delete experimental --force",
     },
@@ -43,6 +47,7 @@ export const deleteHelp: CommandHelp = {
   ],
   notes: [
     "By default, deletion will fail if the worktree has uncommitted changes",
+    "You can pass multiple worktree names to delete them at once",
     "The associated branch will also be deleted if it's not checked out elsewhere",
     "With --fzf, you can interactively select the worktree to delete",
   ],
