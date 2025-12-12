@@ -4,6 +4,7 @@ import { z } from "zod";
 export interface Preferences {
   editor?: string;
   ai?: string;
+  worktreesDirectory?: string;
 }
 
 export class PreferencesValidationError extends Error {
@@ -17,6 +18,7 @@ const preferencesSchema = z
   .object({
     editor: z.string().optional(),
     ai: z.string().optional(),
+    worktreesDirectory: z.string().optional(),
   })
   .passthrough();
 
@@ -52,6 +54,8 @@ function parsePreferences(output: string): Preferences {
       preferences.editor = value;
     } else if (strippedKey === "ai") {
       preferences.ai = value;
+    } else if (strippedKey === "worktreesDirectory") {
+      preferences.worktreesDirectory = value;
     }
   }
 

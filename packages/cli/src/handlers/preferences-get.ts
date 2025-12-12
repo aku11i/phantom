@@ -3,7 +3,7 @@ import { loadPreferences } from "@aku11i/phantom-core";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
-const supportedKeys = ["editor", "ai"] as const;
+const supportedKeys = ["editor", "ai", "worktreesDirectory"] as const;
 
 export async function preferencesGetHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({
@@ -36,7 +36,9 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
         ? preferences.editor
         : inputKey === "ai"
           ? preferences.ai
-          : undefined;
+          : inputKey === "worktreesDirectory"
+            ? preferences.worktreesDirectory
+            : undefined;
 
     if (value === undefined) {
       output.log(

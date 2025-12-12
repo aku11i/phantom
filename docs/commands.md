@@ -309,6 +309,7 @@ phantom ai feature-auth
 Configure defaults for Phantom commands using global git config. Preferences are stored under the `phantom.<key>` namespace and currently support:
 - `editor` - preferred editor command for `phantom edit`
 - `ai` - assistant command for `phantom ai`
+- `worktreesDirectory` - where to store worktrees (relative to the Git repository root; defaults to `.git/phantom/worktrees`)
 
 Set them once to avoid exporting environment variables each time.
 
@@ -319,6 +320,7 @@ Show a preference value.
 ```bash
 phantom preferences get editor
 phantom preferences get ai
+phantom preferences get worktreesDirectory
 ```
 
 ### preferences set
@@ -331,6 +333,9 @@ phantom preferences set editor "code --reuse-window"
 
 # Configure your AI assistant command
 phantom preferences set ai "codex --full-auto"
+
+# Store worktrees outside the repo (path relative to the Git root)
+phantom preferences set worktreesDirectory ../phantom-worktrees
 ```
 
 ### preferences remove
@@ -340,11 +345,13 @@ Remove a preference value.
 ```bash
 phantom preferences remove editor
 phantom preferences remove ai
+phantom preferences remove worktreesDirectory
 ```
 
 **Notes:**
 - `phantom edit` prefers `phantom.editor` and falls back to `$EDITOR` if unset
 - `phantom ai` requires `phantom.ai` to be configured
+- `worktreesDirectory` should be set relative to the Git repository root (default: `.git/phantom/worktrees`); this overrides the deprecated `worktreesDirectory` in `phantom.config.json` (to be removed in the next version)
 
 ## GitHub Integration
 
