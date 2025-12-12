@@ -1,4 +1,4 @@
-import { deepStrictEqual, equal, ok as assertOk } from "node:assert/strict";
+import { ok as assertOk, deepStrictEqual, equal } from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 
 const loadConfigMock = mock.fn();

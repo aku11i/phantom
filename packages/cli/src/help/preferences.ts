@@ -20,7 +20,8 @@ export const preferencesHelp: CommandHelp = {
         "Set the AI assistant preference (stored as phantom.ai in git config --global)",
     },
     {
-      command: "phantom preferences set worktreesDirectory ../phantom-worktrees",
+      command:
+        "phantom preferences set worktreesDirectory ../phantom-worktrees",
       description:
         "Store a custom worktreesDirectory (relative to the Git repository root) for all commands",
     },
@@ -59,7 +60,8 @@ export const preferencesGetHelp: CommandHelp = {
     },
     {
       command: "phantom preferences get worktreesDirectory",
-      description: "Show the preferred worktrees directory (relative to repo root)",
+      description:
+        "Show the preferred worktrees directory (relative to repo root)",
     },
   ],
   notes: ["Supported keys: editor, ai, worktreesDirectory"],
@@ -80,7 +82,8 @@ export const preferencesSetHelp: CommandHelp = {
       description: "Configure the AI assistant command",
     },
     {
-      command: "phantom preferences set worktreesDirectory ../phantom-worktrees",
+      command:
+        "phantom preferences set worktreesDirectory ../phantom-worktrees",
       description:
         "Store worktrees in ../phantom-worktrees relative to the Git repository root",
     },

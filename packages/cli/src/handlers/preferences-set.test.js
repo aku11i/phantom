@@ -167,7 +167,10 @@ describe("preferencesSetHandler", () => {
 
     await rejects(
       async () =>
-        await preferencesSetHandler(["worktreesDirectory", "../phantom/worktrees"]),
+        await preferencesSetHandler([
+          "worktreesDirectory",
+          "../phantom/worktrees",
+        ]),
       /Process exit with code 0/,
     );
 
