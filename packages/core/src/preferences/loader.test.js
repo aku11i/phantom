@@ -19,13 +19,18 @@ describe("loadPreferences", () => {
   it("returns editor and ai preferences from git config", async () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
-      stdout: "phantom.editor\ncode\u0000phantom.ai\nclaude\u0000",
+      stdout:
+        "phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.worktreesDirectory\n../phantom-worktrees\u0000",
       stderr: "",
     }));
 
     const preferences = await loadPreferences();
 
-    deepStrictEqual(preferences, { editor: "code", ai: "claude" });
+    deepStrictEqual(preferences, {
+      editor: "code",
+      ai: "claude",
+      worktreesDirectory: "../phantom-worktrees",
+    });
     deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments[0], [
       "config",
       "--global",
@@ -39,13 +44,17 @@ describe("loadPreferences", () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
       stdout:
-        "phantom.unknown\nvalue\u0000phantom.editor\nvim\u0000phantom.ai\ncodex\u0000",
+        "phantom.unknown\nvalue\u0000phantom.editor\nvim\u0000phantom.ai\ncodex\u0000phantom.worktreesDirectory\n../phantom\u0000",
       stderr: "",
     }));
 
     const preferences = await loadPreferences();
 
-    deepStrictEqual(preferences, { editor: "vim", ai: "codex" });
+    deepStrictEqual(preferences, {
+      editor: "vim",
+      ai: "codex",
+      worktreesDirectory: "../phantom",
+    });
   });
 
   it("returns empty preferences when no config entries exist", async () => {
@@ -64,7 +73,7 @@ describe("loadPreferences", () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
       stdout:
-        "phantom.editor\nvim\u0000phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.ai\ncursor\u0000",
+        "phantom.editor\nvim\u0000phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.ai\ncursor\u0000phantom.worktreesDirectory\n../phantom-custom\u0000phantom.worktreesDirectory\n../phantom-worktrees\u0000",
       stderr: "",
     }));
 
@@ -72,5 +81,6 @@ describe("loadPreferences", () => {
 
     equal(preferences.editor, "code");
     equal(preferences.ai, "cursor");
+    equal(preferences.worktreesDirectory, "../phantom-worktrees");
   });
 });

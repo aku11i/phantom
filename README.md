@@ -27,7 +27,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🪟 **Built-in tmux integration** - Open worktrees in new panes or windows
 - 🔍 **Interactive selection with fzf** - Use built-in fzf option for worktree selection
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
-- 🧭 **Configurable defaults** - Set editor and AI commands once via `phantom preferences` (stored in global git config)
+- 🧭 **Configurable defaults** - Set editor, AI commands, and worktree location once via `phantom preferences` (stored in global git config)
 - 🐙 **GitHub Integration** - Create worktrees directly from GitHub PRs and issues
 - 🤖 **MCP Integration** - AI autonomously manages worktrees for parallel development
 - ⚡ **Fast and lightweight** - Minimal external dependencies
@@ -77,7 +77,7 @@ your-project/    # Git repository
 └── ...
 ```
 
-You can also customize the worktree location using the `worktreesDirectory` configuration option in `phantom.config.json`. This allows you to store worktrees in any location you prefer.
+You can also customize the worktree location with `phantom preferences set worktreesDirectory <path-from-git-root>` (default: `.git/phantom/worktrees`).
 
 This convention means you never need to remember worktree paths - just use the branch name for easy worktree operations.
 
@@ -160,20 +160,23 @@ phantom ai feature-auth
 
 #### Preferences
 
-Store your defaults in global git config and manage them with `phantom preferences`.
+Store your defaults in global git config and manage them with `phantom preferences` (including a per-user `worktreesDirectory` relative to the Git repo root; default: `.git/phantom/worktrees`).
 
 ```bash
 # Inspect current defaults
 phantom preferences get editor
 phantom preferences get ai
+phantom preferences get worktreesDirectory
 
 # Update them
 phantom preferences set editor "code --reuse-window"
 phantom preferences set ai claude
+phantom preferences set worktreesDirectory ../phantom-worktrees
 
 # Remove to fall back to $EDITOR or reconfigure AI
 phantom preferences remove editor
 phantom preferences remove ai
+phantom preferences remove worktreesDirectory
 ```
 
 #### fzf Integration

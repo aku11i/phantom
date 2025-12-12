@@ -9,7 +9,7 @@
   - [postCreate.commands](#postcreatecommands)
   - [preDelete.commands](#predeletecommands)
 
-Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied and commands to be executed when creating new worktrees.
+Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied and commands to be executed when creating new worktrees. For personal defaults such as `worktreesDirectory`, prefer `phantom preferences` (stored in your global git config); the `worktreesDirectory` key in `phantom.config.json` is deprecated and will be removed in the next version.
 
 ## Configuration File
 
@@ -41,7 +41,7 @@ Create a `phantom.config.json` file in your repository root:
 
 ### worktreesDirectory
 
-A custom base directory where Phantom worktrees will be created. By default, Phantom creates all worktrees in `.git/phantom/worktrees/`, but you can customize this location using the `worktreesDirectory` option.
+A custom base directory where Phantom worktrees will be created. By default, Phantom creates all worktrees in `.git/phantom/worktrees/`. Set a per-user location with `phantom preferences set worktreesDirectory <path-from-git-root>` (recommended). The `worktreesDirectory` option in `phantom.config.json` remains temporarily supported for compatibility but is deprecated and will be removed in the next version.
 
 **Use Cases:**
 - Store worktrees outside the main repository directory
@@ -84,10 +84,10 @@ parent-directory/
 
 **Notes:**
 - If `worktreesDirectory` is not specified, defaults to `.git/phantom/worktrees`
-- Relative paths are resolved from the repository root
-- Absolute paths are used as-is
+- Use a path relative to the Git repository root (relative paths are resolved from the repo root; absolute paths are used as-is)
 - The directory will be created automatically if it doesn't exist
 - When worktreesDirectory is specified, worktrees are created directly in that directory
+- Prefer configuring this via `phantom preferences set worktreesDirectory <path-from-git-root>`; the `phantom.config.json` key is deprecated and will be removed in the next version
 
 ### postCreate.copyFiles
 
@@ -175,4 +175,3 @@ An array of commands to execute in a worktree **before** it is deleted. Use this
 - Commands are executed in order and halt on the first failure
 - If a command fails, the worktree is **not** removed
 - Output is displayed in real-time
-
