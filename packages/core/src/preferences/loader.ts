@@ -48,13 +48,13 @@ function parsePreferences(output: string): Preferences {
       continue;
     }
 
-    const strippedKey = key.slice("phantom.".length);
+    const strippedKey = key.slice("phantom.".length).toLowerCase();
 
     if (strippedKey === "editor") {
       preferences.editor = value;
     } else if (strippedKey === "ai") {
       preferences.ai = value;
-    } else if (strippedKey === "worktreesDirectory") {
+    } else if (strippedKey === "worktreesdirectory") {
       preferences.worktreesDirectory = value;
     }
   }

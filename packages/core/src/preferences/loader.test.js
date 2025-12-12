@@ -20,7 +20,7 @@ describe("loadPreferences", () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
       stdout:
-        "phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.worktreesDirectory\n../phantom-worktrees\u0000",
+        "phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.worktreesdirectory\n../phantom-worktrees\u0000",
       stderr: "",
     }));
 
@@ -44,7 +44,7 @@ describe("loadPreferences", () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
       stdout:
-        "phantom.unknown\nvalue\u0000phantom.editor\nvim\u0000phantom.ai\ncodex\u0000phantom.worktreesDirectory\n../phantom\u0000",
+        "phantom.unknown\nvalue\u0000phantom.editor\nvim\u0000phantom.ai\ncodex\u0000phantom.worktreesdirectory\n../phantom\u0000",
       stderr: "",
     }));
 
@@ -73,7 +73,7 @@ describe("loadPreferences", () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
       stdout:
-        "phantom.editor\nvim\u0000phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.ai\ncursor\u0000phantom.worktreesDirectory\n../phantom-custom\u0000phantom.worktreesDirectory\n../phantom-worktrees\u0000",
+        "phantom.editor\nvim\u0000phantom.editor\ncode\u0000phantom.ai\nclaude\u0000phantom.ai\ncursor\u0000phantom.worktreesdirectory\n../phantom-custom\u0000phantom.worktreesdirectory\n../phantom-worktrees\u0000",
       stderr: "",
     }));
 
@@ -82,5 +82,20 @@ describe("loadPreferences", () => {
     equal(preferences.editor, "code");
     equal(preferences.ai, "cursor");
     equal(preferences.worktreesDirectory, "../phantom-worktrees");
+  });
+
+  it("parses preferences regardless of git config key casing", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout:
+        "phantom.Editor\nvim\u0000phantom.AI\nclaude\u0000phantom.WorktreesDirectory\n../phantom-wt\u0000",
+      stderr: "",
+    }));
+
+    const preferences = await loadPreferences();
+
+    equal(preferences.editor, "vim");
+    equal(preferences.ai, "claude");
+    equal(preferences.worktreesDirectory, "../phantom-wt");
   });
 });
