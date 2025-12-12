@@ -27,6 +27,7 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 - 🪟 **組み込みtmux統合** - ワークツリーを新しいペインやウィンドウで開きます
 - 🔍 **fzfによるインタラクティブな選択** - worktreeの選択に組み込みのfzfオプションを使用できます
 - 🎮 **シェル補完** - Fish,Zsh,Bashの完全な自動補完サポート
+- 🧭 **好みのデフォルト設定** - `phantom preferences`でエディタ、AIコマンド、worktreeの保存先を一括設定（global git configに保存）
 - 🐙 **GitHub統合** - GitHubのPRやイシューから直接ワークツリーを作成
 - 🤖 **MCP統合** - AIが自律的にワークツリーを管理し、並行開発を実現
 - ⚡ **高速で軽量** - 最小限の外部依存関係
@@ -119,7 +120,7 @@ phantom shell feature-y --tmux-v
 
 #### エディタ統合
 
-PhantomはVS CodeやCursorなどのエディタでも快適に使用できます。エディタを指定してワークツリーを開くことができます。
+PhantomはVS CodeやCursorなどのエディタでも快適に使用できます。`phantom preferences set editor <command>`で一度設定しておけば、ワークツリーをエディタ付きで素早く開けます。
 
 ```bash
 # VS Codeで開く
@@ -134,6 +135,44 @@ phantom exec feature cursor .
 ```
 
 ![Phantom VS Code統合](./docs/assets/phantom-vscode.gif)
+
+#### AIアシスタント統合
+
+好みのAIコマンドを1度設定すれば、どのworktreeでもすぐに起動できます。
+
+```bash
+# AIアシスタントを設定（例）
+phantom preferences set ai claude
+phantom preferences set ai "codex --full-auto"
+
+# 設定の確認や削除
+phantom preferences get ai
+phantom preferences remove ai
+
+# worktreeで起動
+phantom ai feature-auth
+```
+
+#### Preferences
+
+`phantom preferences`で個人向けデフォルトをglobal git configに保存します（`worktreesDirectory`はGitリポジトリのルートからの相対パス、デフォルトは`.git/phantom/worktrees`。`phantom.config.json`の同キーは非推奨）。
+
+```bash
+# 現在の設定を確認
+phantom preferences get editor
+phantom preferences get ai
+phantom preferences get worktreesDirectory
+
+# 設定する
+phantom preferences set editor "code --reuse-window"
+phantom preferences set ai claude
+phantom preferences set worktreesDirectory ../phantom-worktrees
+
+# 解除する（エディタは$EDITORへ、AIは未設定へ戻る）
+phantom preferences remove editor
+phantom preferences remove ai
+phantom preferences remove worktreesDirectory
+```
 
 #### fzf統合
 
