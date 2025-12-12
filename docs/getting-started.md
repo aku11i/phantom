@@ -95,9 +95,10 @@ phantom list
 phantom exec feature-name npm test
 ```
 
-### 5. Delete a Worktree
+### 5. Delete Worktrees
 ```bash
 phantom delete feature-name
+phantom delete feature-a feature-b  # delete multiple at once
 ```
 
 For more commands and options, see the [Commands Reference](./commands.md).
@@ -153,4 +154,3 @@ npm test
 # Done reviewing
 exit
 ```
-
