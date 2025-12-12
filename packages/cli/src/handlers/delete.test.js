@@ -138,18 +138,14 @@ describe("deleteHandler", () => {
     );
 
     await rejects(
-      async () =>
-        await deleteHandler(["feature-a", "feature-b", "feature-c"]),
+      async () => await deleteHandler(["feature-a", "feature-b", "feature-c"]),
       /Exit with code 0: success/,
     );
 
     strictEqual(deleteWorktreeMock.mock.calls.length, 3);
     for (const call of deleteWorktreeMock.mock.calls) {
       strictEqual(call.arguments[0], "/test/repo");
-      strictEqual(
-        call.arguments[1],
-        "/test/repo/.git/phantom/worktrees",
-      );
+      strictEqual(call.arguments[1], "/test/repo/.git/phantom/worktrees");
       const deleteOptions = call.arguments[3];
       strictEqual(deleteOptions.force, false);
     }
@@ -159,9 +155,18 @@ describe("deleteHandler", () => {
     );
 
     strictEqual(consoleLogMock.mock.calls.length, 3);
-    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "Deleted worktree 'feature-a' and its branch 'feature-a'");
-    strictEqual(consoleLogMock.mock.calls[1].arguments[0], "Deleted worktree 'feature-b' and its branch 'feature-b'");
-    strictEqual(consoleLogMock.mock.calls[2].arguments[0], "Deleted worktree 'feature-c' and its branch 'feature-c'");
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Deleted worktree 'feature-a' and its branch 'feature-a'",
+    );
+    strictEqual(
+      consoleLogMock.mock.calls[1].arguments[0],
+      "Deleted worktree 'feature-b' and its branch 'feature-b'",
+    );
+    strictEqual(
+      consoleLogMock.mock.calls[2].arguments[0],
+      "Deleted worktree 'feature-c' and its branch 'feature-c'",
+    );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
