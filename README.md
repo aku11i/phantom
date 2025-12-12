@@ -77,7 +77,7 @@ your-project/    # Git repository
 └── ...
 ```
 
-You can also customize the worktree location with `phantom preferences set worktreesDirectory <path-from-git-root>` (default: `.git/phantom/worktrees`). The `worktreesDirectory` key in `phantom.config.json` is deprecated and will be removed in the next version.
+You can also customize the worktree location with `phantom preferences set worktreesDirectory <path-from-git-root>` (default: `.git/phantom/worktrees`).
 
 This convention means you never need to remember worktree paths - just use the branch name for easy worktree operations.
 

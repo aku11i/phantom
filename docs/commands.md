@@ -351,7 +351,7 @@ phantom preferences remove worktreesDirectory
 **Notes:**
 - `phantom edit` prefers `phantom.editor` and falls back to `$EDITOR` if unset
 - `phantom ai` requires `phantom.ai` to be configured
-- `worktreesDirectory` should be set relative to the Git repository root (default: `.git/phantom/worktrees`); this overrides the deprecated `worktreesDirectory` in `phantom.config.json` (to be removed in the next version)
+- `worktreesDirectory` should be set relative to the Git repository root (default: `.git/phantom/worktrees`)
 
 ## GitHub Integration
 

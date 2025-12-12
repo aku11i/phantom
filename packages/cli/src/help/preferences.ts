@@ -39,7 +39,7 @@ export const preferencesHelp: CommandHelp = {
     "Supported keys:",
     "  editor - used by 'phantom edit', preferred over $EDITOR",
     "  ai - used by 'phantom ai'",
-    "  worktreesDirectory - path relative to the Git repo root for storing worktrees (defaults to .git/phantom/worktrees; overrides the deprecated phantom.config.json option, which will be removed in the next version)",
+    "  worktreesDirectory - path relative to the Git repo root for storing worktrees (defaults to .git/phantom/worktrees)",
   ],
 };
 

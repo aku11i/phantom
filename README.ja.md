@@ -77,7 +77,7 @@ your-project/    # Gitリポジトリ
 └── ...
 ```
 
-`phantom preferences set worktreesDirectory <Gitリポジトリのルートからの相対パス>`でワークツリーの保存先をカスタマイズできます（デフォルト: `.git/phantom/worktrees`）。`phantom.config.json`の`worktreesDirectory`は非推奨で、次のバージョンで削除されます。
+`phantom preferences set worktreesDirectory <Gitリポジトリのルートからの相対パス>`でワークツリーの保存先をカスタマイズできます（デフォルト: `.git/phantom/worktrees`）。
 
 このルールにより、worktreeの場所を覚える必要がなくなり、ブランチ名だけで簡単にワークツリーの操作ができます。
 
@@ -155,7 +155,7 @@ phantom ai feature-auth
 
 #### Preferences
 
-`phantom preferences`で個人向けデフォルトをglobal git configに保存します（`worktreesDirectory`はGitリポジトリのルートからの相対パス、デフォルトは`.git/phantom/worktrees`。`phantom.config.json`の同キーは非推奨）。
+`phantom preferences`で個人向けデフォルトをglobal git configに保存します（`worktreesDirectory`はGitリポジトリのルートからの相対パス、デフォルトは`.git/phantom/worktrees`）。
 
 ```bash
 # 現在の設定を確認
