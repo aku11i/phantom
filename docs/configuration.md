@@ -4,7 +4,7 @@
 
 - [Configuration File](#configuration-file)
 - [Configuration Options](#configuration-options)
-  - [worktreesDirectory](#worktreebasedirectory)
+  - [worktreesDirectory](#worktreesdirectory-deprecated)
   - [postCreate.copyFiles](#postcreatecopyfiles)
   - [postCreate.commands](#postcreatecommands)
   - [preDelete.commands](#predeletecommands)
@@ -17,7 +17,6 @@ Create a `phantom.config.json` file in your repository root:
 
 ```json
 {
-  "worktreesDirectory": "../phantom-worktrees",
   "postCreate": {
     "copyFiles": [
       ".env",
@@ -39,9 +38,11 @@ Create a `phantom.config.json` file in your repository root:
 
 ## Configuration Options
 
-### worktreesDirectory
+### worktreesDirectory (Deprecated)
 
-A custom base directory where Phantom worktrees will be created. By default, Phantom creates all worktrees in `.git/phantom/worktrees/`, but you can customize this location using the `worktreesDirectory` option.
+A custom base directory where Phantom worktrees will be created.
+
+**Deprecated:** Configure this per user via `phantom preferences set worktreesDirectory <path>` instead. Specify a path relative to the Git repository root; the default is `.git/phantom/worktrees/`. This config option will be removed in the next version.
 
 **Use Cases:**
 - Store worktrees outside the main repository directory
@@ -175,4 +176,3 @@ An array of commands to execute in a worktree **before** it is deleted. Use this
 - Commands are executed in order and halt on the first failure
 - If a command fails, the worktree is **not** removed
 - Output is displayed in real-time
-

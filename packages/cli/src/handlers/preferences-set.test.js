@@ -73,7 +73,7 @@ describe("preferencesSetHandler", () => {
 
     await rejects(
       async () => await preferencesSetHandler(["unknown", "value"]),
-      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor, ai/,
+      /Exit with code 3: Unknown preference 'unknown'\. Supported keys: editor, ai, worktreesDirectory/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
@@ -154,6 +154,37 @@ describe("preferencesSetHandler", () => {
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "Set phantom.ai (global) to 'claude'",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("sets worktreesDirectory preference via git config --global", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "",
+      stderr: "",
+    }));
+
+    await rejects(
+      async () =>
+        await preferencesSetHandler([
+          "worktreesDirectory",
+          "../phantom-worktrees",
+        ]),
+      /Process exit with code 0/,
+    );
+
+    strictEqual(
+      executeGitCommandMock.mock.calls[0].arguments[0][2],
+      "phantom.worktreesDirectory",
+    );
+    strictEqual(
+      executeGitCommandMock.mock.calls[0].arguments[0][3],
+      "../phantom-worktrees",
+    );
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Set phantom.worktreesDirectory (global) to '../phantom-worktrees'",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });

@@ -76,7 +76,9 @@ your-project/    # Gitリポジトリ
 └── ...
 ```
 
-`phantom.config.json`の`worktreesDirectory`設定オプションを使用してワークツリーの場所をカスタマイズすることもできます。これにより、お好みの場所にワークツリーを保存できます。
+ユーザーごとに `phantom preferences set worktreesDirectory <path>` でワークツリーの場所をカスタマイズできます。**Gitリポジトリのルートからの相対パス**を指定してください。デフォルトは `.git/phantom/worktrees/` です。
+
+`phantom.config.json` の `worktreesDirectory` オプションはDeprecatedで、次のバージョンで削除されます。
 
 このルールにより、worktreeの場所を覚える必要がなくなり、ブランチ名だけで簡単にワークツリーの操作ができます。
 

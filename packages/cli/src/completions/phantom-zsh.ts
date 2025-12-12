@@ -110,7 +110,7 @@ _phantom() {
                 preferences)
                     _arguments \
                         '1:subcommand:(get set remove)' \
-                        '2:key:(editor ai)'
+                        '2:key:(editor ai worktreesDirectory)'
                     ;;
                 completion)
                     _arguments \

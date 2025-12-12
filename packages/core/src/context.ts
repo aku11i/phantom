@@ -13,8 +13,18 @@ export interface Context {
 export async function createContext(gitRoot: string): Promise<Context> {
   const configResult = await loadConfig(gitRoot);
   const config = isOk(configResult) ? configResult.value : null;
-  const worktreesDirectory = config?.worktreesDirectory;
   const preferences = await loadPreferences();
+  const deprecatedWorktreesDirectory = config?.worktreesDirectory;
+  const preferredWorktreesDirectory = preferences.worktreesDirectory;
+
+  if (deprecatedWorktreesDirectory && !preferredWorktreesDirectory) {
+    console.warn(
+      "Warning: 'worktreesDirectory' in phantom.config.json is deprecated and will be removed in the next version. Set it via 'phantom preferences set worktreesDirectory <path>' instead.",
+    );
+  }
+
+  const worktreesDirectory =
+    preferredWorktreesDirectory ?? deprecatedWorktreesDirectory;
 
   return {
     gitRoot,
