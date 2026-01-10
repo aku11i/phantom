@@ -128,6 +128,47 @@ describe("listHandler", () => {
     cwdMock.mock.restore();
   });
 
+  it("should exclude default worktree with --no-default", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    listWorktreesCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          worktrees: [
+            {
+              name: "main",
+              path: "/test/repo",
+              pathToDisplay: ".",
+              branch: "main",
+              isClean: true,
+            },
+            {
+              name: "feature-1",
+              path: "/test/repo/.git/phantom/worktrees/feature-1",
+              pathToDisplay: ".git/phantom/worktrees/feature-1",
+              branch: "feature-1",
+              isClean: true,
+            },
+          ],
+        }),
+      ),
+    );
+
+    await rejects(
+      async () => await listHandler(["--no-default"]),
+      /Exit with code 0/,
+    );
+
+    strictEqual(getGitRootMock.mock.calls.length, 1);
+    strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
+    strictEqual(consoleLogMock.mock.calls.length, 1);
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "feature-1 (.git/phantom/worktrees/feature-1)",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
   it("should list only worktree names with --names option", async () => {
     resetMocks();
     getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
@@ -241,6 +282,41 @@ describe("listHandler", () => {
 
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
+    strictEqual(listWorktreesCoreMock.mock.calls.length, 0);
+    strictEqual(consoleLogMock.mock.calls.length, 1);
+    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "feature-1");
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("should pass --no-default to fzf selection", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    selectWorktreeWithFzfMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          name: "feature-1",
+          path: "/test/repo/.git/phantom/worktrees/feature-1",
+          branch: "feature-1",
+          isClean: true,
+        }),
+      ),
+    );
+
+    await rejects(
+      async () => await listHandler(["--fzf", "--no-default"]),
+      /Exit with code 0/,
+    );
+
+    strictEqual(getGitRootMock.mock.calls.length, 1);
+    strictEqual(selectWorktreeWithFzfMock.mock.calls.length, 1);
+    strictEqual(
+      selectWorktreeWithFzfMock.mock.calls[0].arguments[0],
+      "/test/repo",
+    );
+    strictEqual(
+      selectWorktreeWithFzfMock.mock.calls[0].arguments[1]?.excludeDefault,
+      true,
+    );
     strictEqual(listWorktreesCoreMock.mock.calls.length, 0);
     strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(consoleLogMock.mock.calls[0].arguments[0], "feature-1");
