@@ -59,6 +59,7 @@ _phantom() {
                 list)
                     _arguments \
                         '--fzf[Use fzf for interactive selection]' \
+                        '--no-default[Exclude the default worktree from the list]' \
                         '--names[Output only phantom names (for scripts and completion)]'
                     ;;
                 where|delete|shell)

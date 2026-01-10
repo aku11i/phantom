@@ -16,6 +16,10 @@ export async function listHandler(args: string[] = []): Promise<void> {
         type: "boolean",
         default: false,
       },
+      "no-default": {
+        type: "boolean",
+        default: false,
+      },
       names: {
         type: "boolean",
         default: false,
@@ -27,8 +31,12 @@ export async function listHandler(args: string[] = []): Promise<void> {
   try {
     const gitRoot = await getGitRoot();
 
+    const excludeDefault = values["no-default"] ?? false;
+
     if (values.fzf) {
-      const selectResult = await selectWorktreeWithFzf(gitRoot);
+      const selectResult = await selectWorktreeWithFzf(gitRoot, {
+        excludeDefault,
+      });
 
       if (isErr(selectResult)) {
         exitWithError(selectResult.error.message, exitCodes.generalError);
@@ -44,11 +52,17 @@ export async function listHandler(args: string[] = []): Promise<void> {
         exitWithError("Failed to list worktrees", exitCodes.generalError);
       }
 
-      const { worktrees, message } = result.value;
+      const { message } = result.value;
+      const worktrees = excludeDefault
+        ? result.value.worktrees.filter((worktree) => worktree.path !== gitRoot)
+        : result.value.worktrees;
 
       if (worktrees.length === 0) {
         if (!values.names) {
-          output.log(message || "No worktrees found.");
+          const fallbackMessage = excludeDefault
+            ? "No sub worktrees found."
+            : message || "No worktrees found.";
+          output.log(fallbackMessage);
         }
         process.exit(exitCodes.success);
       }
