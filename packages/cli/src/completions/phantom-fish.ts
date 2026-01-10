@@ -123,6 +123,7 @@ complete -c phantom -n "__phantom_using_command attach" -l copy-file -d "Copy sp
 
 # list command options
 complete -c phantom -n "__phantom_using_command list" -l fzf -d "Use fzf for interactive selection"
+complete -c phantom -n "__phantom_using_command list" -l no-default -d "Exclude the default worktree from the list"
 complete -c phantom -n "__phantom_using_command list" -l names -d "Output only phantom names (for scripts and completion)"
 
 # where command options

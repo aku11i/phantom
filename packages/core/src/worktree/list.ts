@@ -72,11 +72,8 @@ export async function listWorktrees(
 ): Promise<Result<ListWorktreesSuccess, never>> {
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
-    const filteredWorktrees = gitWorktrees.filter((worktree) =>
-      Boolean(relative(gitRoot, worktree.path)),
-    );
 
-    if (filteredWorktrees.length === 0) {
+    if (gitWorktrees.length === 0) {
       return ok({
         worktrees: [],
         message: "No worktrees found",
@@ -84,7 +81,7 @@ export async function listWorktrees(
     }
 
     const worktrees = await Promise.all(
-      filteredWorktrees.map(async (gitWorktree) => {
+      gitWorktrees.map(async (gitWorktree) => {
         const shortHead = gitWorktree.head?.slice(0, 7) ?? "HEAD";
         const branchName =
           gitWorktree.branch && gitWorktree.branch !== "(detached HEAD)"

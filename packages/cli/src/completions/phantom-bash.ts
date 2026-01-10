@@ -126,7 +126,7 @@ _phantom_completion() {
             esac
             ;;
         list)
-            local opts="--fzf --names"
+            local opts="--fzf --no-default --names"
             COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
             return 0
             ;;

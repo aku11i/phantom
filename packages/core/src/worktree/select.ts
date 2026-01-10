@@ -8,8 +8,13 @@ export interface SelectWorktreeResult {
   isClean: boolean;
 }
 
+export interface SelectWorktreeOptions {
+  excludeDefault?: boolean;
+}
+
 export async function selectWorktreeWithFzf(
   gitRoot: string,
+  options: SelectWorktreeOptions = {},
 ): Promise<Result<SelectWorktreeResult | null, Error>> {
   const listResult = await listWorktrees(gitRoot);
 
@@ -17,16 +22,18 @@ export async function selectWorktreeWithFzf(
     return listResult;
   }
 
-  const { worktrees } = listResult.value;
+  const filteredWorktrees = options.excludeDefault
+    ? listResult.value.worktrees.filter((wt) => wt.path !== gitRoot)
+    : listResult.value.worktrees;
 
-  if (worktrees.length === 0) {
+  if (filteredWorktrees.length === 0) {
     return {
       ok: true,
       value: null,
     };
   }
 
-  const list = worktrees.map((wt) => {
+  const list = filteredWorktrees.map((wt) => {
     const status = !wt.isClean ? " [dirty]" : "";
     return `${wt.name} (${wt.pathToDisplay})${status}`;
   });
@@ -48,7 +55,9 @@ export async function selectWorktreeWithFzf(
   }
 
   const selectedName = fzfResult.value.split(" ")[0];
-  const selectedWorktree = worktrees.find((wt) => wt.name === selectedName);
+  const selectedWorktree = filteredWorktrees.find(
+    (wt) => wt.name === selectedName,
+  );
 
   if (!selectedWorktree) {
     return {
