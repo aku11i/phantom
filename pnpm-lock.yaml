@@ -121,8 +121,8 @@ importers:
         version: 4.1.13
     devDependencies:
       '@modelcontextprotocol/inspector':
-        specifier: ^0.17.5
-        version: 0.17.5(@types/node@25.0.0)(typescript@5.9.3)
+        specifier: ^0.18.0
+        version: 0.18.0(@types/node@25.0.0)(typescript@5.9.3)
 
   packages/process:
     dependencies:
@@ -372,20 +372,20 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@modelcontextprotocol/inspector-cli@0.17.5':
-    resolution: {integrity: sha512-LoDwYa/lpjug19mvIrqOU1UAmgrnOxToZqa/WCDmFLlo7t2LXMqtWKdw00WHXH7p4knF6CgRNfHSBquUmwBJag==}
+  '@modelcontextprotocol/inspector-cli@0.18.0':
+    resolution: {integrity: sha512-QMPjKx8zKmX17S1LF2gWuwbYglKexkdgB0HhKZFXzGrQ0MYoKUsIgokMyV48xr4LipaLS3b2v3ut3nV/jhWeSg==}
     hasBin: true
 
-  '@modelcontextprotocol/inspector-client@0.17.5':
-    resolution: {integrity: sha512-zoSa3LESpaYoRLD+6UNDkjyKtu1oYD3hXOwPegwtpvvLbM3CVj5WSUTXNaqN8UnFtyiQK2hc98IjaDPBkWProw==}
+  '@modelcontextprotocol/inspector-client@0.18.0':
+    resolution: {integrity: sha512-M6A5SN09tYCoTTGwMi5hdQpesX5eHYn3FCAHTWfv1pZ1Cy7h5GjB1LxL5WhbMhXWmFFJ6AnQVGAJj0P0XkVhUg==}
     hasBin: true
 
-  '@modelcontextprotocol/inspector-server@0.17.5':
-    resolution: {integrity: sha512-HlCVDPnCXGb/7HWhJ6Yu51YAQ0mgKluRspa+WtR4DnVxkYwrnph2VMJGlnJ3gwBtHlJM1TYpX0nYDcxF6Meu+w==}
+  '@modelcontextprotocol/inspector-server@0.18.0':
+    resolution: {integrity: sha512-N7mDwUuj+gB8ZbZ52M4Oqh37qChS8kWJUkc4qL/MMsaQTVshXEOTcyiQ/mLKa17O5uODZQerAnQJWZbZYReBkg==}
     hasBin: true
 
-  '@modelcontextprotocol/inspector@0.17.5':
-    resolution: {integrity: sha512-4IevkwKP1tvhxO5m48v21PMaxkGvMSHwbTSCW/ZRkYnqJidQDu9eoWaXKa7Q5347767bhi0HAjFfOiEt/r6jQQ==}
+  '@modelcontextprotocol/inspector@0.18.0':
+    resolution: {integrity: sha512-aBrBDaI8MtvyS9j3TMRgTHZaOwbe/zh2rbIVplIBtxWifaSfvQX9DbnoI3xv9sZjgeFyF/3CwZdfEVTUx2RfBg==}
     engines: {node: '>=22.7.5'}
     hasBin: true
 
@@ -1633,8 +1633,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.18.3:
-    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+  ws@8.19.0:
+    resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -1821,7 +1821,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@modelcontextprotocol/inspector-cli@0.17.5(zod@3.25.76)':
+  '@modelcontextprotocol/inspector-cli@0.18.0(zod@3.25.76)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.24.3(zod@3.25.76)
       commander: 13.1.0
@@ -1831,7 +1831,7 @@ snapshots:
       - supports-color
       - zod
 
-  '@modelcontextprotocol/inspector-client@0.17.5':
+  '@modelcontextprotocol/inspector-client@0.18.0':
     dependencies:
       '@modelcontextprotocol/sdk': 1.24.3(zod@3.25.76)
       '@radix-ui/react-checkbox': 1.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1864,14 +1864,14 @@ snapshots:
       - '@types/react-dom'
       - supports-color
 
-  '@modelcontextprotocol/inspector-server@0.17.5':
+  '@modelcontextprotocol/inspector-server@0.18.0':
     dependencies:
       '@modelcontextprotocol/sdk': 1.24.3(zod@3.25.76)
       cors: 2.8.5
       express: 5.2.1
       shell-quote: 1.8.3
       spawn-rx: 5.1.2
-      ws: 8.18.3
+      ws: 8.19.0
       zod: 3.25.76
     transitivePeerDependencies:
       - '@cfworker/json-schema'
@@ -1879,11 +1879,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@modelcontextprotocol/inspector@0.17.5(@types/node@25.0.0)(typescript@5.9.3)':
+  '@modelcontextprotocol/inspector@0.18.0(@types/node@25.0.0)(typescript@5.9.3)':
     dependencies:
-      '@modelcontextprotocol/inspector-cli': 0.17.5(zod@3.25.76)
-      '@modelcontextprotocol/inspector-client': 0.17.5
-      '@modelcontextprotocol/inspector-server': 0.17.5
+      '@modelcontextprotocol/inspector-cli': 0.18.0(zod@3.25.76)
+      '@modelcontextprotocol/inspector-client': 0.18.0
+      '@modelcontextprotocol/inspector-server': 0.18.0
       '@modelcontextprotocol/sdk': 1.24.3(zod@3.25.76)
       concurrently: 9.2.1
       node-fetch: 3.3.2
@@ -3077,7 +3077,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.18.3: {}
+  ws@8.19.0: {}
 
   wsl-utils@0.1.0:
     dependencies:
