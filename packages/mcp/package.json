@@ -17,7 +17,7 @@
     "@aku11i/phantom-process": "workspace:*",
     "@aku11i/phantom-shared": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.24.3",
-    "zod": "^4.1.13"
+    "zod": "^4.3.4"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.18.0"
