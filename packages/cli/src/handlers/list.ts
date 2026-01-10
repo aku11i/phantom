@@ -46,11 +46,11 @@ export async function listHandler(args: string[] = []): Promise<void> {
 
       const { worktrees, message } = result.value;
 
-      if (worktrees.length === 0) {
-        if (!values.names) {
-          output.log(message || "No worktrees found.");
-        }
-        process.exit(exitCodes.success);
+      if (worktrees.length === 0 && !values.names) {
+        exitWithError(
+          "Only the default worktree was found.",
+          exitCodes.success,
+        );
       }
 
       if (values.names) {
