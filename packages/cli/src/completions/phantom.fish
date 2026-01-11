@@ -5,6 +5,10 @@ function __phantom_list_worktrees
     phantom list --names 2>/dev/null
 end
 
+function __phantom_list_worktrees_no_default
+    phantom list --names --no-default 2>/dev/null
+end
+
 function __phantom_using_command
     set -l cmd (commandline -opc)
     set -l cmd_count (count $cmd)
@@ -123,6 +127,7 @@ complete -c phantom -n "__phantom_using_command attach" -l copy-file -d "Copy sp
 
 # list command options
 complete -c phantom -n "__phantom_using_command list" -l fzf -d "Use fzf for interactive selection"
+complete -c phantom -n "__phantom_using_command list" -l no-default -d "Exclude the default worktree from the list"
 complete -c phantom -n "__phantom_using_command list" -l names -d "Output only phantom names (for scripts and completion)"
 
 # where command options
@@ -133,7 +138,7 @@ complete -c phantom -n "__phantom_using_command where" -a "(__phantom_list_workt
 complete -c phantom -n "__phantom_using_command delete" -l force -d "Force deletion even if worktree has uncommitted changes (-f)"
 complete -c phantom -n "__phantom_using_command delete" -l current -d "Delete the current worktree"
 complete -c phantom -n "__phantom_using_command delete" -l fzf -d "Use fzf for interactive selection"
-complete -c phantom -n "__phantom_using_command delete" -a "(__phantom_list_worktrees)"
+complete -c phantom -n "__phantom_using_command delete" -a "(__phantom_list_worktrees_no_default)"
 
 # exec command options
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l fzf -d "Use fzf for interactive selection"

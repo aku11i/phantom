@@ -59,16 +59,19 @@ _phantom() {
                 list)
                     _arguments \
                         '--fzf[Use fzf for interactive selection]' \
+                        '--no-default[Exclude the default worktree from the list]' \
                         '--names[Output only phantom names (for scripts and completion)]'
                     ;;
                 where|delete|shell)
-                    local worktrees
-                    worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
                     if [[ \${line[1]} == "where" ]]; then
+                        local worktrees
+                        worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
                         _arguments \
                             '--fzf[Use fzf for interactive selection]' \
                             '1:worktree:(\${(q)worktrees[@]})'
                     elif [[ \${line[1]} == "shell" ]]; then
+                        local worktrees
+                        worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
                         _arguments \
                             '--fzf[Use fzf for interactive selection]' \
                             '--tmux[Open shell in new tmux window (-t)]' \
@@ -76,6 +79,8 @@ _phantom() {
                             '--tmux-horizontal[Open shell in horizontal split pane]' \
                             '1:worktree:(\${(q)worktrees[@]})'
                     elif [[ \${line[1]} == "delete" ]]; then
+                        local worktrees
+                        worktrees=(\${(f)"$(phantom list --names --no-default 2>/dev/null)"})
                         _arguments \
                             '--force[Force deletion even if worktree has uncommitted changes (-f)]' \
                             '--current[Delete the current worktree]' \

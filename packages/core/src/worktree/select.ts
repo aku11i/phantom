@@ -8,10 +8,17 @@ export interface SelectWorktreeResult {
   isClean: boolean;
 }
 
+export interface SelectWorktreeOptions {
+  excludeDefault?: boolean;
+}
+
 export async function selectWorktreeWithFzf(
   gitRoot: string,
+  options: SelectWorktreeOptions = {},
 ): Promise<Result<SelectWorktreeResult | null, Error>> {
-  const listResult = await listWorktrees(gitRoot);
+  const listResult = await listWorktrees(gitRoot, {
+    excludeDefault: options.excludeDefault,
+  });
 
   if (isErr(listResult)) {
     return listResult;

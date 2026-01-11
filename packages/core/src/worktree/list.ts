@@ -19,6 +19,10 @@ export interface ListWorktreesSuccess {
   message?: string;
 }
 
+export interface ListWorktreesOptions {
+  excludeDefault?: boolean;
+}
+
 export async function getWorktreeBranch(worktreePath: string): Promise<string> {
   try {
     const { stdout } = await executeGitCommandInDirectory(worktreePath, [
@@ -69,17 +73,23 @@ export async function getWorktreeInfo(
 
 export async function listWorktrees(
   gitRoot: string,
+  options: ListWorktreesOptions = {},
 ): Promise<Result<ListWorktreesSuccess, never>> {
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
-    const filteredWorktrees = gitWorktrees.filter((worktree) =>
-      Boolean(relative(gitRoot, worktree.path)),
-    );
+    const excludeDefault = options.excludeDefault ?? false;
+    const filteredWorktrees = excludeDefault
+      ? gitWorktrees.filter((worktree) => worktree.path !== gitRoot)
+      : gitWorktrees;
 
     if (filteredWorktrees.length === 0) {
+      const message =
+        excludeDefault && gitWorktrees.length > 0
+          ? "No sub worktrees found"
+          : "No worktrees found";
       return ok({
         worktrees: [],
-        message: "No worktrees found",
+        message,
       });
     }
 

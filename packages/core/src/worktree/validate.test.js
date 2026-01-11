@@ -80,6 +80,27 @@ describe("validateWorktreeExists", () => {
     deepStrictEqual(isErr(result), true);
     deepStrictEqual(result.error.message, "Worktree 'any' not found");
   });
+
+  it("should pass excludeDefault to listWorktrees", async () => {
+    resetMocks();
+    listWorktreesMock.mock.mockImplementation(() =>
+      Promise.resolve(ok({ worktrees: [] })),
+    );
+
+    const result = await validateWorktreeExists(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "main",
+      { excludeDefault: true },
+    );
+
+    deepStrictEqual(isErr(result), true);
+    deepStrictEqual(listWorktreesMock.mock.calls.length, 1);
+    deepStrictEqual(listWorktreesMock.mock.calls[0].arguments, [
+      "/test/repo",
+      { excludeDefault: true },
+    ]);
+  });
 });
 
 describe("validateWorktreeDoesNotExist", () => {

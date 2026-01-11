@@ -1,9 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.1/schema.json",
   "vcs": {
-    "enabled": false,
+    "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": false
+    "useIgnoreFile": true
   },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
@@ -22,6 +22,7 @@
       "./**/*",
       "!./node_modules",
       "!./.git",
+      "!./.worktrees",
       "!./dist",
       "!./**/dist",
       "!./package.json",

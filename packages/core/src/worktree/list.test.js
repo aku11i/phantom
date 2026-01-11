@@ -47,7 +47,7 @@ const normalizeWorktrees = (worktrees) =>
   }));
 
 describe("listWorktrees", () => {
-  it("should return empty array when only root-level worktree exists", async () => {
+  it("should include root-level worktree when only root exists", async () => {
     const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
       if (_args.includes("worktree") && _args.includes("list")) {
@@ -67,8 +67,49 @@ describe("listWorktrees", () => {
 
     ok(result.ok);
     if (result.ok) {
+      deepStrictEqual(
+        normalizeWorktrees(result.value.worktrees),
+        normalizeWorktrees([
+          {
+            name: "main",
+            path: "/test/repo",
+            pathToDisplay: ".",
+            branch: "main",
+            isClean: true,
+          },
+        ]),
+      );
+      deepStrictEqual(result.value.message, undefined);
+    }
+
+    execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
+  });
+
+  it("should return empty array when excluding default worktree", async () => {
+    const cwdMock = mockCwd();
+    execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
+      if (_args.includes("worktree") && _args.includes("list")) {
+        return Promise.resolve({
+          stdout:
+            "worktree /test/repo\nHEAD abc123\nbranch refs/heads/main\n\n",
+          stderr: "",
+        });
+      }
+      if (_args.includes("status") && _args.includes("--porcelain")) {
+        return Promise.resolve({ stdout: "", stderr: "" });
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+
+    const result = await listWorktrees("/test/repo", {
+      excludeDefault: true,
+    });
+
+    ok(result.ok);
+    if (result.ok) {
       deepStrictEqual(result.value.worktrees, []);
-      deepStrictEqual(result.value.message, "No worktrees found");
+      deepStrictEqual(result.value.message, "No sub worktrees found");
     }
 
     execFileMock.mock.resetCalls();
@@ -108,6 +149,13 @@ branch refs/heads/feature-2
       deepStrictEqual(
         normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
+          {
+            name: "main",
+            path: "/test/repo",
+            pathToDisplay: ".",
+            branch: "main",
+            isClean: true,
+          },
           {
             name: "feature-1",
             path: "/test/repo/.git/phantom/worktrees/feature-1",
@@ -166,6 +214,13 @@ branch refs/heads/dirty-feature
         normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
           {
+            name: "main",
+            path: "/test/repo",
+            pathToDisplay: ".",
+            branch: "main",
+            isClean: true,
+          },
+          {
             name: "dirty-feature",
             path: "/test/repo/.git/phantom/worktrees/dirty-feature",
             pathToDisplay: ".git/phantom/worktrees/dirty-feature",
@@ -209,6 +264,13 @@ detached
       deepStrictEqual(
         normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
+          {
+            name: "main",
+            path: "/test/repo",
+            pathToDisplay: ".",
+            branch: "main",
+            isClean: true,
+          },
           {
             name: "def456",
             path: "/test/repo/.git/phantom/worktrees/detached",
@@ -261,6 +323,13 @@ branch refs/heads/sibling-feature
       deepStrictEqual(
         normalizeWorktrees(result.value.worktrees),
         normalizeWorktrees([
+          {
+            name: "main",
+            path: "/test/repo",
+            pathToDisplay: ".",
+            branch: "main",
+            isClean: true,
+          },
           {
             name: "phantom-feature",
             path: "/test/repo/.git/phantom/worktrees/phantom-feature",

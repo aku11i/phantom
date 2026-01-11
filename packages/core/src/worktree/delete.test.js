@@ -119,6 +119,7 @@ describe("deleteWorktree", () => {
       "/test/repo",
       "/test/repo/.git/phantom/worktrees",
       "feature",
+      { excludeDefault: true },
     ]);
 
     strictEqual(executeGitCommandInDirectoryMock.mock.calls.length, 1);
