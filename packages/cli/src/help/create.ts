@@ -43,7 +43,7 @@ export const createHelp: CommandHelp = {
       short: "z",
       type: "boolean",
       description:
-        "Open the worktree in a new Zellij tab (requires being inside Zellij)",
+        "Open the worktree in a new Zellij tab (inside Zellij) or launch a new Zellij session (outside Zellij)",
     },
     {
       name: "zellij-vertical",

@@ -49,7 +49,8 @@ export const attachHelp: CommandHelp = {
       name: "zellij",
       short: "z",
       type: "boolean",
-      description: "Open the worktree in a new Zellij tab after attaching",
+      description:
+        "Open the worktree in a new Zellij tab (inside Zellij) or launch a new Zellij session (outside Zellij)",
     },
     {
       name: "zellij-vertical",
@@ -114,6 +115,7 @@ export const attachHelp: CommandHelp = {
     "To work with remote branches, first checkout the branch with git",
     "Only one of --shell, --exec, --tmux, or --zellij options can be used at a time",
     "The tmux options require running phantom inside an active tmux session",
-    "The zellij options require running phantom inside an active Zellij session",
+    "The --zellij option can launch a new Zellij session when run outside Zellij",
+    "The --zellij-vertical and --zellij-horizontal options require being inside a Zellij session",
   ],
 };

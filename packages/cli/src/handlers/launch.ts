@@ -163,7 +163,7 @@ export async function launchHandler(args: string[]): Promise<void> {
     output.log(`\nLaunching Zellij session '${worktreeName}'...`);
 
     const zellijResult = await createZellijSession({
-      sessionName: worktreeName,
+      sessionName: worktreeName.replaceAll("/", "-"),
       layout: layoutPath,
       cwd: worktreePath,
       env: getPhantomEnv(worktreeName, worktreePath),

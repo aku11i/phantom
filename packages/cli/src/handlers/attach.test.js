@@ -20,6 +20,7 @@ const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
 const isInsideZellijMock = mock.fn();
 const executeZellijCommandMock = mock.fn();
+const createZellijSessionMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
 
 mock.module("../errors.ts", {
@@ -62,6 +63,7 @@ mock.module("@aku11i/phantom-core", {
 
 mock.module("@aku11i/phantom-process", {
   namedExports: {
+    createZellijSession: createZellijSessionMock,
     executeTmuxCommand: executeTmuxCommandMock,
     executeZellijCommand: executeZellijCommandMock,
     getPhantomEnv: getPhantomEnvMock,

@@ -38,6 +38,7 @@ mock.module("@aku11i/phantom-git", {
 
 mock.module("@aku11i/phantom-process", {
   namedExports: {
+    createZellijSession: mock.fn(),
     isInsideTmux: isInsideTmuxMock,
     executeTmuxCommand: executeTmuxCommandMock,
     isInsideZellij: isInsideZellijMock,

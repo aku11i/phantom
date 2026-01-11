@@ -9,6 +9,7 @@ import {
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import {
+  createZellijSession,
   executeTmuxCommand,
   executeZellijCommand,
   getPhantomEnv,
@@ -146,13 +147,6 @@ export async function attachHandler(args: string[]): Promise<void> {
     );
   }
 
-  if (zellijOption && !(await isInsideZellij())) {
-    exitWithError(
-      "The --zellij option can only be used inside a Zellij session",
-      exitCodes.validationError,
-    );
-  }
-
   const result = await attachWorktreeCore(
     context.gitRoot,
     context.worktreesDirectory,
@@ -218,24 +212,51 @@ export async function attachHandler(args: string[]): Promise<void> {
       exitWithError(tmuxResult.error.message, exitCodes.generalError);
     }
   } else if (zellijDirection) {
-    output.log(
-      `Opening worktree '${branchName}' in Zellij ${
-        zellijDirection === "new" ? "tab" : "pane"
-      }...`,
-    );
+    const insideZellij = await isInsideZellij();
+
+    // Pane options require being inside Zellij
+    if (
+      (zellijDirection === "vertical" || zellijDirection === "horizontal") &&
+      !insideZellij
+    ) {
+      exitWithError(
+        "The --zellij-vertical and --zellij-horizontal options can only be used inside a Zellij session. Use --zellij to launch a new session.",
+        exitCodes.validationError,
+      );
+    }
 
     const shell = process.env.SHELL || "/bin/sh";
 
-    const zellijResult = await executeZellijCommand({
-      direction: zellijDirection,
-      command: shell,
-      cwd: worktreePath,
-      env: getPhantomEnv(branchName, worktreePath),
-      tabName: zellijDirection === "new" ? branchName : undefined,
-    });
+    if (insideZellij) {
+      output.log(
+        `Opening worktree '${branchName}' in Zellij ${
+          zellijDirection === "new" ? "tab" : "pane"
+        }...`,
+      );
 
-    if (isErr(zellijResult)) {
-      exitWithError(zellijResult.error.message, exitCodes.generalError);
+      const zellijResult = await executeZellijCommand({
+        direction: zellijDirection,
+        command: shell,
+        cwd: worktreePath,
+        env: getPhantomEnv(branchName, worktreePath),
+        tabName: zellijDirection === "new" ? branchName : undefined,
+      });
+
+      if (isErr(zellijResult)) {
+        exitWithError(zellijResult.error.message, exitCodes.generalError);
+      }
+    } else {
+      output.log(`Launching Zellij session '${branchName}'...`);
+
+      const zellijResult = await createZellijSession({
+        sessionName: branchName.replaceAll("/", "-"),
+        cwd: worktreePath,
+        env: getPhantomEnv(branchName, worktreePath),
+      });
+
+      if (isErr(zellijResult)) {
+        exitWithError(zellijResult.error.message, exitCodes.generalError);
+      }
     }
   }
 }

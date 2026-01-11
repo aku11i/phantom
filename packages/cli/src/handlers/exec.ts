@@ -8,6 +8,7 @@ import {
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import {
+  createZellijSession,
   executeTmuxCommand,
   executeZellijCommand,
   getPhantomEnv,
@@ -137,13 +138,6 @@ export async function execHandler(args: string[]): Promise<void> {
       );
     }
 
-    if (zellijOption && !(await isInsideZellij())) {
-      exitWithError(
-        "The --zellij option can only be used inside a Zellij session",
-        exitCodes.validationError,
-      );
-    }
-
     let worktreeName: string;
 
     if (useFzf) {
@@ -200,30 +194,67 @@ export async function execHandler(args: string[]): Promise<void> {
     }
 
     if (zellijDirection) {
-      output.log(
-        `Executing command in worktree '${worktreeName}' in Zellij ${
-          zellijDirection === "new" ? "tab" : "pane"
-        }...`,
-      );
+      const insideZellij = await isInsideZellij();
 
-      const [command, ...args] = commandArgs;
+      // Pane options require being inside Zellij
+      if (
+        (zellijDirection === "vertical" || zellijDirection === "horizontal") &&
+        !insideZellij
+      ) {
+        exitWithError(
+          "The --zellij-vertical and --zellij-horizontal options can only be used inside a Zellij session. Use --zellij to launch a new session.",
+          exitCodes.validationError,
+        );
+      }
 
-      const zellijResult = await executeZellijCommand({
-        direction: zellijDirection,
-        command,
-        args,
-        cwd: validation.value.path,
-        env: getPhantomEnv(worktreeName, validation.value.path),
-        tabName: zellijDirection === "new" ? worktreeName : undefined,
-      });
+      if (insideZellij) {
+        const [command, ...args] = commandArgs;
 
-      if (isErr(zellijResult)) {
-        output.error(zellijResult.error.message);
-        const exitCode =
-          "exitCode" in zellijResult.error
-            ? (zellijResult.error.exitCode ?? exitCodes.generalError)
-            : exitCodes.generalError;
-        exitWithError("", exitCode);
+        output.log(
+          `Executing command in worktree '${worktreeName}' in Zellij ${
+            zellijDirection === "new" ? "tab" : "pane"
+          }...`,
+        );
+
+        const zellijResult = await executeZellijCommand({
+          direction: zellijDirection,
+          command,
+          args,
+          cwd: validation.value.path,
+          env: getPhantomEnv(worktreeName, validation.value.path),
+          tabName: zellijDirection === "new" ? worktreeName : undefined,
+        });
+
+        if (isErr(zellijResult)) {
+          output.error(zellijResult.error.message);
+          const exitCode =
+            "exitCode" in zellijResult.error
+              ? (zellijResult.error.exitCode ?? exitCodes.generalError)
+              : exitCodes.generalError;
+          exitWithError("", exitCode);
+        }
+      } else {
+        output.log(
+          `Launching Zellij session '${worktreeName}' and executing command...`,
+        );
+
+        // For launching a new session with a command, we need to run the command in a shell
+        // createZellijSession doesn't support running a specific command, so we'll just launch the session
+        // The user can run the command manually or we could enhance createZellijSession later
+        const zellijResult = await createZellijSession({
+          sessionName: worktreeName.replaceAll("/", "-"),
+          cwd: validation.value.path,
+          env: getPhantomEnv(worktreeName, validation.value.path),
+        });
+
+        if (isErr(zellijResult)) {
+          output.error(zellijResult.error.message);
+          const exitCode =
+            "exitCode" in zellijResult.error
+              ? (zellijResult.error.exitCode ?? exitCodes.generalError)
+              : exitCodes.generalError;
+          exitWithError("", exitCode);
+        }
       }
 
       exitWithSuccess();

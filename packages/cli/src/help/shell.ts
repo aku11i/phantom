@@ -28,17 +28,20 @@ export const shellHelp: CommandHelp = {
     {
       name: "--zellij, -z",
       type: "boolean",
-      description: "Open shell in new Zellij tab",
+      description:
+        "Open shell in new Zellij tab (inside Zellij) or launch a new Zellij session (outside Zellij)",
     },
     {
       name: "--zellij-vertical, --zellij-v",
       type: "boolean",
-      description: "Open shell in vertical Zellij pane",
+      description:
+        "Open shell in vertical Zellij pane (requires being inside Zellij)",
     },
     {
       name: "--zellij-horizontal, --zellij-h",
       type: "boolean",
-      description: "Open shell in horizontal Zellij pane",
+      description:
+        "Open shell in horizontal Zellij pane (requires being inside Zellij)",
     },
   ],
   examples: [
@@ -77,6 +80,7 @@ export const shellHelp: CommandHelp = {
     "Type 'exit' to return to your original directory",
     "With --fzf, you can interactively select the worktree to enter",
     "Tmux options require being inside a tmux session",
-    "Zellij options require being inside a Zellij session",
+    "The --zellij option can launch a new Zellij session when run outside Zellij",
+    "The --zellij-vertical and --zellij-horizontal options require being inside Zellij",
   ],
 };

@@ -55,17 +55,20 @@ export const githubCheckoutHelp: CommandHelp = {
     {
       name: "--zellij, -z",
       type: "boolean",
-      description: "Open worktree in new Zellij tab",
+      description:
+        "Open worktree in new Zellij tab (inside Zellij) or launch a new Zellij session (outside Zellij)",
     },
     {
       name: "--zellij-vertical, --zellij-v",
       type: "boolean",
-      description: "Open worktree in vertical Zellij pane",
+      description:
+        "Open worktree in vertical Zellij pane (requires being inside Zellij)",
     },
     {
       name: "--zellij-horizontal, --zellij-h",
       type: "boolean",
-      description: "Open worktree in horizontal Zellij pane",
+      description:
+        "Open worktree in horizontal Zellij pane (requires being inside Zellij)",
     },
   ],
   examples: [
@@ -100,6 +103,7 @@ export const githubCheckoutHelp: CommandHelp = {
     "  - Must be authenticated with 'gh auth login'",
     "",
     "Tmux options require being inside a tmux session",
-    "Zellij options require being inside a Zellij session",
+    "The --zellij option can launch a new Zellij session when run outside Zellij",
+    "The --zellij-vertical and --zellij-horizontal options require being inside Zellij",
   ],
 };

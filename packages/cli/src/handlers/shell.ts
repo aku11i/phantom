@@ -8,6 +8,7 @@ import {
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import {
+  createZellijSession,
   executeTmuxCommand,
   executeZellijCommand,
   getPhantomEnv,
@@ -133,13 +134,6 @@ export async function shellHandler(args: string[]): Promise<void> {
       );
     }
 
-    if (zellijOption && !(await isInsideZellij())) {
-      exitWithError(
-        "The --zellij option can only be used inside a Zellij session",
-        exitCodes.validationError,
-      );
-    }
-
     if (useFzf) {
       const selectResult = await selectWorktreeWithFzf(context.gitRoot);
       if (isErr(selectResult)) {
@@ -193,29 +187,61 @@ export async function shellHandler(args: string[]): Promise<void> {
     }
 
     if (zellijDirection) {
-      output.log(
-        `Opening worktree '${worktreeName}' in Zellij ${
-          zellijDirection === "new" ? "tab" : "pane"
-        }...`,
-      );
+      const insideZellij = await isInsideZellij();
+
+      // Pane options require being inside Zellij
+      if (
+        (zellijDirection === "vertical" || zellijDirection === "horizontal") &&
+        !insideZellij
+      ) {
+        exitWithError(
+          "The --zellij-vertical and --zellij-horizontal options can only be used inside a Zellij session. Use --zellij to launch a new session.",
+          exitCodes.validationError,
+        );
+      }
 
       const shell = process.env.SHELL || "/bin/sh";
 
-      const zellijResult = await executeZellijCommand({
-        direction: zellijDirection,
-        command: shell,
-        cwd: validation.value.path,
-        env: getPhantomEnv(worktreeName, validation.value.path),
-        tabName: zellijDirection === "new" ? worktreeName : undefined,
-      });
+      if (insideZellij) {
+        output.log(
+          `Opening worktree '${worktreeName}' in Zellij ${
+            zellijDirection === "new" ? "tab" : "pane"
+          }...`,
+        );
 
-      if (isErr(zellijResult)) {
-        output.error(zellijResult.error.message);
-        const exitCode =
-          "exitCode" in zellijResult.error
-            ? (zellijResult.error.exitCode ?? exitCodes.generalError)
-            : exitCodes.generalError;
-        exitWithError("", exitCode);
+        const zellijResult = await executeZellijCommand({
+          direction: zellijDirection,
+          command: shell,
+          cwd: validation.value.path,
+          env: getPhantomEnv(worktreeName, validation.value.path),
+          tabName: zellijDirection === "new" ? worktreeName : undefined,
+        });
+
+        if (isErr(zellijResult)) {
+          output.error(zellijResult.error.message);
+          const exitCode =
+            "exitCode" in zellijResult.error
+              ? (zellijResult.error.exitCode ?? exitCodes.generalError)
+              : exitCodes.generalError;
+          exitWithError("", exitCode);
+        }
+      } else {
+        output.log(`Launching Zellij session '${worktreeName}'...`);
+
+        const zellijResult = await createZellijSession({
+          sessionName: worktreeName.replaceAll("/", "-"),
+          cwd: validation.value.path,
+          env: getPhantomEnv(worktreeName, validation.value.path),
+        });
+
+        if (isErr(zellijResult)) {
+          output.error(zellijResult.error.message);
+          const exitCode =
+            "exitCode" in zellijResult.error
+              ? (zellijResult.error.exitCode ?? exitCodes.generalError)
+              : exitCodes.generalError;
+          exitWithError("", exitCode);
+        }
       }
 
       exitWithSuccess();

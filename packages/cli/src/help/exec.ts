@@ -28,17 +28,20 @@ export const execHelp: CommandHelp = {
     {
       name: "--zellij, -z",
       type: "boolean",
-      description: "Execute command in new Zellij tab",
+      description:
+        "Execute command in new Zellij tab (inside Zellij) or launch a new Zellij session (outside Zellij)",
     },
     {
       name: "--zellij-vertical, --zellij-v",
       type: "boolean",
-      description: "Execute command in vertical Zellij pane",
+      description:
+        "Execute command in vertical Zellij pane (requires being inside Zellij)",
     },
     {
       name: "--zellij-horizontal, --zellij-h",
       type: "boolean",
-      description: "Execute command in horizontal Zellij pane",
+      description:
+        "Execute command in horizontal Zellij pane (requires being inside Zellij)",
     },
   ],
   examples: [
@@ -85,6 +88,7 @@ export const execHelp: CommandHelp = {
     "The exit code of the executed command is preserved",
     "With --fzf, select the worktree interactively before executing the command",
     "Tmux options require being inside a tmux session",
-    "Zellij options require being inside a Zellij session",
+    "The --zellij option can launch a new Zellij session when run outside Zellij",
+    "The --zellij-vertical and --zellij-horizontal options require being inside Zellij",
   ],
 };
