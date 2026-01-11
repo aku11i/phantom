@@ -17,6 +17,10 @@ import {
 } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
+import {
+  cleanupTemporaryLayout,
+  createTemporaryLayout,
+} from "../layouts/index.ts";
 import { output } from "../output.ts";
 
 export async function execHandler(args: string[]): Promise<void> {
@@ -57,6 +61,9 @@ export async function execHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "zellij-h": {
+        type: "boolean",
+      },
+      "no-agent": {
         type: "boolean",
       },
     },
@@ -234,18 +241,39 @@ export async function execHandler(args: string[]): Promise<void> {
           exitWithError("", exitCode);
         }
       } else {
-        output.log(
-          `Launching Zellij session '${worktreeName}' and executing command...`,
-        );
+        // exec --zellij launches without agent by default (use 'phantom launch' for AI sessions)
+        const zellijConfig = context.config?.zellij;
 
-        // For launching a new session with a command, we need to run the command in a shell
-        // createZellijSession doesn't support running a specific command, so we'll just launch the session
-        // The user can run the command manually or we could enhance createZellijSession later
+        // Determine layout path
+        let layoutPath: string;
+        let isTemporaryLayout = false;
+
+        if (zellijConfig?.layout) {
+          // Config-specified layout
+          layoutPath = zellijConfig.layout;
+        } else {
+          // Generate temporary layout WITHOUT agent
+          layoutPath = await createTemporaryLayout({
+            worktreePath: validation.value.path,
+            worktreeName,
+            noAgent: true,
+          });
+          isTemporaryLayout = true;
+        }
+
+        output.log(`Launching Zellij session '${worktreeName}'...`);
+
         const zellijResult = await createZellijSession({
           sessionName: worktreeName.replaceAll("/", "-"),
+          layout: layoutPath,
           cwd: validation.value.path,
           env: getPhantomEnv(worktreeName, validation.value.path),
         });
+
+        // Cleanup temporary layout if we created one
+        if (isTemporaryLayout) {
+          await cleanupTemporaryLayout(layoutPath);
+        }
 
         if (isErr(zellijResult)) {
           output.error(zellijResult.error.message);

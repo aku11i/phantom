@@ -17,6 +17,10 @@ import {
 } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
+import {
+  cleanupTemporaryLayout,
+  createTemporaryLayout,
+} from "../layouts/index.ts";
 import { output } from "../output.ts";
 
 export async function shellHandler(args: string[]): Promise<void> {
@@ -57,6 +61,9 @@ export async function shellHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "zellij-h": {
+        type: "boolean",
+      },
+      "no-agent": {
         type: "boolean",
       },
     },
@@ -226,13 +233,39 @@ export async function shellHandler(args: string[]): Promise<void> {
           exitWithError("", exitCode);
         }
       } else {
+        // shell --zellij launches without agent by default (use 'phantom launch' for AI sessions)
+        const zellijConfig = context.config?.zellij;
+
+        // Determine layout path
+        let layoutPath: string;
+        let isTemporaryLayout = false;
+
+        if (zellijConfig?.layout) {
+          // Config-specified layout
+          layoutPath = zellijConfig.layout;
+        } else {
+          // Generate temporary layout WITHOUT agent for shell
+          layoutPath = await createTemporaryLayout({
+            worktreePath: validation.value.path,
+            worktreeName,
+            noAgent: true,
+          });
+          isTemporaryLayout = true;
+        }
+
         output.log(`Launching Zellij session '${worktreeName}'...`);
 
         const zellijResult = await createZellijSession({
           sessionName: worktreeName.replaceAll("/", "-"),
+          layout: layoutPath,
           cwd: validation.value.path,
           env: getPhantomEnv(worktreeName, validation.value.path),
         });
+
+        // Cleanup temporary layout if we created one
+        if (isTemporaryLayout) {
+          await cleanupTemporaryLayout(layoutPath);
+        }
 
         if (isErr(zellijResult)) {
           output.error(zellijResult.error.message);

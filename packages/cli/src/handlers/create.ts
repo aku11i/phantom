@@ -17,6 +17,10 @@ import {
 } from "@aku11i/phantom-process";
 import { isErr, isOk } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
+import {
+  cleanupTemporaryLayout,
+  createTemporaryLayout,
+} from "../layouts/index.ts";
 import { output } from "../output.ts";
 
 export async function createHandler(args: string[]): Promise<void> {
@@ -61,6 +65,9 @@ export async function createHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "zellij-h": {
+        type: "boolean",
+      },
+      "no-agent": {
         type: "boolean",
       },
       "copy-file": {
@@ -305,13 +312,39 @@ export async function createHandler(args: string[]): Promise<void> {
           exitWithError("", exitCode);
         }
       } else {
+        // create --zellij launches without agent by default (use 'phantom launch' for AI sessions)
+        const zellijConfig = context.config?.zellij;
+
+        // Determine layout path
+        let layoutPath: string;
+        let isTemporaryLayout = false;
+
+        if (zellijConfig?.layout) {
+          // Config-specified layout
+          layoutPath = zellijConfig.layout;
+        } else {
+          // Generate temporary layout WITHOUT agent
+          layoutPath = await createTemporaryLayout({
+            worktreePath: result.value.path,
+            worktreeName,
+            noAgent: true,
+          });
+          isTemporaryLayout = true;
+        }
+
         output.log(`\nLaunching Zellij session '${worktreeName}'...`);
 
         const zellijResult = await createZellijSession({
           sessionName: worktreeName.replaceAll("/", "-"),
+          layout: layoutPath,
           cwd: result.value.path,
           env: getPhantomEnv(worktreeName, result.value.path),
         });
+
+        // Cleanup temporary layout if we created one
+        if (isTemporaryLayout) {
+          await cleanupTemporaryLayout(layoutPath);
+        }
 
         if (isErr(zellijResult)) {
           output.error(zellijResult.error.message);

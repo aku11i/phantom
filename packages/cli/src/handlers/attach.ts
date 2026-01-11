@@ -18,6 +18,10 @@ import {
 } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
+import {
+  cleanupTemporaryLayout,
+  createTemporaryLayout,
+} from "../layouts/index.ts";
 import { output } from "../output.ts";
 
 export async function attachHandler(args: string[]): Promise<void> {
@@ -64,6 +68,9 @@ export async function attachHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "zellij-h": {
+        type: "boolean",
+      },
+      "no-agent": {
         type: "boolean",
       },
       "copy-file": {
@@ -246,13 +253,39 @@ export async function attachHandler(args: string[]): Promise<void> {
         exitWithError(zellijResult.error.message, exitCodes.generalError);
       }
     } else {
+      // attach --zellij launches without agent by default (use 'phantom launch' for AI sessions)
+      const zellijConfig = context.config?.zellij;
+
+      // Determine layout path
+      let layoutPath: string;
+      let isTemporaryLayout = false;
+
+      if (zellijConfig?.layout) {
+        // Config-specified layout
+        layoutPath = zellijConfig.layout;
+      } else {
+        // Generate temporary layout WITHOUT agent
+        layoutPath = await createTemporaryLayout({
+          worktreePath,
+          worktreeName: branchName,
+          noAgent: true,
+        });
+        isTemporaryLayout = true;
+      }
+
       output.log(`Launching Zellij session '${branchName}'...`);
 
       const zellijResult = await createZellijSession({
         sessionName: branchName.replaceAll("/", "-"),
+        layout: layoutPath,
         cwd: worktreePath,
         env: getPhantomEnv(branchName, worktreePath),
       });
+
+      // Cleanup temporary layout if we created one
+      if (isTemporaryLayout) {
+        await cleanupTemporaryLayout(layoutPath);
+      }
 
       if (isErr(zellijResult)) {
         exitWithError(zellijResult.error.message, exitCodes.generalError);

@@ -1,4 +1,6 @@
 import { parseArgs } from "node:util";
+import { createContext } from "@aku11i/phantom-core";
+import { getGitRoot } from "@aku11i/phantom-git";
 import { githubCheckout } from "@aku11i/phantom-github";
 import {
   createZellijSession,
@@ -10,6 +12,10 @@ import {
 } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
+import {
+  cleanupTemporaryLayout,
+  createTemporaryLayout,
+} from "../layouts/index.ts";
 import { output } from "../output.ts";
 
 export async function githubCheckoutHandler(args: string[]): Promise<void> {
@@ -49,6 +55,9 @@ export async function githubCheckoutHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "zellij-h": {
+        type: "boolean",
+      },
+      "no-agent": {
         type: "boolean",
       },
     },
@@ -188,13 +197,41 @@ export async function githubCheckoutHandler(args: string[]): Promise<void> {
         exitWithError("", exitCode);
       }
     } else {
+      // github-checkout --zellij launches without agent by default (use 'phantom launch' for AI sessions)
+      const gitRoot = await getGitRoot();
+      const context = await createContext(gitRoot);
+      const zellijConfig = context.config?.zellij;
+
+      // Determine layout path
+      let layoutPath: string;
+      let isTemporaryLayout = false;
+
+      if (zellijConfig?.layout) {
+        // Config-specified layout
+        layoutPath = zellijConfig.layout;
+      } else {
+        // Generate temporary layout WITHOUT agent
+        layoutPath = await createTemporaryLayout({
+          worktreePath: result.value.path,
+          worktreeName: result.value.worktree,
+          noAgent: true,
+        });
+        isTemporaryLayout = true;
+      }
+
       output.log(`\nLaunching Zellij session '${result.value.worktree}'...`);
 
       const zellijResult = await createZellijSession({
         sessionName: result.value.worktree.replaceAll("/", "-"),
+        layout: layoutPath,
         cwd: result.value.path,
         env: getPhantomEnv(result.value.worktree, result.value.path),
       });
+
+      // Cleanup temporary layout if we created one
+      if (isTemporaryLayout) {
+        await cleanupTemporaryLayout(layoutPath);
+      }
 
       if (isErr(zellijResult)) {
         output.error(zellijResult.error.message);

@@ -51,6 +51,13 @@ mock.module("@aku11i/phantom-process", {
   },
 });
 
+mock.module("../layouts/index.ts", {
+  namedExports: {
+    createTemporaryLayout: mock.fn(() => Promise.resolve("/tmp/layout.kdl")),
+    cleanupTemporaryLayout: mock.fn(() => Promise.resolve()),
+  },
+});
+
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     validateWorktreeExists: validateWorktreeExistsMock,
