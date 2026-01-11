@@ -7,6 +7,7 @@ This document provides a comprehensive reference for all Phantom commands and th
 - [Worktree Management](#worktree-management)
   - [create](#create)
   - [attach](#attach)
+  - [launch](#launch)
   - [list](#list)
   - [where](#where)
   - [delete](#delete)
@@ -42,6 +43,9 @@ phantom create <name> [options]
 - `--tmux` / `-t` - Create and open in new tmux window
 - `--tmux-vertical` / `--tmux-v` - Create and split tmux pane vertically
 - `--tmux-horizontal` / `--tmux-h` - Create and split tmux pane horizontally
+- `--zellij` / `-z` - Create and open in new Zellij tab
+- `--zellij-vertical` / `--zellij-v` - Create and split Zellij pane vertically
+- `--zellij-horizontal` / `--zellij-h` - Create and split Zellij pane horizontally
 - `--copy-file <file>` - Copy specific files from current worktree (can be used multiple times)
 - `--base <branch/commit>` - Branch or commit to create the new worktree from (defaults to HEAD)
 
@@ -55,6 +59,9 @@ phantom create feature-auth --shell
 
 # Create in new tmux window
 phantom create feature-auth --tmux
+
+# Create in new Zellij tab
+phantom create feature-auth --zellij
 
 # Create and copy environment files
 phantom create feature-auth --copy-file .env --copy-file .env.local
@@ -80,6 +87,9 @@ phantom attach <branch-name> [options]
 - `--tmux` / `-t` - Attach and open in new tmux window
 - `--tmux-vertical` / `--tmux-v` - Attach and split tmux pane vertically
 - `--tmux-horizontal` / `--tmux-h` - Attach and split tmux pane horizontally
+- `--zellij` / `-z` - Attach and open in new Zellij tab
+- `--zellij-vertical` / `--zellij-v` - Attach and split Zellij pane vertically
+- `--zellij-horizontal` / `--zellij-h` - Attach and split Zellij pane horizontally
 
 **Examples:**
 ```bash
@@ -94,7 +104,67 @@ phantom attach feature/existing-branch --exec "npm install"
 
 # Attach and open in tmux window
 phantom attach feature/existing-branch --tmux
+
+# Attach and open in Zellij tab
+phantom attach feature/existing-branch --zellij
 ```
+
+### launch
+
+Create a worktree and launch a Zellij session with your AI agent.
+
+```bash
+phantom launch <name> [options]
+```
+
+**Options:**
+- `--layout` / `-l` - Path to a custom Zellij layout file (.kdl)
+- `--base <branch/commit>` - Branch or commit to create the worktree from (defaults to HEAD)
+- `--no-agent` - Don't start the AI agent in the session (shells only)
+- `--copy-file <file>` - Copy specific files from current worktree (can be used multiple times)
+
+**Examples:**
+```bash
+# Launch a new worktree with AI agent in Zellij
+phantom launch feature-auth
+
+# Launch without AI agent (shells only)
+phantom launch experiment --no-agent
+
+# Launch with a custom layout
+phantom launch feature-x --layout ./layouts/dev.kdl
+
+# Launch from main branch
+phantom launch feature-new --base main
+
+# Launch an existing worktree in Zellij
+phantom launch existing-branch
+
+# Launch with environment files copied
+phantom launch feature-y --copy-file .env --copy-file .env.local
+```
+
+**Behavior:**
+- Creates a new Zellij session (works outside Zellij too)
+- Automatically creates the worktree if it doesn't exist
+- If a branch with that name exists, attaches to it instead
+- Default layout: AI agent on top, two shells side by side on bottom
+
+**Configuration:**
+Configure the AI agent command in `phantom.config.json`:
+```json
+{
+  "zellij": {
+    "agent": {
+      "command": "claude",
+      "args": ["--model", "opus"]
+    },
+    "layout": "./layouts/custom.kdl"
+  }
+}
+```
+
+See [Configuration](./configuration.md#zellij) for more details.
 
 ### list
 
@@ -191,6 +261,9 @@ phantom shell <name> [options]
 - `--tmux`, `-t` - Open shell in new tmux window
 - `--tmux-vertical`, `--tmux-v` - Open shell in vertical split pane
 - `--tmux-horizontal`, `--tmux-h` - Open shell in horizontal split pane
+- `--zellij`, `-z` - Open shell in new Zellij tab
+- `--zellij-vertical`, `--zellij-v` - Open shell in vertical Zellij pane
+- `--zellij-horizontal`, `--zellij-h` - Open shell in horizontal Zellij pane
 
 **Environment Variables:**
 When in a phantom shell, these environment variables are set:
@@ -209,18 +282,25 @@ phantom shell --fzf
 # Open in new tmux window
 phantom shell feature-auth --tmux
 
+# Open in new Zellij tab
+phantom shell feature-auth --zellij
+
 # Open in vertical split pane
 phantom shell feature-auth --tmux-v
+phantom shell feature-auth --zellij-v
 
 # Open in horizontal split pane
 phantom shell feature-auth --tmux-h
+phantom shell feature-auth --zellij-h
 
-# Interactive selection with tmux
+# Interactive selection with tmux/zellij
 phantom shell --fzf --tmux
+phantom shell --fzf --zellij
 ```
 
 **Notes:**
 - tmux options require being inside a tmux session
+- zellij options require a Zellij session to be running
 
 ### exec
 
@@ -235,6 +315,9 @@ phantom exec [options] <name> <command> [args...]
 - `--tmux`, `-t` - Execute command in new tmux window
 - `--tmux-vertical`, `--tmux-v` - Execute command in vertical split pane
 - `--tmux-horizontal`, `--tmux-h` - Execute command in horizontal split pane
+- `--zellij`, `-z` - Execute command in new Zellij tab
+- `--zellij-vertical`, `--zellij-v` - Execute command in vertical Zellij pane
+- `--zellij-horizontal`, `--zellij-h` - Execute command in horizontal Zellij pane
 
 **Examples:**
 ```bash
@@ -256,18 +339,25 @@ phantom exec --fzf npm run dev
 # Execute in new tmux window
 phantom exec --tmux feature-auth npm run dev
 
+# Execute in new Zellij tab
+phantom exec --zellij feature-auth npm run dev
+
 # Execute in vertical split pane
 phantom exec --tmux-v feature-auth npm test
+phantom exec --zellij-v feature-auth npm test
 
 # Execute in horizontal split pane
 phantom exec --tmux-h feature-auth npm run watch
+phantom exec --zellij-h feature-auth npm run watch
 
-# Interactive selection with tmux
+# Interactive selection with tmux/zellij
 phantom exec --fzf --tmux npm run dev
+phantom exec --fzf --zellij npm run dev
 ```
 
 **Notes:**
 - tmux options require being inside a tmux session
+- zellij options require a Zellij session to be running
 
 ### edit
 
@@ -372,6 +462,9 @@ phantom gh checkout <number> [options]  # alias
 - `--tmux` / `-t` - Open the worktree in a new tmux window after checkout
 - `--tmux-vertical` / `--tmux-v` - Open the worktree in a vertical tmux split
 - `--tmux-horizontal` / `--tmux-h` - Open the worktree in a horizontal tmux split
+- `--zellij` / `-z` - Open the worktree in a new Zellij tab after checkout
+- `--zellij-vertical` / `--zellij-v` - Open the worktree in a vertical Zellij split
+- `--zellij-horizontal` / `--zellij-h` - Open the worktree in a horizontal Zellij split
 
 **Examples:**
 ```bash
@@ -387,8 +480,12 @@ phantom github checkout 789 --base develop
 # Create and open PR #321 in a new tmux window
 phantom github checkout 321 --tmux
 
+# Create and open PR #321 in a new Zellij tab
+phantom github checkout 321 --zellij
+
 # Create and open issue #654 in a vertical split
 phantom github checkout 654 --tmux-v
+phantom github checkout 654 --zellij-v
 
 # Using the alias
 phantom gh checkout 123
@@ -398,6 +495,7 @@ phantom gh checkout 123
 - GitHub CLI (gh) must be installed
 - Must be authenticated with `gh auth login`
 - tmux options require being inside a tmux session
+- zellij options require a Zellij session to be running
 
 **Behavior:**
 - For same-repo PRs: Worktree name matches the PR branch (e.g., `feature/add-logging`)
