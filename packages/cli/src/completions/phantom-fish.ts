@@ -99,7 +99,7 @@ complete -c phantom -n "__phantom_using_command" -a "gh" -d "GitHub integration 
 complete -c phantom -n "__phantom_using_command" -a "version" -d "Display phantom version information"
 complete -c phantom -n "__phantom_using_command" -a "completion" -d "Generate shell completion scripts"
 complete -c phantom -n "__phantom_using_command" -a "mcp" -d "Manage Model Context Protocol (MCP) server"
-complete -c phantom -n "__phantom_using_command" -a "launch" -d "Create a worktree and open it in Zellij with Claude"
+complete -c phantom -n "__phantom_using_command" -a "launch" -d "Create a worktree and open it in Zellij with AI agent"
 
 # Global options
 complete -c phantom -l help -d "Show help (-h)"
@@ -230,7 +230,7 @@ complete -c phantom -n "__phantom_using_command mcp" -a "serve" -d "Start MCP se
 
 # launch command options
 complete -c phantom -n "__phantom_using_command launch" -l layout -d "Path to a custom Zellij layout file (-l)" -r
-complete -c phantom -n "__phantom_using_command launch" -l no-claude -d "Do not start Claude in the Zellij session"
+complete -c phantom -n "__phantom_using_command launch" -l no-agent -d "Do not start the AI agent in the Zellij session"
 complete -c phantom -n "__phantom_using_command launch" -l copy-file -d "Copy specified files from the current worktree" -r
 complete -c phantom -n "__phantom_using_command launch" -l base -d "Branch or commit to create the new worktree from (defaults to HEAD)" -x
 `;

@@ -1,14 +1,20 @@
 // Default Phantom layout for Zellij
-// Vertical split: shell on top, Claude on bottom (Claude focused)
+// Top pane: AI agent (focused)
+// Bottom pane: two shells side by side
 
 layout {
     pane split_direction="vertical" {
-        pane size="50%" {
-            name "shell"
-        }
         pane size="50%" focus=true {
-            name "claude"
+            name "agent"
             command "claude"
+        }
+        pane size="50%" split_direction="horizontal" {
+            pane {
+                name "shell"
+            }
+            pane {
+                name "shell2"
+            }
         }
     }
 }

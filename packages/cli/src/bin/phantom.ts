@@ -65,7 +65,7 @@ const commands: Command[] = [
   },
   {
     name: "launch",
-    description: "Create a worktree and launch a Zellij session with Claude",
+    description: "Create a worktree and launch a Zellij session with AI agent",
     handler: launchHandler,
     help: launchHelp,
   },

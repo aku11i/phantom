@@ -26,7 +26,7 @@ export async function launchHandler(args: string[]): Promise<void> {
         type: "string",
         short: "l",
       },
-      "no-claude": {
+      "no-agent": {
         type: "boolean",
       },
       "copy-file": {
@@ -47,7 +47,7 @@ export async function launchHandler(args: string[]): Promise<void> {
 
   const worktreeName = positionals[0];
   const layoutOption = values.layout;
-  const noClaude = values["no-claude"] ?? false;
+  const noAgent = values["no-agent"] ?? false;
   const copyFileOptions = values["copy-file"];
   const baseOption = values.base;
 
@@ -55,10 +55,10 @@ export async function launchHandler(args: string[]): Promise<void> {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
 
-    // Determine Claude command from config or defaults
+    // Determine AI agent command from config or defaults
     const zellijConfig = context.config?.zellij;
-    const claudeCommand = zellijConfig?.claude?.command ?? "claude";
-    const claudeArgs = zellijConfig?.claude?.args ?? [];
+    const agentCommand = zellijConfig?.agent?.command ?? "claude";
+    const agentArgs = zellijConfig?.agent?.args ?? [];
 
     // Smart worktree resolution: existing worktree → attach branch → create new
     let worktreePath: string;
@@ -153,9 +153,9 @@ export async function launchHandler(args: string[]): Promise<void> {
       layoutPath = await createTemporaryLayout({
         worktreePath,
         worktreeName,
-        claudeCommand: noClaude ? undefined : claudeCommand,
-        claudeArgs: noClaude ? undefined : claudeArgs,
-        noClaude,
+        agentCommand: noAgent ? undefined : agentCommand,
+        agentArgs: noAgent ? undefined : agentArgs,
+        noAgent,
       });
       isTemporaryLayout = true;
     }

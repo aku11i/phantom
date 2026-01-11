@@ -8,9 +8,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export interface LayoutOptions {
   worktreePath: string;
   worktreeName: string;
-  claudeCommand?: string;
-  claudeArgs?: string[];
-  noClaude?: boolean;
+  agentCommand?: string;
+  agentArgs?: string[];
+  noAgent?: boolean;
 }
 
 export async function getDefaultLayoutPath(): Promise<string> {
@@ -23,40 +23,47 @@ export async function createTemporaryLayout(
   const {
     worktreePath,
     worktreeName,
-    claudeCommand = "claude",
-    claudeArgs = [],
-    noClaude = false,
+    agentCommand = "claude",
+    agentArgs = [],
+    noAgent = false,
   } = options;
 
-  // Build the Claude pane content
-  let claudePane: string;
-  if (noClaude) {
-    // Just a shell pane if Claude is disabled
-    claudePane = `        pane size="50%" focus=true {
-            name "shell2"
+  // Build the top pane content (agent or shell)
+  let topPane: string;
+  if (noAgent) {
+    // Just a shell pane if agent is disabled
+    topPane = `        pane size="50%" focus=true {
+            name "shell"
         }`;
   } else {
-    // Claude pane with command
+    // Agent pane with command
     const argsLine =
-      claudeArgs.length > 0
-        ? `\n            args ${claudeArgs.map((a) => `"${a}"`).join(" ")}`
+      agentArgs.length > 0
+        ? `\n            args ${agentArgs.map((a) => `"${a}"`).join(" ")}`
         : "";
-    claudePane = `        pane size="50%" focus=true {
-            name "claude"
-            command "${claudeCommand}"${argsLine}
+    topPane = `        pane size="50%" focus=true {
+            name "agent"
+            command "${agentCommand}"${argsLine}
         }`;
   }
 
   // Generate a dynamic layout with the correct paths and commands
+  // Top pane: agent (or shell if --no-agent)
+  // Bottom pane: two shells side by side
   const layout = `// Phantom generated layout for ${worktreeName}
 layout {
     cwd "${worktreePath}"
 
     pane split_direction="vertical" {
-        pane size="50%" {
-            name "shell"
+${topPane}
+        pane size="50%" split_direction="horizontal" {
+            pane {
+                name "shell"
+            }
+            pane {
+                name "shell2"
+            }
         }
-${claudePane}
     }
 }
 `;

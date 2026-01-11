@@ -9,7 +9,7 @@ export class ConfigValidationError extends Error {
   }
 }
 
-const zellijClaudeConfigSchema = z
+const zellijAgentConfigSchema = z
   .object({
     command: z.string().optional(),
     args: z.array(z.string()).optional(),
@@ -20,7 +20,7 @@ const zellijClaudeConfigSchema = z
 const zellijConfigSchema = z
   .object({
     layout: z.string().optional(),
-    claude: zellijClaudeConfigSchema,
+    agent: zellijAgentConfigSchema,
   })
   .passthrough()
   .optional();

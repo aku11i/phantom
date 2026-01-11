@@ -18,7 +18,7 @@ _phantom() {
         'preferences:Manage editor/ai/worktreesDirectory preferences (git config --global)'
         'github:GitHub integration commands'
         'gh:GitHub integration commands (alias)'
-        'launch:Create a worktree and open it in Zellij with Claude'
+        'launch:Create a worktree and open it in Zellij with AI agent'
         'version:Display phantom version information'
         'completion:Generate shell completion scripts'
         'mcp:Manage Model Context Protocol (MCP) server'
@@ -161,7 +161,7 @@ _phantom() {
                 launch)
                     _arguments \
                         '--layout[Path to a custom Zellij layout file (-l)]:file:_files' \
-                        '--no-claude[Do not start Claude in the Zellij session]' \
+                        '--no-agent[Do not start the AI agent in the Zellij session]' \
                         '*--copy-file[Copy specified files from the current worktree]:file:_files' \
                         '--base[Branch or commit to create the new worktree from (defaults to HEAD)]:branch/commit:' \
                         '1:name/branch:'

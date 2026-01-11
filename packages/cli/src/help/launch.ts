@@ -2,7 +2,8 @@ import type { CommandHelp } from "../help.ts";
 
 export const launchHelp: CommandHelp = {
   name: "launch",
-  description: "Create a worktree and launch a Zellij session with Claude",
+  description:
+    "Create a worktree and launch a Zellij session with your AI agent",
   usage: "phantom launch <name> [options]",
   options: [
     {
@@ -20,9 +21,9 @@ export const launchHelp: CommandHelp = {
       example: "--base main",
     },
     {
-      name: "no-claude",
+      name: "no-agent",
       type: "boolean",
-      description: "Don't start Claude in the session (shell only)",
+      description: "Don't start the AI agent in the session (shell only)",
     },
     {
       name: "copy-file",
@@ -35,7 +36,7 @@ export const launchHelp: CommandHelp = {
   ],
   examples: [
     {
-      description: "Launch a new worktree with Claude in Zellij",
+      description: "Launch a new worktree with AI agent in Zellij",
       command: "phantom launch feature-auth",
     },
     {
@@ -47,8 +48,8 @@ export const launchHelp: CommandHelp = {
       command: "phantom launch feature-new --base main",
     },
     {
-      description: "Launch without Claude (shell only)",
-      command: "phantom launch experiment --no-claude",
+      description: "Launch without AI agent (shell only)",
+      command: "phantom launch experiment --no-agent",
     },
     {
       description: "Launch an existing worktree in Zellij",
@@ -59,8 +60,8 @@ export const launchHelp: CommandHelp = {
     "Creates a new Zellij session (works outside Zellij too)",
     "Automatically creates the worktree if it doesn't exist",
     "If a branch with that name exists, attaches to it instead",
-    "Default layout: shell on top, Claude on bottom (Claude focused)",
-    "Configure Claude command in phantom.config.json under 'zellij.claude'",
+    "Default layout: AI agent on top, two shells side by side on bottom",
+    "Configure agent command in phantom.config.json under 'zellij.agent'",
     "Custom layouts can be specified in config: 'zellij.layout'",
   ],
 };

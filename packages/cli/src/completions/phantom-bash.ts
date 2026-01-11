@@ -334,7 +334,7 @@ _phantom_completion() {
                     return 0
                     ;;
                 *)
-                    local opts="--layout --no-claude --copy-file --base"
+                    local opts="--layout --no-agent --copy-file --base"
                     COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     return 0
                     ;;
