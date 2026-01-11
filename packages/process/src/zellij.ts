@@ -76,7 +76,9 @@ export async function createZellijSession(
   const zellijArgs: string[] = ["--session", sessionName];
 
   if (layout) {
-    zellijArgs.push("--layout", layout);
+    // Use --new-session-with-layout to ALWAYS create a new session
+    // (--layout with --session tries to attach and add tabs to existing session)
+    zellijArgs.push("--new-session-with-layout", layout);
   }
 
   const spawnOptions: { cwd?: string; env?: NodeJS.ProcessEnv } = {};
