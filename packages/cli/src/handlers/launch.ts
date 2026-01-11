@@ -1,0 +1,193 @@
+import { parseArgs } from "node:util";
+import {
+  attachWorktreeCore,
+  createContext,
+  createWorktree,
+  validateWorktreeExists,
+} from "@aku11i/phantom-core";
+import { branchExists, getGitRoot } from "@aku11i/phantom-git";
+import { createZellijSession, getPhantomEnv } from "@aku11i/phantom-process";
+import { isErr, isOk } from "@aku11i/phantom-shared";
+import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
+import {
+  cleanupTemporaryLayout,
+  createTemporaryLayout,
+} from "../layouts/index.ts";
+import { output } from "../output.ts";
+
+export async function launchHandler(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    options: {
+      base: {
+        type: "string",
+      },
+      layout: {
+        type: "string",
+        short: "l",
+      },
+      "no-claude": {
+        type: "boolean",
+      },
+      "copy-file": {
+        type: "string",
+        multiple: true,
+      },
+    },
+    strict: true,
+    allowPositionals: true,
+  });
+
+  if (positionals.length === 0) {
+    exitWithError(
+      "Please provide a name for the worktree/session",
+      exitCodes.validationError,
+    );
+  }
+
+  const worktreeName = positionals[0];
+  const layoutOption = values.layout;
+  const noClaude = values["no-claude"] ?? false;
+  const copyFileOptions = values["copy-file"];
+  const baseOption = values.base;
+
+  try {
+    const gitRoot = await getGitRoot();
+    const context = await createContext(gitRoot);
+
+    // Determine Claude command from config or defaults
+    const zellijConfig = context.config?.zellij;
+    const claudeCommand = zellijConfig?.claude?.command ?? "claude";
+    const claudeArgs = zellijConfig?.claude?.args ?? [];
+
+    // Smart worktree resolution: existing worktree → attach branch → create new
+    let worktreePath: string;
+
+    const existingWorktree = await validateWorktreeExists(
+      context.gitRoot,
+      context.worktreesDirectory,
+      worktreeName,
+    );
+
+    if (isOk(existingWorktree)) {
+      // Worktree already exists, use it
+      worktreePath = existingWorktree.value.path;
+      output.log(`Using existing worktree '${worktreeName}'`);
+    } else {
+      // Check if branch exists (for attach) or create new
+      const branchCheck = await branchExists(gitRoot, worktreeName);
+
+      if (isOk(branchCheck) && branchCheck.value) {
+        // Branch exists, attach to it
+        let filesToCopy: string[] = context.config?.postCreate?.copyFiles ?? [];
+        if (copyFileOptions && copyFileOptions.length > 0) {
+          const cliFiles = Array.isArray(copyFileOptions)
+            ? copyFileOptions
+            : [copyFileOptions];
+          filesToCopy = [...new Set([...filesToCopy, ...cliFiles])];
+        }
+
+        const attachResult = await attachWorktreeCore(
+          context.gitRoot,
+          context.worktreesDirectory,
+          worktreeName,
+          filesToCopy.length > 0 ? filesToCopy : undefined,
+          context.config?.postCreate?.commands,
+        );
+
+        if (isErr(attachResult)) {
+          exitWithError(attachResult.error.message, exitCodes.generalError);
+        }
+
+        worktreePath = attachResult.value;
+        output.log(`Attached to existing branch '${worktreeName}'`);
+      } else {
+        // Create new worktree
+        let filesToCopy: string[] = context.config?.postCreate?.copyFiles ?? [];
+        if (copyFileOptions && copyFileOptions.length > 0) {
+          const cliFiles = Array.isArray(copyFileOptions)
+            ? copyFileOptions
+            : [copyFileOptions];
+          filesToCopy = [...new Set([...filesToCopy, ...cliFiles])];
+        }
+
+        const createResult = await createWorktree(
+          context.gitRoot,
+          context.worktreesDirectory,
+          worktreeName,
+          {
+            copyFiles: filesToCopy.length > 0 ? filesToCopy : undefined,
+            base: baseOption,
+          },
+          filesToCopy.length > 0 ? filesToCopy : undefined,
+          context.config?.postCreate?.commands,
+        );
+
+        if (isErr(createResult)) {
+          exitWithError(createResult.error.message, exitCodes.generalError);
+        }
+
+        worktreePath = createResult.value.path;
+        output.log(createResult.value.message);
+
+        if (createResult.value.copyError) {
+          output.error(
+            `\nWarning: Failed to copy some files: ${createResult.value.copyError}`,
+          );
+        }
+      }
+    }
+
+    // Determine layout path
+    let layoutPath: string;
+    let isTemporaryLayout = false;
+
+    if (layoutOption) {
+      // User-specified layout via CLI flag
+      layoutPath = layoutOption;
+    } else if (zellijConfig?.layout) {
+      // Config-specified layout
+      layoutPath = zellijConfig.layout;
+    } else {
+      // Generate temporary layout
+      layoutPath = await createTemporaryLayout({
+        worktreePath,
+        worktreeName,
+        claudeCommand: noClaude ? undefined : claudeCommand,
+        claudeArgs: noClaude ? undefined : claudeArgs,
+        noClaude,
+      });
+      isTemporaryLayout = true;
+    }
+
+    output.log(`\nLaunching Zellij session '${worktreeName}'...`);
+
+    const zellijResult = await createZellijSession({
+      sessionName: worktreeName,
+      layout: layoutPath,
+      cwd: worktreePath,
+      env: getPhantomEnv(worktreeName, worktreePath),
+    });
+
+    // Cleanup temporary layout if we created one
+    if (isTemporaryLayout) {
+      await cleanupTemporaryLayout(layoutPath);
+    }
+
+    if (isErr(zellijResult)) {
+      output.error(zellijResult.error.message);
+      const exitCode =
+        "exitCode" in zellijResult.error
+          ? (zellijResult.error.exitCode ?? exitCodes.generalError)
+          : exitCodes.generalError;
+      exitWithError("", exitCode);
+    }
+
+    exitWithSuccess();
+  } catch (error) {
+    exitWithError(
+      error instanceof Error ? error.message : String(error),
+      exitCodes.generalError,
+    );
+  }
+}

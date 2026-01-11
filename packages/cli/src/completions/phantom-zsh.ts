@@ -18,6 +18,7 @@ _phantom() {
         'preferences:Manage editor/ai/worktreesDirectory preferences (git config --global)'
         'github:GitHub integration commands'
         'gh:GitHub integration commands (alias)'
+        'launch:Create a worktree and open it in Zellij with Claude'
         'version:Display phantom version information'
         'completion:Generate shell completion scripts'
         'mcp:Manage Model Context Protocol (MCP) server'
@@ -42,6 +43,9 @@ _phantom() {
                         '--tmux[Open the worktree in a new tmux window (-t)]' \
                         '--tmux-vertical[Open the worktree in a vertical tmux pane]' \
                         '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \
+                        '--zellij[Open the worktree in a new Zellij tab (-z)]' \
+                        '--zellij-vertical[Open the worktree in a vertical Zellij pane]' \
+                        '--zellij-horizontal[Open the worktree in a horizontal Zellij pane]' \
                         '*--copy-file[Copy specified files from the current worktree]:file:_files' \
                         '--base[Branch or commit to create the new worktree from (defaults to HEAD)]:branch/commit:' \
                         '1:name:'
@@ -53,6 +57,9 @@ _phantom() {
                         '--tmux[Open the worktree in a new tmux window (-t)]' \
                         '--tmux-vertical[Open the worktree in a vertical tmux pane]' \
                         '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \
+                        '--zellij[Open the worktree in a new Zellij tab (-z)]' \
+                        '--zellij-vertical[Open the worktree in a vertical Zellij pane]' \
+                        '--zellij-horizontal[Open the worktree in a horizontal Zellij pane]' \
                         '*--copy-file[Copy specified files from the current worktree]:file:_files' \
                         '1:branch-name:'
                     ;;
@@ -77,6 +84,9 @@ _phantom() {
                             '--tmux[Open shell in new tmux window (-t)]' \
                             '--tmux-vertical[Open shell in vertical split pane]' \
                             '--tmux-horizontal[Open shell in horizontal split pane]' \
+                            '--zellij[Open shell in new Zellij tab (-z)]' \
+                            '--zellij-vertical[Open shell in vertical Zellij pane]' \
+                            '--zellij-horizontal[Open shell in horizontal Zellij pane]' \
                             '1:worktree:(\${(q)worktrees[@]})'
                     elif [[ \${line[1]} == "delete" ]]; then
                         local worktrees
@@ -96,6 +106,9 @@ _phantom() {
                         '--tmux[Execute command in new tmux window (-t)]' \
                         '--tmux-vertical[Execute command in vertical split pane]' \
                         '--tmux-horizontal[Execute command in horizontal split pane]' \
+                        '--zellij[Execute command in new Zellij tab (-z)]' \
+                        '--zellij-vertical[Execute command in vertical Zellij pane]' \
+                        '--zellij-horizontal[Execute command in horizontal Zellij pane]' \
                         '1:worktree:(\${(q)worktrees[@]})' \
                         '*:command:_command_names'
                     ;;
@@ -133,12 +146,25 @@ _phantom() {
                             '--tmux-v[Alias for --tmux-vertical]' \
                             '--tmux-horizontal[Open worktree in horizontal split pane]' \
                             '--tmux-h[Alias for --tmux-horizontal]' \
+                            '--zellij[Open worktree in new Zellij tab (-z)]' \
+                            '--zellij-vertical[Open worktree in vertical Zellij pane]' \
+                            '--zellij-v[Alias for --zellij-vertical]' \
+                            '--zellij-horizontal[Open worktree in horizontal Zellij pane]' \
+                            '--zellij-h[Alias for --zellij-horizontal]' \
                             '1:number:'
                     fi
                     ;;
                 mcp)
                     _arguments \
                         '1:action:(serve)'
+                    ;;
+                launch)
+                    _arguments \
+                        '--layout[Path to a custom Zellij layout file (-l)]:file:_files' \
+                        '--no-claude[Do not start Claude in the Zellij session]' \
+                        '*--copy-file[Copy specified files from the current worktree]:file:_files' \
+                        '--base[Branch or commit to create the new worktree from (defaults to HEAD)]:branch/commit:' \
+                        '1:name/branch:'
                     ;;
             esac
             ;;

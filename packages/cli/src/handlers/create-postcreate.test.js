@@ -55,6 +55,8 @@ mock.module("@aku11i/phantom-process", {
   namedExports: {
     isInsideTmux: mock.fn(() => false),
     executeTmuxCommand: mock.fn(),
+    isInsideZellij: mock.fn(() => false),
+    executeZellijCommand: mock.fn(),
     getPhantomEnv: mock.fn(() => ({})),
   },
 });

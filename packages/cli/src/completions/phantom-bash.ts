@@ -72,7 +72,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec edit ai shell preferences github gh version completion mcp"
+    local commands="create attach list where delete exec edit ai shell preferences github gh launch version completion mcp"
     local global_opts="--help --version"
 
     if [[ \${cword} -eq 1 ]]; then
@@ -100,7 +100,7 @@ _phantom_completion() {
                     return 0
                     ;;
                 *)
-                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --copy-file --base"
+                    local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --zellij --zellij-vertical --zellij-horizontal --zellij-v --zellij-h --copy-file --base"
                     COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     return 0
                     ;;
@@ -122,7 +122,7 @@ _phantom_completion() {
                         # First argument: branch name (not completing - user needs to provide)
                         return 0
                     else
-                        local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --copy-file"
+                        local opts="--shell --exec --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --zellij --zellij-vertical --zellij-horizontal --zellij-v --zellij-h --copy-file"
                         COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                         return 0
                     fi
@@ -172,7 +172,7 @@ _phantom_completion() {
                         use_fzf=true
                         continue
                         ;;
-                    --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h)
+                    --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h|--zellij|-z|--zellij-vertical|--zellij-horizontal|--zellij-v|--zellij-h)
                         continue
                         ;;
                 esac
@@ -203,7 +203,7 @@ _phantom_completion() {
             fi
 
             case "\${prev}" in
-                --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h)
+                --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h|--zellij|-z|--zellij-vertical|--zellij-horizontal|--zellij-v|--zellij-h)
                     local worktrees=$(_phantom_list_worktrees)
                     COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
                     return 0
@@ -211,7 +211,7 @@ _phantom_completion() {
             esac
 
             if [[ "\${cur}" == -* ]]; then
-                local opts="--fzf --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h"
+                local opts="--fzf --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --zellij --zellij-vertical --zellij-horizontal --zellij-v --zellij-h"
                 COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                 return 0
             fi
@@ -242,15 +242,15 @@ _phantom_completion() {
             ;;
         shell)
             case "\${prev}" in
-                --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h)
-                    # After tmux options, expect worktree name
+                --tmux|-t|--tmux-vertical|--tmux-horizontal|--tmux-v|--tmux-h|--zellij|-z|--zellij-vertical|--zellij-horizontal|--zellij-v|--zellij-h)
+                    # After tmux/zellij options, expect worktree name
                     local worktrees=$(_phantom_list_worktrees)
                     COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
                     return 0
                     ;;
                 *)
                     if [[ "\${cur}" == -* ]]; then
-                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h"
+                        local opts="--fzf --tmux --tmux-vertical --tmux-horizontal --tmux-v --tmux-h --zellij --zellij-vertical --zellij-horizontal --zellij-v --zellij-h"
                         COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                     else
                         local worktrees=$(_phantom_list_worktrees)
@@ -308,7 +308,7 @@ _phantom_completion() {
                             # First argument after checkout should be number
                             return 0
                         else
-                            local opts="--base --tmux -t --tmux-vertical --tmux-v --tmux-horizontal --tmux-h"
+                            local opts="--base --tmux -t --tmux-vertical --tmux-v --tmux-horizontal --tmux-h --zellij -z --zellij-vertical --zellij-v --zellij-horizontal --zellij-h"
                             COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
                             return 0
                         fi
@@ -316,6 +316,29 @@ _phantom_completion() {
                 esac
             fi
             return 0
+            ;;
+        launch)
+            case "\${prev}" in
+                --layout|-l)
+                    # Complete files for layout
+                    _filedir
+                    return 0
+                    ;;
+                --copy-file)
+                    # Complete files
+                    _filedir
+                    return 0
+                    ;;
+                --base)
+                    # Don't complete anything specific for base (branch/commit)
+                    return 0
+                    ;;
+                *)
+                    local opts="--layout --no-claude --copy-file --base"
+                    COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
+                    return 0
+                    ;;
+            esac
             ;;
         version)
             # No completion for version command

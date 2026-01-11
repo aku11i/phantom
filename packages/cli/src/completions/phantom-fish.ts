@@ -99,6 +99,7 @@ complete -c phantom -n "__phantom_using_command" -a "gh" -d "GitHub integration 
 complete -c phantom -n "__phantom_using_command" -a "version" -d "Display phantom version information"
 complete -c phantom -n "__phantom_using_command" -a "completion" -d "Generate shell completion scripts"
 complete -c phantom -n "__phantom_using_command" -a "mcp" -d "Manage Model Context Protocol (MCP) server"
+complete -c phantom -n "__phantom_using_command" -a "launch" -d "Create a worktree and open it in Zellij with Claude"
 
 # Global options
 complete -c phantom -l help -d "Show help (-h)"
@@ -112,6 +113,11 @@ complete -c phantom -n "__phantom_using_command create" -l tmux-vertical -d "Ope
 complete -c phantom -n "__phantom_using_command create" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
 complete -c phantom -n "__phantom_using_command create" -l tmux-v -d "Alias for --tmux-vertical"
 complete -c phantom -n "__phantom_using_command create" -l tmux-h -d "Alias for --tmux-horizontal"
+complete -c phantom -n "__phantom_using_command create" -l zellij -d "Open the worktree in a new Zellij tab (-z)"
+complete -c phantom -n "__phantom_using_command create" -l zellij-vertical -d "Open the worktree in a vertical Zellij pane"
+complete -c phantom -n "__phantom_using_command create" -l zellij-horizontal -d "Open the worktree in a horizontal Zellij pane"
+complete -c phantom -n "__phantom_using_command create" -l zellij-v -d "Alias for --zellij-vertical"
+complete -c phantom -n "__phantom_using_command create" -l zellij-h -d "Alias for --zellij-horizontal"
 complete -c phantom -n "__phantom_using_command create" -l copy-file -d "Copy specified files from the current worktree" -r
 complete -c phantom -n "__phantom_using_command create" -l base -d "Branch or commit to create the new worktree from (defaults to HEAD)" -x
 
@@ -123,6 +129,11 @@ complete -c phantom -n "__phantom_using_command attach" -l tmux-vertical -d "Ope
 complete -c phantom -n "__phantom_using_command attach" -l tmux-horizontal -d "Open the worktree in a horizontal tmux pane"
 complete -c phantom -n "__phantom_using_command attach" -l tmux-v -d "Alias for --tmux-vertical"
 complete -c phantom -n "__phantom_using_command attach" -l tmux-h -d "Alias for --tmux-horizontal"
+complete -c phantom -n "__phantom_using_command attach" -l zellij -d "Open the worktree in a new Zellij tab (-z)"
+complete -c phantom -n "__phantom_using_command attach" -l zellij-vertical -d "Open the worktree in a vertical Zellij pane"
+complete -c phantom -n "__phantom_using_command attach" -l zellij-horizontal -d "Open the worktree in a horizontal Zellij pane"
+complete -c phantom -n "__phantom_using_command attach" -l zellij-v -d "Alias for --zellij-vertical"
+complete -c phantom -n "__phantom_using_command attach" -l zellij-h -d "Alias for --zellij-horizontal"
 complete -c phantom -n "__phantom_using_command attach" -l copy-file -d "Copy specified files from the current worktree" -r
 
 # list command options
@@ -147,6 +158,11 @@ complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-v -d "Alias for --tmux-vertical"
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-horizontal -d "Execute command in horizontal split pane"
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l tmux-h -d "Alias for --tmux-horizontal"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l zellij -d "Execute command in new Zellij tab (-z)"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l zellij-vertical -d "Execute command in vertical Zellij pane"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l zellij-v -d "Alias for --zellij-vertical"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l zellij-horizontal -d "Execute command in horizontal Zellij pane"
+complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l zellij-h -d "Alias for --zellij-horizontal"
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_expect_worktree" -a "(__phantom_list_worktrees)"
 complete -c phantom -n "__phantom_using_command exec; and not __phantom_exec_expect_worktree" -a "(__fish_complete_subcommand --fcs-skip=(__phantom_exec_command_skip))"
 
@@ -171,6 +187,11 @@ complete -c phantom -n "__phantom_using_command shell" -l tmux-vertical -d "Open
 complete -c phantom -n "__phantom_using_command shell" -l tmux-horizontal -d "Open shell in horizontal split pane"
 complete -c phantom -n "__phantom_using_command shell" -l tmux-v -d "Alias for --tmux-vertical"
 complete -c phantom -n "__phantom_using_command shell" -l tmux-h -d "Alias for --tmux-horizontal"
+complete -c phantom -n "__phantom_using_command shell" -l zellij -d "Open shell in new Zellij tab (-z)"
+complete -c phantom -n "__phantom_using_command shell" -l zellij-vertical -d "Open shell in vertical Zellij pane"
+complete -c phantom -n "__phantom_using_command shell" -l zellij-horizontal -d "Open shell in horizontal Zellij pane"
+complete -c phantom -n "__phantom_using_command shell" -l zellij-v -d "Alias for --zellij-vertical"
+complete -c phantom -n "__phantom_using_command shell" -l zellij-h -d "Alias for --zellij-horizontal"
 complete -c phantom -n "__phantom_using_command shell" -a "(__phantom_list_worktrees)"
 
 # completion command - shell names
@@ -187,13 +208,29 @@ complete -c phantom -n "__phantom_using_command github checkout" -l tmux-vertica
 complete -c phantom -n "__phantom_using_command github checkout" -l tmux-v -d "Alias for --tmux-vertical"
 complete -c phantom -n "__phantom_using_command github checkout" -l tmux-horizontal -d "Open worktree in horizontal split pane"
 complete -c phantom -n "__phantom_using_command github checkout" -l tmux-h -d "Alias for --tmux-horizontal"
+complete -c phantom -n "__phantom_using_command github checkout" -l zellij -d "Open worktree in new Zellij tab (-z)"
+complete -c phantom -n "__phantom_using_command github checkout" -l zellij-vertical -d "Open worktree in vertical Zellij pane"
+complete -c phantom -n "__phantom_using_command github checkout" -l zellij-v -d "Alias for --zellij-vertical"
+complete -c phantom -n "__phantom_using_command github checkout" -l zellij-horizontal -d "Open worktree in horizontal Zellij pane"
+complete -c phantom -n "__phantom_using_command github checkout" -l zellij-h -d "Alias for --zellij-horizontal"
 complete -c phantom -n "__phantom_using_command gh checkout" -l base -d "Base branch for new issue branches (issues only)" -x
 complete -c phantom -n "__phantom_using_command gh checkout" -l tmux -d "Open worktree in new tmux window (-t)"
 complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-vertical -d "Open worktree in vertical split pane"
 complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-v -d "Alias for --tmux-vertical"
 complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-horizontal -d "Open worktree in horizontal split pane"
 complete -c phantom -n "__phantom_using_command gh checkout" -l tmux-h -d "Alias for --tmux-horizontal"
+complete -c phantom -n "__phantom_using_command gh checkout" -l zellij -d "Open worktree in new Zellij tab (-z)"
+complete -c phantom -n "__phantom_using_command gh checkout" -l zellij-vertical -d "Open worktree in vertical Zellij pane"
+complete -c phantom -n "__phantom_using_command gh checkout" -l zellij-v -d "Alias for --zellij-vertical"
+complete -c phantom -n "__phantom_using_command gh checkout" -l zellij-horizontal -d "Open worktree in horizontal Zellij pane"
+complete -c phantom -n "__phantom_using_command gh checkout" -l zellij-h -d "Alias for --zellij-horizontal"
 
 # mcp command options
 complete -c phantom -n "__phantom_using_command mcp" -a "serve" -d "Start MCP server"
+
+# launch command options
+complete -c phantom -n "__phantom_using_command launch" -l layout -d "Path to a custom Zellij layout file (-l)" -r
+complete -c phantom -n "__phantom_using_command launch" -l no-claude -d "Do not start Claude in the Zellij session"
+complete -c phantom -n "__phantom_using_command launch" -l copy-file -d "Copy specified files from the current worktree" -r
+complete -c phantom -n "__phantom_using_command launch" -l base -d "Branch or commit to create the new worktree from (defaults to HEAD)" -x
 `;

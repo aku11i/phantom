@@ -9,8 +9,10 @@ import {
 import { getGitRoot } from "@aku11i/phantom-git";
 import {
   executeTmuxCommand,
+  executeZellijCommand,
   getPhantomEnv,
   isInsideTmux,
+  isInsideZellij,
 } from "@aku11i/phantom-process";
 import { isErr, isOk } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
@@ -42,6 +44,22 @@ export async function createHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "tmux-h": {
+        type: "boolean",
+      },
+      zellij: {
+        type: "boolean",
+        short: "z",
+      },
+      "zellij-vertical": {
+        type: "boolean",
+      },
+      "zellij-v": {
+        type: "boolean",
+      },
+      "zellij-horizontal": {
+        type: "boolean",
+      },
+      "zellij-h": {
         type: "boolean",
       },
       "copy-file": {
@@ -86,12 +104,30 @@ export async function createHandler(args: string[]): Promise<void> {
     tmuxDirection = "horizontal";
   }
 
+  // Determine zellij option
+  const zellijOption =
+    values.zellij ||
+    values["zellij-vertical"] ||
+    values["zellij-v"] ||
+    values["zellij-horizontal"] ||
+    values["zellij-h"];
+
+  let zellijDirection: "new" | "vertical" | "horizontal" | undefined;
+  if (values.zellij) {
+    zellijDirection = "new";
+  } else if (values["zellij-vertical"] || values["zellij-v"]) {
+    zellijDirection = "vertical";
+  } else if (values["zellij-horizontal"] || values["zellij-h"]) {
+    zellijDirection = "horizontal";
+  }
+
   if (
-    [openShell, execCommand !== undefined, tmuxOption].filter(Boolean).length >
-    1
+    [openShell, execCommand !== undefined, tmuxOption, zellijOption].filter(
+      Boolean,
+    ).length > 1
   ) {
     exitWithError(
-      "Cannot use --shell, --exec, and --tmux options together",
+      "Cannot use --shell, --exec, --tmux, and --zellij options together",
       exitCodes.validationError,
     );
   }
@@ -99,6 +135,13 @@ export async function createHandler(args: string[]): Promise<void> {
   if (tmuxOption && !(await isInsideTmux())) {
     exitWithError(
       "The --tmux option can only be used inside a tmux session",
+      exitCodes.validationError,
+    );
+  }
+
+  if (zellijOption && !(await isInsideZellij())) {
+    exitWithError(
+      "The --zellij option can only be used inside a Zellij session",
       exitCodes.validationError,
     );
   }
@@ -223,6 +266,33 @@ export async function createHandler(args: string[]): Promise<void> {
         const exitCode =
           "exitCode" in tmuxResult.error
             ? (tmuxResult.error.exitCode ?? exitCodes.generalError)
+            : exitCodes.generalError;
+        exitWithError("", exitCode);
+      }
+    }
+
+    if (zellijDirection && isOk(result)) {
+      output.log(
+        `\nOpening worktree '${worktreeName}' in Zellij ${
+          zellijDirection === "new" ? "tab" : "pane"
+        }...`,
+      );
+
+      const shell = process.env.SHELL || "/bin/sh";
+
+      const zellijResult = await executeZellijCommand({
+        direction: zellijDirection,
+        command: shell,
+        cwd: result.value.path,
+        env: getPhantomEnv(worktreeName, result.value.path),
+        tabName: zellijDirection === "new" ? worktreeName : undefined,
+      });
+
+      if (isErr(zellijResult)) {
+        output.error(zellijResult.error.message);
+        const exitCode =
+          "exitCode" in zellijResult.error
+            ? (zellijResult.error.exitCode ?? exitCodes.generalError)
             : exitCodes.generalError;
         exitWithError("", exitCode);
       }

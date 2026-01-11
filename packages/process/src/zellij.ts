@@ -1,0 +1,99 @@
+import type { Result } from "@aku11i/phantom-shared";
+import type { ProcessError } from "./errors.ts";
+import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
+
+export type ZellijSplitDirection = "new" | "vertical" | "horizontal";
+
+export interface ZellijOptions {
+  direction: ZellijSplitDirection;
+  command: string;
+  args?: string[];
+  cwd?: string;
+  env?: Record<string, string>;
+  tabName?: string;
+}
+
+export interface ZellijSessionOptions {
+  sessionName: string;
+  layout?: string;
+  cwd?: string;
+  env?: Record<string, string>;
+}
+
+export type ZellijSuccess = SpawnSuccess;
+
+export async function isInsideZellij(): Promise<boolean> {
+  return process.env.ZELLIJ !== undefined;
+}
+
+export async function executeZellijCommand(
+  options: ZellijOptions,
+): Promise<Result<ZellijSuccess, ProcessError>> {
+  const { direction, command, args, cwd, tabName } = options;
+
+  const zellijArgs: string[] = [];
+
+  switch (direction) {
+    case "new":
+      zellijArgs.push("action", "new-tab");
+      if (tabName) {
+        zellijArgs.push("--name", tabName);
+      }
+      break;
+    case "vertical":
+      zellijArgs.push("action", "new-pane", "--direction", "down");
+      break;
+    case "horizontal":
+      zellijArgs.push("action", "new-pane", "--direction", "right");
+      break;
+  }
+
+  if (cwd) {
+    zellijArgs.push("--cwd", cwd);
+  }
+
+  // Add command separator and the command to run
+  zellijArgs.push("--", command);
+  if (args && args.length > 0) {
+    zellijArgs.push(...args);
+  }
+
+  // Note: Zellij inherits environment from parent process
+  // Unlike tmux, there's no direct env flag support
+  const result = await spawnProcess({
+    command: "zellij",
+    args: zellijArgs,
+  });
+
+  return result;
+}
+
+export async function createZellijSession(
+  options: ZellijSessionOptions,
+): Promise<Result<ZellijSuccess, ProcessError>> {
+  const { sessionName, layout, cwd, env } = options;
+
+  const zellijArgs: string[] = ["--session", sessionName];
+
+  if (layout) {
+    zellijArgs.push("--layout", layout);
+  }
+
+  const spawnOptions: { cwd?: string; env?: NodeJS.ProcessEnv } = {};
+
+  if (cwd) {
+    spawnOptions.cwd = cwd;
+  }
+
+  if (env) {
+    spawnOptions.env = { ...process.env, ...env };
+  }
+
+  const result = await spawnProcess({
+    command: "zellij",
+    args: zellijArgs,
+    options: Object.keys(spawnOptions).length > 0 ? spawnOptions : undefined,
+  });
+
+  return result;
+}

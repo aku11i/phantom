@@ -39,6 +39,25 @@ export const createHelp: CommandHelp = {
         "Open the worktree in a horizontal tmux pane (requires being inside tmux)",
     },
     {
+      name: "zellij",
+      short: "z",
+      type: "boolean",
+      description:
+        "Open the worktree in a new Zellij tab (requires being inside Zellij)",
+    },
+    {
+      name: "zellij-vertical",
+      type: "boolean",
+      description:
+        "Open the worktree in a vertical Zellij pane (requires being inside Zellij)",
+    },
+    {
+      name: "zellij-horizontal",
+      type: "boolean",
+      description:
+        "Open the worktree in a horizontal Zellij pane (requires being inside Zellij)",
+    },
+    {
       name: "copy-file",
       type: "string",
       multiple: true,
@@ -72,6 +91,10 @@ export const createHelp: CommandHelp = {
       command: "phantom create experiment --tmux",
     },
     {
+      description: "Create a worktree in a new Zellij tab",
+      command: "phantom create experiment --zellij",
+    },
+    {
       description: "Create a worktree and copy environment files",
       command:
         "phantom create staging --copy-file .env --copy-file database.yml",
@@ -87,7 +110,7 @@ export const createHelp: CommandHelp = {
   ],
   notes: [
     "The worktree name will be used as the branch name",
-    "Only one of --shell, --exec, or --tmux options can be used at a time",
+    "Only one of --shell, --exec, --tmux, or --zellij options can be used at a time",
     "File copying can also be configured in phantom.config.json",
   ],
 };

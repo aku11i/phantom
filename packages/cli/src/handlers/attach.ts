@@ -10,8 +10,10 @@ import {
 import { getGitRoot } from "@aku11i/phantom-git";
 import {
   executeTmuxCommand,
+  executeZellijCommand,
   getPhantomEnv,
   isInsideTmux,
+  isInsideZellij,
 } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
@@ -45,6 +47,22 @@ export async function attachHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "tmux-h": {
+        type: "boolean",
+      },
+      zellij: {
+        type: "boolean",
+        short: "z",
+      },
+      "zellij-vertical": {
+        type: "boolean",
+      },
+      "zellij-v": {
+        type: "boolean",
+      },
+      "zellij-horizontal": {
+        type: "boolean",
+      },
+      "zellij-h": {
         type: "boolean",
       },
       "copy-file": {
@@ -81,9 +99,28 @@ export async function attachHandler(args: string[]): Promise<void> {
           ? "horizontal"
           : undefined;
 
-  if ([values.shell, values.exec, tmuxOption].filter(Boolean).length > 1) {
+  const zellijOption =
+    values.zellij ||
+    values["zellij-vertical"] ||
+    values["zellij-v"] ||
+    values["zellij-horizontal"] ||
+    values["zellij-h"];
+
+  const zellijDirection: "new" | "vertical" | "horizontal" | undefined =
+    values.zellij
+      ? "new"
+      : values["zellij-vertical"] || values["zellij-v"]
+        ? "vertical"
+        : values["zellij-horizontal"] || values["zellij-h"]
+          ? "horizontal"
+          : undefined;
+
+  if (
+    [values.shell, values.exec, tmuxOption, zellijOption].filter(Boolean)
+      .length > 1
+  ) {
     exitWithError(
-      "Cannot use --shell, --exec, and --tmux options together",
+      "Cannot use --shell, --exec, --tmux, and --zellij options together",
       exitCodes.validationError,
     );
   }
@@ -105,6 +142,13 @@ export async function attachHandler(args: string[]): Promise<void> {
   if (tmuxOption && !(await isInsideTmux())) {
     exitWithError(
       "The --tmux option can only be used inside a tmux session",
+      exitCodes.validationError,
+    );
+  }
+
+  if (zellijOption && !(await isInsideZellij())) {
+    exitWithError(
+      "The --zellij option can only be used inside a Zellij session",
       exitCodes.validationError,
     );
   }
@@ -172,6 +216,26 @@ export async function attachHandler(args: string[]): Promise<void> {
 
     if (isErr(tmuxResult)) {
       exitWithError(tmuxResult.error.message, exitCodes.generalError);
+    }
+  } else if (zellijDirection) {
+    output.log(
+      `Opening worktree '${branchName}' in Zellij ${
+        zellijDirection === "new" ? "tab" : "pane"
+      }...`,
+    );
+
+    const shell = process.env.SHELL || "/bin/sh";
+
+    const zellijResult = await executeZellijCommand({
+      direction: zellijDirection,
+      command: shell,
+      cwd: worktreePath,
+      env: getPhantomEnv(branchName, worktreePath),
+      tabName: zellijDirection === "new" ? branchName : undefined,
+    });
+
+    if (isErr(zellijResult)) {
+      exitWithError(zellijResult.error.message, exitCodes.generalError);
     }
   }
 }

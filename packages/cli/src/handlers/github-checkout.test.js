@@ -12,6 +12,8 @@ const outputErrorMock = mock.fn();
 const githubCheckoutMock = mock.fn();
 const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
+const isInsideZellijMock = mock.fn();
+const executeZellijCommandMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
 
 mock.module("../errors.ts", {
@@ -40,6 +42,8 @@ mock.module("@aku11i/phantom-process", {
   namedExports: {
     isInsideTmux: isInsideTmuxMock,
     executeTmuxCommand: executeTmuxCommandMock,
+    isInsideZellij: isInsideZellijMock,
+    executeZellijCommand: executeZellijCommandMock,
     getPhantomEnv: getPhantomEnvMock,
   },
 });

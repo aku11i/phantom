@@ -25,6 +25,21 @@ export const shellHelp: CommandHelp = {
       type: "boolean",
       description: "Open shell in horizontal split pane",
     },
+    {
+      name: "--zellij, -z",
+      type: "boolean",
+      description: "Open shell in new Zellij tab",
+    },
+    {
+      name: "--zellij-vertical, --zellij-v",
+      type: "boolean",
+      description: "Open shell in vertical Zellij pane",
+    },
+    {
+      name: "--zellij-horizontal, --zellij-h",
+      type: "boolean",
+      description: "Open shell in horizontal Zellij pane",
+    },
   ],
   examples: [
     {
@@ -47,6 +62,14 @@ export const shellHelp: CommandHelp = {
       description: "Interactive selection with tmux",
       command: "phantom shell --fzf --tmux",
     },
+    {
+      description: "Open a shell in a new Zellij tab",
+      command: "phantom shell feature-auth --zellij",
+    },
+    {
+      description: "Open a shell in a vertical Zellij pane",
+      command: "phantom shell feature-auth --zellij-v",
+    },
   ],
   notes: [
     "Uses your default shell from the SHELL environment variable",
@@ -54,5 +77,6 @@ export const shellHelp: CommandHelp = {
     "Type 'exit' to return to your original directory",
     "With --fzf, you can interactively select the worktree to enter",
     "Tmux options require being inside a tmux session",
+    "Zellij options require being inside a Zellij session",
   ],
 };

@@ -25,6 +25,21 @@ export const execHelp: CommandHelp = {
       type: "boolean",
       description: "Execute command in horizontal split pane",
     },
+    {
+      name: "--zellij, -z",
+      type: "boolean",
+      description: "Execute command in new Zellij tab",
+    },
+    {
+      name: "--zellij-vertical, --zellij-v",
+      type: "boolean",
+      description: "Execute command in vertical Zellij pane",
+    },
+    {
+      name: "--zellij-horizontal, --zellij-h",
+      type: "boolean",
+      description: "Execute command in horizontal Zellij pane",
+    },
   ],
   examples: [
     {
@@ -55,6 +70,14 @@ export const execHelp: CommandHelp = {
       description: "Interactive selection with tmux",
       command: "phantom exec --fzf --tmux npm run dev",
     },
+    {
+      description: "Run dev server in new Zellij tab",
+      command: "phantom exec --zellij feature-auth npm run dev",
+    },
+    {
+      description: "Run tests in vertical Zellij pane",
+      command: "phantom exec --zellij-v feature-auth npm test",
+    },
   ],
   notes: [
     "The command is executed with the worktree directory as the working directory",
@@ -62,5 +85,6 @@ export const execHelp: CommandHelp = {
     "The exit code of the executed command is preserved",
     "With --fzf, select the worktree interactively before executing the command",
     "Tmux options require being inside a tmux session",
+    "Zellij options require being inside a Zellij session",
   ],
 };

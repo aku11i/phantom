@@ -1,0 +1,14 @@
+// Default Phantom layout for Zellij
+// Vertical split: shell on top, Claude on bottom (Claude focused)
+
+layout {
+    pane split_direction="vertical" {
+        pane size="50%" {
+            name "shell"
+        }
+        pane size="50%" focus=true {
+            name "claude"
+            command "claude"
+        }
+    }
+}

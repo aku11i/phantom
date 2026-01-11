@@ -52,6 +52,21 @@ export const githubCheckoutHelp: CommandHelp = {
       type: "boolean",
       description: "Open worktree in horizontal split pane",
     },
+    {
+      name: "--zellij, -z",
+      type: "boolean",
+      description: "Open worktree in new Zellij tab",
+    },
+    {
+      name: "--zellij-vertical, --zellij-v",
+      type: "boolean",
+      description: "Open worktree in vertical Zellij pane",
+    },
+    {
+      name: "--zellij-horizontal, --zellij-h",
+      type: "boolean",
+      description: "Open worktree in horizontal Zellij pane",
+    },
   ],
   examples: [
     {
@@ -70,6 +85,10 @@ export const githubCheckoutHelp: CommandHelp = {
       command: "phantom github checkout 321 --tmux",
       description: "Create a worktree and open it in a new tmux window",
     },
+    {
+      command: "phantom github checkout 321 --zellij",
+      description: "Create a worktree and open it in a new Zellij tab",
+    },
   ],
   notes: [
     "For same-repo PRs: Worktree name matches the PR branch (e.g., 'feature/add-logging')",
@@ -81,5 +100,6 @@ export const githubCheckoutHelp: CommandHelp = {
     "  - Must be authenticated with 'gh auth login'",
     "",
     "Tmux options require being inside a tmux session",
+    "Zellij options require being inside a Zellij session",
   ],
 };
