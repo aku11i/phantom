@@ -46,23 +46,20 @@ export async function listHandler(args: string[] = []): Promise<void> {
         output.log(selectResult.value.name);
       }
     } else {
-      const result = await listWorktreesCore(gitRoot);
+      const result = await listWorktreesCore(gitRoot, { excludeDefault });
 
       if (isErr(result)) {
         exitWithError("Failed to list worktrees", exitCodes.generalError);
       }
 
-      const { message } = result.value;
-      const worktrees = excludeDefault
-        ? result.value.worktrees.filter((worktree) => worktree.path !== gitRoot)
-        : result.value.worktrees;
+      const { worktrees, message } = result.value;
 
       if (worktrees.length === 0) {
         if (!values.names) {
           const fallbackMessage = excludeDefault
             ? "No sub worktrees found."
-            : message || "No worktrees found.";
-          output.log(fallbackMessage);
+            : "No worktrees found.";
+          output.log(message || fallbackMessage);
         }
         process.exit(exitCodes.success);
       }

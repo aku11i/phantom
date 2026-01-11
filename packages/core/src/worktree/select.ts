@@ -16,24 +16,24 @@ export async function selectWorktreeWithFzf(
   gitRoot: string,
   options: SelectWorktreeOptions = {},
 ): Promise<Result<SelectWorktreeResult | null, Error>> {
-  const listResult = await listWorktrees(gitRoot);
+  const listResult = await listWorktrees(gitRoot, {
+    excludeDefault: options.excludeDefault,
+  });
 
   if (isErr(listResult)) {
     return listResult;
   }
 
-  const filteredWorktrees = options.excludeDefault
-    ? listResult.value.worktrees.filter((wt) => wt.path !== gitRoot)
-    : listResult.value.worktrees;
+  const { worktrees } = listResult.value;
 
-  if (filteredWorktrees.length === 0) {
+  if (worktrees.length === 0) {
     return {
       ok: true,
       value: null,
     };
   }
 
-  const list = filteredWorktrees.map((wt) => {
+  const list = worktrees.map((wt) => {
     const status = !wt.isClean ? " [dirty]" : "";
     return `${wt.name} (${wt.pathToDisplay})${status}`;
   });
@@ -55,9 +55,7 @@ export async function selectWorktreeWithFzf(
   }
 
   const selectedName = fzfResult.value.split(" ")[0];
-  const selectedWorktree = filteredWorktrees.find(
-    (wt) => wt.name === selectedName,
-  );
+  const selectedWorktree = worktrees.find((wt) => wt.name === selectedName);
 
   if (!selectedWorktree) {
     return {

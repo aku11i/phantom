@@ -86,6 +86,36 @@ describe("listWorktrees", () => {
     cwdMock.mock.restore();
   });
 
+  it("should return empty array when excluding default worktree", async () => {
+    const cwdMock = mockCwd();
+    execFileMock.mock.mockImplementation((_cmd, _args, _options) => {
+      if (_args.includes("worktree") && _args.includes("list")) {
+        return Promise.resolve({
+          stdout:
+            "worktree /test/repo\nHEAD abc123\nbranch refs/heads/main\n\n",
+          stderr: "",
+        });
+      }
+      if (_args.includes("status") && _args.includes("--porcelain")) {
+        return Promise.resolve({ stdout: "", stderr: "" });
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+
+    const result = await listWorktrees("/test/repo", {
+      excludeDefault: true,
+    });
+
+    ok(result.ok);
+    if (result.ok) {
+      deepStrictEqual(result.value.worktrees, []);
+      deepStrictEqual(result.value.message, "No sub worktrees found");
+    }
+
+    execFileMock.mock.resetCalls();
+    cwdMock.mock.restore();
+  });
+
   it("should list worktrees with clean status", async () => {
     const cwdMock = mockCwd();
     execFileMock.mock.mockImplementation((_cmd, _args, _options) => {

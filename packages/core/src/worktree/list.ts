@@ -19,6 +19,10 @@ export interface ListWorktreesSuccess {
   message?: string;
 }
 
+export interface ListWorktreesOptions {
+  excludeDefault?: boolean;
+}
+
 export async function getWorktreeBranch(worktreePath: string): Promise<string> {
   try {
     const { stdout } = await executeGitCommandInDirectory(worktreePath, [
@@ -69,19 +73,28 @@ export async function getWorktreeInfo(
 
 export async function listWorktrees(
   gitRoot: string,
+  options: ListWorktreesOptions = {},
 ): Promise<Result<ListWorktreesSuccess, never>> {
   try {
     const gitWorktrees = await gitListWorktrees(gitRoot);
+    const excludeDefault = options.excludeDefault ?? false;
+    const filteredWorktrees = excludeDefault
+      ? gitWorktrees.filter((worktree) => worktree.path !== gitRoot)
+      : gitWorktrees;
 
-    if (gitWorktrees.length === 0) {
+    if (filteredWorktrees.length === 0) {
+      const message =
+        excludeDefault && gitWorktrees.length > 0
+          ? "No sub worktrees found"
+          : "No worktrees found";
       return ok({
         worktrees: [],
-        message: "No worktrees found",
+        message,
       });
     }
 
     const worktrees = await Promise.all(
-      gitWorktrees.map(async (gitWorktree) => {
+      filteredWorktrees.map(async (gitWorktree) => {
         const shortHead = gitWorktree.head?.slice(0, 7) ?? "HEAD";
         const branchName =
           gitWorktree.branch && gitWorktree.branch !== "(detached HEAD)"

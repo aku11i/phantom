@@ -92,6 +92,13 @@ describe("listHandler", () => {
         ok({
           worktrees: [
             {
+              name: "main",
+              path: "/test/repo",
+              pathToDisplay: ".",
+              branch: "main",
+              isClean: true,
+            },
+            {
               name: "feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
               pathToDisplay: ".git/phantom/worktrees/feature-1",
@@ -115,13 +122,14 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(consoleLogMock.mock.calls.length, 2);
+    strictEqual(consoleLogMock.mock.calls.length, 3);
+    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "main (.)");
     strictEqual(
-      consoleLogMock.mock.calls[0].arguments[0],
+      consoleLogMock.mock.calls[1].arguments[0],
       "feature-1 (.git/phantom/worktrees/feature-1)",
     );
     strictEqual(
-      consoleLogMock.mock.calls[1].arguments[0],
+      consoleLogMock.mock.calls[2].arguments[0],
       "feature-2 (.git/phantom/worktrees/feature-2) [dirty]",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
@@ -135,13 +143,6 @@ describe("listHandler", () => {
       Promise.resolve(
         ok({
           worktrees: [
-            {
-              name: "main",
-              path: "/test/repo",
-              pathToDisplay: ".",
-              branch: "main",
-              isClean: true,
-            },
             {
               name: "feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
@@ -161,10 +162,45 @@ describe("listHandler", () => {
 
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
+    strictEqual(
+      listWorktreesCoreMock.mock.calls[0].arguments[1]?.excludeDefault,
+      true,
+    );
     strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "feature-1 (.git/phantom/worktrees/feature-1)",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("should output message when no sub worktrees are found", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    listWorktreesCoreMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          worktrees: [],
+          message: "No sub worktrees found",
+        }),
+      ),
+    );
+
+    await rejects(
+      async () => await listHandler(["--no-default"]),
+      /Exit with code 0/,
+    );
+
+    strictEqual(getGitRootMock.mock.calls.length, 1);
+    strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
+    strictEqual(
+      listWorktreesCoreMock.mock.calls[0].arguments[1]?.excludeDefault,
+      true,
+    );
+    strictEqual(consoleLogMock.mock.calls.length, 1);
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "No sub worktrees found",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
@@ -176,6 +212,13 @@ describe("listHandler", () => {
       Promise.resolve(
         ok({
           worktrees: [
+            {
+              name: "main",
+              path: "/test/repo",
+              pathToDisplay: ".",
+              branch: "main",
+              isClean: true,
+            },
             {
               name: "feature-1",
               path: "/test/repo/.git/phantom/worktrees/feature-1",
@@ -210,10 +253,11 @@ describe("listHandler", () => {
     strictEqual(getGitRootMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls.length, 1);
     strictEqual(listWorktreesCoreMock.mock.calls[0].arguments[0], "/test/repo");
-    strictEqual(consoleLogMock.mock.calls.length, 3);
-    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "feature-1");
-    strictEqual(consoleLogMock.mock.calls[1].arguments[0], "feature-2");
-    strictEqual(consoleLogMock.mock.calls[2].arguments[0], "bugfix-3");
+    strictEqual(consoleLogMock.mock.calls.length, 4);
+    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "main");
+    strictEqual(consoleLogMock.mock.calls[1].arguments[0], "feature-1");
+    strictEqual(consoleLogMock.mock.calls[2].arguments[0], "feature-2");
+    strictEqual(consoleLogMock.mock.calls[3].arguments[0], "bugfix-3");
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
