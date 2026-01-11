@@ -89,6 +89,7 @@ export async function deleteWorktree(
     gitRoot,
     worktreeDirectory,
     name,
+    { excludeDefault: true },
   );
   if (isErr(validation)) {
     return err(validation.error);
