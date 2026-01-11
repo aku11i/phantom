@@ -5,6 +5,10 @@ _phantom_list_worktrees() {
     phantom list --names 2>/dev/null || true
 }
 
+_phantom_list_worktrees_no_default() {
+    phantom list --names --no-default 2>/dev/null || true
+}
+
 _phantom_complete_exec_command() {
     local command_index=$1
 
@@ -145,7 +149,7 @@ _phantom_completion() {
                 local opts="--force --current --fzf"
                 COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
             else
-                local worktrees=$(_phantom_list_worktrees)
+                local worktrees=$(_phantom_list_worktrees_no_default)
                 COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
             fi
             return 0
