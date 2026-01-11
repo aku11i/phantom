@@ -8,6 +8,7 @@
   - [postCreate.copyFiles](#postcreatecopyfiles)
   - [postCreate.commands](#postcreatecommands)
   - [preDelete.commands](#predeletecommands)
+  - [zellij](#zellij)
 
 Phantom supports configuration through a `phantom.config.json` file in your repository root. This allows you to define files to be automatically copied and commands to be executed when creating new worktrees. For personal defaults such as `worktreesDirectory`, prefer `phantom preferences` (stored in your global git config); the `worktreesDirectory` key in `phantom.config.json` is deprecated and will be removed in the next version.
 
@@ -33,6 +34,13 @@ Create a `phantom.config.json` file in your repository root:
     "commands": [
       "docker compose down"
     ]
+  },
+  "zellij": {
+    "agent": {
+      "command": "claude",
+      "args": []
+    },
+    "layout": "./layouts/dev.kdl"
   }
 }
 ```
@@ -175,3 +183,96 @@ An array of commands to execute in a worktree **before** it is deleted. Use this
 - Commands are executed in order and halt on the first failure
 - If a command fails, the worktree is **not** removed
 - Output is displayed in real-time
+
+### zellij
+
+Configuration options for Zellij terminal multiplexer integration. The `phantom launch` command uses these settings when creating Zellij sessions.
+
+#### zellij.agent
+
+Configure the AI agent that runs in the Zellij session created by `phantom launch`.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `command` | string | `"claude"` | The command to run the AI agent |
+| `args` | string[] | `[]` | Arguments to pass to the agent command |
+
+**Example:**
+```json
+{
+  "zellij": {
+    "agent": {
+      "command": "claude",
+      "args": ["--model", "opus"]
+    }
+  }
+}
+```
+
+**Use Cases:**
+- Use a different AI coding assistant (e.g., `aider`, `codex`)
+- Pass custom arguments to your preferred agent
+- Configure model selection or other agent-specific options
+
+**Notes:**
+- The agent can be disabled at runtime with `phantom launch --no-agent`
+- The default agent command is `claude` if not specified
+
+#### zellij.layout
+
+Path to a custom Zellij layout file (`.kdl`) to use instead of the default layout.
+
+**Example:**
+```json
+{
+  "zellij": {
+    "layout": "./layouts/dev.kdl"
+  }
+}
+```
+
+**Default Layout:**
+When no custom layout is specified, Phantom generates a layout with:
+- Top pane (50%): AI agent (focused)
+- Bottom pane (50%): Two shells side by side
+
+**Custom Layout Example (`./layouts/dev.kdl`):**
+```kdl
+layout {
+    pane split_direction="vertical" {
+        pane size="60%" focus=true {
+            name "agent"
+            command "claude"
+        }
+        pane size="40%" split_direction="horizontal" {
+            pane {
+                name "shell"
+            }
+            pane {
+                name "tests"
+                command "npm"
+                args "run" "test:watch"
+            }
+        }
+    }
+}
+```
+
+**Notes:**
+- Paths are relative to the repository root
+- Can be overridden at runtime with `phantom launch --layout <path>`
+- See [Zellij Layout Documentation](https://zellij.dev/documentation/layouts) for layout syntax
+
+#### Full Zellij Configuration Example
+
+```json
+{
+  "zellij": {
+    "agent": {
+      "command": "aider",
+      "args": ["--model", "gpt-4o"]
+    },
+    "layout": "./layouts/custom.kdl"
+  }
+}
+```
