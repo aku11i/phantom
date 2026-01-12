@@ -28,8 +28,68 @@ export interface ZellijTabOptions {
 
 export type ZellijSuccess = SpawnSuccess;
 
+export type ZellijSessionStatus = "active" | "dead" | "not_found";
+
 export async function isInsideZellij(): Promise<boolean> {
   return process.env.ZELLIJ !== undefined;
+}
+
+/**
+ * Check the status of a Zellij session by name.
+ * Returns "active" if the session exists and is running,
+ * "dead" if it exists but has exited, or "not_found" if it doesn't exist.
+ */
+export async function getZellijSessionStatus(
+  sessionName: string,
+): Promise<ZellijSessionStatus> {
+  try {
+    const { execSync } = await import("node:child_process");
+    const output = execSync("zellij list-sessions --no-formatting", {
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    for (const line of output.split("\n")) {
+      // Each line starts with the session name followed by space and metadata
+      const trimmedLine = line.trim();
+      if (!trimmedLine) continue;
+
+      // Extract session name (everything before the first " [")
+      const bracketIndex = trimmedLine.indexOf(" [");
+      if (bracketIndex === -1) continue;
+
+      const name = trimmedLine.substring(0, bracketIndex);
+      if (name === sessionName) {
+        // Check if it's dead (contains "EXITED")
+        if (trimmedLine.includes("(EXITED")) {
+          return "dead";
+        }
+        return "active";
+      }
+    }
+
+    return "not_found";
+  } catch {
+    // If zellij command fails, assume not found
+    return "not_found";
+  }
+}
+
+/**
+ * Delete a Zellij session by name.
+ */
+export async function deleteZellijSession(
+  sessionName: string,
+): Promise<Result<void, ProcessError>> {
+  const result = await spawnProcess({
+    command: "zellij",
+    args: ["delete-session", sessionName],
+  });
+
+  if (result.ok) {
+    return { ok: true, value: undefined };
+  }
+  return result;
 }
 
 export async function executeZellijCommand(

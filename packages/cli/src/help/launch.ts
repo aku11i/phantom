@@ -37,8 +37,7 @@ export const launchHelp: CommandHelp = {
       name: "detach",
       short: "d",
       type: "boolean",
-      description:
-        "Launch in a new terminal window (not available over SSH)",
+      description: "Launch in a new terminal window (not available over SSH)",
     },
   ],
   examples: [

@@ -9,7 +9,9 @@ import { branchExists, getGitRoot } from "@aku11i/phantom-git";
 import {
   addZellijTab,
   createZellijSession,
+  deleteZellijSession,
   getPhantomEnv,
+  getZellijSessionStatus,
   isInsideZellij,
   spawnTerminalWindow,
 } from "@aku11i/phantom-process";
@@ -192,6 +194,21 @@ export async function launchHandler(args: string[]): Promise<void> {
 
     const sessionName = worktreeName.replaceAll("/", "-");
     const insideZellij = await isInsideZellij();
+
+    // Check for and clean up dead Zellij sessions before creating new ones
+    // (only relevant for detach mode and when outside Zellij)
+    if (detach || !insideZellij) {
+      const sessionStatus = await getZellijSessionStatus(sessionName);
+      if (sessionStatus === "dead") {
+        output.log(`Cleaning up dead Zellij session '${sessionName}'...`);
+        await deleteZellijSession(sessionName);
+      } else if (sessionStatus === "active") {
+        exitWithError(
+          `Zellij session '${sessionName}' is already running. Attach to it or choose a different name.`,
+          exitCodes.validationError,
+        );
+      }
+    }
 
     // Mode 1: --detach - spawn new terminal window with Zellij
     if (detach) {
