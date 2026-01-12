@@ -226,6 +226,12 @@ phantom exec feature-awesome {実行したいコマンド}
 # 例: phantom exec feature-awesome npm run build
 ```
 
+### post-create を再実行
+
+```bash
+phantom post-create feature-awesome
+```
+
 ### 完了したらクリーンアップ
 
 ```bash

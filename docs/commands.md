@@ -7,6 +7,7 @@ This document provides a comprehensive reference for all Phantom commands and th
 - [Worktree Management](#worktree-management)
   - [create](#create)
   - [attach](#attach)
+  - [post-create](#post-create)
   - [list](#list)
   - [where](#where)
   - [delete](#delete)
@@ -95,6 +96,33 @@ phantom attach feature/existing-branch --exec "npm install"
 # Attach and open in tmux window
 phantom attach feature/existing-branch --tmux
 ```
+
+### post-create
+
+Re-run postCreate file copies and commands for an existing worktree.
+
+```bash
+phantom post-create <name> [options]
+```
+
+**Options:**
+- `--current` - Run post-create actions for the current worktree
+- `--fzf` - Select worktree with fzf
+
+**Examples:**
+```bash
+# Re-run post-create actions in a worktree
+phantom post-create feature-auth
+
+# Re-run post-create actions in the current worktree
+phantom post-create --current
+
+# Select a worktree interactively
+phantom post-create --fzf
+```
+
+**Notes:**
+- Runs `postCreate.copyFiles` and `postCreate.commands` from `phantom.config.json`
 
 ### list
 

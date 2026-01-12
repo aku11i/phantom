@@ -89,6 +89,7 @@ complete -c phantom -n "__phantom_using_command" -a "attach" -d "Attach to an ex
 complete -c phantom -n "__phantom_using_command" -a "list" -d "List all Git worktrees (phantoms)"
 complete -c phantom -n "__phantom_using_command" -a "where" -d "Output the filesystem path of a specific worktree"
 complete -c phantom -n "__phantom_using_command" -a "delete" -d "Delete Git worktrees (phantoms)"
+complete -c phantom -n "__phantom_using_command" -a "post-create" -d "Re-run post-create actions for an existing worktree"
 complete -c phantom -n "__phantom_using_command" -a "exec" -d "Execute a command in a worktree directory"
 complete -c phantom -n "__phantom_using_command" -a "edit" -d "Open a worktree in your configured editor"
 complete -c phantom -n "__phantom_using_command" -a "ai" -d "Launch your configured AI coding assistant in a worktree"
@@ -139,6 +140,11 @@ complete -c phantom -n "__phantom_using_command delete" -l force -d "Force delet
 complete -c phantom -n "__phantom_using_command delete" -l current -d "Delete the current worktree"
 complete -c phantom -n "__phantom_using_command delete" -l fzf -d "Use fzf for interactive selection"
 complete -c phantom -n "__phantom_using_command delete" -a "(__phantom_list_worktrees_no_default)"
+
+# post-create command options
+complete -c phantom -n "__phantom_using_command post-create" -l current -d "Run post-create actions for the current worktree"
+complete -c phantom -n "__phantom_using_command post-create" -l fzf -d "Select a worktree interactively with fzf"
+complete -c phantom -n "__phantom_using_command post-create" -a "(__phantom_list_worktrees)"
 
 # exec command options
 complete -c phantom -n "__phantom_using_command exec; and __phantom_exec_before_command" -l fzf -d "Use fzf for interactive selection"

@@ -72,7 +72,7 @@ _phantom_completion() {
     local cur prev words cword
     _init_completion || return
 
-    local commands="create attach list where delete exec edit ai shell preferences github gh version completion mcp"
+    local commands="create attach list where delete post-create exec edit ai shell preferences github gh version completion mcp"
     local global_opts="--help --version"
 
     if [[ \${cword} -eq 1 ]]; then
@@ -150,6 +150,16 @@ _phantom_completion() {
                 COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
             else
                 local worktrees=$(_phantom_list_worktrees_no_default)
+                COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
+            fi
+            return 0
+            ;;
+        post-create)
+            if [[ "\${cur}" == -* ]]; then
+                local opts="--current --fzf"
+                COMPREPLY=( $(compgen -W "\${opts}" -- "\${cur}") )
+            else
+                local worktrees=$(_phantom_list_worktrees)
                 COMPREPLY=( $(compgen -W "\${worktrees}" -- "\${cur}") )
             fi
             return 0
