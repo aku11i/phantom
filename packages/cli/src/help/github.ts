@@ -72,7 +72,8 @@ export const githubCheckoutHelp: CommandHelp = {
     },
   ],
   notes: [
-    "For PRs: Creates worktree named 'pulls/{number}' with the PR's branch",
+    "For same-repo PRs: Worktree name matches the PR branch (e.g., 'feature/add-logging')",
+    "For fork PRs: Worktree name is '{owner}/{branch}' (e.g., 'aku11i/feature/add-logging')",
     "For Issues: Creates worktree named 'issues/{number}' with a new branch",
     "",
     "Requirements:",

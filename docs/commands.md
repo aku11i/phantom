@@ -400,7 +400,8 @@ phantom gh checkout 123
 - tmux options require being inside a tmux session
 
 **Behavior:**
-- For PRs: Creates worktree named after the PR branch (e.g., `feature/add-logging`)
+- For same-repo PRs: Worktree name matches the PR branch (e.g., `feature/add-logging`)
+- For fork PRs: Worktree name is `{owner}/{branch}` (e.g., `aku11i/feature/add-logging`)
 - For Issues: Creates worktree named `issues/{number}` with a new branch
 
 For detailed information, see the [GitHub Integration Guide](./github.md).
