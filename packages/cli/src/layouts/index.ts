@@ -70,9 +70,10 @@ ${topPane}
 
   // Write to a temporary file
   const tempDir = os.tmpdir();
+  const sanitizedName = worktreeName.replaceAll("/", "-");
   const tempFile = path.join(
     tempDir,
-    `phantom-${worktreeName}-${Date.now()}.kdl`,
+    `phantom-${sanitizedName}-${Date.now()}.kdl`,
   );
   await fs.writeFile(tempFile, layout, "utf-8");
 
