@@ -5,6 +5,7 @@ export interface Preferences {
   editor?: string;
   ai?: string;
   worktreesDirectory?: string;
+  terminal?: string;
 }
 
 export class PreferencesValidationError extends Error {
@@ -19,6 +20,7 @@ const preferencesSchema = z
     editor: z.string().optional(),
     ai: z.string().optional(),
     worktreesDirectory: z.string().optional(),
+    terminal: z.string().optional(),
   })
   .passthrough();
 
@@ -56,6 +58,8 @@ function parsePreferences(output: string): Preferences {
       preferences.ai = value;
     } else if (strippedKey === "worktreesdirectory") {
       preferences.worktreesDirectory = value;
+    } else if (strippedKey === "terminal") {
+      preferences.terminal = value;
     }
   }
 

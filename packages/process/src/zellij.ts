@@ -20,6 +20,12 @@ export interface ZellijSessionOptions {
   env?: Record<string, string>;
 }
 
+export interface ZellijTabOptions {
+  layout: string;
+  tabName?: string;
+  cwd?: string;
+}
+
 export type ZellijSuccess = SpawnSuccess;
 
 export async function isInsideZellij(): Promise<boolean> {
@@ -95,6 +101,33 @@ export async function createZellijSession(
     command: "zellij",
     args: zellijArgs,
     options: Object.keys(spawnOptions).length > 0 ? spawnOptions : undefined,
+  });
+
+  return result;
+}
+
+/**
+ * Add a new tab with a layout to the current Zellij session.
+ * Must be called from inside a Zellij session.
+ */
+export async function addZellijTab(
+  options: ZellijTabOptions,
+): Promise<Result<ZellijSuccess, ProcessError>> {
+  const { layout, tabName, cwd } = options;
+
+  const zellijArgs: string[] = ["action", "new-tab", "--layout", layout];
+
+  if (tabName) {
+    zellijArgs.push("--name", tabName);
+  }
+
+  if (cwd) {
+    zellijArgs.push("--cwd", cwd);
+  }
+
+  const result = await spawnProcess({
+    command: "zellij",
+    args: zellijArgs,
   });
 
   return result;

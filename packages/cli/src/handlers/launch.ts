@@ -6,7 +6,13 @@ import {
   validateWorktreeExists,
 } from "@aku11i/phantom-core";
 import { branchExists, getGitRoot } from "@aku11i/phantom-git";
-import { createZellijSession, getPhantomEnv } from "@aku11i/phantom-process";
+import {
+  addZellijTab,
+  createZellijSession,
+  getPhantomEnv,
+  isInsideZellij,
+  spawnTerminalWindow,
+} from "@aku11i/phantom-process";
 import { isErr, isOk } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import {
@@ -14,6 +20,17 @@ import {
   createTemporaryLayout,
 } from "../layouts/index.ts";
 import { output } from "../output.ts";
+
+/**
+ * Check if connected via SSH by looking for SSH environment variables
+ */
+function isSSHConnection(): boolean {
+  return !!(
+    process.env.SSH_CONNECTION ||
+    process.env.SSH_CLIENT ||
+    process.env.SSH_TTY
+  );
+}
 
 export async function launchHandler(args: string[]): Promise<void> {
   const { values, positionals } = parseArgs({
@@ -33,6 +50,10 @@ export async function launchHandler(args: string[]): Promise<void> {
         type: "string",
         multiple: true,
       },
+      detach: {
+        type: "boolean",
+        short: "d",
+      },
     },
     strict: true,
     allowPositionals: true,
@@ -50,6 +71,15 @@ export async function launchHandler(args: string[]): Promise<void> {
   const noAgent = values["no-agent"] ?? false;
   const copyFileOptions = values["copy-file"];
   const baseOption = values.base;
+  const detach = values.detach ?? false;
+
+  // Check if connected via SSH - --detach won't work without a local display
+  if (detach && isSSHConnection()) {
+    exitWithError(
+      "The --detach option cannot be used over SSH connections (no local display available)",
+      exitCodes.validationError,
+    );
+  }
 
   try {
     const gitRoot = await getGitRoot();
@@ -160,10 +190,73 @@ export async function launchHandler(args: string[]): Promise<void> {
       isTemporaryLayout = true;
     }
 
-    output.log(`\nLaunching Zellij session '${worktreeName}'...`);
+    const sessionName = worktreeName.replaceAll("/", "-");
+    const insideZellij = await isInsideZellij();
+
+    // Mode 1: --detach - spawn new terminal window with Zellij
+    if (detach) {
+      output.log(
+        `\nLaunching Zellij session '${sessionName}' in new terminal window...`,
+      );
+
+      const terminalResult = await spawnTerminalWindow({
+        command: "zellij",
+        args: [
+          "--session",
+          sessionName,
+          "--new-session-with-layout",
+          layoutPath,
+        ],
+        cwd: worktreePath,
+        env: getPhantomEnv(worktreeName, worktreePath),
+        terminalPreference: context.preferences.terminal,
+      });
+
+      // Cleanup temporary layout if we created one
+      if (isTemporaryLayout) {
+        await cleanupTemporaryLayout(layoutPath);
+      }
+
+      if (isErr(terminalResult)) {
+        exitWithError(terminalResult.error.message, exitCodes.generalError);
+      }
+
+      output.log(`Opened in ${terminalResult.value.terminal}`);
+      exitWithSuccess();
+    }
+
+    // Mode 2: Inside Zellij - add new tab with layout
+    if (insideZellij) {
+      output.log(`\nAdding Zellij tab '${sessionName}'...`);
+
+      const tabResult = await addZellijTab({
+        layout: layoutPath,
+        tabName: sessionName,
+        cwd: worktreePath,
+      });
+
+      // Cleanup temporary layout if we created one
+      if (isTemporaryLayout) {
+        await cleanupTemporaryLayout(layoutPath);
+      }
+
+      if (isErr(tabResult)) {
+        output.error(tabResult.error.message);
+        const exitCode =
+          "exitCode" in tabResult.error
+            ? (tabResult.error.exitCode ?? exitCodes.generalError)
+            : exitCodes.generalError;
+        exitWithError("", exitCode);
+      }
+
+      exitWithSuccess();
+    }
+
+    // Mode 3: Outside Zellij - create new session
+    output.log(`\nLaunching Zellij session '${sessionName}'...`);
 
     const zellijResult = await createZellijSession({
-      sessionName: worktreeName.replaceAll("/", "-"),
+      sessionName,
       layout: layoutPath,
       cwd: worktreePath,
       env: getPhantomEnv(worktreeName, worktreePath),

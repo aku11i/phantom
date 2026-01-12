@@ -33,6 +33,13 @@ export const launchHelp: CommandHelp = {
         "Copy specified files from the current worktree to the new one. Can be used multiple times",
       example: "--copy-file .env",
     },
+    {
+      name: "detach",
+      short: "d",
+      type: "boolean",
+      description:
+        "Launch in a new terminal window (not available over SSH)",
+    },
   ],
   examples: [
     {
@@ -55,13 +62,20 @@ export const launchHelp: CommandHelp = {
       description: "Launch an existing worktree in Zellij",
       command: "phantom launch existing-branch",
     },
+    {
+      description: "Launch in a new terminal window",
+      command: "phantom launch feature-auth --detach",
+    },
   ],
   notes: [
-    "Creates a new Zellij session (works outside Zellij too)",
+    "Inside Zellij: Opens as a new tab in the current session",
+    "Outside Zellij: Creates a new Zellij session",
+    "With --detach: Opens a new terminal window with the Zellij session",
     "Automatically creates the worktree if it doesn't exist",
     "If a branch with that name exists, attaches to it instead",
     "Default layout: AI agent on top, two shells side by side on bottom",
     "Configure agent command in phantom.config.json under 'zellij.agent'",
     "Custom layouts can be specified in config: 'zellij.layout'",
+    "Configure terminal for --detach: phantom preferences set terminal <name>",
   ],
 };
