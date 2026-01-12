@@ -14,13 +14,23 @@ export interface CheckoutResult {
   alreadyExists?: boolean;
 }
 
+function getForkWorktreeName(pullRequest: GitHubPullRequest): string {
+  const [owner] = pullRequest.head.repo.full_name.split("/");
+  if (!owner) {
+    return pullRequest.head.ref;
+  }
+  return `${owner}/${pullRequest.head.ref}`;
+}
+
 export async function checkoutPullRequest(
   pullRequest: GitHubPullRequest,
+  worktreeName = pullRequest.isFromFork
+    ? getForkWorktreeName(pullRequest)
+    : pullRequest.head.ref,
 ): Promise<Result<CheckoutResult>> {
   const gitRoot = await getGitRoot();
   const context = await createContext(gitRoot);
-  const worktreeName = pullRequest.head.ref;
-  const localBranch = pullRequest.head.ref;
+  const localBranch = worktreeName;
 
   // Check if worktree already exists before attempting to fetch
   const existsResult = await validateWorktreeExists(

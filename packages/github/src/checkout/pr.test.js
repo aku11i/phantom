@@ -316,7 +316,7 @@ describe("checkoutPullRequest", () => {
     }));
     attachWorktreeCoreMock.mock.mockImplementation(async () => ({
       ok: true,
-      value: "/path/to/repo/.git/phantom/worktrees/fork-feature",
+      value: "/path/to/repo/.git/phantom/worktrees/contributor/fork-feature",
     }));
     setUpstreamBranchMock.mock.mockImplementation(async () => ({
       ok: true,
@@ -333,17 +333,17 @@ describe("checkoutPullRequest", () => {
 
     // Verify it uses the same refspec for forked PRs
     const fetchOptions = fetchMock.mock.calls[0].arguments[0];
-    equal(fetchOptions.refspec, "pull/1234/head:fork-feature");
+    equal(fetchOptions.refspec, "pull/1234/head:contributor/fork-feature");
 
     const [, worktreeDirectory, worktreeName] =
       attachWorktreeCoreMock.mock.calls[0].arguments;
     equal(worktreeDirectory, "/path/to/repo/.git/phantom/worktrees");
-    equal(worktreeName, "fork-feature");
+    equal(worktreeName, "contributor/fork-feature");
 
     // Verify upstream was set correctly for forked PR
     const upstreamArgs = setUpstreamBranchMock.mock.calls[0].arguments;
     equal(upstreamArgs[0], mockGitRoot);
-    equal(upstreamArgs[1], "fork-feature");
+    equal(upstreamArgs[1], "contributor/fork-feature");
     equal(upstreamArgs[2], "origin/pull/1234/head");
   });
 
