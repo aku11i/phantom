@@ -1,3 +1,4 @@
+import { basename } from "node:path";
 import { parseArgs } from "node:util";
 import {
   attachWorktreeCore,
@@ -192,7 +193,8 @@ export async function launchHandler(args: string[]): Promise<void> {
       isTemporaryLayout = true;
     }
 
-    const sessionName = worktreeName.replaceAll("/", "-");
+    const projectName = basename(gitRoot);
+    const sessionName = `${projectName}-${worktreeName.replaceAll("/", "-")}`;
     const insideZellij = await isInsideZellij();
 
     // Check for and clean up dead Zellij sessions before creating new ones
