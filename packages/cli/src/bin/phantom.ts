@@ -20,6 +20,9 @@ import { preferencesSetHandler } from "../handlers/preferences-set.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
 import { whereHandler } from "../handlers/where.ts";
+import { zellijHandler } from "../handlers/zellij.ts";
+import { zellijInitHandler } from "../handlers/zellij-init.ts";
+import { zellijListHandler } from "../handlers/zellij-list.ts";
 import { aiHelp } from "../help/ai.ts";
 import { attachHelp } from "../help/attach.ts";
 import { completionHelp } from "../help/completion.ts";
@@ -40,6 +43,7 @@ import {
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
+import { zellijHelp, zellijInitHelp, zellijListHelp } from "../help/zellij.ts";
 import { type CommandHelp, helpFormatter } from "../help.ts";
 
 interface Command {
@@ -180,6 +184,26 @@ const commands: Command[] = [
         description: "Create a worktree for a GitHub PR or issue",
         handler: githubCheckoutHandler,
         help: githubCheckoutHelp,
+      },
+    ],
+  },
+  {
+    name: "zellij",
+    description: "Manage Zellij layout templates",
+    handler: zellijHandler,
+    help: zellijHelp,
+    subcommands: [
+      {
+        name: "init",
+        description: "Create a customizable Zellij layout file",
+        handler: zellijInitHandler,
+        help: zellijInitHelp,
+      },
+      {
+        name: "list",
+        description: "List available Zellij layouts",
+        handler: zellijListHandler,
+        help: zellijListHelp,
       },
     ],
   },

@@ -23,6 +23,8 @@ import {
   createTemporaryLayout,
 } from "../layouts/index.ts";
 import { output } from "../output.ts";
+import { promptZellijSetup } from "../zellij/prompt-setup.ts";
+import { resolveLayout } from "../zellij/resolve-layout.ts";
 
 /**
  * Check if connected via SSH by looking for SSH environment variables
@@ -171,18 +173,35 @@ export async function launchHandler(args: string[]): Promise<void> {
       }
     }
 
-    // Determine layout path
+    // Resolve layout using the resolution order:
+    // 1. CLI flag, 2. Project config, 3. Project default (.zellij/),
+    // 4. Global config, 5. Global default, 6. Built-in
+    const layoutResolution = await resolveLayout({
+      cliLayoutPath: layoutOption,
+      projectConfig: zellijConfig,
+      gitRoot,
+    });
+
+    // If no zellij config exists, prompt user for setup
+    if (layoutResolution.source === "prompt-needed") {
+      const setupResult = await promptZellijSetup({ gitRoot, context });
+      if (setupResult.action === "skip" || setupResult.action === "builtin") {
+        // User chose to skip or use built-in
+        layoutResolution.source = "builtin";
+      } else if (setupResult.layoutPath && setupResult.source) {
+        layoutResolution.path = setupResult.layoutPath;
+        layoutResolution.source = setupResult.source;
+      }
+    }
+
+    // Determine final layout path
     let layoutPath: string;
     let isTemporaryLayout = false;
 
-    if (layoutOption) {
-      // User-specified layout via CLI flag
-      layoutPath = layoutOption;
-    } else if (zellijConfig?.layout) {
-      // Config-specified layout
-      layoutPath = zellijConfig.layout;
+    if (layoutResolution.path) {
+      layoutPath = layoutResolution.path;
     } else {
-      // Generate temporary layout
+      // Use built-in: generate temporary layout
       layoutPath = await createTemporaryLayout({
         worktreePath,
         worktreeName,
@@ -274,7 +293,7 @@ export async function launchHandler(args: string[]): Promise<void> {
     // Mode 3: Outside Zellij - create new session
     output.log(`\nLaunching Zellij session '${sessionName}'...`);
 
-    const zellijResult = await createZellijSession({
+    const zellijResult = createZellijSession({
       sessionName,
       layout: layoutPath,
       cwd: worktreePath,

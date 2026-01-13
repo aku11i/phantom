@@ -48,12 +48,18 @@ export async function createTemporaryLayout(
   }
 
   // Generate a dynamic layout with the correct paths and commands
-  // Top pane: agent (or shell if --no-agent)
-  // Bottom pane: two shells side by side
+  // Includes tab-bar at top, status-bar at bottom
+  // Main content: agent (or shell if --no-agent) on left, two shells on right
   const layout = `// Phantom generated layout for ${worktreeName}
 layout {
     cwd "${worktreePath}"
 
+    // Tab bar at top
+    pane size=1 borderless=true {
+        plugin location="tab-bar"
+    }
+
+    // Main content area
     pane split_direction="vertical" {
 ${topPane}
         pane size="50%" split_direction="horizontal" {
@@ -64,6 +70,11 @@ ${topPane}
                 name "shell2"
             }
         }
+    }
+
+    // Status bar at bottom
+    pane size=2 borderless=true {
+        plugin location="status-bar"
     }
 }
 `;

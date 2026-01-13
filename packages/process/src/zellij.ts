@@ -1,5 +1,6 @@
+import { execSync } from "node:child_process";
 import type { Result } from "@aku11i/phantom-shared";
-import type { ProcessError } from "./errors.ts";
+import { type ProcessError, ProcessExecutionError } from "./errors.ts";
 import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
 
 export type ZellijSplitDirection = "new" | "vertical" | "horizontal";
@@ -134,9 +135,9 @@ export async function executeZellijCommand(
   return result;
 }
 
-export async function createZellijSession(
+export function createZellijSession(
   options: ZellijSessionOptions,
-): Promise<Result<ZellijSuccess, ProcessError>> {
+): Result<ZellijSuccess, ProcessError> {
   const { sessionName, layout, cwd, env } = options;
 
   const zellijArgs: string[] = ["--session", sessionName];
@@ -147,23 +148,26 @@ export async function createZellijSession(
     zellijArgs.push("--new-session-with-layout", layout);
   }
 
-  const spawnOptions: { cwd?: string; env?: NodeJS.ProcessEnv } = {};
+  // Build command string for execSync
+  const command = `zellij ${zellijArgs.map((arg) => `'${arg}'`).join(" ")}`;
 
-  if (cwd) {
-    spawnOptions.cwd = cwd;
+  try {
+    execSync(command, {
+      stdio: "inherit",
+      cwd: cwd,
+      env: env ? { ...process.env, ...env } : undefined,
+    });
+    return { ok: true, value: { exitCode: 0 } };
+  } catch (error: unknown) {
+    const exitCode = (error as { status?: number }).status ?? 1;
+    if (exitCode === 0) {
+      return { ok: true, value: { exitCode: 0 } };
+    }
+    return {
+      ok: false,
+      error: new ProcessExecutionError("zellij", exitCode),
+    };
   }
-
-  if (env) {
-    spawnOptions.env = { ...process.env, ...env };
-  }
-
-  const result = await spawnProcess({
-    command: "zellij",
-    args: zellijArgs,
-    options: Object.keys(spawnOptions).length > 0 ? spawnOptions : undefined,
-  });
-
-  return result;
 }
 
 /**
