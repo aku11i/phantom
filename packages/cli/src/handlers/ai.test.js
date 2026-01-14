@@ -13,6 +13,13 @@ const validateWorktreeExistsMock = mock.fn();
 const createContextMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
 const spawnMock = mock.fn();
+const isInsideTmuxMock = mock.fn();
+const isInsideZellijMock = mock.fn();
+const executeTmuxCommandMock = mock.fn();
+const executeZellijCommandMock = mock.fn();
+const createZellijSessionMock = mock.fn();
+const createTemporaryLayoutMock = mock.fn();
+const cleanupTemporaryLayoutMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   consoleErrorMock(`Error: ${message}`);
   try {
@@ -21,6 +28,9 @@ const exitWithErrorMock = mock.fn((message, code) => {
     // Ignore to surface the formatted exit message below.
   }
   throw new Error(`Exit with code ${code}: ${message}`);
+});
+const exitWithSuccessMock = mock.fn(() => {
+  throw new Error("Exit with success");
 });
 
 mock.module("node:process", {
@@ -39,6 +49,11 @@ mock.module("@aku11i/phantom-git", {
 mock.module("@aku11i/phantom-process", {
   namedExports: {
     getPhantomEnv: getPhantomEnvMock,
+    isInsideTmux: isInsideTmuxMock,
+    isInsideZellij: isInsideZellijMock,
+    executeTmuxCommand: executeTmuxCommandMock,
+    executeZellijCommand: executeZellijCommandMock,
+    createZellijSession: createZellijSessionMock,
   },
 });
 
@@ -68,12 +83,20 @@ mock.module("../output.ts", {
 mock.module("../errors.ts", {
   namedExports: {
     exitWithError: exitWithErrorMock,
+    exitWithSuccess: exitWithSuccessMock,
     exitCodes: {
       success: 0,
       generalError: 1,
       notFound: 2,
       validationError: 3,
     },
+  },
+});
+
+mock.module("../layouts/index.ts", {
+  namedExports: {
+    createTemporaryLayout: createTemporaryLayoutMock,
+    cleanupTemporaryLayout: cleanupTemporaryLayoutMock,
   },
 });
 
@@ -88,6 +111,14 @@ function resetMocks() {
   createContextMock.mock.resetCalls();
   getPhantomEnvMock.mock.resetCalls();
   spawnMock.mock.resetCalls();
+  isInsideTmuxMock.mock.resetCalls();
+  isInsideZellijMock.mock.resetCalls();
+  executeTmuxCommandMock.mock.resetCalls();
+  executeZellijCommandMock.mock.resetCalls();
+  createZellijSessionMock.mock.resetCalls();
+  createTemporaryLayoutMock.mock.resetCalls();
+  cleanupTemporaryLayoutMock.mock.resetCalls();
+  exitWithSuccessMock.mock.resetCalls();
 }
 
 describe(

@@ -9,6 +9,7 @@
     "build": "node build.ts",
     "precompile": "rm -f output/*",
     "compile": "node --no-warnings --experimental-strip-types build-executable.ts",
+    "install-local": "bun build src/bin/phantom.ts --compile --outfile ./phantom && mv ./phantom $(pnpm bin -g)/phantom",
     "typecheck": "tsc --noEmit",
     "test:shell": "pnpm run test:shell:bash && pnpm run test:shell:zsh && pnpm run test:shell:fish",
     "test:shell:bash": "node --test --experimental-strip-types --experimental-test-module-mocks src/completions/phantom.bash.test.shell.js",

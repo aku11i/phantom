@@ -24,7 +24,7 @@ PhantomはGit worktreeをシンプルかつパワフルに操り、開発生産�
 - 🚀 **シンプルなWorktree管理** - 直感的なコマンドでGit worktreeを作成・管理
 - 🔄 **真のマルチタスク** - ブランチ毎に作業ディレクトリを作成し、複数のタスクを同時進行
 - 🎯 **どこからでもコマンド実行** - `phantom exec <worktree> <command>`でワークツリーに対してコマンドを実行可能
-- 🪟 **組み込みtmux統合** - ワークツリーを新しいペインやウィンドウで開きます
+- 🪟 **組み込みtmux・Zellij統合** - ワークツリーを新しいペインやウィンドウで開きます
 - 🔍 **fzfによるインタラクティブな選択** - worktreeの選択に組み込みのfzfオプションを使用できます
 - 🎮 **シェル補完** - Fish,Zsh,Bashの完全な自動補完サポート
 - 🧭 **好みのデフォルト設定** - `phantom preferences`でエディタ、AIコマンド、worktreeの保存先を一括設定（global git configに保存）
@@ -117,6 +117,40 @@ phantom shell feature-y --tmux-v
 ```
 
 ![Phantom tmux統合](./docs/assets/phantom-tmux.gif)
+
+#### Zellij統合
+
+Phantomはモダンなターミナルマルチプレクサ「Zellij」をファーストクラスでサポートしています。`phantom launch`コマンドはワークツリーを作成し、AIエージェントが起動した状態で新しいZellijセッションを開きます。
+
+```bash
+# AIエージェント付きで新しいワークツリーをZellijで起動
+phantom launch feature-auth
+
+# AIエージェントなしで起動（シェルのみ）
+phantom launch experiment --no-agent
+
+# カスタムレイアウトで起動
+phantom launch feature-x --layout ./my-layout.kdl
+
+# 他のコマンドでZellijフラグを使用（Zellij内で実行時）
+phantom create feature-y --zellij          # 新しいタブ
+phantom shell feature-z --zellij-v         # 垂直分割
+phantom exec feature-a npm test --zellij-h # 水平分割
+```
+
+デフォルトのレイアウトは、上部にAIエージェント、下部に2つのシェルが横並びで表示されます。`phantom.config.json`でエージェントコマンドを設定できます：
+
+```json
+{
+  "zellij": {
+    "agent": {
+      "command": "claude",
+      "args": ["--model", "opus"]
+    },
+    "layout": "./layouts/custom.kdl"
+  }
+}
+```
 
 #### エディタ統合
 

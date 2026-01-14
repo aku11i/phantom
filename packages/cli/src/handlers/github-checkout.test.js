@@ -12,6 +12,8 @@ const outputErrorMock = mock.fn();
 const githubCheckoutMock = mock.fn();
 const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
+const isInsideZellijMock = mock.fn();
+const executeZellijCommandMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
 
 mock.module("../errors.ts", {
@@ -30,16 +32,44 @@ mock.module("../output.ts", {
   },
 });
 
+mock.module("@aku11i/phantom-core", {
+  namedExports: {
+    createContext: mock.fn(() =>
+      Promise.resolve({
+        gitRoot: "/repo",
+        worktreesDirectory: "/repo/.git/phantom/worktrees",
+        config: null,
+      }),
+    ),
+  },
+});
+
+mock.module("@aku11i/phantom-git", {
+  namedExports: {
+    getGitRoot: mock.fn(() => Promise.resolve("/repo")),
+  },
+});
+
 mock.module("@aku11i/phantom-github", {
   namedExports: {
     githubCheckout: githubCheckoutMock,
   },
 });
 
+mock.module("../layouts/index.ts", {
+  namedExports: {
+    createTemporaryLayout: mock.fn(() => Promise.resolve("/tmp/layout.kdl")),
+    cleanupTemporaryLayout: mock.fn(() => Promise.resolve()),
+  },
+});
+
 mock.module("@aku11i/phantom-process", {
   namedExports: {
+    createZellijSession: mock.fn(),
     isInsideTmux: isInsideTmuxMock,
     executeTmuxCommand: executeTmuxCommandMock,
+    isInsideZellij: isInsideZellijMock,
+    executeZellijCommand: executeZellijCommandMock,
     getPhantomEnv: getPhantomEnvMock,
   },
 });

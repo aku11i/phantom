@@ -11,11 +11,13 @@ import {
 } from "./errors.ts";
 
 const spawnMock = mock.fn();
+const spawnSyncMock = mock.fn();
 const resolveWindowsCommandPathMock = mock.fn((command) => command);
 
 mock.module("node:child_process", {
   namedExports: {
     spawn: spawnMock,
+    spawnSync: spawnSyncMock,
   },
 });
 

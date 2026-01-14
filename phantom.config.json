@@ -2,5 +2,8 @@
   "postCreate": {
     "copyFiles": [".claude/settings.local.json"],
     "commands": ["pnpm install"]
+  },
+  "zellij": {
+    "agent": { "command": "claude", "args": ["--dangerously-skip-permissions"] }
   }
 }

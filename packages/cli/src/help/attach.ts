@@ -46,6 +46,35 @@ export const attachHelp: CommandHelp = {
       description: "Alias for --tmux-horizontal",
     },
     {
+      name: "zellij",
+      short: "z",
+      type: "boolean",
+      description:
+        "Open the worktree in a new Zellij tab (inside Zellij) or launch a new Zellij session (outside Zellij)",
+    },
+    {
+      name: "zellij-vertical",
+      type: "boolean",
+      description:
+        "Open the worktree in a vertical Zellij pane after attaching",
+    },
+    {
+      name: "zellij-v",
+      type: "boolean",
+      description: "Alias for --zellij-vertical",
+    },
+    {
+      name: "zellij-horizontal",
+      type: "boolean",
+      description:
+        "Open the worktree in a horizontal Zellij pane after attaching",
+    },
+    {
+      name: "zellij-h",
+      type: "boolean",
+      description: "Alias for --zellij-horizontal",
+    },
+    {
       name: "copy-file",
       type: "string",
       multiple: true,
@@ -72,6 +101,10 @@ export const attachHelp: CommandHelp = {
       command: "phantom attach feature-branch --tmux",
     },
     {
+      description: "Attach and open the worktree in a Zellij tab",
+      command: "phantom attach feature-branch --zellij",
+    },
+    {
       description: "Attach and copy shared environment files",
       command:
         "phantom attach feature-branch --copy-file .env --copy-file .npmrc",
@@ -80,7 +113,9 @@ export const attachHelp: CommandHelp = {
   notes: [
     "The branch must already exist locally",
     "To work with remote branches, first checkout the branch with git",
-    "Only one of --shell, --exec, or tmux options can be used at a time",
+    "Only one of --shell, --exec, --tmux, or --zellij options can be used at a time",
     "The tmux options require running phantom inside an active tmux session",
+    "The --zellij option can launch a new Zellij session when run outside Zellij",
+    "The --zellij-vertical and --zellij-horizontal options require being inside a Zellij session",
   ],
 };

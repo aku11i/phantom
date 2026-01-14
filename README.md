@@ -24,7 +24,7 @@ Phantom is a powerful CLI tool that dramatically boosts your development product
 - 🚀 **Simple worktree management** - Create and manage Git worktrees with intuitive commands
 - 🔄 **True multitasking** - Create separate working directories per branch and run multiple tasks simultaneously
 - 🎯 **Execute commands from anywhere** - Run commands in any worktree with `phantom exec <worktree> <command>`
-- 🪟 **Built-in tmux integration** - Open worktrees in new panes or windows
+- 🪟 **Built-in tmux & Zellij integration** - Open worktrees in new panes or windows
 - 🔍 **Interactive selection with fzf** - Use built-in fzf option for worktree selection
 - 🎮 **Shell completion** - Full autocomplete support for Fish, Zsh, and Bash
 - 🧭 **Configurable defaults** - Set editor, AI commands, and worktree location once via `phantom preferences` (stored in global git config)
@@ -117,6 +117,40 @@ phantom shell feature-y --tmux-v
 ```
 
 ![Phantom tmux integration](./docs/assets/phantom-tmux.gif)
+
+#### Zellij Integration
+
+Phantom has first-class support for Zellij, a modern terminal multiplexer. The `phantom launch` command creates a worktree and opens it in a new Zellij session with your AI agent ready to go.
+
+```bash
+# Launch a new worktree with AI agent in Zellij
+phantom launch feature-auth
+
+# Launch without AI agent (shells only)
+phantom launch experiment --no-agent
+
+# Launch with a custom layout
+phantom launch feature-x --layout ./my-layout.kdl
+
+# Use Zellij flags on other commands (when inside Zellij)
+phantom create feature-y --zellij          # new tab
+phantom shell feature-z --zellij-v         # vertical split
+phantom exec feature-a npm test --zellij-h # horizontal split
+```
+
+The default layout shows your AI agent on top with two shells side by side on the bottom. Configure the agent command in `phantom.config.json`:
+
+```json
+{
+  "zellij": {
+    "agent": {
+      "command": "claude",
+      "args": ["--model", "opus"]
+    },
+    "layout": "./layouts/custom.kdl"
+  }
+}
+```
 
 #### Editor Integration
 
