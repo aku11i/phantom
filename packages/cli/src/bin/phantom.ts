@@ -12,6 +12,7 @@ import { githubHandler } from "../handlers/github.ts";
 import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
+import { postCreateHandler } from "../handlers/post-create.ts";
 import { preferencesHandler } from "../handlers/preferences.ts";
 import { preferencesGetHandler } from "../handlers/preferences-get.ts";
 import { preferencesRemoveHandler } from "../handlers/preferences-remove.ts";
@@ -29,6 +30,7 @@ import { execHelp } from "../help/exec.ts";
 import { githubCheckoutHelp, githubHelp } from "../help/github.ts";
 import { listHelp } from "../help/list.ts";
 import { mcpHelp } from "../help/mcp.ts";
+import { postCreateHelp } from "../help/post-create.ts";
 import {
   preferencesGetHelp,
   preferencesHelp,
@@ -78,6 +80,12 @@ const commands: Command[] = [
     description: "Delete a Git worktree (phantom)",
     handler: deleteHandler,
     help: deleteHelp,
+  },
+  {
+    name: "post-create",
+    description: "Re-run post-create actions for an existing worktree",
+    handler: postCreateHandler,
+    help: postCreateHelp,
   },
   {
     name: "exec",

@@ -230,6 +230,12 @@ phantom exec feature-awesome {command to run}
 # Example: phantom exec feature-awesome npm run build
 ```
 
+### Re-run post-create actions
+
+```bash
+phantom post-create feature-awesome
+```
+
 ### Open your editor in the worktree
 
 ```bash

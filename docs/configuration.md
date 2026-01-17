@@ -119,6 +119,7 @@ An array of file paths to automatically copy from the current worktree to newly 
 - Files must exist in the source worktree
 - Non-existent files are silently skipped
 - Can be overridden with `--copy-file` command line options
+- Re-run with `phantom post-create` to copy files into an existing worktree
 
 ### postCreate.commands
 
@@ -149,6 +150,7 @@ An array of commands to execute after creating a new worktree.
 - Execution stops on the first failed command
 - Commands run in the new worktree's directory
 - Output is displayed in real-time
+- Re-run with `phantom post-create` to execute commands in an existing worktree
 
 ### preDelete.commands
 

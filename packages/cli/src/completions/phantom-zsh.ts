@@ -11,6 +11,7 @@ _phantom() {
         'list:List all Git worktrees (phantoms)'
         'where:Output the filesystem path of a specific worktree'
         'delete:Delete Git worktrees (phantoms)'
+        'post-create:Re-run post-create actions for an existing worktree'
         'exec:Execute a command in a worktree directory'
         'edit:Open a worktree in your configured editor'
         'ai:Launch your configured AI coding assistant in a worktree'
@@ -62,12 +63,19 @@ _phantom() {
                         '--no-default[Exclude the default worktree from the list]' \
                         '--names[Output only phantom names (for scripts and completion)]'
                     ;;
-                where|delete|shell)
+                where|delete|post-create|shell)
                     if [[ \${line[1]} == "where" ]]; then
                         local worktrees
                         worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
                         _arguments \
                             '--fzf[Use fzf for interactive selection]' \
+                            '1:worktree:(\${(q)worktrees[@]})'
+                    elif [[ \${line[1]} == "post-create" ]]; then
+                        local worktrees
+                        worktrees=(\${(f)"$(phantom list --names 2>/dev/null)"})
+                        _arguments \
+                            '--current[Run post-create actions for the current worktree]' \
+                            '--fzf[Select worktree with fzf]' \
                             '1:worktree:(\${(q)worktrees[@]})'
                     elif [[ \${line[1]} == "shell" ]]; then
                         local worktrees

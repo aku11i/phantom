@@ -89,5 +89,6 @@ export const createHelp: CommandHelp = {
     "The worktree name will be used as the branch name",
     "Only one of --shell, --exec, or --tmux options can be used at a time",
     "File copying can also be configured in phantom.config.json",
+    "Re-run post-create actions with phantom post-create",
   ],
 };

@@ -14,6 +14,19 @@ export interface PostCreateExecutionResult {
   executedCommands: string[];
 }
 
+export interface PostCreateOptions {
+  gitRoot: string;
+  worktreesDirectory: string;
+  worktreeName: string;
+  copyFiles?: string[];
+  commands?: string[];
+}
+
+export interface PostCreateResult {
+  copyError?: string;
+  executedCommands: string[];
+}
+
 export async function executePostCreateCommands(
   options: PostCreateExecutionOptions,
 ): Promise<Result<PostCreateExecutionResult>> {
@@ -56,6 +69,45 @@ export async function executePostCreateCommands(
   }
 
   return ok({ executedCommands });
+}
+
+export async function runPostCreate(
+  options: PostCreateOptions,
+): Promise<Result<PostCreateResult>> {
+  const { gitRoot, worktreesDirectory, worktreeName, copyFiles, commands } =
+    options;
+
+  let copyError: string | undefined;
+
+  if (copyFiles && copyFiles.length > 0) {
+    const copyResult = await copyFilesToWorktree(
+      gitRoot,
+      worktreesDirectory,
+      worktreeName,
+      copyFiles,
+    );
+    if (isErr(copyResult)) {
+      copyError = copyResult.error.message;
+    }
+  }
+
+  let executedCommands: string[] = [];
+
+  if (commands && commands.length > 0) {
+    console.log("\nRunning post-create commands...");
+    const commandsResult = await executePostCreateCommands({
+      gitRoot,
+      worktreesDirectory,
+      worktreeName,
+      commands,
+    });
+    if (isErr(commandsResult)) {
+      return err(commandsResult.error);
+    }
+    executedCommands = commandsResult.value.executedCommands;
+  }
+
+  return ok({ copyError, executedCommands });
 }
 
 export async function copyFilesToWorktree(

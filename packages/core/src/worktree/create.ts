@@ -4,10 +4,7 @@ import { err, isErr, isOk, ok, type Result } from "@aku11i/phantom-shared";
 import { getWorktreePathFromDirectory } from "../paths.ts";
 import { type WorktreeAlreadyExistsError, WorktreeError } from "./errors.ts";
 import { copyFiles } from "./file-copier.ts";
-import {
-  copyFilesToWorktree,
-  executePostCreateCommands,
-} from "./post-create.ts";
+import { runPostCreate } from "./post-create.ts";
 import {
   validateWorktreeDoesNotExist,
   validateWorktreeName,
@@ -87,33 +84,18 @@ export async function createWorktree(
       }
     }
 
-    // Execute postCreate hooks
-    if (postCreateCopyFiles && postCreateCopyFiles.length > 0) {
-      const copyResult = await copyFilesToWorktree(
-        gitRoot,
-        worktreeDirectory,
-        name,
-        postCreateCopyFiles,
-      );
-      if (isErr(copyResult)) {
-        // Don't fail worktree creation, just warn
-        if (!copyError) {
-          copyError = copyResult.error.message;
-        }
-      }
+    const postCreateResult = await runPostCreate({
+      gitRoot,
+      worktreesDirectory: worktreeDirectory,
+      worktreeName: name,
+      copyFiles: postCreateCopyFiles,
+      commands: postCreateCommands,
+    });
+    if (isErr(postCreateResult)) {
+      return err(new WorktreeError(postCreateResult.error.message));
     }
-
-    if (postCreateCommands && postCreateCommands.length > 0) {
-      console.log("\nRunning post-create commands...");
-      const commandsResult = await executePostCreateCommands({
-        gitRoot,
-        worktreesDirectory: worktreeDirectory,
-        worktreeName: name,
-        commands: postCreateCommands,
-      });
-      if (isErr(commandsResult)) {
-        return err(new WorktreeError(commandsResult.error.message));
-      }
+    if (postCreateResult.value.copyError && !copyError) {
+      copyError = postCreateResult.value.copyError;
     }
 
     return ok({
