@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import type { Result } from "@aku11i/phantom-shared";
 import { type ProcessError, ProcessExecutionError } from "./errors.ts";
 import { type SpawnSuccess, spawnProcess } from "./spawn.ts";
@@ -135,9 +135,9 @@ export async function executeZellijCommand(
   return result;
 }
 
-export function createZellijSession(
+export async function createZellijSession(
   options: ZellijSessionOptions,
-): Result<ZellijSuccess, ProcessError> {
+): Promise<Result<ZellijSuccess, ProcessError>> {
   const { sessionName, layout, cwd, env } = options;
 
   const zellijArgs: string[] = ["--session", sessionName];
@@ -148,26 +148,48 @@ export function createZellijSession(
     zellijArgs.push("--new-session-with-layout", layout);
   }
 
-  // Build command string for execSync
-  const command = `zellij ${zellijArgs.map((arg) => `'${arg}'`).join(" ")}`;
+  // Debug output
+  if (process.env.PHANTOM_DEBUG) {
+    console.error(`[DEBUG] Running: zellij ${zellijArgs.join(" ")}`);
+    console.error(`[DEBUG] cwd: ${cwd}`);
+    if (layout) {
+      console.error(`[DEBUG] Layout: ${layout}`);
+    }
+  }
 
-  try {
-    execSync(command, {
-      stdio: "inherit",
+  // Use spawn with stdio inherit for proper TTY handling
+  return new Promise((resolve) => {
+    const child = spawn("zellij", zellijArgs, {
+      stdio: ["inherit", "inherit", "pipe"], // Capture stderr to show errors
       cwd: cwd,
       env: env ? { ...process.env, ...env } : undefined,
     });
-    return { ok: true, value: { exitCode: 0 } };
-  } catch (error: unknown) {
-    const exitCode = (error as { status?: number }).status ?? 1;
-    if (exitCode === 0) {
-      return { ok: true, value: { exitCode: 0 } };
-    }
-    return {
-      ok: false,
-      error: new ProcessExecutionError("zellij", exitCode),
-    };
-  }
+
+    child.stderr?.on("data", (data) => {
+      // Also write to console so user sees it in real-time
+      process.stderr.write(data);
+    });
+
+    child.on("error", (err) => {
+      console.error(`zellij spawn error: ${err.message}`);
+      resolve({
+        ok: false,
+        error: new ProcessExecutionError("zellij", 1),
+      });
+    });
+
+    child.on("close", (code) => {
+      const exitCode = code ?? 0;
+      if (exitCode !== 0) {
+        resolve({
+          ok: false,
+          error: new ProcessExecutionError("zellij", exitCode),
+        });
+      } else {
+        resolve({ ok: true, value: { exitCode: 0 } });
+      }
+    });
+  });
 }
 
 /**

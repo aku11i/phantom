@@ -293,7 +293,7 @@ export async function launchHandler(args: string[]): Promise<void> {
     // Mode 3: Outside Zellij - create new session
     output.log(`\nLaunching Zellij session '${sessionName}'...`);
 
-    const zellijResult = createZellijSession({
+    const zellijResult = await createZellijSession({
       sessionName,
       layout: layoutPath,
       cwd: worktreePath,
