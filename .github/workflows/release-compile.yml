@@ -30,7 +30,7 @@ jobs:
           cache: pnpm
 
       - name: Set up Bun
-        uses: oven-sh/setup-bun@b7a1c7ccf290d58743029c4f6903da283811b979
+        uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3
         with:
           bun-version: latest
 
