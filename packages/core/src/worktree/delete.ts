@@ -9,6 +9,7 @@ import { validateWorktreeExists } from "./validate.ts";
 
 export interface DeleteWorktreeOptions {
   force?: boolean;
+  deleteBranch?: boolean;
 }
 
 export interface DeleteWorktreeSuccess {
@@ -83,7 +84,8 @@ export async function deleteWorktree(
 ): Promise<
   Result<DeleteWorktreeSuccess, WorktreeNotFoundError | WorktreeError>
 > {
-  const { force = false } = options || {};
+  const { force = false, deleteBranch: shouldDeleteBranch = true } =
+    options || {};
 
   const validation = await validateWorktreeExists(
     gitRoot,
@@ -126,14 +128,19 @@ export async function deleteWorktree(
     await removeWorktree(gitRoot, worktreePath, force);
 
     const branchName = name;
-    const branchResult = await deleteBranch(gitRoot, branchName);
-
     let message: string;
-    if (isOk(branchResult)) {
-      message = `Deleted worktree '${name}' and its branch '${branchName}'`;
+
+    if (shouldDeleteBranch) {
+      const branchResult = await deleteBranch(gitRoot, branchName);
+
+      if (isOk(branchResult)) {
+        message = `Deleted worktree '${name}' and its branch '${branchName}'`;
+      } else {
+        message = `Deleted worktree '${name}'`;
+        message += `\nNote: Branch '${branchName}' could not be deleted: ${branchResult.error.message}`;
+      }
     } else {
-      message = `Deleted worktree '${name}'`;
-      message += `\nNote: Branch '${branchName}' could not be deleted: ${branchResult.error.message}`;
+      message = `Deleted worktree '${name}' (branch '${branchName}' kept)`;
     }
 
     if (status.hasUncommittedChanges) {

@@ -43,6 +43,7 @@ mock.module("@aku11i/phantom-core", {
       Promise.resolve({
         gitRoot,
         worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        preferences: {},
       }),
     ),
     loadConfig: mock.fn(() =>
@@ -300,6 +301,28 @@ describe("deleteHandler", () => {
 
     strictEqual(consoleLogMock.mock.calls.length, 1);
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("should pass deleteBranch false when --keep-branch is specified", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    deleteWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          message: "Deleted worktree 'feature' (branch 'feature' kept)",
+        }),
+      ),
+    );
+
+    await rejects(
+      async () => await deleteHandler(["feature", "--keep-branch"]),
+      /Exit with code 0: success/,
+    );
+
+    strictEqual(deleteWorktreeMock.mock.calls.length, 1);
+    const deleteOptions = deleteWorktreeMock.mock.calls[0].arguments[3];
+    strictEqual(deleteOptions.force, false);
+    strictEqual(deleteOptions.deleteBranch, false);
   });
 
   it("should handle worktree not found error", async () => {

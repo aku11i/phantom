@@ -2,7 +2,12 @@ import { executeGitCommand } from "@aku11i/phantom-git";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
-const supportedKeys = ["editor", "ai", "worktreesDirectory"] as const;
+const supportedKeys = [
+  "editor",
+  "ai",
+  "worktreesDirectory",
+  "deleteBranch",
+] as const;
 
 export async function preferencesSetHandler(args: string[]): Promise<void> {
   if (args.length < 2) {
@@ -26,6 +31,13 @@ export async function preferencesSetHandler(args: string[]): Promise<void> {
   if (!value) {
     exitWithError(
       `Preference '${inputKey}' requires a value`,
+      exitCodes.validationError,
+    );
+  }
+
+  if (inputKey === "deleteBranch" && value !== "true" && value !== "false") {
+    exitWithError(
+      `Preference 'deleteBranch' must be 'true' or 'false'`,
       exitCodes.validationError,
     );
   }

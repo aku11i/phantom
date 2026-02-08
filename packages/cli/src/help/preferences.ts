@@ -29,6 +29,10 @@ export const preferencesHelp: CommandHelp = {
       command: "phantom preferences remove editor",
       description: "Remove the editor preference (fallback to env/default)",
     },
+    {
+      command: "phantom preferences set deleteBranch false",
+      description: "Disable automatic branch deletion when deleting worktrees",
+    },
   ],
   notes: [
     "Subcommands:",
@@ -41,6 +45,7 @@ export const preferencesHelp: CommandHelp = {
     "  editor - used by 'phantom edit', preferred over $EDITOR",
     "  ai - used by 'phantom ai'",
     "  worktreesDirectory - path relative to the Git repo root for storing worktrees (defaults to .git/phantom/worktrees)",
+    "  deleteBranch - whether to delete the branch when deleting a worktree (true or false, defaults to true)",
   ],
 };
 
@@ -63,8 +68,12 @@ export const preferencesGetHelp: CommandHelp = {
       description:
         "Show the preferred worktrees directory (relative to repo root)",
     },
+    {
+      command: "phantom preferences get deleteBranch",
+      description: "Show whether branches are deleted when deleting worktrees",
+    },
   ],
-  notes: ["Supported keys: editor, ai, worktreesDirectory"],
+  notes: ["Supported keys: editor, ai, worktreesDirectory, deleteBranch"],
 };
 
 export const preferencesSetHelp: CommandHelp = {
@@ -87,10 +96,15 @@ export const preferencesSetHelp: CommandHelp = {
       description:
         "Store worktrees in ../phantom-worktrees relative to the Git repository root",
     },
+    {
+      command: "phantom preferences set deleteBranch false",
+      description: "Disable automatic branch deletion when deleting worktrees",
+    },
   ],
   notes: [
-    "Supported keys: editor, ai, worktreesDirectory",
+    "Supported keys: editor, ai, worktreesDirectory, deleteBranch",
     "For worktreesDirectory, provide a path relative to the Git repository root; defaults to .git/phantom/worktrees when unset",
+    "For deleteBranch, use 'true' or 'false'; defaults to true when unset",
   ],
 };
 
@@ -112,6 +126,11 @@ export const preferencesRemoveHelp: CommandHelp = {
       command: "phantom preferences remove worktreesDirectory",
       description: "Unset the custom worktrees directory preference",
     },
+    {
+      command: "phantom preferences remove deleteBranch",
+      description:
+        "Unset the deleteBranch preference (reverts to default: true)",
+    },
   ],
-  notes: ["Supported keys: editor, ai, worktreesDirectory"],
+  notes: ["Supported keys: editor, ai, worktreesDirectory, deleteBranch"],
 };

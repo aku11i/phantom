@@ -98,4 +98,28 @@ describe("loadPreferences", () => {
     equal(preferences.ai, "claude");
     equal(preferences.worktreesDirectory, "../phantom-wt");
   });
+
+  it("parses deleteBranch preference as boolean", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "phantom.deletebranch\nfalse\u0000",
+      stderr: "",
+    }));
+
+    const preferences = await loadPreferences();
+
+    equal(preferences.deleteBranch, false);
+  });
+
+  it("parses deleteBranch preference as true", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "phantom.deletebranch\ntrue\u0000",
+      stderr: "",
+    }));
+
+    const preferences = await loadPreferences();
+
+    equal(preferences.deleteBranch, true);
+  });
 });

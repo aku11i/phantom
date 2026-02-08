@@ -3,7 +3,12 @@ import { loadPreferences } from "@aku11i/phantom-core";
 import { exitCodes, exitWithError, exitWithSuccess } from "../errors.ts";
 import { output } from "../output.ts";
 
-const supportedKeys = ["editor", "ai", "worktreesDirectory"] as const;
+const supportedKeys = [
+  "editor",
+  "ai",
+  "worktreesDirectory",
+  "deleteBranch",
+] as const;
 
 export async function preferencesGetHandler(args: string[]): Promise<void> {
   const { positionals } = parseArgs({
@@ -38,14 +43,16 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
           ? preferences.ai
           : inputKey === "worktreesDirectory"
             ? preferences.worktreesDirectory
-            : undefined;
+            : inputKey === "deleteBranch"
+              ? preferences.deleteBranch
+              : undefined;
 
     if (value === undefined) {
       output.log(
         `Preference '${inputKey}' is not set (git config --global phantom.${inputKey})`,
       );
     } else {
-      output.log(value);
+      output.log(String(value));
     }
 
     exitWithSuccess();

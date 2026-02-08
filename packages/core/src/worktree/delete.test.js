@@ -193,6 +193,50 @@ describe("deleteWorktree", () => {
     }
   });
 
+  it("should skip branch deletion when deleteBranch is false", async () => {
+    resetMocks();
+    validateWorktreeExistsMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({ path: "/test/repo/.git/phantom/worktrees/feature" }),
+      ),
+    );
+
+    executeGitCommandMock.mock.mockImplementation((command) => {
+      if (command[0] === "worktree" && command[1] === "remove") {
+        return Promise.resolve({ stdout: "", stderr: "" });
+      }
+      return Promise.reject(new Error("Unexpected command"));
+    });
+    executeGitCommandInDirectoryMock.mock.mockImplementation(() =>
+      Promise.resolve({ stdout: "", stderr: "" }),
+    );
+
+    const result = await deleteWorktree(
+      "/test/repo",
+      "/test/repo/.git/phantom/worktrees",
+      "feature",
+      { deleteBranch: false },
+      undefined,
+    );
+
+    strictEqual(isOk(result), true);
+    if (isOk(result)) {
+      strictEqual(
+        result.value.message,
+        "Deleted worktree 'feature' (branch 'feature' kept)",
+      );
+      strictEqual(result.value.hasUncommittedChanges, false);
+      strictEqual(result.value.changedFiles, undefined);
+    }
+
+    // Should only call worktree remove, not branch -D
+    strictEqual(executeGitCommandMock.mock.calls.length, 1);
+    deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments, [
+      ["worktree", "remove", "/test/repo/.git/phantom/worktrees/feature"],
+      { cwd: "/test/repo" },
+    ]);
+  });
+
   it("should delete worktree with uncommitted changes when force is true", async () => {
     resetMocks();
     validateWorktreeExistsMock.mock.mockImplementation(() =>

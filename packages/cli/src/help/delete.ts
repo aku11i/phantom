@@ -22,6 +22,12 @@ export const deleteHelp: CommandHelp = {
       type: "boolean",
       description: "Use fzf for interactive selection",
     },
+    {
+      name: "--keep-branch",
+      type: "boolean",
+      description:
+        "Keep the associated branch after deleting the worktree (overrides deleteBranch preference)",
+    },
   ],
   examples: [
     {
@@ -44,11 +50,15 @@ export const deleteHelp: CommandHelp = {
       description: "Delete a worktree with interactive fzf selection",
       command: "phantom delete --fzf",
     },
+    {
+      description: "Delete a worktree but keep its branch",
+      command: "phantom delete feature-auth --keep-branch",
+    },
   ],
   notes: [
     "By default, deletion will fail if the worktree has uncommitted changes",
     "You can pass multiple worktree names to delete them at once",
-    "The associated branch will also be deleted if it's not checked out elsewhere",
+    "The associated branch will also be deleted unless --keep-branch is specified or the deleteBranch preference is set to false",
     "With --fzf, you can interactively select the worktree to delete",
   ],
 };

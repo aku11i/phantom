@@ -19,12 +19,14 @@ export const deleteWorktreeTool: Tool<typeof schema> = {
   handler: async ({ name, force }) => {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
+    const shouldDeleteBranch = context.preferences.deleteBranch ?? true;
     const result = await deleteWorktree(
       context.gitRoot,
       context.worktreesDirectory,
       name,
       {
         force,
+        deleteBranch: shouldDeleteBranch,
       },
       context.config?.preDelete?.commands,
     );

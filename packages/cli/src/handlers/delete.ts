@@ -26,6 +26,9 @@ export async function deleteHandler(args: string[]): Promise<void> {
         type: "boolean",
         default: false,
       },
+      "keep-branch": {
+        type: "boolean",
+      },
     },
     strict: true,
     allowPositionals: true,
@@ -56,10 +59,16 @@ export async function deleteHandler(args: string[]): Promise<void> {
   }
 
   const forceDelete = values.force ?? false;
+  const keepBranch = values["keep-branch"] ?? false;
 
   try {
     const gitRoot = await getGitRoot();
     const context = await createContext(gitRoot);
+
+    // --keep-branch flag takes priority, then preference, default is true (delete branch)
+    const shouldDeleteBranch = keepBranch
+      ? false
+      : (context.preferences.deleteBranch ?? true);
 
     const worktreeNames: string[] = [];
     if (deleteCurrent) {
@@ -91,6 +100,7 @@ export async function deleteHandler(args: string[]): Promise<void> {
         worktreeName,
         {
           force: forceDelete,
+          deleteBranch: shouldDeleteBranch,
         },
         context.config?.preDelete?.commands,
       );
