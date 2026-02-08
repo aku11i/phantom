@@ -1,4 +1,4 @@
-import { rejects, strictEqual } from "node:assert";
+import { deepStrictEqual, rejects, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 
 const exitMock = mock.fn();
@@ -62,13 +62,13 @@ describe("preferencesGetHandler", () => {
 
     await rejects(
       async () => await preferencesGetHandler([]),
-      /Exit with code 3: Usage: phantom preferences get <key>/,
+      /Exit with code 3: Usage: phantom preferences get \[--local\] <key>/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
     strictEqual(
       consoleErrorMock.mock.calls[0].arguments[0],
-      "Error: Usage: phantom preferences get <key>",
+      "Error: Usage: phantom preferences get [--local] <key>",
     );
   });
 
@@ -94,7 +94,28 @@ describe("preferencesGetHandler", () => {
       /Process exit with code 0/,
     );
 
+    deepStrictEqual(loadPreferencesMock.mock.calls[0].arguments[0], {
+      scope: "global",
+    });
     strictEqual(consoleLogMock.mock.calls[0].arguments[0], "code");
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("reads from local scope when --local is passed", async () => {
+    resetMocks();
+    loadPreferencesMock.mock.mockImplementation(async () => ({
+      editor: "vim",
+    }));
+
+    await rejects(
+      async () => await preferencesGetHandler(["--local", "editor"]),
+      /Process exit with code 0/,
+    );
+
+    deepStrictEqual(loadPreferencesMock.mock.calls[0].arguments[0], {
+      scope: "local",
+    });
+    strictEqual(consoleLogMock.mock.calls[0].arguments[0], "vim");
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });
 
@@ -173,6 +194,21 @@ describe("preferencesGetHandler", () => {
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "Preference 'worktreesDirectory' is not set (git config --global phantom.worktreesDirectory)",
+    );
+  });
+
+  it("warns with local scope when --local is passed and preference is unset", async () => {
+    resetMocks();
+    loadPreferencesMock.mock.mockImplementation(async () => ({}));
+
+    await rejects(
+      async () => await preferencesGetHandler(["--local", "editor"]),
+      /Process exit with code 0/,
+    );
+
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Preference 'editor' is not set (git config --local phantom.editor)",
     );
   });
 });

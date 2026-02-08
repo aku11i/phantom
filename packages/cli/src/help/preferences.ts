@@ -3,16 +3,22 @@ import type { CommandHelp } from "../help.ts";
 export const preferencesHelp: CommandHelp = {
   name: "preferences",
   usage: "phantom preferences <subcommand>",
-  description: "Manage phantom user preferences stored in git config (global)",
+  description:
+    "Manage phantom user preferences stored in git config (global or local)",
   examples: [
     {
       command: "phantom preferences get editor",
-      description: "Show the configured editor preference",
+      description: "Show the configured editor preference (global)",
     },
     {
       command: "phantom preferences set editor code",
       description:
         "Set the editor preference (stored as phantom.editor in git config --global)",
+    },
+    {
+      command: "phantom preferences set --local editor vim",
+      description:
+        "Set the editor preference for the current repository only (git config --local)",
     },
     {
       command: 'phantom preferences set ai "codex --full-auto"',
@@ -36,7 +42,12 @@ export const preferencesHelp: CommandHelp = {
     "  set <key>    Set a preference value",
     "  remove <key> Remove a preference value",
     "",
-    "Preferences are saved in git config with the 'phantom.' prefix (global scope).",
+    "Options:",
+    "  --local  Target the repository-local git config instead of global",
+    "",
+    "Preferences are saved in git config with the 'phantom.' prefix.",
+    "By default, preferences use global scope. Pass --local to use per-repository scope.",
+    "Local preferences take precedence over global ones at runtime.",
     "Supported keys:",
     "  editor - used by 'phantom edit', preferred over $EDITOR",
     "  ai - used by 'phantom ai'",
@@ -46,13 +57,23 @@ export const preferencesHelp: CommandHelp = {
 
 export const preferencesGetHelp: CommandHelp = {
   name: "preferences get",
-  usage: "phantom preferences get <key>",
-  description:
-    "Show a preference value (reads git config --global phantom.<key>)",
+  usage: "phantom preferences get [--local] <key>",
+  description: "Show a preference value (reads git config phantom.<key>)",
+  options: [
+    {
+      name: "local",
+      type: "boolean",
+      description: "Read from repository-local git config instead of global",
+    },
+  ],
   examples: [
     {
       command: "phantom preferences get editor",
-      description: "Show the editor preference",
+      description: "Show the editor preference (global)",
+    },
+    {
+      command: "phantom preferences get --local editor",
+      description: "Show the editor preference (local to this repository)",
     },
     {
       command: "phantom preferences get ai",
@@ -69,13 +90,23 @@ export const preferencesGetHelp: CommandHelp = {
 
 export const preferencesSetHelp: CommandHelp = {
   name: "preferences set",
-  usage: "phantom preferences set <key> <value>",
-  description:
-    "Set a preference value (writes git config --global phantom.<key>)",
+  usage: "phantom preferences set [--local] <key> <value>",
+  description: "Set a preference value (writes git config phantom.<key>)",
+  options: [
+    {
+      name: "local",
+      type: "boolean",
+      description: "Write to repository-local git config instead of global",
+    },
+  ],
   examples: [
     {
       command: "phantom preferences set editor code",
-      description: "Set VS Code as the editor",
+      description: "Set VS Code as the editor (global)",
+    },
+    {
+      command: "phantom preferences set --local editor vim",
+      description: "Set vim as the editor for this repository only",
     },
     {
       command: "phantom preferences set ai claude",
@@ -96,13 +127,23 @@ export const preferencesSetHelp: CommandHelp = {
 
 export const preferencesRemoveHelp: CommandHelp = {
   name: "preferences remove",
-  usage: "phantom preferences remove <key>",
-  description:
-    "Remove a preference value (git config --global --unset phantom.<key>)",
+  usage: "phantom preferences remove [--local] <key>",
+  description: "Remove a preference value (git config --unset phantom.<key>)",
+  options: [
+    {
+      name: "local",
+      type: "boolean",
+      description: "Remove from repository-local git config instead of global",
+    },
+  ],
   examples: [
     {
       command: "phantom preferences remove editor",
-      description: "Unset the editor preference",
+      description: "Unset the editor preference (global)",
+    },
+    {
+      command: "phantom preferences remove --local editor",
+      description: "Unset the editor preference (local to this repository)",
     },
     {
       command: "phantom preferences remove ai",

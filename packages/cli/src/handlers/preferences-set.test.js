@@ -1,4 +1,4 @@
-import { rejects, strictEqual } from "node:assert";
+import { deepStrictEqual, rejects, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 
 const exitMock = mock.fn();
@@ -62,7 +62,7 @@ describe("preferencesSetHandler", () => {
 
     await rejects(
       async () => await preferencesSetHandler(["editor"]),
-      /Exit with code 3: Usage: phantom preferences set <key> <value>/,
+      /Exit with code 3: Usage: phantom preferences set \[--local\] <key> <value>/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
@@ -185,6 +185,31 @@ describe("preferencesSetHandler", () => {
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "Set phantom.worktreesDirectory (global) to '../phantom/worktrees'",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("sets preference via git config --local when --local is passed", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "",
+      stderr: "",
+    }));
+
+    await rejects(
+      async () => await preferencesSetHandler(["--local", "editor", "vim"]),
+      /Process exit with code 0/,
+    );
+
+    deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments[0], [
+      "config",
+      "--local",
+      "phantom.editor",
+      "vim",
+    ]);
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Set phantom.editor (local) to 'vim'",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });

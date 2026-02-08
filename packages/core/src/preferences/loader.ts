@@ -70,14 +70,24 @@ function parsePreferences(output: string): Preferences {
   return parsed.data;
 }
 
-export async function loadPreferences(): Promise<Preferences> {
-  const { stdout } = await executeGitCommand([
-    "config",
-    "--global",
-    "--null",
-    "--get-regexp",
-    "^phantom\\.",
-  ]);
+export interface LoadPreferencesOptions {
+  scope?: "global" | "local";
+}
+
+export async function loadPreferences(
+  options?: LoadPreferencesOptions,
+): Promise<Preferences> {
+  const args = ["config"];
+
+  if (options?.scope === "global") {
+    args.push("--global");
+  } else if (options?.scope === "local") {
+    args.push("--local");
+  }
+
+  args.push("--null", "--get-regexp", "^phantom\\.");
+
+  const { stdout } = await executeGitCommand(args);
 
   return parsePreferences(stdout);
 }

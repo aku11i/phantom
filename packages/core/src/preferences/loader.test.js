@@ -16,7 +16,7 @@ describe("loadPreferences", () => {
     executeGitCommandMock.mock.resetCalls();
   };
 
-  it("returns editor and ai preferences from git config", async () => {
+  it("returns editor and ai preferences from git config (no scope)", async () => {
     resetMocks();
     executeGitCommandMock.mock.mockImplementation(async () => ({
       stdout:
@@ -33,7 +33,44 @@ describe("loadPreferences", () => {
     });
     deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments[0], [
       "config",
+      "--null",
+      "--get-regexp",
+      "^phantom\\.",
+    ]);
+  });
+
+  it("passes --global flag when scope is global", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "phantom.editor\ncode\u0000",
+      stderr: "",
+    }));
+
+    const preferences = await loadPreferences({ scope: "global" });
+
+    deepStrictEqual(preferences, { editor: "code" });
+    deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments[0], [
+      "config",
       "--global",
+      "--null",
+      "--get-regexp",
+      "^phantom\\.",
+    ]);
+  });
+
+  it("passes --local flag when scope is local", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "phantom.editor\nvim\u0000",
+      stderr: "",
+    }));
+
+    const preferences = await loadPreferences({ scope: "local" });
+
+    deepStrictEqual(preferences, { editor: "vim" });
+    deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments[0], [
+      "config",
+      "--local",
       "--null",
       "--get-regexp",
       "^phantom\\.",

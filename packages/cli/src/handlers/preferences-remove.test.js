@@ -1,4 +1,4 @@
-import { rejects, strictEqual } from "node:assert";
+import { deepStrictEqual, rejects, strictEqual } from "node:assert";
 import { describe, it, mock } from "node:test";
 
 const exitMock = mock.fn();
@@ -62,7 +62,7 @@ describe("preferencesRemoveHandler", () => {
 
     await rejects(
       async () => await preferencesRemoveHandler([]),
-      /Exit with code 3: Usage: phantom preferences remove <key>/,
+      /Exit with code 3: Usage: phantom preferences remove \[--local\] <key>/,
     );
 
     strictEqual(exitMock.mock.calls[0].arguments[0], 3);
@@ -146,6 +146,31 @@ describe("preferencesRemoveHandler", () => {
     strictEqual(
       consoleLogMock.mock.calls[0].arguments[0],
       "Removed phantom.worktreesDirectory from global git config",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("unsets preference via git config --local when --local is passed", async () => {
+    resetMocks();
+    executeGitCommandMock.mock.mockImplementation(async () => ({
+      stdout: "",
+      stderr: "",
+    }));
+
+    await rejects(
+      async () => await preferencesRemoveHandler(["--local", "editor"]),
+      /Process exit with code 0/,
+    );
+
+    deepStrictEqual(executeGitCommandMock.mock.calls[0].arguments[0], [
+      "config",
+      "--local",
+      "--unset",
+      "phantom.editor",
+    ]);
+    strictEqual(
+      consoleLogMock.mock.calls[0].arguments[0],
+      "Removed phantom.editor from local git config",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
   });

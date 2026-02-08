@@ -6,16 +6,21 @@ import { output } from "../output.ts";
 const supportedKeys = ["editor", "ai", "worktreesDirectory"] as const;
 
 export async function preferencesRemoveHandler(args: string[]): Promise<void> {
-  const { positionals } = parseArgs({
+  const { positionals, values } = parseArgs({
     args,
-    options: {},
+    options: {
+      local: { type: "boolean" },
+    },
     strict: true,
     allowPositionals: true,
   });
 
+  const isLocal = values.local ?? false;
+  const scope = isLocal ? "local" : "global";
+
   if (positionals.length !== 1) {
     exitWithError(
-      "Usage: phantom preferences remove <key>",
+      "Usage: phantom preferences remove [--local] <key>",
       exitCodes.validationError,
     );
   }
@@ -32,12 +37,12 @@ export async function preferencesRemoveHandler(args: string[]): Promise<void> {
   try {
     await executeGitCommand([
       "config",
-      "--global",
+      `--${scope}`,
       "--unset",
       `phantom.${inputKey}`,
     ]);
 
-    output.log(`Removed phantom.${inputKey} from global git config`);
+    output.log(`Removed phantom.${inputKey} from ${scope} git config`);
     exitWithSuccess();
   } catch (error) {
     exitWithError(

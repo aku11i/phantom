@@ -5,14 +5,18 @@ import { output } from "../output.ts";
 const supportedKeys = ["editor", "ai", "worktreesDirectory"] as const;
 
 export async function preferencesSetHandler(args: string[]): Promise<void> {
-  if (args.length < 2) {
+  const isLocal = args.includes("--local");
+  const remainingArgs = args.filter((arg) => arg !== "--local");
+  const scope = isLocal ? "local" : "global";
+
+  if (remainingArgs.length < 2) {
     exitWithError(
-      "Usage: phantom preferences set <key> <value>",
+      "Usage: phantom preferences set [--local] <key> <value>",
       exitCodes.validationError,
     );
   }
 
-  const [inputKey, ...valueParts] = args;
+  const [inputKey, ...valueParts] = remainingArgs;
 
   if (!supportedKeys.includes(inputKey as (typeof supportedKeys)[number])) {
     exitWithError(
@@ -33,12 +37,12 @@ export async function preferencesSetHandler(args: string[]): Promise<void> {
   try {
     await executeGitCommand([
       "config",
-      "--global",
+      `--${scope}`,
       `phantom.${inputKey}`,
       value,
     ]);
 
-    output.log(`Set phantom.${inputKey} (global) to '${value}'`);
+    output.log(`Set phantom.${inputKey} (${scope}) to '${value}'`);
     exitWithSuccess();
   } catch (error) {
     exitWithError(

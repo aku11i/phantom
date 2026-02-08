@@ -6,16 +6,21 @@ import { output } from "../output.ts";
 const supportedKeys = ["editor", "ai", "worktreesDirectory"] as const;
 
 export async function preferencesGetHandler(args: string[]): Promise<void> {
-  const { positionals } = parseArgs({
+  const { positionals, values } = parseArgs({
     args,
-    options: {},
+    options: {
+      local: { type: "boolean" },
+    },
     strict: true,
     allowPositionals: true,
   });
 
+  const isLocal = values.local ?? false;
+  const scope = isLocal ? "local" : "global";
+
   if (positionals.length !== 1) {
     exitWithError(
-      "Usage: phantom preferences get <key>",
+      "Usage: phantom preferences get [--local] <key>",
       exitCodes.validationError,
     );
   }
@@ -30,7 +35,7 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
   }
 
   try {
-    const preferences = await loadPreferences();
+    const preferences = await loadPreferences({ scope });
     const value =
       inputKey === "editor"
         ? preferences.editor
@@ -42,7 +47,7 @@ export async function preferencesGetHandler(args: string[]): Promise<void> {
 
     if (value === undefined) {
       output.log(
-        `Preference '${inputKey}' is not set (git config --global phantom.${inputKey})`,
+        `Preference '${inputKey}' is not set (git config --${scope} phantom.${inputKey})`,
       );
     } else {
       output.log(value);
