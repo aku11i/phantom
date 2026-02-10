@@ -23,6 +23,7 @@ mock.module("./validate.ts", {
 mock.module("node:fs", {
   namedExports: {
     existsSync: existsSyncMock,
+    globSync: mock.fn(() => []),
   },
 });
 
