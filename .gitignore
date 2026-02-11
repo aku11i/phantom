@@ -1,7 +1,54 @@
 # OS specific files
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE and editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
 
 # Dependencies
-node_modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.eslintcache
+.parcel-cache/
+.turbo/
+
+# Phantom worktrees
 .worktrees
+
+# Misc
+*.tgz
+.pnpm-store/

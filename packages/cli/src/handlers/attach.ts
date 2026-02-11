@@ -9,12 +9,19 @@ import {
 } from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import {
+  createZellijSession,
   executeTmuxCommand,
+  executeZellijCommand,
   getPhantomEnv,
   isInsideTmux,
+  isInsideZellij,
 } from "@aku11i/phantom-process";
 import { isErr } from "@aku11i/phantom-shared";
 import { exitCodes, exitWithError } from "../errors.ts";
+import {
+  cleanupTemporaryLayout,
+  createTemporaryLayout,
+} from "../layouts/index.ts";
 import { output } from "../output.ts";
 
 export async function attachHandler(args: string[]): Promise<void> {
@@ -45,6 +52,25 @@ export async function attachHandler(args: string[]): Promise<void> {
         type: "boolean",
       },
       "tmux-h": {
+        type: "boolean",
+      },
+      zellij: {
+        type: "boolean",
+        short: "z",
+      },
+      "zellij-vertical": {
+        type: "boolean",
+      },
+      "zellij-v": {
+        type: "boolean",
+      },
+      "zellij-horizontal": {
+        type: "boolean",
+      },
+      "zellij-h": {
+        type: "boolean",
+      },
+      "no-agent": {
         type: "boolean",
       },
       "copy-file": {
@@ -81,9 +107,28 @@ export async function attachHandler(args: string[]): Promise<void> {
           ? "horizontal"
           : undefined;
 
-  if ([values.shell, values.exec, tmuxOption].filter(Boolean).length > 1) {
+  const zellijOption =
+    values.zellij ||
+    values["zellij-vertical"] ||
+    values["zellij-v"] ||
+    values["zellij-horizontal"] ||
+    values["zellij-h"];
+
+  const zellijDirection: "new" | "vertical" | "horizontal" | undefined =
+    values.zellij
+      ? "new"
+      : values["zellij-vertical"] || values["zellij-v"]
+        ? "vertical"
+        : values["zellij-horizontal"] || values["zellij-h"]
+          ? "horizontal"
+          : undefined;
+
+  if (
+    [values.shell, values.exec, tmuxOption, zellijOption].filter(Boolean)
+      .length > 1
+  ) {
     exitWithError(
-      "Cannot use --shell, --exec, and --tmux options together",
+      "Cannot use --shell, --exec, --tmux, and --zellij options together",
       exitCodes.validationError,
     );
   }
@@ -172,6 +217,79 @@ export async function attachHandler(args: string[]): Promise<void> {
 
     if (isErr(tmuxResult)) {
       exitWithError(tmuxResult.error.message, exitCodes.generalError);
+    }
+  } else if (zellijDirection) {
+    const insideZellij = await isInsideZellij();
+
+    // Pane options require being inside Zellij
+    if (
+      (zellijDirection === "vertical" || zellijDirection === "horizontal") &&
+      !insideZellij
+    ) {
+      exitWithError(
+        "The --zellij-vertical and --zellij-horizontal options can only be used inside a Zellij session. Use --zellij to launch a new session.",
+        exitCodes.validationError,
+      );
+    }
+
+    const shell = process.env.SHELL || "/bin/sh";
+
+    if (insideZellij) {
+      output.log(
+        `Opening worktree '${branchName}' in Zellij ${
+          zellijDirection === "new" ? "tab" : "pane"
+        }...`,
+      );
+
+      const zellijResult = await executeZellijCommand({
+        direction: zellijDirection,
+        command: shell,
+        cwd: worktreePath,
+        env: getPhantomEnv(branchName, worktreePath),
+        tabName: zellijDirection === "new" ? branchName : undefined,
+      });
+
+      if (isErr(zellijResult)) {
+        exitWithError(zellijResult.error.message, exitCodes.generalError);
+      }
+    } else {
+      // attach --zellij launches without agent by default (use 'phantom launch' for AI sessions)
+      const zellijConfig = context.config?.zellij;
+
+      // Determine layout path
+      let layoutPath: string;
+      let isTemporaryLayout = false;
+
+      if (zellijConfig?.layout) {
+        // Config-specified layout
+        layoutPath = zellijConfig.layout;
+      } else {
+        // Generate temporary layout WITHOUT agent
+        layoutPath = await createTemporaryLayout({
+          worktreePath,
+          worktreeName: branchName,
+          noAgent: true,
+        });
+        isTemporaryLayout = true;
+      }
+
+      output.log(`Launching Zellij session '${branchName}'...`);
+
+      const zellijResult = await createZellijSession({
+        sessionName: branchName.replaceAll("/", "-"),
+        layout: layoutPath,
+        cwd: worktreePath,
+        env: getPhantomEnv(branchName, worktreePath),
+      });
+
+      // Cleanup temporary layout if we created one
+      if (isTemporaryLayout) {
+        await cleanupTemporaryLayout(layoutPath);
+      }
+
+      if (isErr(zellijResult)) {
+        exitWithError(zellijResult.error.message, exitCodes.generalError);
+      }
     }
   }
 }

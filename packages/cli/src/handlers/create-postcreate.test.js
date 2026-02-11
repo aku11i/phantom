@@ -53,9 +53,19 @@ mock.module("@aku11i/phantom-core", {
 
 mock.module("@aku11i/phantom-process", {
   namedExports: {
+    createZellijSession: mock.fn(),
     isInsideTmux: mock.fn(() => false),
     executeTmuxCommand: mock.fn(),
+    isInsideZellij: mock.fn(() => false),
+    executeZellijCommand: mock.fn(),
     getPhantomEnv: mock.fn(() => ({})),
+  },
+});
+
+mock.module("../layouts/index.ts", {
+  namedExports: {
+    createTemporaryLayout: mock.fn(() => Promise.resolve("/tmp/layout.kdl")),
+    cleanupTemporaryLayout: mock.fn(() => Promise.resolve()),
   },
 });
 

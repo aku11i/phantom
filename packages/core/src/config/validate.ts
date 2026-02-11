@@ -9,6 +9,22 @@ export class ConfigValidationError extends Error {
   }
 }
 
+const zellijAgentConfigSchema = z
+  .object({
+    command: z.string().optional(),
+    args: z.array(z.string()).optional(),
+  })
+  .passthrough()
+  .optional();
+
+const zellijConfigSchema = z
+  .object({
+    layout: z.string().optional(),
+    agent: zellijAgentConfigSchema,
+  })
+  .passthrough()
+  .optional();
+
 export const phantomConfigSchema = z
   .object({
     postCreate: z
@@ -25,6 +41,7 @@ export const phantomConfigSchema = z
       .passthrough()
       .optional(),
     worktreesDirectory: z.string().optional(),
+    zellij: zellijConfigSchema,
   })
   .passthrough();
 

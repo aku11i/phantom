@@ -2,6 +2,8 @@ import {
   type ChildProcess,
   spawn as nodeSpawn,
   type SpawnOptions,
+  type SpawnSyncOptions,
+  spawnSync,
 } from "node:child_process";
 import { err, ok, type Result } from "@aku11i/phantom-shared";
 import {
@@ -20,6 +22,12 @@ export interface SpawnConfig {
   command: string;
   args?: string[];
   options?: SpawnOptions;
+}
+
+export interface SpawnSyncConfig {
+  command: string;
+  args?: string[];
+  options?: SpawnSyncOptions;
 }
 
 export async function spawnProcess(
@@ -54,4 +62,44 @@ export async function spawnProcess(
       }
     });
   });
+}
+
+/**
+ * Spawn a process synchronously - better for interactive TUI applications
+ * that need direct control of stdin/stdout/stderr
+ */
+export function spawnProcessSync(
+  config: SpawnSyncConfig,
+): Result<SpawnSuccess, ProcessError> {
+  const { command, args = [], options = {} } = config;
+  const file =
+    process.platform === "win32" ? resolveWindowsCommandPath(command) : command;
+
+  try {
+    const result = spawnSync(file, args, {
+      stdio: "inherit",
+      ...options,
+    });
+
+    if (result.error) {
+      return err(new ProcessSpawnError(file, result.error.message));
+    }
+
+    if (result.signal) {
+      return err(new ProcessSignalError(result.signal));
+    }
+
+    const exitCode = result.status ?? 0;
+    if (exitCode === 0) {
+      return ok({ exitCode });
+    }
+    return err(new ProcessExecutionError(file, exitCode));
+  } catch (error) {
+    return err(
+      new ProcessSpawnError(
+        file,
+        error instanceof Error ? error.message : String(error),
+      ),
+    );
+  }
 }

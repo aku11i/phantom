@@ -10,6 +10,7 @@ import { editHandler } from "../handlers/edit.ts";
 import { execHandler } from "../handlers/exec.ts";
 import { githubHandler } from "../handlers/github.ts";
 import { githubCheckoutHandler } from "../handlers/github-checkout.ts";
+import { launchHandler } from "../handlers/launch.ts";
 import { listHandler } from "../handlers/list.ts";
 import { mcpHandler } from "../handlers/mcp.ts";
 import { preferencesHandler } from "../handlers/preferences.ts";
@@ -19,6 +20,9 @@ import { preferencesSetHandler } from "../handlers/preferences-set.ts";
 import { shellHandler } from "../handlers/shell.ts";
 import { versionHandler } from "../handlers/version.ts";
 import { whereHandler } from "../handlers/where.ts";
+import { zellijHandler } from "../handlers/zellij.ts";
+import { zellijInitHandler } from "../handlers/zellij-init.ts";
+import { zellijListHandler } from "../handlers/zellij-list.ts";
 import { aiHelp } from "../help/ai.ts";
 import { attachHelp } from "../help/attach.ts";
 import { completionHelp } from "../help/completion.ts";
@@ -27,6 +31,7 @@ import { deleteHelp } from "../help/delete.ts";
 import { editHelp } from "../help/edit.ts";
 import { execHelp } from "../help/exec.ts";
 import { githubCheckoutHelp, githubHelp } from "../help/github.ts";
+import { launchHelp } from "../help/launch.ts";
 import { listHelp } from "../help/list.ts";
 import { mcpHelp } from "../help/mcp.ts";
 import {
@@ -38,6 +43,7 @@ import {
 import { shellHelp } from "../help/shell.ts";
 import { versionHelp } from "../help/version.ts";
 import { whereHelp } from "../help/where.ts";
+import { zellijHelp, zellijInitHelp, zellijListHelp } from "../help/zellij.ts";
 import { type CommandHelp, helpFormatter } from "../help.ts";
 
 interface Command {
@@ -60,6 +66,12 @@ const commands: Command[] = [
     description: "Attach to an existing branch by creating a new worktree",
     handler: attachHandler,
     help: attachHelp,
+  },
+  {
+    name: "launch",
+    description: "Create a worktree and launch a Zellij session with AI agent",
+    handler: launchHandler,
+    help: launchHelp,
   },
   {
     name: "list",
@@ -172,6 +184,26 @@ const commands: Command[] = [
         description: "Create a worktree for a GitHub PR or issue",
         handler: githubCheckoutHandler,
         help: githubCheckoutHelp,
+      },
+    ],
+  },
+  {
+    name: "zellij",
+    description: "Manage Zellij layout templates",
+    handler: zellijHandler,
+    help: zellijHelp,
+    subcommands: [
+      {
+        name: "init",
+        description: "Create a customizable Zellij layout file",
+        handler: zellijInitHandler,
+        help: zellijInitHelp,
+      },
+      {
+        name: "list",
+        description: "List available Zellij layouts",
+        handler: zellijListHandler,
+        help: zellijListHelp,
       },
     ],
   },

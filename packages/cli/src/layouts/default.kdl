@@ -1,0 +1,40 @@
+// Default Phantom layout for Zellij
+// Top pane: AI agent (focused)
+// Bottom pane: two shells side by side
+//
+// Running commands in panes:
+//
+//   // Run a simple command (pane closes when command exits)
+//   pane {
+//       command "npm"
+//       args "install"
+//   }
+//
+//   // Run a command and keep the shell open afterward
+//   pane {
+//       command "bash"
+//       args "-c" "npm install; exec bash"
+//   }
+//
+//   // Run multiple commands in sequence
+//   pane {
+//       command "bash"
+//       args "-c" "npm install && npm run dev; exec bash"
+//   }
+
+layout {
+    pane split_direction="vertical" {
+        pane size="50%" focus=true {
+            name "agent"
+            command "claude"
+        }
+        pane size="50%" split_direction="horizontal" {
+            pane {
+                name "shell"
+            }
+            pane {
+                name "shell2"
+            }
+        }
+    }
+}
