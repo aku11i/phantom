@@ -21,6 +21,8 @@ const createContextMock = mock.fn();
 const executePostCreateCommandsMock = mock.fn();
 const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
+const isInsideZellijMock = mock.fn();
+const executeZellijCommandMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
 const exitWithErrorMock = mock.fn((message, code) => {
   if (message) consoleErrorMock(`Error: ${message}`);
@@ -67,9 +69,19 @@ mock.module("@aku11i/phantom-core", {
 
 mock.module("@aku11i/phantom-process", {
   namedExports: {
+    createZellijSession: mock.fn(),
     isInsideTmux: isInsideTmuxMock,
     executeTmuxCommand: executeTmuxCommandMock,
+    isInsideZellij: isInsideZellijMock,
+    executeZellijCommand: executeZellijCommandMock,
     getPhantomEnv: getPhantomEnvMock,
+  },
+});
+
+mock.module("../layouts/index.ts", {
+  namedExports: {
+    createTemporaryLayout: mock.fn(() => Promise.resolve("/tmp/layout.kdl")),
+    cleanupTemporaryLayout: mock.fn(() => Promise.resolve()),
   },
 });
 

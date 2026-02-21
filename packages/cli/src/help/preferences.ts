@@ -26,6 +26,11 @@ export const preferencesHelp: CommandHelp = {
         "Store a custom worktreesDirectory (relative to the Git repository root) for all commands",
     },
     {
+      command: "phantom preferences set terminal iterm",
+      description:
+        "Set the terminal to use with --detach (stored as phantom.terminal in git config --global)",
+    },
+    {
       command: "phantom preferences remove editor",
       description: "Remove the editor preference (fallback to env/default)",
     },
@@ -41,6 +46,7 @@ export const preferencesHelp: CommandHelp = {
     "  editor - used by 'phantom edit', preferred over $EDITOR",
     "  ai - used by 'phantom ai'",
     "  worktreesDirectory - path relative to the Git repo root for storing worktrees (defaults to .git/phantom/worktrees)",
+    "  terminal - used by 'phantom launch --detach' (known: iterm, terminal, ghostty, wezterm, alacritty, gnome-terminal, konsole, wt; or any terminal command)",
   ],
 };
 
@@ -63,8 +69,12 @@ export const preferencesGetHelp: CommandHelp = {
       description:
         "Show the preferred worktrees directory (relative to repo root)",
     },
+    {
+      command: "phantom preferences get terminal",
+      description: "Show the terminal preference for --detach",
+    },
   ],
-  notes: ["Supported keys: editor, ai, worktreesDirectory"],
+  notes: ["Supported keys: editor, ai, worktreesDirectory, terminal"],
 };
 
 export const preferencesSetHelp: CommandHelp = {
@@ -87,9 +97,14 @@ export const preferencesSetHelp: CommandHelp = {
       description:
         "Store worktrees in ../phantom-worktrees relative to the Git repository root",
     },
+    {
+      command: "phantom preferences set terminal iterm",
+      description:
+        "Use iTerm2 for --detach (also: terminal, wezterm, alacritty)",
+    },
   ],
   notes: [
-    "Supported keys: editor, ai, worktreesDirectory",
+    "Supported keys: editor, ai, worktreesDirectory, terminal",
     "For worktreesDirectory, provide a path relative to the Git repository root; defaults to .git/phantom/worktrees when unset",
   ],
 };
@@ -112,6 +127,10 @@ export const preferencesRemoveHelp: CommandHelp = {
       command: "phantom preferences remove worktreesDirectory",
       description: "Unset the custom worktrees directory preference",
     },
+    {
+      command: "phantom preferences remove terminal",
+      description: "Unset the terminal preference (fallback to $TERM_PROGRAM)",
+    },
   ],
-  notes: ["Supported keys: editor, ai, worktreesDirectory"],
+  notes: ["Supported keys: editor, ai, worktreesDirectory, terminal"],
 };

@@ -18,6 +18,9 @@ const execInWorktreeMock = mock.fn();
 const createContextMock = mock.fn();
 const isInsideTmuxMock = mock.fn();
 const executeTmuxCommandMock = mock.fn();
+const isInsideZellijMock = mock.fn();
+const executeZellijCommandMock = mock.fn();
+const createZellijSessionMock = mock.fn();
 const getPhantomEnvMock = mock.fn();
 
 mock.module("../errors.ts", {
@@ -60,9 +63,19 @@ mock.module("@aku11i/phantom-core", {
 
 mock.module("@aku11i/phantom-process", {
   namedExports: {
+    createZellijSession: createZellijSessionMock,
     executeTmuxCommand: executeTmuxCommandMock,
+    executeZellijCommand: executeZellijCommandMock,
     getPhantomEnv: getPhantomEnvMock,
     isInsideTmux: isInsideTmuxMock,
+    isInsideZellij: isInsideZellijMock,
+  },
+});
+
+mock.module("../layouts/index.ts", {
+  namedExports: {
+    createTemporaryLayout: mock.fn(() => Promise.resolve("/tmp/layout.kdl")),
+    cleanupTemporaryLayout: mock.fn(() => Promise.resolve()),
   },
 });
 
@@ -128,7 +141,7 @@ describe("attachHandler", () => {
     );
 
     deepStrictEqual(exitWithErrorMock.mock.calls[0].arguments, [
-      "Cannot use --shell, --exec, and --tmux options together",
+      "Cannot use --shell, --exec, --tmux, and --zellij options together",
       3,
     ]);
     deepStrictEqual(getGitRootMock.mock.calls.length, 0);
