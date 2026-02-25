@@ -11,15 +11,10 @@ const isOkMock = mock.fn((result) => {
 const okMock = mock.fn((value) => ({ ok: true, value }));
 const errMock = mock.fn((error) => ({ ok: false, error }));
 
-const generateUniqueNameMock = mock.fn(() =>
-  Promise.resolve("fuzzy-cats-dance"),
-);
-
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     createWorktree: createWorktreeMock,
     createContext: createContextMock,
-    generateUniqueName: generateUniqueNameMock,
   },
 });
 
@@ -59,7 +54,7 @@ describe("createWorktreeTool", () => {
     strictEqual(schema instanceof z.ZodObject, true);
 
     const shape = schema.shape;
-    strictEqual(shape.name instanceof z.ZodOptional, true);
+    strictEqual(shape.name instanceof z.ZodString, true);
     strictEqual(shape.baseBranch instanceof z.ZodOptional, true);
   });
 
@@ -184,13 +179,9 @@ describe("createWorktreeTool", () => {
       createWorktreeTool.inputSchema.safeParse(validInputWithBase);
     strictEqual(parsedWithBase.success, true);
 
-    const validWithoutName = { baseBranch: "main" };
-    const parsedWithoutName =
-      createWorktreeTool.inputSchema.safeParse(validWithoutName);
-    strictEqual(parsedWithoutName.success, true);
-
-    const validEmpty = {};
-    const parsedEmpty = createWorktreeTool.inputSchema.safeParse(validEmpty);
-    strictEqual(parsedEmpty.success, true);
+    const invalidInput = { baseBranch: "main" };
+    const parsedInvalid =
+      createWorktreeTool.inputSchema.safeParse(invalidInput);
+    strictEqual(parsedInvalid.success, false);
   });
 });
