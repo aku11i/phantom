@@ -1,8 +1,11 @@
 import { branchExists } from "@aku11i/phantom-git";
-import { err, isOk, ok, type Result } from "@aku11i/phantom-shared";
+import { err, isErr, isOk, ok, type Result } from "@aku11i/phantom-shared";
 import { humanId } from "human-id";
 import { getWorktreePathFromDirectory } from "../paths.ts";
-import { validateWorktreeDirectoryExists } from "./validate.ts";
+import {
+  validateWorktreeDirectoryExists,
+  validateWorktreeName,
+} from "./validate.ts";
 
 const MAX_RETRIES = 10;
 
@@ -17,13 +20,20 @@ export async function generateUniqueName(
   for (let i = 0; i < MAX_RETRIES; i++) {
     const name = generate();
 
+    if (isErr(validateWorktreeName(name))) {
+      continue;
+    }
+
     const worktreePath = getWorktreePathFromDirectory(worktreesDirectory, name);
     if (await validateWorktreeDirectoryExists(worktreePath)) {
       continue;
     }
 
     const result = await branchExists(gitRoot, name);
-    if (isOk(result) && result.value) {
+    if (isErr(result)) {
+      return err(result.error);
+    }
+    if (result.value) {
       continue;
     }
 

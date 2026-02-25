@@ -1,9 +1,11 @@
 import { strictEqual } from "node:assert";
+import { join } from "node:path";
 import { describe, it, mock } from "node:test";
 import { err, isErr, isOk, ok } from "@aku11i/phantom-shared";
 
 const branchExistsMock = mock.fn();
 const validateWorktreeDirectoryExistsMock = mock.fn();
+const validateWorktreeNameMock = mock.fn(() => ok(undefined));
 let humanIdCallCount = 0;
 
 mock.module("@aku11i/phantom-git", {
@@ -15,6 +17,7 @@ mock.module("@aku11i/phantom-git", {
 mock.module("./validate.ts", {
   namedExports: {
     validateWorktreeDirectoryExists: validateWorktreeDirectoryExistsMock,
+    validateWorktreeName: validateWorktreeNameMock,
   },
 });
 
@@ -33,6 +36,8 @@ describe("generateUniqueName", () => {
   const resetMocks = () => {
     branchExistsMock.mock.resetCalls();
     validateWorktreeDirectoryExistsMock.mock.resetCalls();
+    validateWorktreeNameMock.mock.resetCalls();
+    validateWorktreeNameMock.mock.mockImplementation(() => ok(undefined));
     humanIdCallCount = 0;
   };
 
@@ -55,7 +60,7 @@ describe("generateUniqueName", () => {
     strictEqual(validateWorktreeDirectoryExistsMock.mock.calls.length, 1);
     strictEqual(
       validateWorktreeDirectoryExistsMock.mock.calls[0].arguments[0],
-      "/test/repo/.git/phantom/worktrees/generated-name-1",
+      join("/test/repo/.git/phantom/worktrees", "generated-name-1"),
     );
     strictEqual(branchExistsMock.mock.calls.length, 1);
   });
@@ -130,7 +135,7 @@ describe("generateUniqueName", () => {
     strictEqual(branchExistsMock.mock.calls.length, 0);
   });
 
-  it("should accept name when branchExists returns error", async () => {
+  it("should return error when branchExists fails", async () => {
     resetMocks();
     validateWorktreeDirectoryExistsMock.mock.mockImplementation(() =>
       Promise.resolve(false),
@@ -144,9 +149,9 @@ describe("generateUniqueName", () => {
       "/test/repo/.git/phantom/worktrees",
     );
 
-    strictEqual(isOk(result), true);
-    if (isOk(result)) {
-      strictEqual(result.value, "generated-name-1");
+    strictEqual(isErr(result), true);
+    if (isErr(result)) {
+      strictEqual(result.error.message, "git command failed");
     }
   });
 });
