@@ -6,18 +6,11 @@ export async function branchExists(
   branchName: string,
 ): Promise<Result<boolean, Error>> {
   try {
-    await executeGitCommand(
-      ["show-ref", "--verify", "--quiet", `refs/heads/${branchName}`],
-      { cwd: gitRoot },
-    );
-    return ok(true);
+    const result = await executeGitCommand(["branch", "--list", branchName], {
+      cwd: gitRoot,
+    });
+    return ok(result.stdout.trim() !== "");
   } catch (error) {
-    if (error && typeof error === "object" && "code" in error) {
-      const execError = error as { code?: number; message?: string };
-      if (execError.code === 1) {
-        return ok(false);
-      }
-    }
     return err(
       new Error(
         `Failed to check branch existence: ${
