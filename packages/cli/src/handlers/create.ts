@@ -99,12 +99,18 @@ export async function createHandler(args: string[]): Promise<void> {
 
   try {
     const gitRoot = await getGitRoot();
+    const context = await createContext(gitRoot);
 
     if (!worktreeName) {
-      worktreeName = await generateUniqueName(gitRoot);
+      const nameResult = await generateUniqueName(
+        gitRoot,
+        context.worktreesDirectory,
+      );
+      if (isErr(nameResult)) {
+        exitWithError(nameResult.error.message, exitCodes.generalError);
+      }
+      worktreeName = nameResult.value;
     }
-
-    const context = await createContext(gitRoot);
 
     let filesToCopy: string[] = [];
 

@@ -48,7 +48,7 @@ mock.module("@aku11i/phantom-git", {
 });
 
 const generateUniqueNameMock = mock.fn(() =>
-  Promise.resolve("fuzzy-cats-dance"),
+  Promise.resolve({ ok: true, value: "fuzzy-cats-dance" }),
 );
 
 mock.module("@aku11i/phantom-core", {
@@ -530,5 +530,77 @@ describe("createHandler", () => {
       "Created worktree 'experiment' at /test/repo/.git/phantom/worktrees/experiment",
     );
     strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("should auto-generate name when no name is provided", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
+    );
+    generateUniqueNameMock.mock.mockImplementation(() =>
+      Promise.resolve({ ok: true, value: "fuzzy-cats-dance" }),
+    );
+    createWorktreeMock.mock.mockImplementation(() =>
+      Promise.resolve(
+        ok({
+          message:
+            "Created worktree 'fuzzy-cats-dance' at /test/repo/.git/phantom/worktrees/fuzzy-cats-dance",
+          path: "/test/repo/.git/phantom/worktrees/fuzzy-cats-dance",
+        }),
+      ),
+    );
+
+    await rejects(async () => await createHandler([]), /Exit with code 0/);
+
+    strictEqual(generateUniqueNameMock.mock.calls.length, 1);
+    strictEqual(
+      generateUniqueNameMock.mock.calls[0].arguments[0],
+      "/test/repo",
+    );
+    strictEqual(
+      generateUniqueNameMock.mock.calls[0].arguments[1],
+      "/test/repo/.git/phantom/worktrees",
+    );
+    strictEqual(createWorktreeMock.mock.calls.length, 1);
+    strictEqual(
+      createWorktreeMock.mock.calls[0].arguments[2],
+      "fuzzy-cats-dance",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 0);
+  });
+
+  it("should exit with error when name generation fails", async () => {
+    resetMocks();
+    getGitRootMock.mock.mockImplementation(() => Promise.resolve("/test/repo"));
+    createContextMock.mock.mockImplementation((gitRoot) =>
+      Promise.resolve({
+        gitRoot,
+        worktreesDirectory: `${gitRoot}/.git/phantom/worktrees`,
+        config: null,
+      }),
+    );
+    generateUniqueNameMock.mock.mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        error: new Error(
+          "Failed to generate a unique worktree name after maximum retries",
+        ),
+      }),
+    );
+
+    await rejects(async () => await createHandler([]), /Exit with code 1/);
+
+    strictEqual(generateUniqueNameMock.mock.calls.length, 1);
+    strictEqual(createWorktreeMock.mock.calls.length, 0);
+    strictEqual(
+      consoleErrorMock.mock.calls[0].arguments[0],
+      "Error: Failed to generate a unique worktree name after maximum retries",
+    );
+    strictEqual(exitMock.mock.calls[0].arguments[0], 1);
   });
 });

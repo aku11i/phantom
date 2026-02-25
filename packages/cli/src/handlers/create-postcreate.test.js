@@ -48,7 +48,9 @@ mock.module("@aku11i/phantom-core", {
     createContext: createContextMock,
     execInWorktree: mock.fn(),
     shellInWorktree: mock.fn(),
-    generateUniqueName: mock.fn(() => Promise.resolve("fuzzy-cats-dance")),
+    generateUniqueName: mock.fn(() =>
+      Promise.resolve({ ok: true, value: "fuzzy-cats-dance" }),
+    ),
   },
 });
 
