@@ -1,4 +1,5 @@
-import { isErr } from "@aku11i/phantom-shared";
+import { branchExists } from "@aku11i/phantom-git";
+import { isErr, isOk } from "@aku11i/phantom-shared";
 import { humanId } from "human-id";
 import { listWorktrees } from "./list.ts";
 
@@ -20,9 +21,14 @@ export async function generateUniqueName(gitRoot: string): Promise<string> {
 
   for (let i = 0; i < MAX_RETRIES; i++) {
     const name = generate();
-    if (!existingNames.has(name)) {
-      return name;
+    if (existingNames.has(name)) {
+      continue;
     }
+    const result = await branchExists(gitRoot, name);
+    if (isOk(result) && result.value) {
+      continue;
+    }
+    return name;
   }
 
   throw new Error(
