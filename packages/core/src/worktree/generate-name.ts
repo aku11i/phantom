@@ -18,24 +18,14 @@ export async function generateUniqueName(gitRoot: string): Promise<string> {
     }
   }
 
-  return generateUniqueNameRecursive(existingNames, 0);
-}
-
-function generateUniqueNameRecursive(
-  existingNames: Set<string>,
-  attempt: number,
-): string {
-  if (attempt >= MAX_RETRIES) {
-    throw new Error(
-      "Failed to generate a unique worktree name after maximum retries",
-    );
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    const name = generate();
+    if (!existingNames.has(name)) {
+      return name;
+    }
   }
 
-  const name = generate();
-
-  if (existingNames.has(name)) {
-    return generateUniqueNameRecursive(existingNames, attempt + 1);
-  }
-
-  return name;
+  throw new Error(
+    "Failed to generate a unique worktree name after maximum retries",
+  );
 }

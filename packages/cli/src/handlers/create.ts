@@ -102,7 +102,6 @@ export async function createHandler(args: string[]): Promise<void> {
 
     if (!worktreeName) {
       worktreeName = await generateUniqueName(gitRoot);
-      output.log(`Generated name: ${worktreeName}`);
     }
 
     const context = await createContext(gitRoot);
