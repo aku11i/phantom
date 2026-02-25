@@ -1,4 +1,8 @@
-import { createContext, createWorktree } from "@aku11i/phantom-core";
+import {
+  createContext,
+  createWorktree,
+  generateUniqueName,
+} from "@aku11i/phantom-core";
 import { getGitRoot } from "@aku11i/phantom-git";
 import { isOk } from "@aku11i/phantom-shared";
 import { z } from "zod";
@@ -7,7 +11,10 @@ import type { Tool } from "./types.ts";
 const schema = z.object({
   name: z
     .string()
-    .describe("Name for the worktree (also used as the branch name)"),
+    .optional()
+    .describe(
+      "Name for the worktree (also used as the branch name). If omitted, a random name is generated",
+    ),
   baseBranch: z
     .string()
     .optional()
@@ -18,8 +25,9 @@ export const createWorktreeTool: Tool<typeof schema> = {
   name: "phantom_create_worktree",
   description: "Create a new Git worktree (phantom)",
   inputSchema: schema,
-  handler: async ({ name, baseBranch }) => {
+  handler: async ({ name: inputName, baseBranch }) => {
     const gitRoot = await getGitRoot();
+    const name = inputName || (await generateUniqueName(gitRoot));
     const context = await createContext(gitRoot);
     const result = await createWorktree(
       context.gitRoot,
