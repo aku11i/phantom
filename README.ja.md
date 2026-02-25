@@ -204,6 +204,8 @@ AIエージェントは2つのワークツリーを作成し、それぞれにEx
 
 ```bash
 phantom create feature-awesome
+# 名前を省略するとランダムな名前が自動生成されます
+phantom create
 
 phantom list
 ```

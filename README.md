@@ -208,6 +208,8 @@ See [MCP Integration Guide](./docs/mcp.md) for detailed setup and usage.
 
 ```bash
 phantom create feature-awesome
+# Or omit the name to auto-generate one
+phantom create
 
 phantom list
 ```

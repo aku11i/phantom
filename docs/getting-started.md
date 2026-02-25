@@ -78,6 +78,8 @@ These five commands will cover 90% of your Phantom usage:
 ### 1. Create a Worktree
 ```bash
 phantom create feature-name
+# Or omit the name to auto-generate one
+phantom create
 ```
 
 ### 2. Enter a Worktree
