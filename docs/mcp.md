@@ -71,7 +71,7 @@ The Phantom MCP server exposes four main tools:
 Creates a new Git worktree.
 
 **Parameters:**
-- `name` (required): Name for the worktree (also used as the branch name)
+- `name` (optional): Name for the worktree (also used as the branch name). If omitted, a random name is generated
 - `baseBranch` (optional): Base branch to create from (defaults to current branch)
 
 **Example:**

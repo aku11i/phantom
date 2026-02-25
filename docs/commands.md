@@ -33,8 +33,10 @@ This document provides a comprehensive reference for all Phantom commands and th
 Create a new worktree with a matching branch.
 
 ```bash
-phantom create <name> [options]
+phantom create [name] [options]
 ```
+
+If `name` is omitted, a random human-readable name is generated automatically.
 
 **Options:**
 - `--shell` - Create and enter interactive shell
@@ -47,7 +49,10 @@ phantom create <name> [options]
 
 **Examples:**
 ```bash
-# Basic usage
+# Auto-generate a random name
+phantom create
+
+# Specify a name
 phantom create feature-auth
 
 # Create and immediately open shell

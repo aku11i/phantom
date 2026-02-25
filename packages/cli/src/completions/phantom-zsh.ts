@@ -44,7 +44,7 @@ _phantom() {
                         '--tmux-horizontal[Open the worktree in a horizontal tmux pane]' \
                         '*--copy-file[Copy specified files from the current worktree]:file:_files' \
                         '--base[Branch or commit to create the new worktree from (defaults to HEAD)]:branch/commit:' \
-                        '1:name:'
+                        '1::name:'
                     ;;
                 attach)
                     _arguments \

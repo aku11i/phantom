@@ -3,7 +3,7 @@ import type { CommandHelp } from "../help.ts";
 export const createHelp: CommandHelp = {
   name: "create",
   description: "Create a new Git worktree",
-  usage: "phantom create <name> [options]",
+  usage: "phantom create [name] [options]",
   options: [
     {
       name: "shell",
@@ -56,6 +56,10 @@ export const createHelp: CommandHelp = {
   ],
   examples: [
     {
+      description: "Create a new worktree with an auto-generated name",
+      command: "phantom create",
+    },
+    {
       description: "Create a new worktree named 'feature-auth'",
       command: "phantom create feature-auth",
     },
@@ -86,6 +90,7 @@ export const createHelp: CommandHelp = {
     },
   ],
   notes: [
+    "If name is omitted, a random human-readable name is generated automatically",
     "The worktree name will be used as the branch name",
     "Only one of --shell, --exec, or --tmux options can be used at a time",
     "File copying can also be configured in phantom.config.json",
