@@ -3,6 +3,7 @@ import {
   createContext,
   createWorktree as createWorktreeCore,
   execInWorktree,
+  generateUniqueName,
   shellInWorktree,
   WorktreeAlreadyExistsError,
 } from "@aku11i/phantom-core";
@@ -56,14 +57,7 @@ export async function createHandler(args: string[]): Promise<void> {
     allowPositionals: true,
   });
 
-  if (positionals.length === 0) {
-    exitWithError(
-      "Please provide a name for the new worktree",
-      exitCodes.validationError,
-    );
-  }
-
-  const worktreeName = positionals[0];
+  let worktreeName = positionals[0];
   const openShell = values.shell ?? false;
   const execCommand = values.exec;
   const copyFileOptions = values["copy-file"];
@@ -105,6 +99,12 @@ export async function createHandler(args: string[]): Promise<void> {
 
   try {
     const gitRoot = await getGitRoot();
+
+    if (!worktreeName) {
+      worktreeName = await generateUniqueName(gitRoot);
+      output.log(`Generated name: ${worktreeName}`);
+    }
+
     const context = await createContext(gitRoot);
 
     let filesToCopy: string[] = [];

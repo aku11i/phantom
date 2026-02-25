@@ -10,6 +10,7 @@ export * from "./worktree/create.ts";
 export * from "./worktree/delete.ts";
 export * from "./worktree/errors.ts";
 export * from "./worktree/file-copier.ts";
+export * from "./worktree/generate-name.ts";
 export * from "./worktree/list.ts";
 export * from "./worktree/post-create.ts";
 export * from "./worktree/pre-delete.ts";

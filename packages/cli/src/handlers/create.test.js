@@ -47,6 +47,10 @@ mock.module("@aku11i/phantom-git", {
   },
 });
 
+const generateUniqueNameMock = mock.fn(() =>
+  Promise.resolve("fuzzy-cats-dance"),
+);
+
 mock.module("@aku11i/phantom-core", {
   namedExports: {
     createWorktree: createWorktreeMock,
@@ -59,6 +63,7 @@ mock.module("@aku11i/phantom-core", {
     WorktreeAlreadyExistsError,
     createContext: createContextMock,
     executePostCreateCommands: executePostCreateCommandsMock,
+    generateUniqueName: generateUniqueNameMock,
     getWorktreesDirectory: mock.fn((gitRoot, worktreesDirectory) => {
       return worktreesDirectory || `${gitRoot}/.git/phantom/worktrees`;
     }),
