@@ -1,6 +1,6 @@
 {
   "name": "@aku11i/phantom-core",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
@@ -13,6 +13,7 @@
     "@aku11i/phantom-git": "workspace:*",
     "@aku11i/phantom-process": "workspace:*",
     "@aku11i/phantom-shared": "workspace:*",
+    "human-id": "^4.1.3",
     "zod": "^4.3.6"
   }
 }

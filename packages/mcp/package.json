@@ -1,6 +1,6 @@
 {
   "name": "@aku11i/phantom-mcp",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
@@ -16,10 +16,10 @@
     "@aku11i/phantom-github": "workspace:*",
     "@aku11i/phantom-process": "workspace:*",
     "@aku11i/phantom-shared": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.25.3",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@modelcontextprotocol/inspector": "^0.19.0"
+    "@modelcontextprotocol/inspector": "^0.20.0"
   }
 }
